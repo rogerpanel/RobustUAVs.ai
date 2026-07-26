@@ -47,6 +47,36 @@ except Exception:                                    # torch not installed etc.
     def gronwall_output_bound(L_g, T, eps_in):
         return float(eps_in * math.exp(L_g * T))
 
+# ---- W3 unit bridge: pos_error_m -> CAF-feature l2 (certificates/unit_bridge.py)
+try:
+    try:
+        from certificates.unit_bridge import to_feature_l2, bridge_info
+    except ImportError:                              # run as a script from certificates/
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from unit_bridge import to_feature_l2, bridge_info
+    HAVE_BRIDGE = True
+except Exception:                                    # numpy/torch missing
+    HAVE_BRIDGE = False
+
+
+def _to_feature_l2(delta: "Perturbation"):
+    """Map a schema delta to feature-space l2. Returns (l2, meta) or
+    (None, meta) when the kind is not yet mappable — the caller reports
+    unit_bridge_missing honestly instead of guessing."""
+    if delta.kind == "sensor_l2":
+        return delta.value, {"unit_bridge": "identity"}
+    if delta.kind == "pos_error_m" and HAVE_BRIDGE:
+        info = bridge_info()
+        return to_feature_l2(delta.value), {
+            "unit_bridge": info["version"],
+            "unit_bridge_basis": info["basis"],
+            "pos_error_m_input": delta.value}
+    return None, {
+        "status": "unit_bridge_missing",
+        "detail": f"delta kind '{delta.kind}' not yet mappable to feature-space "
+                  f"l2" + ("" if HAVE_BRIDGE else
+                           " (unit_bridge unavailable: numpy/torch not installed)")}
+
 # ------------------------- dissertation constants -------------------------
 
 PHASE_A = {
@@ -91,13 +121,15 @@ class LipschitzGronwallCertificate:
     output deviation is bounded by eps_out and the certified operating regime
     (J/S <= 20 dB, MCR >= mcr_certified_target) applies.
 
-    OPEN ITEM (W3): delta arrives in physical units (metres of position error,
-    seconds of staleness); the certificate radius lives in normalised CAF-
-    feature l2 space. The unit bridge — the sensor-to-feature scaling that
-    converts pos_error_m into feature-space l2 — must come from the
-    uav_defense feature pipeline (datasets/texbat.py normalisation constants).
-    Until it is ported, pass deltas already expressed in feature space
-    (kind='sensor_l2'); certify() refuses other kinds rather than guess.
+    Unit bridge (W3, landed): kind='pos_error_m' deltas are converted to
+    feature-space l2 through certificates/unit_bridge.py (caf_shift_v1 — the
+    measured sensitivity of the ported texbat.py CAF extractor to a
+    code-delay + carrier-phase shift of d metres, upper envelope). Note the
+    bridge saturates above ~lambda_L1: metre-scale spoofs certify as OUTSIDE
+    the radius, which is the physically honest outcome. Deltas already in
+    feature space pass through (kind='sensor_l2'); other kinds
+    (state_staleness_s, sensor_linf) still return unit_bridge_missing rather
+    than guess.
     """
 
     name = "lipschitz_gronwall"
@@ -108,24 +140,22 @@ class LipschitzGronwallCertificate:
         self.radius = gronwall_radius(L_g, T, eps_out)
 
     def certify(self, delta: Perturbation) -> CertificateResult:
-        if delta.kind != "sensor_l2":
-            return CertificateResult(self.name, None, {
-                "status": "unit_bridge_missing",
-                "detail": f"delta kind '{delta.kind}' not yet mappable to "
-                          f"feature-space l2; port the normalisation constants "
-                          f"(see class docstring).",
-                "certified_input_radius": round(self.radius, 4)})
-        inside = delta.value <= self.radius
+        l2, meta = _to_feature_l2(delta)
+        if l2 is None:
+            meta["certified_input_radius"] = round(self.radius, 4)
+            return CertificateResult(self.name, None, meta)
+        inside = l2 <= self.radius
         return CertificateResult(
             self.name,
             PHASE_A["mcr_certified_target"] if inside else None,
             {"L_g": self.L_g, "T": self.T, "eps_out": self.eps_out,
              "certified_input_radius": round(self.radius, 4),
-             "delta_l2": delta.value, "inside_radius": inside,
+             "delta_l2": round(l2, 4), "inside_radius": inside,
              "output_bound": round(gronwall_output_bound(self.L_g, self.T,
-                                                         delta.value), 4),
+                                                         l2), 4),
              "regime": f"J/S<={PHASE_A['js_anchor_db']:.0f} dB" if inside
-                       else "outside certified regime"})
+                       else "outside certified regime",
+             **meta})
 
 
 class RandomizedSmoothingCertificate:
@@ -137,15 +167,15 @@ class RandomizedSmoothingCertificate:
     name = "randomized_smoothing"
 
     def certify(self, delta: Perturbation) -> CertificateResult:
-        if delta.kind != "sensor_l2":
-            return CertificateResult(self.name, None,
-                                     {"status": "unit_bridge_missing"})
-        inside = delta.value <= PHASE_A["rs_radius"]
+        l2, meta = _to_feature_l2(delta)
+        if l2 is None:
+            return CertificateResult(self.name, None, meta)
+        inside = l2 <= PHASE_A["rs_radius"]
         return CertificateResult(
             self.name, PHASE_A["mcr_certified_target"] if inside else None,
             {"sigma": PHASE_A["rs_sigma"], "radius": PHASE_A["rs_radius"],
              "alpha": PHASE_A["rs_alpha"], "n": PHASE_A["rs_n"],
-             "delta_l2": delta.value, "inside_radius": inside})
+             "delta_l2": round(l2, 4), "inside_radius": inside, **meta})
 
 
 class MWURegretCertificate:
@@ -190,8 +220,28 @@ if __name__ == "__main__":
     assert abs(lg.radius - 0.18) < 0.005, lg.radius
     r = lg.certify(Perturbation("sensor_l2", 0.10, "test"))
     assert r.certified_mcr == 0.80 and r.params["inside_radius"]
-    r2 = lg.certify(Perturbation("pos_error_m", 30.0, "staleness_v0"))
-    assert r2.certified_mcr is None and r2.params["status"] == "unit_bridge_missing"
+
+    # W3 unit bridge: pos_error_m now converts instead of refusing
+    r2 = lg.certify(Perturbation("pos_error_m", 30.0, "whelan_measured"))
+    if HAVE_BRIDGE:
+        # a 30 m spoof decorrelates the carrier: far outside the 0.18 tube
+        assert r2.certified_mcr is None and not r2.params["inside_radius"], r2
+        assert r2.params["unit_bridge"] == "caf_shift_v1"
+        # sub-wavelength errors stay inside the certified tube
+        r3 = lg.certify(Perturbation("pos_error_m", 0.001, "whelan_measured"))
+        assert r3.certified_mcr == 0.80 and r3.params["inside_radius"], r3
+        bridge_note = (f"bridge caf_shift_v1: 1 mm -> l2="
+                       f"{r3.params['delta_l2']}, 30 m -> l2="
+                       f"{r2.params['delta_l2']} (plateau)")
+    else:
+        assert r2.certified_mcr is None and r2.params["status"] == "unit_bridge_missing"
+        bridge_note = "bridge unavailable (numpy/torch missing) - honest refusal kept"
+
+    # kinds with no bridge still refuse honestly
+    r4 = lg.certify(Perturbation("state_staleness_s", 2.0, "staleness_v0"))
+    assert r4.certified_mcr is None and r4.params["status"] == "unit_bridge_missing"
+
     print(f"OK  Gronwall radius={lg.radius:.4f} (dissertation: 0.18); "
           f"RS radius={PHASE_A['rs_radius']}; "
-          f"MWU bound(T=100)={MWURegretCertificate().bound(100).params['regret_bound']}")
+          f"MWU bound(T=100)={MWURegretCertificate().bound(100).params['regret_bound']}; "
+          f"{bridge_note}")

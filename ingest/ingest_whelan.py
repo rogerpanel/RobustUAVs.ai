@@ -163,22 +163,29 @@ def ingest_flight(rows, topic, flight_id, attack_key, outdir: Path,
     cls, layer, sublayer = ATTACK_MAP[attack_key]
     events = []
 
+    # t0 = first valid timestamp; PX4 clocks are us since boot, so every
+    # per-flight cutoff (attack_start/end, self_ref_until) is relative to it.
+    t0 = None
+    for r in rows:
+        t = _to_float(r.get("timestamp"))
+        if t is not None:
+            t0 = t
+            break
+
     # establish reference position for pos_error_m
     ref = ref_latlon
-    if ref is None and self_ref_until is not None:
+    if ref is None and self_ref_until is not None and t0 is not None:
         pre = []
         for r in rows:
             t = _to_float(r.get("timestamp"))
             if t is None:
                 continue
-            if t / US <= self_ref_until:
+            if (t - t0) / US <= self_ref_until:
                 p = gps_latlon(r)
                 if p:
                     pre.append(p)
         if pre:
             ref = (median(p[0] for p in pre), median(p[1] for p in pre))
-
-    t0 = None
     for i, r in enumerate(rows):
         t_us = _to_float(r.get("timestamp"))
         if t_us is None:
