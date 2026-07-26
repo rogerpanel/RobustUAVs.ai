@@ -1,0 +1,206 @@
+# CLAUDE.md — RobustUAVs.ai (uav-e2e-bench)
+
+Project memory for Claude Code. This is the authoritative context; read it fully
+before acting. When a fact here conflicts with your assumptions, this wins.
+
+## Mission
+
+Two coupled outputs for **IEEE SaTML 2027** (deadline 29 Sept 2026; submit 28 Sept):
+
+- **Option C** — the first open **end-to-end UAV-security benchmark + harness**:
+  six datasets unified across the *network layer* (swarm mesh, C2/MAVLink link,
+  UAVCAN bus) and the *autonomy layer* (GNSS, controller, mission), with
+  cross-layer attack↔degradation pairings. Lower-risk; the fallback deliverable.
+- **Option A** — a **composition theorem**: for any network attack that evades the
+  DATAMUt-style detector at operating point θ, the navigation stack retains
+  certified Mission-Completion-Rate **MCR ≥ f(δ(θ))**. The chain:
+  θ → residual undetected budget → perturbation δ on the navigation input →
+  Lipschitz–Grönwall certificate → certified MCR floor. Headline figure: certified
+  MCR vs θ, holding the DO-326A floor (0.90) where neither layer alone does.
+
+Collaboration & division of labour: Roger Anaedevha runs research, engineering,
+experiments, writing. SPRITZ / Federico Turrin (+ Prof. Conti) provide the
+network detector and advise. Keiwan Soltani (Missouri S&T) authored DATAMUt and
+answers code questions (potential co-author). Only hard external dependency:
+Federico's simulation code (in hand) + the detector operating point (θ = ε,
+answered). Full plan: `paper/PLAN.md`.
+
+## Data — the Kaggle aggregate is the single source
+
+All six datasets + the DATAMUt program are aggregated on Kaggle:
+- https://www.kaggle.com/datasets/rogernickanaedevha/uavs-network-and-navigation-end-to-end-security-data
+- DOI: 10.34740/kaggle/dsv/18346203
+
+Fetch + stage into stable local paths (needs Kaggle credentials):
+```bash
+pip install kagglehub
+python3 data/fetch_kaggle.py            # symlinks into data/raw/<source>/
+```
+`data/fetch_kaggle.py` maps Kaggle files to `data/raw/<source>/`; extend its
+MAPPING table if the Kaggle layout adds files. The two big sets (UAV Attack
+Dataset ~700 MB, UAV-CAS ~2.5 GB) live only on Kaggle — do not commit them.
+Paste-ready per-dataset descriptions: `docs/KAGGLE_DATASET_DESCRIPTIONS.md`.
+
+The six sources and their schema mapping:
+
+| source_dataset | layer · sublayer | kind | status |
+|----------------|------------------|------|--------|
+| uav_ew_bench_2026 | autonomy · mission/gnss | flight | adapter done, verified |
+| datamut_sim | network · mesh | hop | adapter done, verified; θ-sweep working |
+| uavids_2025 | network · mesh | flow | adapter done, verified (122,171 flows) |
+| hcrl_uavcan | network · intra_bus | frame | adapter done; per-type attack-class map TODO |
+| uav_attack_whelan | autonomy · gnss (+network · c2_link for ping-DoS) | telemetry_sample | adapter done, verified; measures pos_error_m — grounds δ |
+| uav_cas | network · mesh | flow | **adapter TODO** — ts + stat CSVs, list cols need ast.literal_eval |
+
+## Repository layout
+
+- `schema/uavsec_schema.json` — unified two-layer schema (JSON Schema 2020-12).
+  Record kinds: **Event**, **AttackWindow**, **CrossLayerPairing** (the novelty:
+  network window + θ + residual budget + δ + certificate + empirical MCR;
+  `pairing_basis` ∈ measured_same_platform / physics_model / synthetic_alignment
+  is the per-record honesty flag). Rationale: `docs/SCHEMA.md`.
+- `ingest/` — one adapter per source, all emitting schema-valid
+  `events.jsonl` + `windows.jsonl`:
+  `ingest_datamut.py`, `ingest_ewbench.py`, `ingest_uavids.py`, `ingest_hcrl.py`
+  (done); `pair_poc.py` (θ→δ→pairing PoC, **placeholder mapping**);
+  `sweep_theta.py` (detector operating curve recall/FPR vs ε).
+  `ingest_whelan.py` (done: PX4 ULOG + ulog2csv; measures pos_error_m vs a benign
+  reference; emits measured_same_platform windows). TODO: `ingest_uavcas.py`.
+- `models/uav_defense/` — the AUTHORITATIVE Phase-A reference package (ported
+  from github.com/rogerpanel/cv, branch claude/latex-report-datasets-DiJWE):
+  real CT-TGNN on the GNSS graph, MambaShield, CAF-CNN + Seq2Seq baselines,
+  attack suite, train/evaluate, `scripts/run_phase_a.sh` (synthetic smoke test,
+  ~5 min CPU → metrics.json), and the Grönwall + randomised-smoothing
+  certificates. `models/legacy_ridps_demo/` is the old network-IDS demo (kept for
+  provenance; NOT for navigation). **Read `models/PORT_STATUS.md`** — the port is
+  resolved (M7 = FedGTD; stack = M1+M4+M6+M7); the one remaining step is the W3
+  δ unit bridge.
+- `certificates/engine.py` — the four Ch.6 §6.6 certificates wired to the real
+  `uav_defense/defenses/` code, with dissertation constants (Grönwall radius
+  0.18, RS radius 0.44, MWU |S|=4). Self-checks against the dissertation values.
+  Returns a certified floor for feature-space deltas; honestly reports
+  `unit_bridge_missing` for physical-unit deltas until the W3 bridge lands.
+- `patches/datamut_epsilon.patch` — makes ε (`DATAMUT_EPSILON`) and the malicious
+  delay range (`DATAMUT_DELAY_MIN/MAX`) env-configurable. Never edit
+  `third_party/`; extend via patches.
+- `third_party/datamut/` — Keiwan's original DATAMUt source, unmodified.
+- `results/` — committed small outputs (`theta_operating_curve.csv`, PoC pairings).
+- `data/` — `fetch_kaggle.py`; `data/raw/` and `data/staging/` are gitignored.
+- `paper/` — `PLAN.md` (schedule) and the drafts that Weeks 6–9 produce.
+
+## Build & run
+
+```bash
+pip install -r requirements.txt                 # jsonschema, kagglehub
+python3 data/fetch_kaggle.py                     # stage the corpus
+# Patched DATAMUt demo:
+mkdir -p build && cp third_party/datamut/* build/ && cd build \
+  && patch -p0 < ../patches/datamut_epsilon.patch \
+  && g++ -O2 -std=c++17 datamut_paper_exact_demo.cc -o datamut_demo && cd ..
+# Network operating curve (network-side half of the composition):
+python3 ingest/sweep_theta.py build/datamut_demo results/theta_operating_curve.csv
+# Ingest (examples; paths come from data/raw after fetch):
+python3 ingest/ingest_ewbench.py data/raw/uav_ew_bench_2026/per_flight.csv data/staging/ewbench
+python3 ingest/ingest_uavids.py  data/raw/uavids_2025/UAVIDS-2025_0.csv data/staging/uavids --part 0
+```
+Every adapter output MUST validate against the schema before commit:
+```python
+from jsonschema import Draft202012Validator
+v = Draft202012Validator({"$ref": "#/$defs/Event", "$defs": schema["$defs"]})
+```
+
+## Established facts (cite; do not re-derive)
+
+- DATAMUt as received is a self-contained **C++17 replay**; the paper's evaluation
+  used **ns-3 built-in AODV/OLSR/DSR/DSDV** (Keiwan R1). Detector operating point
+  θ = `deviationEpsilonSeconds` (paper 0.25 s); flag if residual delay > ε OR
+  next-hop mismatch. The header's adaptive `MaliciousDetector` is unused
+  future-work (R3) — use `PaperExactDetector`.
+- **Inter-UAV contact window = 5 s** (Keiwan R2). Residual budget is piecewise:
+  Δ(θ) ≤ H·θ additive under window slack; delay ≥ 5 s risks a missed window
+  costing a full TWiG period (60 s). This knee is central to the headline figure.
+- Attack modes: low U[1,7] s, medium U[1,10] s malicious delay (R2); benign
+  U[0.05,0.18] s; deterministic per seed.
+- Measured operating curve (grid, 8 seeds): recall ≈0.90 for ε≤2 s, →0.675 @4 s,
+  →0.275 @6.5 s (low mode); FPR=0 throughout. **Scenario 3 medium mode plateaus
+  ≈0.71 at high ε** — path-deviation trigger fires independently of ε; investigate
+  before using scenario 3 in theorem experiments.
+- **UAV-EW-Bench design** (authoritative, from its README): 5,000 base flights =
+  3 missions (search_and_rescue, perimeter_patrol, cargo_mixed_terrain) × 3 GNSS
+  receivers (ublox_f9p_sim, novatel_oem7_sim, gp_software_receiver); 32 J/S levels
+  0–40 dB; 4 defences (no_def, caf_cnn, seq2seq_tr, ours_m1m4m6m7); 3 seeds
+  (42,7,13); Wilson 95% CIs; DO-326A completion metric. `ours_m1m4m6m7` holds the
+  0.90 floor to ≈25 dB; empirical MCR ≈0.95 at J/S=20 dB. NOTE: released
+  `per_flight.csv` has 93,600 rows; the plan doc says "108k" — reconcile which is
+  canonical before it appears in the paper.
+- **δ mapping is a placeholder** (`staleness_v0`: δ = v_max · cumulative_delay).
+  Replace with a UAV-Attack-Dataset-grounded mapping (W3): real GPS-spoof/jam →
+  measured pos_error_m. That set is the ONLY source of `measured_same_platform`
+  pairings.
+- **Model/certificate port RESOLVED** — see `models/PORT_STATUS.md`. M7 = FedGTD
+  (Stackelberg/MWU defender); Phase-A stack = M1(CT-TGNN)+M4(MambaShield)+
+  M6(UC-HGP)+M7(FedGTD). Real `uav_defense` package + all four certificates in
+  hand. Dissertation constants: L_g=1.01, T=1, ε_out=0.5 ⇒ Grönwall radius 0.18;
+  RS σ=0.25 ⇒ radius 0.44 (Cohen α=1e-3, n=200); MWU |S|=4. engine.py reproduces
+  these. Do NOT use dashboard-screenshot pill values (0.083/0.460/0.111/0.041) —
+  those are per-visit 16-sample demo recomputes, not the paper constants.
+- **TWO FLOORS — never conflate.** Ch.6 §6.6 certified text: MCR ≥ **0.80** at
+  J/S=20 dB (certified). EW-Bench + dashboard: DO-326A **0.90** operational floor
+  holds to ~20–25 dB (empirical). Different quantities; label both in the paper.
+- **δ unit bridge is the one real W3 blocker for the certified curve.** The
+  Grönwall radius is in normalised CAF-feature ℓ2 space; the network side emits
+  δ in metres/seconds. Port the sensor→feature normalisation from
+  `uav_defense/datasets/texbat.py` to convert. Until then engine.certify()
+  refuses physical-unit deltas (returns `unit_bridge_missing`) — by design.
+
+## Conventions
+
+- Python 3.11+, stdlib + jsonschema + kagglehub; PyTorch for models. Keep deps
+  pinned in requirements.txt.
+- Lossless ingestion: unmapped source columns go in `native`. Validate before commit.
+- `event_id` = `<source_dataset>:<scenario>:<natural key>`; relative clocks per
+  scenario; alignment at window level.
+- Never edit `third_party/`; extend via `patches/`. Small results in `results/`
+  (committed), bulk in `data/staging/` (gitignored).
+- Multi-seed everything; headline stats use **Wilcoxon signed-rank + Holm**.
+- Flag missing artifacts honestly (M7, certificate constants, weights) instead of
+  fabricating. A clearly-marked TODO beats a plausible-looking wrong number.
+- Repo must stay host-agnostic (no paths tied to a specific machine) so it moves
+  cleanly onto the Hetzner server + domain (candidate: robustuavs.ai) later.
+
+## Roadmap — mapped to the 9-week plan (today ≈ end of W1)
+
+- **W1 (done):** threat/system model; schema; repo scaffold; DATAMUt analysis;
+  θ-sweep; 5/6 adapters (Whelan done); full `uav_defense` package + four Ch.6 certificates
+  ported and self-checked (M7=FedGTD resolved); pairing pipeline calls the real
+  Grönwall certificate.
+- **W2:** `ingest_uavcas.py` (ts + stat CSVs; ast.literal_eval list cols);
+  HCRL per-type attack-class map;
+  first real time-alignment of a network window with an autonomy window.
+  (M7/certificate port already resolved in W1.)
+- **W3:** interface-mapping theorem θ↦δ(θ) drafted; **port the δ unit bridge**
+  (sensor→CAF-feature ℓ2 from uav_defense/datasets/texbat.py) so certify()
+  returns a floor; replace `staleness_v0` with the Whelan-grounded δ mapping;
+  scenario-3 plateau investigation.
+- **W4 (light — visa 19–20 Aug):** port certificate constants into
+  `certificates/engine.py`; first certified-MCR-vs-θ curve on the time-delay class.
+- **W5:** full attack classes; autonomy-only / network-only / composed baselines;
+  dominance result.
+- **W6:** freeze experiments; ablations (per-certificate, mapping tightness);
+  Wilcoxon+Holm; draft methods + results. Lock before travel.
+- **W7 (Finland/ESTC 6–12 Sept):** light writing only — intro + related work
+  (position vs UAV-CAS).
+- **W8:** full draft; Federico reviews network framing; author order; internal review.
+- **W9:** address review; finalize figures; package Option C artifact; buffer.
+- **Final 27–28 Sept:** proofread, format, artifact links; submit.
+- **Path B fallback:** if the theorem isn't tight by W6, submit Option C alone
+  (benchmark + SoK) to the artifact track and target Option A for T-IFS/CCS.
+
+## The one-line orientation for a fresh session
+
+Four of six ingest adapters work and validate; the DATAMUt θ-sweep produces the
+network-side operating curve; three Phase-A model architectures are ported but not
+yet wired to the autonomy layer; the certificate engine is an interface awaiting
+dissertation constants. Highest-value next actions: the two remaining adapters
+(Whelan first — it grounds δ), resolving M7 and the Ch.6 certificate code, and the
+θ↦δ theorem draft. Keep everything schema-valid and host-agnostic.

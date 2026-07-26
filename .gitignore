@@ -1,0 +1,10 @@
+data/staging/
+data/raw/
+build/
+__pycache__/
+*.pyc
+*.o
+*.zip
+*.tar.gz
+.DS_Store
+venv/

@@ -1,0 +1,45 @@
+--- datamut_paper_exact_demo.cc	2026-05-05 22:55:16.000000000 +0000
++++ datamut_paper_exact_demo_patched.cc	2026-07-25 17:58:04.385697136 +0000
+@@ -477,7 +477,7 @@
+         const NodeId sink = scenario.sink;
+         const std::string topologyTag = scenario.topologyTag;
+         const std::set<NodeId>& maliciousNodes = scenario.maliciousNodes;
+-        const double deviationEpsilonSeconds = 0.25;
++        const double deviationEpsilonSeconds = ReadEnvDouble("DATAMUT_EPSILON", 0.25);
+         const int seedBase = ReadEnvInt("DATAMUT_SEED_BASE", 37, 0);
+         const int seedCount = ReadEnvInt("DATAMUT_NUM_SEEDS", 10, 1);
+         const bool hasSingleSeedOverride = std::getenv("DATAMUT_SEED") != nullptr;
+@@ -499,8 +499,8 @@
+             const int seed = effectiveSeedBase + seedOffset;
+             const DelayModel attackModel(0.05,
+                                          0.18,
+-                                         1.00,
+-                                         7.00,
++                                         ReadEnvDouble("DATAMUT_DELAY_MIN", 1.00),
++                                         ReadEnvDouble("DATAMUT_DELAY_MAX", 7.00),
+                                          maliciousNodes,
+                                          static_cast<std::uint32_t>(seed),
+                                          0.02);
+@@ -540,6 +540,22 @@
+     }
+ 
+   private:
++    static double ReadEnvDouble(const char* name, double fallback)
++    {
++        const char* rawValue = std::getenv(name);
++        if (rawValue == nullptr)
++        {
++            return fallback;
++        }
++        char* parseEnd = nullptr;
++        const double parsed = std::strtod(rawValue, &parseEnd);
++        if (parseEnd == rawValue || *parseEnd != '\0' || parsed <= 0.0)
++        {
++            return fallback;
++        }
++        return parsed;
++    }
++
+     static int ReadEnvInt(const char* name, int fallback, int minValue)
+     {
+         const char* rawValue = std::getenv(name);

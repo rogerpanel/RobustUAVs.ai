@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/rogerpanel/uav-e2e-bench/schema/uavsec_schema.json",
+  "title": "UAV End-to-End Security Benchmark - Unified Two-Layer Schema v0.1",
+  "description": "Common schema unifying five UAV security datasets across the network layer (mesh / C2 / bus) and the autonomy layer (GNSS / sensors / controller). Three record kinds: Event (atomic observation), AttackWindow (labeled attack interval), CrossLayerPairing (the novelty: a network attack window paired with an autonomy degradation window and certificate outcome).",
+  "$defs": {
+
+    "Layer": {
+      "type": "string",
+      "enum": ["network", "autonomy"],
+      "description": "Top-level layer. network = anything on the wire/bus/RF-link between nodes; autonomy = anything inside the navigation/perception/control stack."
+    },
+
+    "Sublayer": {
+      "type": "string",
+      "enum": ["mesh", "c2_link", "intra_bus", "gnss", "sensor", "controller", "mission"],
+      "description": "mesh = multi-hop swarm network (UAVIDS-2025, UAV-CAS, DATAMUt). c2_link = ground-to-UAV C2/MAVLink (UAV Attack Dataset). intra_bus = on-board UAVCAN/DroneCAN (HCRL UAVCAN). gnss/sensor/controller/mission = autonomy layer (UAV-EW-Bench)."
+    },
+
+    "AttackClass": {
+      "type": "string",
+      "enum": [
+        "benign",
+        "time_delay",
+        "dos_flooding",
+        "replay",
+        "fuzzing",
+        "blackhole",
+        "sybil",
+        "wormhole",
+        "gps_spoofing",
+        "gps_jamming",
+        "rf_jamming",
+        "adversarial_ml",
+        "collaborative",
+        "other"
+      ],
+      "description": "Unified attack taxonomy across all five source datasets. Source-native labels are preserved verbatim in label_native and mapped here."
+    },
+
+    "SourceDataset": {
+      "type": "string",
+      "enum": [
+        "uav_ew_bench_2026",
+        "uav_attack_whelan",
+        "hcrl_uavcan",
+        "uavids_2025",
+        "uav_cas",
+        "datamut_sim"
+      ]
+    },
+
+    "EventKind": {
+      "type": "string",
+      "enum": ["flow", "frame", "hop", "telemetry_sample", "flight"],
+      "description": "flow = aggregated network flow (UAVIDS-2025, UAV-CAS). frame = single bus frame (HCRL UAVCAN). hop = one store-and-forward hop in a DTN/mesh route (DATAMUt). telemetry_sample = one timestamped sensor/telemetry record (UAV Attack Dataset). flight = one whole mission with an outcome (UAV-EW-Bench)."
+    },
+
+    "Event": {
+      "type": "object",
+      "description": "One atomic observation, from any source, mapped into common fields. Source-specific extra columns go in `native` untouched.",
+      "required": ["event_id", "source_dataset", "event_kind", "layer", "sublayer", "t_start", "label_class"],
+      "properties": {
+        "event_id":       { "type": "string", "description": "Globally unique: '<source_dataset>:<native id or row index>'" },
+        "source_dataset": { "$ref": "#/$defs/SourceDataset" },
+        "event_kind":     { "$ref": "#/$defs/EventKind" },
+        "layer":          { "$ref": "#/$defs/Layer" },
+        "sublayer":       { "$ref": "#/$defs/Sublayer" },
+
+        "scenario_id":    { "type": ["string", "null"], "description": "Source scenario/config/topology tag (e.g. DATAMUt 'grid4x4-temporal', UAV-CAS config index, HCRL scenario number)." },
+        "run_id":         { "type": ["string", "null"], "description": "Seed or repetition identifier within a scenario." },
+
+        "t_start":        { "type": "number", "description": "Seconds from the start of the source scenario/capture (relative clock; every source gets its own t=0)." },
+        "t_end":          { "type": ["number", "null"], "description": "End time in the same relative clock; null for instantaneous events." },
+
+        "src_node":       { "type": ["string", "null"], "description": "Sending/origin entity (UAV id, IP, CAN node id, ground station)." },
+        "dst_node":       { "type": ["string", "null"], "description": "Receiving/target entity." },
+        "protocol":       { "type": ["string", "null"], "description": "e.g. 'mavlink', 'uavcan_v0', 'udp', 'aodv', 'olsr', 'dtn_twig'." },
+
+        "label_class":    { "$ref": "#/$defs/AttackClass" },
+        "label_native":   { "type": ["string", "null"], "description": "Verbatim label from the source dataset, for provenance." },
+        "attacker_node":  { "type": ["string", "null"], "description": "Ground-truth malicious entity if known." },
+
+        "metrics": {
+          "type": "object",
+          "description": "Small set of cross-source numeric measures; only fill what the source supports.",
+          "properties": {
+            "residual_delay_s":   { "type": ["number", "null"], "description": "DATAMUt: observed minus expected send time at a hop. THE key network-side quantity for the theta->delta mapping." },
+            "expected_send_s":    { "type": ["number", "null"] },
+            "observed_send_s":    { "type": ["number", "null"] },
+            "bytes":              { "type": ["number", "null"] },
+            "packets":            { "type": ["number", "null"] },
+            "duration_s":         { "type": ["number", "null"] },
+            "js_db":              { "type": ["number", "null"], "description": "Jamming-to-signal ratio (autonomy layer)." },
+            "pos_error_m":        { "type": ["number", "null"], "description": "Position error vs ground truth (UAV Attack Dataset under spoofing; the empirical grounding of delta)." },
+            "mission_completed":  { "type": ["integer", "null"], "description": "0/1 per-flight DO-326A outcome (UAV-EW-Bench)." }
+          },
+          "additionalProperties": true
+        },
+
+        "detector": {
+          "type": "object",
+          "description": "Detector verdicts attached to this event (network layer).",
+          "properties": {
+            "name":            { "type": ["string", "null"], "description": "e.g. 'datamut_paper_exact'" },
+            "operating_point": { "type": ["number", "null"], "description": "theta: for DATAMUt, the deviation epsilon in seconds." },
+            "suspicious":      { "type": ["boolean", "null"] },
+            "path_match":      { "type": ["boolean", "null"] }
+          },
+          "additionalProperties": true
+        },
+
+        "native": {
+          "type": "object",
+          "description": "All remaining source-native columns, unmodified. Guarantees losslessness.",
+          "additionalProperties": true
+        }
+      }
+    },
+
+    "AttackWindow": {
+      "type": "object",
+      "description": "A labeled attack interval within one source scenario. The unit of cross-layer alignment.",
+      "required": ["window_id", "source_dataset", "layer", "attack_class", "t_start", "t_end"],
+      "properties": {
+        "window_id":      { "type": "string" },
+        "source_dataset": { "$ref": "#/$defs/SourceDataset" },
+        "scenario_id":    { "type": ["string", "null"] },
+        "run_id":         { "type": ["string", "null"] },
+        "layer":          { "$ref": "#/$defs/Layer" },
+        "sublayer":       { "$ref": "#/$defs/Sublayer" },
+        "attack_class":   { "$ref": "#/$defs/AttackClass" },
+        "t_start":        { "type": "number" },
+        "t_end":          { "type": "number" },
+        "attacker_node":  { "type": ["string", "null"] },
+        "intensity": {
+          "type": "object",
+          "description": "Attack-strength parameters, per class.",
+          "properties": {
+            "delay_min_s":  { "type": ["number", "null"], "description": "time_delay: injected extra delay range (DATAMUt DelayModel: [1.0, 7.0])." },
+            "delay_max_s":  { "type": ["number", "null"] },
+            "js_db":        { "type": ["number", "null"], "description": "gps_jamming / rf_jamming intensity." },
+            "rate_pps":     { "type": ["number", "null"], "description": "flooding rate." }
+          },
+          "additionalProperties": true
+        },
+        "event_ids":      { "type": "array", "items": { "type": "string" }, "description": "Events falling inside this window." }
+      }
+    },
+
+    "CrossLayerPairing": {
+      "type": "object",
+      "description": "THE NOVELTY. One record = one composed scenario: a network-layer attack window, the residual (undetected) budget at detector operating point theta, the induced autonomy-layer perturbation delta, and the certified + empirical mission outcome.",
+      "required": ["pairing_id", "network_window_id", "autonomy_window_id", "theta", "pairing_basis"],
+      "properties": {
+        "pairing_id":         { "type": "string" },
+        "network_window_id":  { "type": "string" },
+        "autonomy_window_id": { "type": "string" },
+
+        "pairing_basis": {
+          "type": "string",
+          "enum": ["measured_same_platform", "physics_model", "synthetic_alignment"],
+          "description": "Honesty flag. measured_same_platform = network event and autonomy degradation recorded on the same testbed (UAV Attack Dataset). physics_model = coupled through a stated physical model (e.g. delayed C2 correction -> position staleness). synthetic_alignment = time-aligned by construction in simulation."
+        },
+
+        "theta":              { "type": "number", "description": "Detector operating point. For DATAMUt: deviation epsilon in seconds." },
+        "detector_name":      { "type": "string" },
+        "detector_verdict":   { "type": ["string", "null"], "enum": ["detected", "evaded", null] },
+
+        "residual_budget": {
+          "type": "object",
+          "description": "Worst-case attack effect that survives an evading attacker at theta.",
+          "properties": {
+            "undetected_delay_per_hop_s": { "type": ["number", "null"], "description": "<= theta minus benign floor, per malicious hop." },
+            "n_malicious_hops":           { "type": ["integer", "null"] },
+            "cumulative_delay_s":         { "type": ["number", "null"] }
+          },
+          "additionalProperties": true
+        },
+
+        "delta": {
+          "type": "object",
+          "description": "The perturbation budget handed to the certificate engine.",
+          "properties": {
+            "kind":     { "type": "string", "enum": ["state_staleness_s", "pos_error_m", "sensor_linf", "sensor_l2"] },
+            "value":    { "type": "number" },
+            "mapping":  { "type": "string", "description": "Name/version of the theta->delta mapping used, e.g. 'staleness_v0: delta = v_max * cumulative_delay_s'." }
+          },
+          "required": ["kind", "value", "mapping"]
+        },
+
+        "certificate": {
+          "type": "object",
+          "properties": {
+            "name":          { "type": "string", "description": "e.g. 'lipschitz_gronwall'" },
+            "certified_mcr": { "type": ["number", "null"], "description": "f(delta(theta)): the certified floor." },
+            "params":        { "type": "object", "additionalProperties": true }
+          }
+        },
+
+        "empirical": {
+          "type": "object",
+          "description": "What actually happened, for validating the certificate (empirical MCR must be >= certified floor).",
+          "properties": {
+            "mcr":       { "type": ["number", "null"] },
+            "n_flights": { "type": ["integer", "null"] },
+            "ci_low":    { "type": ["number", "null"] },
+            "ci_high":   { "type": ["number", "null"] }
+          }
+        }
+      }
+    }
+  }
+}
