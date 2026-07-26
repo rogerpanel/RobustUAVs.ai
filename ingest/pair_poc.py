@@ -25,9 +25,10 @@ from certificates.engine import REGISTRY, Perturbation
 
 def _certify(delta_m: float) -> dict:
     """Call the real Grönwall certificate. delta_m is in metres (pos error);
-    the certificate needs feature-space l2, so until the W3 unit bridge lands
-    this returns the 'unit_bridge_missing' status honestly rather than a
-    fabricated floor. Wire the bridge and pass kind='sensor_l2' to get a floor.
+    the W3 unit bridge (certificates/unit_bridge.py, caf_shift_v1) converts it
+    to feature-space l2 inside certify(). Metre-scale deltas sit far beyond
+    the carrier-decorrelation plateau, so expect inside_radius=False there —
+    the certified floor engages only for sub-wavelength perturbations.
     """
     cert = REGISTRY["lipschitz_gronwall"]
     return cert.certify(Perturbation("pos_error_m", delta_m,

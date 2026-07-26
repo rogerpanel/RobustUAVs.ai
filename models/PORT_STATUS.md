@@ -41,12 +41,18 @@ are closed.
 
 ## Remaining real work (not blockers — genuine research steps)
 
-- **Unit bridge for δ (W3).** The certificate radius lives in normalised
-  CAF-feature ℓ2 space; the network side produces δ in physical units (metres,
-  seconds). The sensor→feature scaling (from `uav_defense/datasets/texbat.py`
-  normalisation) must be ported so `pos_error_m` / `state_staleness_s` convert to
-  feature-space ℓ2. Until then `engine.certify()` accepts `kind='sensor_l2'` and
-  refuses physical-unit deltas rather than guessing.
+- **Unit bridge for δ (W3) — LANDED for `pos_error_m`.**
+  `certificates/unit_bridge.py` (`caf_shift_v1`) measures the ported
+  `texbat.py` CAF extractor's sensitivity to the first-order signal effect of
+  a d-metre position error (code delay τ=d/c at 25 MS/s + carrier rotation
+  2πd/λ_L1), median over seeded clean windows, running-max envelope (a sound
+  upper bound). `engine.certify()` now converts `pos_error_m` and returns real
+  verdicts: sub-wavelength errors (≲2 mm for the 0.18 Grönwall radius) certify
+  at MCR ≥ 0.80; metre-scale spoofs hit the carrier-decorrelation plateau
+  (ℓ2 ≈ 5.1) and certify as *outside* the tube — the physically honest answer.
+  Remaining: re-calibrate the envelope on real TEXBAT windows before quoting
+  bridge numbers in the paper, and `state_staleness_s` still returns
+  `unit_bridge_missing` (needs the θ↦δ mapping, not a signal model).
 - **Two floors, never conflate.** Ch.6 certified text says MCR ≥ **0.80** at
   J/S=20 dB (certified); EW-Bench + the dashboard show the DO-326A **0.90**
   operational floor holding to ~20–25 dB (empirical). Different quantities.
