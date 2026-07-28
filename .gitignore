@@ -8,3 +8,4 @@ __pycache__/
 *.tar.gz
 .DS_Store
 venv/
+models/uav_defense/runs/

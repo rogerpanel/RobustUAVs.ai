@@ -127,10 +127,18 @@ v = Draft202012Validator({"$ref": "#/$defs/Event", "$defs": schema["$defs"]})
   costing a full TWiG period (60 s). This knee is central to the headline figure.
 - Attack modes: low U[1,7] s, medium U[1,10] s malicious delay (R2); benign
   U[0.05,0.18] s; deterministic per seed.
-- Measured operating curve (grid, 8 seeds): recall ≈0.90 for ε≤2 s, →0.675 @4 s,
-  →0.275 @6.5 s (low mode); FPR=0 throughout. **Scenario 3 medium mode plateaus
-  ≈0.71 at high ε** — path-deviation trigger fires independently of ε; investigate
-  before using scenario 3 in theorem experiments.
+- **Operating curve re-measured clean 2026-07-28** — the earlier committed curve
+  was contaminated by a workdir-accumulation bug in sweep_theta.py (demo APPENDS
+  to its summary CSV; each point averaged all previous points; the cumulative
+  n_runs column 32/64/96… was the smoking gun). Fixed; full clean campaign in
+  `experiments/sweep_full.py` → `results/theta_operating_curve{,_perseed}.csv`.
+  Clean grid/low: recall 0.938 for ε≤3 s, 0.609 @4 s, 0.234 @≥5 s; FPR=0
+  throughout (benign residual ceiling 0.178 s, measured). **Scenario-3 plateau
+  RESOLVED**: clean value 0.625 (not 0.71), and it is NOT path deviation — at
+  high ε every surviving detection is a ≥55 s missed-contact-window residual
+  (delay > 5 s slack ⇒ full TWiG period penalty, flagged at any ε). Measured:
+  no undetected malicious per-hop residual ever exceeds 4.84 s over 15,392 hops
+  ⇒ **Lemma 1 tightens to Δ(θ) ≤ H·min(θ, s)** — the knee cuts both ways.
 - **UAV-EW-Bench design** (authoritative, from its README): 5,000 base flights =
   3 missions (search_and_rescue, perimeter_patrol, cargo_mixed_terrain) × 3 GNSS
   receivers (ublox_f9p_sim, novatel_oem7_sim, gp_software_receiver); 32 J/S levels
@@ -153,15 +161,25 @@ v = Draft202012Validator({"$ref": "#/$defs/Event", "$defs": schema["$defs"]})
 - **TWO FLOORS — never conflate.** Ch.6 §6.6 certified text: MCR ≥ **0.80** at
   J/S=20 dB (certified). EW-Bench + dashboard: DO-326A **0.90** operational floor
   holds to ~20–25 dB (empirical). Different quantities; label both in the paper.
-- **δ unit bridge (W3) LANDED for pos_error_m** — `certificates/unit_bridge.py`
-  (`caf_shift_v1`): measured sensitivity of the ported texbat.py CAF extractor
-  to the code-delay + carrier-phase shift of a d-metre position error, upper
-  envelope, seeded/reproducible. engine.certify() now returns real verdicts for
-  `pos_error_m`: certified floor for sub-wavelength δ, `inside_radius=False`
-  at the carrier-decorrelation plateau (ℓ2≈5.1) for metre-scale spoofs —
-  honest, not a refusal. Calibration is on the synthetic clean corpus:
-  re-calibrate on real TEXBAT before quoting bridge numbers in the paper.
-  `state_staleness_s` still returns `unit_bridge_missing` by design.
+- **Certified-regime question RESOLVED (2026-07-28)** — read
+  `docs/certified_regime_analysis.md` before touching Paper A's headline.
+  (a) v1's sub-decimetre cliff was the carrier-phase nuisance (2πd/λ wrapping;
+  absolute phase is wiped by tracking loops and random in real IQ) —
+  `caf_shift_v2` (tracking-loop-aligned) is the engine default: certifies pos
+  errors to 0.45 m (Grönwall) / 1.15 m (RS), a 216× correction; metre-scale
+  spoofs remain outside the tube and that part is physics (certify-small /
+  detect-large). (b) REFUTED: local operating-region Lipschitz is 1.18 (> 1.01)
+  ⇒ honest radius 0.153 — no slack. (c) The time-delay class perturbs in
+  vehicle STATE space (staleness), not CAF feature space — routing it through
+  the bridge was a category error; use `StalenessGronwallCertificate`
+  (`gronwall_state_space`). Certified operating window (worst-case kinematics,
+  H=2): [0.178 s, 0.243 s] Grönwall-amplified at m=20 m; [0.178, 0.67] s
+  un-amplified — the paper's θ=0.25 s sits just OUTSIDE. Composed dominates
+  autonomy-only/network-only at 13/13 ε (Holm p<1e-20). All fixture/simulation-
+  derived: re-calibrate v2 on real TEXBAT; replace v_max·Δ with the
+  Whelan-grounded mapping when the real corpus is reachable.
+  `state_staleness_s` through the feature-space certs still returns
+  `unit_bridge_missing` by design (wrong certificate for that kind).
 
 ## Conventions
 
@@ -209,13 +227,17 @@ v = Draft202012Validator({"$ref": "#/$defs/Event", "$defs": schema["$defs"]})
 
 ## The one-line orientation for a fresh session
 
-All six ingest adapters exist and schema-validate (`ingest/validate.py` is the
-gate); Whelan and UAV-CAS are verified on faithful fixtures but still need one
-run over the real Kaggle corpus (the 2026-07-26 remote session couldn't reach
-Kaggle/IEEE DataPort — egress-policy 403). The certificate engine self-checks
-against the dissertation constants and, via `certificates/unit_bridge.py`,
-returns real verdicts for pos_error_m deltas. Highest-value next actions: real-
-corpus Whelan + UAV-CAS runs (fill `whelan_manifest.json` intervals from the
-dataset docs), the Whelan-grounded θ↦δ mapping replacing `staleness_v0`, HCRL
-attack-class map, and the θ↦δ theorem draft. Keep everything schema-valid and
-host-agnostic.
+All six adapters exist and schema-validate (`ingest/validate.py` is the gate);
+Whelan + UAV-CAS still need one real-corpus run (Kaggle/IEEE DataPort egress
+403 in both remote sessions, 2026-07-26/28). The certified-regime question is
+resolved (`docs/certified_regime_analysis.md`): caf_shift_v2 bridge for RF
+classes, state-space staleness certificate for the time-delay class, Lemma 1
+tightened to Δ≤H·min(θ,s) by measurement, operating curve re-measured clean
+after fixing the sweep-accumulation bug (the old committed curve and both
+drafts' [EXP] figures were wrong — replacements in `results/paper_figures/`
+with a provenance ledger). Full clean campaign: `experiments/sweep_full.py` →
+`compose_certified.py` → `make_paper_figures.py`. Highest-value next actions:
+real-corpus Whelan run → empirical θ↦δ mapping replacing `staleness_v0`
+(this is what widens the narrow certified window, if anything does); real
+TEXBAT re-calibration of the bridge; HCRL attack-class map; PAC-Bayes numeric
+bound. Keep everything schema-valid and host-agnostic.

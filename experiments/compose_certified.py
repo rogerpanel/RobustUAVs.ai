@@ -1,0 +1,267 @@
+#!/usr/bin/env python3
+"""P2: the theta -> delta -> MCR composition on the time-delay class,
+with the corrected (state-space) interface, plus baselines and statistics.
+
+Corrected model (docs/certified_regime_analysis.md):
+  * The time-delay attack never touches the RF front-end; its perturbation is
+    STALENESS of the network-delivered correction. delta enters in vehicle
+    state space (metres), NOT through the CAF feature bridge.
+  * Residual budget (tightened Lemma 1, measured): an attacker that evades
+    the detector at theta keeps every per-hop residual <= theta, and the
+    contact-window slack s caps invisible delay at s regardless of theta
+    (measured: max undetected malicious residual 4.84 s over 15,392 hops;
+    a delay > s forces a missed window whose >=55 s residual is flagged at
+    any epsilon). Hence per hop: r <= min(theta, s), and over H malicious
+    hops:      Delta(theta) <= H * min(theta, s).
+  * Kinematic mapping (staleness_v0, sound worst case): delta_pos =
+    v_max * Delta(theta). The Whelan-grounded empirical tightening is
+    real-corpus work (Kaggle unreachable this session).
+  * State-space Gronwall tube: rho(theta) = delta_pos(theta) * exp(L*T),
+    reference constants L=1.01, T=1 (amplification 2.746). L for the real
+    closed loop is calibration-pending; we also report the un-amplified
+    kinematic tube (A=1) as the lower envelope.
+  * Certified floor for corridor margin m: mission certified iff
+    rho(theta) <= m. Margin family M = {2, 5, 10, 20} m (stated parameters;
+    10 m is the PX4-default-class acceptance radius NAV_ACC_RAD). Floor =
+    fraction of M certified (uniform weight) -- a stated margin model, NOT a
+    measured mission distribution.
+
+Baselines:
+  * composed        : Delta = measured undetected malicious delay at epsilon
+                      (per seed), i.e. what actually slipped past.
+  * composed-worst  : Delta = H * min(theta, s)  (analytic worst case).
+  * autonomy-only   : no detector -> nothing is removed; Delta = the FULL
+                      measured malicious delay including missed-window
+                      penalties (per seed).
+  * network-only    : detector but no navigation certificate -> no floor
+                      exists for evading attacks by definition (floor 0).
+
+Outputs:
+  results/composition_perseed.csv   per-(scenario,mode,eps,seed,policy) budgets
+  results/certified_floor_vs_theta.csv  the corrected headline curve
+  results/stats_wilcoxon.csv        Wilcoxon signed-rank + Holm for the
+                                    headline comparisons
+Provenance: DATAMUt local simulation (deterministic per seed) + stated
+model parameters; fixture/simulation-derived throughout.
+"""
+from __future__ import annotations
+
+import csv
+import math
+import sys
+from collections import defaultdict
+from pathlib import Path
+
+import numpy as np
+from scipy.stats import wilcoxon
+
+REPO = Path(__file__).resolve().parents[1]
+RESULTS = REPO / "results"
+
+SLACK_S = 5.0          # inter-UAV contact window (Keiwan R2)
+V_MAX = 15.0           # m/s, stated kinematic worst-case speed
+L_REF, T_REF = 1.01, 1.0
+AMP = math.exp(L_REF * T_REF)          # 2.746 reference tube amplification
+MARGINS_M = [2.0, 5.0, 10.0, 20.0]     # stated margin family (10 = PX4-class)
+THETA_GRID = [0.25, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 6.5, 7.0, 8.0, 10.0]
+# finer grid for the certified curve itself (sub-0.25 matters: that is where
+# the worst-case kinematic tube fits real corridor margins). 0.178 s is the
+# measured benign residual ceiling -> FPR=0 feasibility floor.
+BENIGN_CEIL_S = 0.178
+THETA_CURVE = [0.05, 0.1, 0.121, 0.15, BENIGN_CEIL_S, 0.2, 0.243, 0.25, 0.3,
+               0.4, 0.5, 0.67, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 6.5, 7.0,
+               8.0, 10.0]
+
+
+def floor_for(delta_pos_m: float, amp: float) -> float:
+    rho = delta_pos_m * amp
+    return sum(1.0 for m in MARGINS_M if rho <= m) / len(MARGINS_M)
+
+
+def holm(pvals):
+    """Holm step-down correction; returns adjusted p-values in input order."""
+    order = np.argsort(pvals)
+    m = len(pvals)
+    adj = np.empty(m)
+    running = 0.0
+    for rank, idx in enumerate(order):
+        running = max(running, (m - rank) * pvals[idx])
+        adj[idx] = min(1.0, running)
+    return adj
+
+
+def main() -> int:
+    hops = list(csv.DictReader(open(RESULTS / "hop_ledger.csv")))
+
+    # ---- per-(scenario,mode,eps,seed,policy) budgets from the ledger ----
+    acc = defaultdict(lambda: {"und": 0.0, "tot": 0.0, "H": 0})
+    for h in hops:
+        if h["malicious_sender"] != "1":
+            continue
+        key = (h["scenario"], h["mode"], h["epsilon"], h["seed"], h["policy"])
+        r = float(h["residual_s"])
+        acc[key]["tot"] += r
+        acc[key]["H"] += 1
+        if h["suspicious"] == "0":
+            acc[key]["und"] += r
+
+    perseed = []
+    for (scen, mode, eps, seed, pol), v in sorted(acc.items()):
+        theta = float(eps)
+        H = v["H"]
+        d_evade = H * min(theta, SLACK_S)
+        rows = {
+            "scenario": scen, "mode": mode, "epsilon": eps, "seed": seed,
+            "policy": pol, "H_malicious_hops": H,
+            "delta_undetected_s": round(v["und"], 3),
+            "delta_total_s": round(v["tot"], 3),
+            "delta_evade_worst_s": round(d_evade, 3),
+            "floor_composed": floor_for(V_MAX * v["und"], AMP),
+            "floor_composed_worst": floor_for(V_MAX * d_evade, AMP),
+            "floor_autonomy_only": floor_for(V_MAX * v["tot"], AMP),
+            "floor_network_only": 0.0,
+        }
+        perseed.append(rows)
+
+    with open(RESULTS / "composition_perseed.csv", "w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(perseed[0].keys()))
+        w.writeheader()
+        w.writerows(perseed)
+    print(f"[compose] {len(perseed)} per-seed rows -> results/composition_perseed.csv")
+
+    # ---- the corrected certified curve vs theta (analytic worst case, ----
+    # ---- H from the measured per-route ledger; per scenario H = max   ----
+    Hs = defaultdict(int)
+    for r in perseed:
+        Hs[r["scenario"]] = max(Hs[r["scenario"]], r["H_malicious_hops"])
+    curve = []
+    for theta in THETA_CURVE:
+        for scen, H in sorted(Hs.items()):
+            d = H * min(theta, SLACK_S)
+            for amp, amp_tag in [(AMP, "gronwall_L1.01_T1"), (1.0, "kinematic_A1")]:
+                curve.append({
+                    "theta_s": theta, "scenario": scen,
+                    "H_malicious_hops": H,
+                    "delta_evade_worst_s": round(d, 3),
+                    "delta_pos_m": round(V_MAX * d, 2),
+                    "tube_m": round(V_MAX * d * amp, 2),
+                    "amplification": amp_tag,
+                    "certified_floor": floor_for(V_MAX * d, amp),
+                })
+    with open(RESULTS / "certified_floor_vs_theta.csv", "w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(curve[0].keys()))
+        w.writeheader()
+        w.writerows(curve)
+    print(f"[compose] {len(curve)} curve rows -> results/certified_floor_vs_theta.csv")
+
+    # ---- the certified operating window: [benign ceiling, theta*(m)] ----
+    # theta*(m) = m / (v_max * A * H): loosest detector setting whose
+    # worst-case evading tube still fits corridor margin m. The window is
+    # nonempty iff theta* > BENIGN_CEIL_S (measured FPR=0 floor).
+    window = []
+    for scen, H in sorted(Hs.items()):
+        for amp, amp_tag in [(AMP, "gronwall_L1.01_T1"), (1.0, "kinematic_A1")]:
+            for m in MARGINS_M:
+                theta_star = m / (V_MAX * amp * H)
+                window.append({
+                    "scenario": scen, "H_malicious_hops": H,
+                    "amplification": amp_tag, "margin_m": m,
+                    "theta_star_s": round(theta_star, 4),
+                    "benign_ceiling_s": BENIGN_CEIL_S,
+                    "window_nonempty": int(theta_star > BENIGN_CEIL_S),
+                })
+    with open(RESULTS / "certified_operating_window.csv", "w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(window[0].keys()))
+        w.writeheader()
+        w.writerows(window)
+    n_open = sum(r["window_nonempty"] for r in window)
+    print(f"[compose] {len(window)} window rows ({n_open} nonempty) -> "
+          "results/certified_operating_window.csv")
+
+    # ---- Wilcoxon signed-rank + Holm ----
+    perseed_idx = defaultdict(dict)
+    for r in perseed:
+        perseed_idx[(r["scenario"], r["epsilon"], r["seed"], r["policy"])][r["mode"]] = r
+
+    tests = []
+
+    # H1: undetected budget, medium vs low (paired per scenario/eps/seed/policy)
+    for eps in [f"{t}" for t in THETA_GRID]:
+        lo, med = [], []
+        for (scen, e, seed, pol), modes in perseed_idx.items():
+            if e == eps and "low" in modes and "medium" in modes:
+                lo.append(modes["low"]["delta_undetected_s"])
+                med.append(modes["medium"]["delta_undetected_s"])
+        if len(lo) >= 8 and any(a != b for a, b in zip(lo, med)):
+            stat, p = wilcoxon(med, lo)
+            tests.append({"comparison": "undetected_budget_medium_vs_low",
+                          "epsilon": eps, "n_pairs": len(lo),
+                          "median_diff": round(float(np.median(np.array(med) - np.array(lo))), 3),
+                          "p_raw": p})
+
+    # H2: composed floor vs autonomy-only floor (paired, pooled modes)
+    for eps in [f"{t}" for t in THETA_GRID]:
+        a, b = [], []
+        for r in perseed:
+            if r["epsilon"] == eps:
+                a.append(r["floor_composed"])
+                b.append(r["floor_autonomy_only"])
+        diffs = np.array(a) - np.array(b)
+        if len(a) >= 8 and np.any(diffs != 0):
+            stat, p = wilcoxon(a, b)
+            tests.append({"comparison": "floor_composed_vs_autonomy_only",
+                          "epsilon": eps, "n_pairs": len(a),
+                          "median_diff": round(float(np.median(diffs)), 3),
+                          "p_raw": p})
+
+    # H3: recall medium vs low (paired per scenario/eps/seed/policy)
+    rec = list(csv.DictReader(open(RESULTS / "theta_operating_curve_perseed.csv")))
+    rec_idx = defaultdict(dict)
+    for r in rec:
+        rec_idx[(r["scenario"], r["epsilon"], r["seed"], r["policy"])][r["mode"]] = float(r["recall"])
+    for eps in [f"{t}" for t in THETA_GRID]:
+        lo, med = [], []
+        for (scen, e, seed, pol), modes in rec_idx.items():
+            if e == eps and "low" in modes and "medium" in modes:
+                lo.append(modes["low"])
+                med.append(modes["medium"])
+        if len(lo) >= 8 and any(a != b for a, b in zip(lo, med)):
+            stat, p = wilcoxon(med, lo)
+            tests.append({"comparison": "recall_medium_vs_low",
+                          "epsilon": eps, "n_pairs": len(lo),
+                          "median_diff": round(float(np.median(np.array(med) - np.array(lo))), 3),
+                          "p_raw": p})
+
+    # Holm within each comparison family
+    by_family = defaultdict(list)
+    for i, t in enumerate(tests):
+        by_family[t["comparison"]].append(i)
+    for fam, idxs in by_family.items():
+        adj = holm([tests[i]["p_raw"] for i in idxs])
+        for i, a in zip(idxs, adj):
+            tests[i]["p_holm"] = float(a)
+            tests[i]["significant_0.05"] = int(a < 0.05)
+    for t in tests:
+        t["p_raw"] = float(t["p_raw"])
+
+    with open(RESULTS / "stats_wilcoxon.csv", "w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(tests[0].keys()))
+        w.writeheader()
+        w.writerows(tests)
+    print(f"[compose] {len(tests)} tests -> results/stats_wilcoxon.csv")
+    sig = sum(t["significant_0.05"] for t in tests)
+    print(f"[compose] {sig}/{len(tests)} significant after Holm within family")
+
+    # console headline
+    print("\ncertified floor vs theta (Gronwall amp, margin family {2,5,10,20} m):")
+    for theta in (0.25, 0.5, 1.0, 2.0, 5.0, 10.0):
+        row = [c for c in curve if c["theta_s"] == theta
+               and c["amplification"] == "gronwall_L1.01_T1"]
+        floors = {c["scenario"]: c["certified_floor"] for c in row}
+        print(f"  theta={theta:>5}: " + "  ".join(
+            f"scen{s}={floors[s]:.2f}" for s in sorted(floors)))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
