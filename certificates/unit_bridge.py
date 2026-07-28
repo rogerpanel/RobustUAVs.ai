@@ -132,6 +132,82 @@ def to_feature_l2(d_m: float) -> float:
     return float(np.interp(math.log(d_m), np.log(d), l2))
 
 
+# --------------------- caf_shift_v2: tracking-loop variant ------------------
+# P1(a) finding (docs/certified_regime_analysis.md): v1 charges the full
+# carrier rotation 2*pi*d/lambda to the adversary, but absolute carrier phase
+# is a receiver nuisance parameter — tracking loops wipe it before any
+# feature extraction, and in real IQ it is uniformly random per window (only
+# the synthetic corpus has a deterministic initial phase). v2 models the
+# perturbation a tracking-loop-fed extractor sees: code delay, then global
+# phase re-aligned to the clean window by complex correlation. Measured
+# effect: the Gronwall(0.18) crossing moves from ~2.1 mm to ~0.45 m and the
+# RS(0.44) crossing to ~1.15 m; metre-scale spoofs still land outside the
+# tube (that part is physics, not artifact).
+
+BRIDGE_VERSION_V2 = "caf_shift_v2"
+_CAL_V2 = None
+
+
+def _apply_pos_error_tracked(iq: np.ndarray, d_m: float) -> np.ndarray:
+    pert = _apply_pos_error(iq, d_m)
+    z = np.vdot(iq, pert)
+    if abs(z) > 0:
+        pert = (pert * np.exp(-1j * np.angle(z))).astype(np.complex64)
+    return pert
+
+
+def _calibrate_v2() -> dict:
+    cfg = TEXBATConfig()
+    rng = np.random.default_rng(_SEED)
+    windows = _clean_windows(rng, _N_WINDOWS, _N_SAMP)
+    base = [_caf_features(w, cfg) for w in windows]
+    med = []
+    for d in _D_GRID_M:
+        disp = [float(np.linalg.norm(
+            _caf_features(_apply_pos_error_tracked(w, d), cfg) - f0))
+            for w, f0 in zip(windows, base)]
+        med.append(float(np.median(disp)))
+    env = np.maximum.accumulate(np.asarray(med))
+    return {"d": _D_GRID_M, "l2": env, "plateau": float(env[-1])}
+
+
+def _cal_v2() -> dict:
+    global _CAL_V2
+    if _CAL_V2 is None:
+        _CAL_V2 = _calibrate_v2()
+    return _CAL_V2
+
+
+def to_feature_l2_v2(d_m: float) -> float:
+    """caf_shift_v2: tracking-loop-aligned upper envelope (the corrected
+    RF-class bridge). Same envelope semantics as v1."""
+    if d_m <= 0:
+        return 0.0
+    cal = _cal_v2()
+    d, l2 = cal["d"], cal["l2"]
+    if d_m <= d[0]:
+        return float(l2[0] * (d_m / d[0]))
+    if d_m >= d[-1]:
+        return cal["plateau"]
+    return float(np.interp(math.log(d_m), np.log(d), l2))
+
+
+def bridge_info_v2() -> dict:
+    cal = _cal_v2()
+    return {"version": BRIDGE_VERSION_V2,
+            "basis": "texbat._caf_features on seeded synthetic clean windows, "
+                     "global carrier phase wiped by complex correlation "
+                     "(tracking-loop model); re-calibrate on real TEXBAT "
+                     "before quoting in-paper",
+            "model": "code delay tau=d/c at FS=25MS/s; carrier phase treated "
+                     "as receiver nuisance (P1(a), "
+                     "docs/certified_regime_analysis.md); median over "
+                     "windows; running-max envelope (upper bound)",
+            "seed": _SEED, "n_windows": _N_WINDOWS,
+            "plateau_l2": round(cal["plateau"], 4),
+            "d_grid_m": [float(cal["d"][0]), float(cal["d"][-1])]}
+
+
 def bridge_info() -> dict:
     cal = _cal()
     return {"version": BRIDGE_VERSION,

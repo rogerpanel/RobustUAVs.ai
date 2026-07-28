@@ -22,9 +22,15 @@ def run_once(binary, scenario, n_seeds, eps, dmin, dmax, workdir):
                DATAMUT_SCENARIO=str(scenario), DATAMUT_NUM_SEEDS=str(n_seeds),
                DATAMUT_EPSILON=str(eps),
                DATAMUT_DELAY_MIN=str(dmin), DATAMUT_DELAY_MAX=str(dmax))
+    # The demo APPENDS to its summary CSV; a stale file from a previous
+    # operating point would contaminate this point's average (this exact bug
+    # produced the pre-2026-07-28 committed operating curve - see
+    # docs/certified_regime_analysis.md). Start every point clean.
+    summary = Path(workdir) / "datamut-paper-metrics-summary.csv"
+    summary.unlink(missing_ok=True)
     subprocess.run([binary], env=env, cwd=workdir,
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
-    rows = list(csv.DictReader(open(Path(workdir) / "datamut-paper-metrics-summary.csv")))
+    rows = list(csv.DictReader(open(summary)))
     n = len(rows)
     return {
         "recall": sum(float(r["recall"]) for r in rows) / n,

@@ -48,12 +48,17 @@ except Exception:                                    # torch not installed etc.
         return float(eps_in * math.exp(L_g * T))
 
 # ---- W3 unit bridge: pos_error_m -> CAF-feature l2 (certificates/unit_bridge.py)
+# caf_shift_v2 (tracking-loop-aligned) is the default since the P1 certified-
+# regime analysis: v1 charged the carrier-phase nuisance to the adversary and
+# under-certified by ~216x. v1 remains available for provenance.
 try:
     try:
-        from certificates.unit_bridge import to_feature_l2, bridge_info
+        from certificates.unit_bridge import (
+            to_feature_l2, bridge_info, to_feature_l2_v2, bridge_info_v2)
     except ImportError:                              # run as a script from certificates/
         sys.path.insert(0, str(Path(__file__).resolve().parent))
-        from unit_bridge import to_feature_l2, bridge_info
+        from unit_bridge import (
+            to_feature_l2, bridge_info, to_feature_l2_v2, bridge_info_v2)
     HAVE_BRIDGE = True
 except Exception:                                    # numpy/torch missing
     HAVE_BRIDGE = False
@@ -62,12 +67,19 @@ except Exception:                                    # numpy/torch missing
 def _to_feature_l2(delta: "Perturbation"):
     """Map a schema delta to feature-space l2. Returns (l2, meta) or
     (None, meta) when the kind is not yet mappable — the caller reports
-    unit_bridge_missing honestly instead of guessing."""
+    unit_bridge_missing honestly instead of guessing.
+
+    NOTE (P1, docs/certified_regime_analysis.md): this bridge is the
+    interface for RF-manipulation classes (gps_spoofing / gps_jamming),
+    where the adversary reshapes the receiver input. Time-delay attacks
+    perturb the vehicle in STATE space (staleness); route those through
+    StalenessGronwallCertificate, not this bridge.
+    """
     if delta.kind == "sensor_l2":
         return delta.value, {"unit_bridge": "identity"}
     if delta.kind == "pos_error_m" and HAVE_BRIDGE:
-        info = bridge_info()
-        return to_feature_l2(delta.value), {
+        info = bridge_info_v2()
+        return to_feature_l2_v2(delta.value), {
             "unit_bridge": info["version"],
             "unit_bridge_basis": info["basis"],
             "pos_error_m_input": delta.value}
@@ -178,6 +190,57 @@ class RandomizedSmoothingCertificate:
              "delta_l2": round(l2, 4), "inside_radius": inside, **meta})
 
 
+class StalenessGronwallCertificate:
+    """State-space Gronwall tube for the TIME-DELAY class (P1(c)).
+
+    The time-delay attack never touches the RF front-end: its effect is that
+    the navigation stack acts on a network-delivered correction that is
+    Delta(theta) seconds stale. The perturbation therefore lives in vehicle
+    STATE space (metres), and the certificate is the trajectory-tube
+    argument of the composition theorem — NOT the CT-TGNN feature-space
+    radius (using that radius here was the category error that made the
+    certified floor look near-zero everywhere; see
+    docs/certified_regime_analysis.md).
+
+    Chain: Delta(theta) <= H*min(theta, s)   [tightened Lemma 1 — the
+           contact-window slack s caps invisible per-hop delay at any
+           epsilon; measured: max undetected malicious residual 4.84 s over
+           15,392 hops, slack s = 5 s]
+           delta_pos = v_max * Delta(theta)  [kinematic worst case,
+           staleness_v0; the Whelan-grounded empirical tightening is
+           real-corpus work]
+           tube rho = delta_pos * exp(L*T)   [reference L=1.01, T=1;
+           closed-loop L for the real vehicle is calibration-pending]
+           certified iff rho <= margin m.
+    """
+
+    name = "gronwall_state_space"
+
+    def __init__(self, v_max: float = 15.0, slack_s: float = 5.0,
+                 L: float = PHASE_A["L_g"], T: float = PHASE_A["T"]):
+        self.v_max, self.slack_s, self.L, self.T = v_max, slack_s, L, T
+
+    def certify_staleness(self, theta_s: float, n_malicious_hops: int,
+                          margin_m: float) -> CertificateResult:
+        delta_stale = n_malicious_hops * min(theta_s, self.slack_s)
+        delta_pos = self.v_max * delta_stale
+        rho = delta_pos * math.exp(self.L * self.T)
+        inside = rho <= margin_m
+        return CertificateResult(
+            self.name,
+            PHASE_A["mcr_certified_target"] if inside else None,
+            {"theta_s": theta_s, "n_malicious_hops": n_malicious_hops,
+             "slack_s": self.slack_s,
+             "delta_staleness_s": round(delta_stale, 4),
+             "mapping": "staleness_v0: delta_pos = v_max * Delta "
+                        "(kinematic worst case; Whelan tightening pending)",
+             "v_max_m_s": self.v_max,
+             "delta_pos_m": round(delta_pos, 3),
+             "L": self.L, "T": self.T,
+             "tube_m": round(rho, 3), "margin_m": margin_m,
+             "inside_tube": inside})
+
+
 class MWURegretCertificate:
     """Theorem 6.4: defender's MWU policy mixing has regret
     R(T) <= sqrt(T * ln|S|) against an adaptive jammer (Stackelberg,
@@ -208,6 +271,7 @@ class PACBayesCertificate:
 
 REGISTRY = {
     "lipschitz_gronwall": LipschitzGronwallCertificate(),
+    "gronwall_state_space": StalenessGronwallCertificate(),
     "randomized_smoothing": RandomizedSmoothingCertificate(),
     "mwu_regret": MWURegretCertificate(),
     "pac_bayes": PACBayesCertificate(),
@@ -224,13 +288,14 @@ if __name__ == "__main__":
     # W3 unit bridge: pos_error_m now converts instead of refusing
     r2 = lg.certify(Perturbation("pos_error_m", 30.0, "whelan_measured"))
     if HAVE_BRIDGE:
-        # a 30 m spoof decorrelates the carrier: far outside the 0.18 tube
+        # a 30 m spoof shifts the code phase far outside the 0.18 tube
         assert r2.certified_mcr is None and not r2.params["inside_radius"], r2
-        assert r2.params["unit_bridge"] == "caf_shift_v1"
-        # sub-wavelength errors stay inside the certified tube
-        r3 = lg.certify(Perturbation("pos_error_m", 0.001, "whelan_measured"))
+        assert r2.params["unit_bridge"] == "caf_shift_v2"
+        # sub-crossing (~0.45 m) errors stay inside the certified tube under
+        # the corrected tracking-loop bridge (v1 capped this at ~2 mm)
+        r3 = lg.certify(Perturbation("pos_error_m", 0.3, "whelan_measured"))
         assert r3.certified_mcr == 0.80 and r3.params["inside_radius"], r3
-        bridge_note = (f"bridge caf_shift_v1: 1 mm -> l2="
+        bridge_note = (f"bridge caf_shift_v2: 0.3 m -> l2="
                        f"{r3.params['delta_l2']}, 30 m -> l2="
                        f"{r2.params['delta_l2']} (plateau)")
     else:
@@ -240,6 +305,18 @@ if __name__ == "__main__":
     # kinds with no bridge still refuse honestly
     r4 = lg.certify(Perturbation("state_staleness_s", 2.0, "staleness_v0"))
     assert r4.certified_mcr is None and r4.params["status"] == "unit_bridge_missing"
+
+    # state-space staleness certificate (time-delay class, P1(c)):
+    ss = StalenessGronwallCertificate()
+    # tight detector, H=2, 20 m corridor: inside the certified window
+    r5 = ss.certify_staleness(theta_s=0.2, n_malicious_hops=2, margin_m=20.0)
+    assert r5.certified_mcr == 0.80 and r5.params["inside_tube"], r5
+    # paper operating point 0.25 s is JUST outside the 20 m window (0.243 s)
+    r6 = ss.certify_staleness(theta_s=0.25, n_malicious_hops=2, margin_m=20.0)
+    assert r6.certified_mcr is None and not r6.params["inside_tube"], r6
+    # the slack cap: theta=10 s certifies exactly like theta=5 s (knee)
+    r7 = ss.certify_staleness(theta_s=10.0, n_malicious_hops=2, margin_m=20.0)
+    assert r7.params["delta_staleness_s"] == 10.0, r7
 
     print(f"OK  Gronwall radius={lg.radius:.4f} (dissertation: 0.18); "
           f"RS radius={PHASE_A['rs_radius']}; "
