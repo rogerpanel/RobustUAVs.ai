@@ -559,17 +559,59 @@ and the mission completes whenever $\rho(\theta) \le m$; consequently
 \MCR \;\ge\; f\big(\delta(\theta)\big) \;=\; \Pr_{\text{missions}}\!\big[\,\delta(\theta)\,e^{LT}\le m\,\big].
 \end{equation}
 \end{theorem}
-\begin{proof}[Proof sketch]
-By Grönwall's inequality applied to two solutions of \eqref{eq:ode} whose inputs
-differ by $\delta u$, the terminal-state deviation obeys
-$\Norm{x_{\text{att}}(T)-x_{\text{nom}}(T)}\le \Norm{\delta u}\,e^{LT}$. Combining
-with the input bound $\Norm{\delta u}\le\delta(\theta)$ gives the tube radius
-\eqref{eq:tube}. If the tube stays within the corridor margin $m$ for all
-$t\in[0,T]$, the trajectory never leaves the safe set and the mission completes;
-taking probability over the mission distribution yields \eqref{eq:floor}.
-Chaining $\theta\!\mapsto\!\Delta(\theta)$ (Lemma~\ref{lem:residual}),
-$\Delta\!\mapsto\!\delta$ (\S\ref{sec:interface}), and
-$\delta\!\mapsto\!\MCR$ (this argument) proves \eqref{eq:chain}.
+\begin{proof}
+Fix a mission and let $x_{\mathrm{nom}}(t)$ be the nominal trajectory---the
+solution of \eqref{eq:ode} under the attack-free input $u(t)$---and
+$x_{\mathrm{att}}(t)$ the trajectory under the perturbed input $u(t)+\delta u(t)$,
+both started from the same initial state $x_{\mathrm{nom}}(0)=x_{\mathrm{att}}(0)$.
+Write $e(t)=x_{\mathrm{att}}(t)-x_{\mathrm{nom}}(t)$ for their deviation. From
+\eqref{eq:ode},
+\[
+\dot e(t)=F\big(x_{\mathrm{att}},u+\delta u\big)-F\big(x_{\mathrm{nom}},u\big).
+\]
+Because $F$ is $L$-Lipschitz in its arguments over the operating region,
+$\Norm{\dot e(t)}\le L\,\Norm{e(t)}+L\,\Norm{\delta u(t)}$. Integrating and using
+$e(0)=0$,
+\[
+\Norm{e(t)}\;\le\;L\!\int_0^t\!\Norm{e(\tau)}\,d\tau
+\;+\;L\!\int_0^t\!\Norm{\delta u(\tau)}\,d\tau .
+\]
+Applying the integral form of Grönwall's inequality~\cite{gronwall1919} to the
+non-decreasing forcing term $g(t)=L\!\int_0^t\!\Norm{\delta u}\,d\tau$ yields
+$\Norm{e(t)}\le g(t)\,e^{Lt}$, and bounding the input by
+$\Norm{\delta u(\tau)}\le\delta(\theta)$ for all $\tau$ gives, at the horizon,
+\begin{equation}
+\label{eq:tube_derivation}
+\Norm{e(T)}\;\le\;\delta(\theta)\,\big(e^{LT}-1\big)\;\le\;\delta(\theta)\,e^{LT},
+\end{equation}
+which is the tube radius \eqref{eq:tube} (the looser right-hand bound is the one
+we report, as it is closed-form and monotone). Now suppose $\rho(\theta)\le m$.
+The nominal trajectory lies in the safe corridor by construction, and every point
+of the attacked trajectory is within $\rho(\theta)\le m$ of it by
+\eqref{eq:tube_derivation}; hence the attacked trajectory never exits the
+corridor over $[0,T]$ and the mission completes. Taking the probability of the
+event $\{\rho(\theta)\le m\}$ over the mission distribution---the only source of
+randomness once $\theta$ is fixed, since $\delta(\theta)$ is a deterministic
+bound---gives the floor \eqref{eq:floor}. Finally, composing the three maps
+$\theta\!\mapsto\!\Delta(\theta)$ (Lemma~\ref{lem:residual}),
+$\Delta\!\mapsto\!\delta$ (\S\ref{sec:interface}), and $\delta\!\mapsto\!\MCR$
+(the argument just given) establishes the end-to-end chain \eqref{eq:chain}.
+\end{proof}
+
+\begin{proposition}[Soundness]
+\label{prop:sound}
+The certified floor never overstates the achievable mission-completion rate:
+for every detector operating point $\theta$, the true $\MCR$ of any
+$D_\theta$-evading attack satisfies $\MCR\ge f(\delta(\theta))$.
+\end{proposition}
+\begin{proof}
+Every step above is an inequality in the conservative direction: the
+Lipschitz bound over-estimates the deviation growth, the input bound uses the
+worst-case $\delta(\theta)$, and the corridor test is a sufficient (not
+necessary) condition for completion. Hence $f(\delta(\theta))$ is a lower bound
+on the true completion probability, which is precisely soundness; the empirical
+validation of \S\ref{sec:instantiation} confirms the certified floor lies below
+the measured rate at every operating point.
 \end{proof}
 
 Two consequences frame the rest of the paper. First, \eqref{eq:floor} is
@@ -586,34 +628,39 @@ bound becomes loose, motivating the complementary certificates of
 
 \begin{figure}[t]
 \centering
-\resizebox{\columnwidth}{!}{%
 \begin{tikzpicture}[
-  font=\footnotesize,
-  stage/.style={rounded corners=2pt,draw,align=center,minimum height=9mm,
-    text width=15mm,inner sep=2pt},
-  net/.style={stage,fill=netcol!12,draw=netcol},
-  br/.style={stage,fill=bridgecol!15,draw=bridgecol,thick},
-  aut/.style={stage,fill=autocol!12,draw=autocol},
-  >={Latex[length=2mm]}]
-\node[net] (theta) {detector\\point $\theta$};
-\node[net,right=6mm of theta] (delta0) {residual\\$\Delta(\theta)$};
-\node[br,right=6mm of delta0] (delta) {perturb.\\$\delta(\theta)$};
-\node[aut,right=6mm of delta] (tube) {tube\\$\delta e^{LT}$};
-\node[aut,right=6mm of tube] (mcr) {floor\\$\MCR\ge f$};
-\draw[->] (theta) -- node[above,font=\scriptsize]{Lem.\,1} (delta0);
-\draw[->] (delta0) -- node[above,font=\scriptsize]{\S5.2} (delta);
-\draw[->] (delta) -- node[above,font=\scriptsize]{Grönwall} (tube);
-\draw[->] (tube) -- node[above,font=\scriptsize]{corridor $m$} (mcr);
+  font=\normalsize,
+  stage/.style={rounded corners=3pt,draw,align=center,minimum height=8.5mm,
+    text width=42mm,inner sep=4pt},
+  net/.style={stage,fill=netcol!12,draw=netcol,thick},
+  br/.style={stage,fill=bridgecol!15,draw=bridgecol,very thick},
+  aut/.style={stage,fill=autocol!12,draw=autocol,thick},
+  lbl/.style={font=\normalsize\bfseries,fill=white,inner sep=1.5pt},
+  >={Latex[length=2.6mm]},
+  node distance=9mm]
+\node[net] (theta) {detector point $\theta$};
+\node[net,below=of theta] (delta0) {residual budget $\Delta(\theta)$};
+\node[br,below=of delta0] (delta) {perturbation $\delta(\theta)$};
+\node[aut,below=of delta] (tube) {trajectory tube $\delta\,e^{LT}$};
+\node[aut,below=of tube] (mcr) {certified floor $\MCR\ge f$};
+\draw[->,thick] (theta) -- node[lbl,right] {Lemma~\ref{lem:residual}} (delta0);
+\draw[->,thick] (delta0) -- node[lbl,right] {interface (\S\ref{sec:interface})} (delta);
+\draw[->,thick] (delta) -- node[lbl,right] {Gr\"onwall} (tube);
+\draw[->,thick] (tube) -- node[lbl,right] {corridor margin $m$} (mcr);
 \begin{scope}[on background layer]
-\node[fill=netcol!6,fit=(theta)(delta0),rounded corners,inner sep=3pt,label=below:{\scriptsize network side}]{};
-\node[fill=autocol!6,fit=(tube)(mcr),rounded corners,inner sep=3pt,label=below:{\scriptsize autonomy side}]{};
+\node[fit=(theta)(delta0),draw=netcol!55,rounded corners,inner sep=6pt,
+  label={[font=\small\bfseries,text=netcol]left:\rotatebox{90}{network side}}]{};
+\node[fit=(tube)(mcr),draw=autocol!55,rounded corners,inner sep=6pt,
+  label={[font=\small\bfseries,text=autocol]left:\rotatebox{90}{autonomy side}}]{};
 \end{scope}
-\end{tikzpicture}%
-}
+\end{tikzpicture}
 \caption{The composition chain of Theorem~\ref{thm:main}. A network detector
-operating point flows through a residual-budget bound, an empirically grounded
-interface mapping, a Grönwall trajectory tube, and a corridor-margin test to a
-certified mission-completion floor.}
+operating point flows top-to-bottom through a residual-budget bound
+(Lemma~\ref{lem:residual}), an empirically grounded interface mapping
+(\S\ref{sec:interface}), a Gr\"onwall trajectory tube, and a corridor-margin
+test, arriving at a certified mission-completion floor. The upper two stages are
+network-side quantities; the lower two are autonomy-side; the perturbation
+$\delta(\theta)$ is the bridge between them.}
 \label{fig:chain}
 \end{figure}
 
