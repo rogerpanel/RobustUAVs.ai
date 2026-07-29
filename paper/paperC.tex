@@ -32,20 +32,14 @@
 A Cross-Layer Benchmark Spanning the Network and\\ Navigation Attack Surfaces of Autonomous Drones}
 
 \author{
-\IEEEauthorblockN{Roger Nick Anaedevha, \textit{IEEE Member}}
-\IEEEauthorblockA{Institute of Cyber Intelligent Systems\\
-National Research Nuclear University MEPhI\\
-Moscow, Russia}
-\and
-\IEEEauthorblockN{Keiwan Soltani}
-\IEEEauthorblockA{Computer Science Department\\
-Missouri University of Science and Technology\\
-Rolla, MO, USA}
-\and
-\IEEEauthorblockN{Federico Cor\`o}
-\IEEEauthorblockA{Tenure-Track Assistant Professor (RTT)\\
-University of Padova\\
-Padua, Italy}
+\IEEEauthorblockN{Roger Nick Anaedevha\IEEEauthorrefmark{1}, \textit{IEEE Member},
+Keiwan Soltani\IEEEauthorrefmark{2}, and Federico Cor\`o\IEEEauthorrefmark{3}}
+\IEEEauthorblockA{\IEEEauthorrefmark{1}Institute of Cyber Intelligent Systems,
+National Research Nuclear University MEPhI, Moscow, Russia}
+\IEEEauthorblockA{\IEEEauthorrefmark{2}Computer Science Department,
+Missouri University of Science and Technology, Rolla, MO, USA}
+\IEEEauthorblockA{\IEEEauthorrefmark{3}Tenure-Track Assistant Professor (RTT),
+University of Padova, Padua, Italy}
 \thanks{Preprint prepared for IEEE SaTML. Artifact and data:
 \url{https://www.kaggle.com/datasets/rogernickanaedevha/uavs-network-and-navigation-end-to-end-security-data} (DOI 10.34740/kaggle/dsv/18346203).
 Every reported number carries an explicit provenance tag in the artifact ledger
@@ -953,6 +947,25 @@ because it makes the cross-layer sweep unambiguous. Extending the harness to
 detectors with multi-dimensional operating points (e.g.\ jointly tuned rate and
 payload thresholds) is direct future work and requires only a
 higher-dimensional sweep, not a schema change.
+
+\emph{Threats to validity, and how the design mitigates them.} We name the three
+that most threaten a cross-layer benchmark. \emph{Construct validity}---does a
+recorded pairing actually represent the causal link it claims? This is the risk
+the honesty flag exists to bound: a pairing can never present stronger evidence
+than its \code{pairing\_basis} declares, and a reviewer can restrict any analysis
+to the measured class. \emph{Internal validity}---are the numbers themselves
+correct? Two of our own measurement errors (the sweep-accumulation bug and the
+initial guess at the \dataset{HCRL} labels) were caught precisely because the
+provenance discipline made them visible; we report them rather than hide them,
+and every figure is regenerated from committed data so a reader can re-derive it.
+\emph{External validity}---do results transfer beyond the corpus? Four of six
+sources are simulation or calibrated-twin, so absolute detector-performance
+numbers are corpus-specific; what transfers is the \emph{structure}---the
+knee-and-floor operating curve and the measured order-of-magnitude gap between
+kinematic and empirical staleness---which is a property of store-and-forward
+scheduling and of estimator behaviour, not of any one simulator. We therefore
+frame the benchmark's contribution as the composable structure it exposes, not
+as a leaderboard.
 
 % =====================================================================
 \section{Conclusion}
