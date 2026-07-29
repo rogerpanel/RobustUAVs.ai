@@ -194,6 +194,74 @@ Full curves: `results/certified_floor_vs_theta.csv`,
    the tube; 0.90 DO-326A remains the empirical operational floor (EW-Bench,
    real-corpus side, unverifiable from this environment).
 
+## ADDENDUM (2026-07-29): the empirical δ mapping — and it WIDENS the window
+
+The real Whelan sample (3 live flights, `experiments/whelan_delta_calibration.py`,
+`results/whelan_delta_calibration.csv`) replaces the kinematic v_max·Δ with a
+**measured error-growth rate γ [m per second of degradation]**. This is the
+number the prior prompt flagged as deciding Paper A's framing, and it lands
+clearly on the window-widened side.
+
+**Measured γ (self-referenced, pre-attack median; hover regime):**
+
+| flight | source | onset | peak (m) | γ_lsq (m/s) | γ_peak (m/s) |
+|--------|--------|------:|---------:|------------:|-------------:|
+| jamming  | receiver | fix-loss @175 s | 6.73 | −0.08 | 0.48 |
+| jamming  | ekf      | 3×noise @177 s  | 7.00 | −0.11 | 0.52 |
+| spoofing | receiver | 3×noise @119 s  | 14.34 | 0.24 | **1.20** |
+| spoofing | ekf      | 3×noise @120 s  | 15.57 | 0.70 | **1.37** |
+
+Conservative empirical γ = **1.37 m/s** (max rate). Compare the kinematic worst
+case γ = v_max = 15 m/s — **~11× looser**.
+
+**δ source is an explicit switch, not silently chosen** (per the prompt's
+constraint 2). Two mappings are carried through every downstream artifact:
+`empirical_receiver` (γ=1.20 m/s — the false fix the attack injects at the
+estimator *input*) and `empirical_ekf` (γ=1.37 m/s — the filtered error the
+controller *acts on*, from local.csv). They differ by <15% here because in the
+hover regime PX4's EKF barely rejects the slow spoof/jam ramp; under a fast
+spoof they would diverge. The certificate should consume the **ekf** error
+(that is what closes the loop), with the receiver error reported as the
+attack-injected upper input — both are in the CSVs and both are plotted.
+
+**Does θ = 0.25 s come inside the certified window? YES, at every margin.**
+(`results/certified_operating_window.csv`, `results/delta_mapping_sensitivity.csv`;
+scenario 1, Grönwall-amplified tube, H=2.)
+
+| mapping | γ (m/s) | θ*(m=2 m) | θ*(m=10 m) | θ*(m=20 m) | θ=0.25 inside? |
+|---------|--------:|----------:|-----------:|-----------:|:--------------:|
+| kinematic worst case | 15.0 | 0.024 s | 0.121 s | 0.243 s | **no** (all margins) |
+| empirical_receiver | 1.20 | 0.305 s | 1.52 s | 3.05 s | **yes** (all margins) |
+| empirical_ekf | 1.37 | 0.267 s | 1.33 s | 2.67 s | **yes** (all margins) |
+
+**How gentle must the mapping be to admit θ = 0.25 s?** The threshold is
+γ_req = m/(θ·e^{LT}·H). At m = 10 m, γ_req = **7.28 m/s**; the measured γ ≈
+1.2–1.4 m/s clears it by ~5×. Even at the tightest 2 m corridor, γ_req = 1.46
+m/s and the receiver mapping (1.20) still fits. So θ = 0.25 s is inside the
+certified window under the empirical mapping across the entire stated margin
+family — the conclusion is not margin-knife-edge.
+
+**Is that physically plausible?** Yes, and for a concrete reason: the kinematic
+bound assumes the vehicle flies blind at v_max for the whole staleness
+interval, but a real PX4 EKF rejects bad GNSS and coasts on IMU/baro, so
+position error grows at ~1 m/s, not ~15 m/s. γ_emp ≪ v_max is the expected
+ordering, not a fluke. The bound would only approach kinematic if the estimator
+fully trusted the corrupted GNSS — which the DO-326A "no loss of stabilisation"
+labelling already excludes.
+
+**Three caveats keep this honest (prompt constraint 3):** (i) n = 3 flights,
+**hover regime** (|v| ≈ 0.05 m/s) — at cruise the staleness error per second is
+larger, and γ could rise toward the kinematic bound; even so it would need to
+exceed 7.28 m/s (m=10 m) to push θ=0.25 back out, a >5× rise. (ii)
+Self-referenced to the first 25 % because the true attack intervals are not in
+the CSVs (`whelan_manifest.json` intervals are TODO). (iii) These are three
+flights, a calibration sample, not a distribution; TEXBAT re-calibration and a
+larger flight set stay on the pending list. **Verdict for Paper A: frame the
+window as widened by the empirical mapping (θ = 0.25 s certified), with the
+kinematic worst case shown as the conservative fallback and the cruise-regime
+caveat stated. Draft both abstracts (paper/abstract_A_*.tex); this result
+selects the "widened" one, pending confirmation on more flights/cruise data.**
+
 ## Calibration-pending register (do not quote unqualified)
 
 | quantity | current value | status |

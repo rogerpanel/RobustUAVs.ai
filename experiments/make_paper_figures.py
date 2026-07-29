@@ -66,27 +66,27 @@ def fig_opcurve():
 # ----------------------- Paper C: MCR anchor -----------------------
 
 def fig_mcr_anchor():
-    body = (
-        "% UNCHANGED from the draft: these are the published UAV-EW-Bench-2026\n"
-        "% release values as plotted in the submitted draft. They could NOT be\n"
-        "% re-derived in this session (Kaggle egress blocked); treat as\n"
-        "% published-value pending real-corpus re-verification of the released\n"
-        "% per_flight.csv (93,600 rows; reconcile vs the plan doc's '108k').\n"
-        "\\addplot[accent,mark=triangle*,thick] coordinates {\n"
-        "(0,0.990)(5,0.947)(10,0.832)(15,0.510)(20,0.263)(25,0.125)(30,0.038)(35,0.013)(40,0.000)};\n"
-        "\\addlegendentry{No-Def (PX4)}\n"
-        "\\addplot[bridgecol,mark=square*,thick] coordinates {\n"
-        "(0,0.987)(5,0.955)(10,0.917)(15,0.847)(20,0.692)(25,0.510)(30,0.323)(35,0.178)(40,0.068)};\n"
-        "\\addlegendentry{CAF-CNN}\n"
-        "\\addplot[autocol,mark=diamond*,thick] coordinates {\n"
-        "(0,1.000)(5,0.970)(10,0.948)(15,0.913)(20,0.763)(25,0.635)(30,0.510)(35,0.275)(40,0.120)};\n"
-        "\\addlegendentry{Seq2Seq Tr.}\n"
-        "\\addplot[netcol,mark=*,thick] coordinates {\n"
-        "(0,1.000)(5,1.000)(10,0.998)(15,0.978)(20,0.938)(25,0.913)(30,0.793)(35,0.710)(40,0.530)};\n"
-        "\\addlegendentry{Ours (M1+M4+M6+M7)}\n")
+    rows = load("ewbench_mcr_anchor.csv")
+    styles = {"no_def": ("accent", "triangle*", "No-Def (PX4)"),
+              "caf_cnn": ("bridgecol", "square*", "CAF-CNN"),
+              "seq2seq_tr": ("autocol", "diamond*", "Seq2Seq Tr."),
+              "ours_m1m4m6m7": ("netcol", "*", "Ours (M1+M4+M6+M7)")}
+    body = ["% RE-DERIVED from the real 93,600-row per_flight.csv "
+            "(experiments/ewbench_anchor.py).\n"
+            "% Matches the drafted values exactly -> those were genuine release\n"
+            "% numbers; now real-corpus-verified. 93,600 rows is canonical\n"
+            "% (= 4 defenses x 39 J/S x 200 flights x 3 seeds), NOT '108k'.\n"
+            "% Wilson 95%% CIs are in results/ewbench_mcr_anchor.csv.\n"]
+    for dfn, (col, mark, leg) in styles.items():
+        pts = [(float(r["js_db"]), float(r["mcr"]))
+               for r in rows if r["defense"] == dfn]
+        pts.sort()
+        body.append(f"\\addplot[{col},mark={mark},thick] coordinates "
+                    f"{{{coords(pts)}}};\n\\addlegendentry{{{leg}}}\n")
     write("paperC_fig4_mcr_anchor.tex",
-          "published-value (UAV-EW-Bench-2026 release; NOT re-derived here - real corpus unreachable)",
-          body)
+          "real-corpus (UAV-EW-Bench-2026 v1.0.0 per_flight.csv, 93,600 flights, "
+          "sim-lite backend; Wilson 95% CIs)",
+          "".join(body))
 
 
 # ----------------------- Paper C: pairing table -----------------------
@@ -107,13 +107,17 @@ def tab_pairing():
         f"(worst case; slack $s{{=}}5$\\,s)\\\\\n"
         f"Measured undetected delay at $\\theta{{=}}0.25$\\,s & median {med:.2f}\\,s, "
         f"max {mx:.2f}\\,s over {n} runs\\\\\n"
-        f"Induced staleness (kinematic, $v_{{\\max}}{{=}}15$\\,m/s) & "
-        f"$\\le {15 * h * 0.25:.1f}$\\,m position-state offset [fixture]\\\\\n"
-        f"% Empirical MCR of paired window: keep the published-value row\n"
-        f"% (EW-Bench at J/S=20 dB, ~0.94) - not re-derived this session.\n")
+        f"Induced staleness, kinematic $v_{{\\max}}{{=}}15$\\,m/s & "
+        f"$\\le {15 * h * 0.25:.1f}$\\,m [worst case]\\\\\n"
+        f"Induced staleness, empirical $\\gamma{{=}}1.37$\\,m/s (Whelan) & "
+        f"$\\le {1.37 * h * 0.25:.2f}$\\,m [real-corpus, hover, 3-flight]\\\\\n")
+    anchor = load("ewbench_mcr_anchor.csv")
+    mcr20 = next(float(r["mcr"]) for r in anchor
+                 if r["defense"] == "ours_m1m4m6m7" and r["js_db"] == "20")
+    body += (f"Empirical MCR of paired window & {mcr20:.3f} "
+             f"(EW-Bench ours at $J/S{{=}}20$\\,dB, real-corpus)\\\\\n")
     write("paperC_tab2_pairing.tex",
-          "simulation-derived (DATAMUt local runs) + stated kinematic model; "
-          "Whelan empirical grounding pending (real corpus blocked)",
+          "simulation-derived (DATAMUt) + real-corpus (Whelan gamma, EW-Bench MCR)",
           body)
 
 
@@ -121,37 +125,45 @@ def tab_pairing():
 
 def fig_headline():
     rows = load("certified_floor_vs_theta.csv")
-    body = []
-    for amp, label in (("gronwall_L1.01_T1",
-                        "certified floor, Gr\\\"onwall tube ($L{=}1.01$, $T{=}1$)"),
-                       ("kinematic_A1",
-                        "certified floor, un-amplified kinematic tube")):
+    styles = {"kinematic_v15": ("accent,dashed",
+                                "certified floor, kinematic worst case ($\\gamma{=}15$ m/s)"),
+              "empirical_ekf": ("netcol,thick",
+                                "certified floor, empirical $\\gamma{=}1.37$ m/s (Whelan EKF)"),
+              "empirical_receiver": ("autocol,thick,dotted",
+                                     "certified floor, empirical $\\gamma{=}1.20$ m/s (Whelan receiver)")}
+    body = ["% Certified floor vs theta, scenario 1, Gronwall tube (local L=1.181),\n"
+            "% H=2 malicious hops, margin family {2,5,10,20} m uniform weight.\n"
+            "% PARAMETRIC in the delta mapping (the axis this whole question turns on):\n"
+            "%   kinematic worst case gamma=15 m/s  -> theta=0.25 s OUTSIDE the window\n"
+            "%   empirical Whelan gamma~1.2-1.4 m/s -> theta=0.25 s INSIDE at every margin\n"]
+    for mname, (style, label) in styles.items():
         pts = sorted({(float(r["theta_s"]), float(r["certified_floor"]))
-                      for r in rows
-                      if r["amplification"] == amp and r["scenario"] == "1"})
-        body.append(f"% {label}; H=2 malicious hops (identical for all three\n"
-                    f"% topologies); margin family {{2,5,10,20}} m, uniform weight\n"
-                    f"\\addplot+[const plot] coordinates {{{coords(pts)}}};\n"
-                    f"\\addlegendentry{{{label}}}\n")
+                      for r in rows if r["mapping"] == mname
+                      and r["amplification"] == "gronwall_L1.01_T1"
+                      and r["scenario"] == "1"})
+        if pts:
+            body.append(f"\\addplot[{style}] coordinates {{{coords(pts)}}};\n"
+                        f"\\addlegendentry{{{label}}}\n")
     body.append(
-        "% baselines (exact, not plotted from noise):\n"
-        "% autonomy-only floor = 0 for every theta (no detector -> full delay\n"
-        "%   including 60 s missed-window penalties; measured Delta_total up\n"
-        "%   to 424 s); network-only floor = 0 by definition for evaded attacks.\n"
-        "\\addplot[accent,thick] coordinates {(0.05,0)(10,0)};\n"
+        "% baselines (exact): autonomy-only floor = 0 for every theta (no\n"
+        "%   detector -> full delay incl. 60 s missed-window penalties,\n"
+        "%   measured Delta_total up to 424 s); network-only = 0 by definition.\n"
+        "\\addplot[black,thick] coordinates {(0.05,0)(10,0)};\n"
         "\\addlegendentry{autonomy-only / network-only certified floor}\n"
-        "% certified operating window (FPR=0 AND nonzero floor):\n"
-        "% [0.178 s, 0.243 s] under the Gronwall tube (m=20 m);\n"
-        "% [0.178 s, 0.667 s] un-amplified. Draw as axis shading:\n"
-        "% \\fill[netcol!12] (axis cs:0.178,0) rectangle (axis cs:0.243,1.03);\n"
-        "% CAUTION: the drafted headline figure traced the EW-Bench J/S curve\n"
-        "% on a theta axis - not defensible; this replaces it. The empirical\n"
-        "% MCR-vs-theta validation curve requires the real corpus (pending).\n"
-        "% Axis advice: x = theta (s), log scale 0.05..10; y = certified floor\n"
-        "% under the margin-family model (label it as modeled, not measured MCR).\n")
+        "% Certified operating window at the paper operating point theta=0.25 s:\n"
+        "%   kinematic:          theta* = 0.243 s (m=20) -> 0.25 s just OUTSIDE\n"
+        "%   empirical_ekf:      theta* = 0.267 s (m=2), 1.33 s (m=10) -> INSIDE\n"
+        "%   empirical_receiver: theta* = 0.305 s (m=2), 1.52 s (m=10) -> INSIDE\n"
+        "% Shade the empirical window, e.g. m=10 m ekf: [0.178, 1.334] s:\n"
+        "% \\fill[netcol!10] (axis cs:0.178,0) rectangle (axis cs:1.334,1.03);\n"
+        "% Sensitivity: gamma_req to admit theta=0.25 at m=10 m is 7.28 m/s;\n"
+        "% measured gamma ~1.2-1.4 m/s clears it ~5x (results/delta_mapping_sensitivity.csv).\n"
+        "% This REPLACES the drafted figure, which traced the EW-Bench J/S curve\n"
+        "% on a theta axis (not defensible). Axis: x=theta (s) log 0.05..10;\n"
+        "% y=certified floor under the margin-family model (modeled, not measured MCR).\n")
     write("paperA_fig3_headline.tex",
-          "simulation-derived budgets + stated margin-family model "
-          "(calibration-pending: Whelan delta mapping, closed-loop L, real margins)",
+          "real-corpus delta mapping (Whelan 3-flight) + simulation-derived budgets "
+          "+ stated margin family; cruise-regime gamma pending (PENDING_ON_DATA.md #4)",
           "".join(body))
 
 
@@ -162,12 +174,12 @@ def tab_certificates():
     body = (
         "% Constant column for Paper A Table I (four-certificate architecture).\n"
         "% [fixture] = trained/derived on the synthetic Phase-A corpus.\n"
-        f"Lipschitz--Gr\\\"onwall & $\\hat L{{=}}1.013$ [fixture], $R{{=}}0.182$; "
-        f"local operating-region $\\hat L{{=}}"
-        f"{float(lip['L_local_max (data-driven trajectories)']['value']):.3f}$ "
-        f"$\\Rightarrow R{{=}}"
-        f"{float(lip['L_local_max (data-driven trajectories)']['gronwall_radius']):.3f}$ "
-        "(radius is NOT loose)\\\\\n"
+        f"Lipschitz--Gr\\\"onwall & global $\\hat L{{=}}1.01 \\Rightarrow R{{=}}0.182$; "
+        f"\\textbf{{local (operating-region) $\\hat L{{=}}"
+        f"{float(lip['L_local_max (data-driven trajectories)']['value']):.3f} "
+        f"\\Rightarrow R{{=}}"
+        f"{float(lip['L_local_max (data-driven trajectories)']['gronwall_radius']):.3f}$}} "
+        "(default; the local radius is SMALLER, refuting `too tight')\\\\\n"
         "Randomized smoothing & $\\sigma{=}0.25$, $R_{\\ell_2}{=}0.44$ "
         "(Cohen $\\alpha{=}10^{-3}$, $n{=}200$); measured mean radius 0.446 "
         "on the trained checkpoint [fixture]\\\\\n"
@@ -209,10 +221,17 @@ committed results/ CSVs. Provenance classes:
 | file | replaces | provenance |
 |------|----------|------------|
 | paperC_fig3_opcurve.tex | Paper C Fig. 3 coordinates (**old ones were wrong** - accumulation bug, see docs/certified_regime_analysis.md Finding 0) | simulation-derived |
-| paperC_fig4_mcr_anchor.tex | Paper C Fig. 4 (unchanged) | published-value |
-| paperC_tab2_pairing.tex | Paper C Table II [EXP] rows | simulation-derived + stated model |
-| paperA_fig3_headline.tex | Paper A Fig. 3 (**drafted curve traced the J/S curve on a theta axis; not defensible**) | simulation-derived + margin-family model |
-| paperA_tab1_certificates.tex | Paper A SS6.1 constants / Table I | fixture-derived + exact |
+| paperC_fig4_mcr_anchor.tex | Paper C Fig. 4 | **real-corpus** (93,600-row per_flight.csv; matches draft = draft was real) |
+| paperC_tab2_pairing.tex | Paper C Table II [EXP] rows | simulation-derived + real EW-Bench MCR |
+| paperA_fig3_headline.tex | Paper A Fig. 3 (**drafted curve traced the J/S curve on a theta axis; not defensible**) | **real-corpus delta mapping** (Whelan) + simulation budgets + margin family |
+| paperA_tab1_certificates.tex | Paper A SS6.1 constants / Table I | fixture-derived + exact + measured local L |
+
+DECISIVE real-data result (docs/certified_regime_analysis.md ADDENDUM):
+the empirical Whelan delta mapping (gamma~1.2-1.4 m/s) brings theta=0.25 s
+INSIDE the certified operating window at every corridor margin; the kinematic
+worst case (15 m/s) leaves it just outside. gamma_req to admit theta=0.25 at
+m=10 m is 7.28 m/s; measured clears it ~5x. Paper A -> "widened window"
+framing (abstract_A_widened), cruise-regime confirmation pending.
 
 Also note: results/pairings_poc.jsonl predates the unit bridge (W1 output,
 certificate block says unit_bridge_missing); regenerate via ingest/pair_poc.py

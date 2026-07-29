@@ -104,13 +104,21 @@ def load_gps_from_ulog(ulg_path: Path):
 
 
 def load_gps_from_csv_dir(csv_dir: Path):
-    """Find the ulog2csv file for the first present GPS topic."""
+    """Find the ulog2csv file for the first present GPS topic.
+
+    Also accepts the staged-corpus convention (docs/data_staging_layout.md):
+    a plain `gps.csv` holding the vehicle_gps_position export."""
     for topic in GPS_TOPICS:
         hits = sorted(csv_dir.glob(f"*{topic}*.csv"))
         if hits:
             with open(hits[0], newline="") as fh:
                 rows = list(csv.DictReader(fh))
             return topic, rows
+    plain = csv_dir / "gps.csv"
+    if plain.exists():
+        with open(plain, newline="") as fh:
+            rows = list(csv.DictReader(fh))
+        return "vehicle_gps_position", rows
     return None, []
 
 
@@ -295,6 +303,23 @@ def main(argv=None) -> int:
     # ---- batch mode ----
     if a.manifest:
         flights = json.loads(Path(a.manifest).read_text())
+        # Refuse fabricated windows: an attack flight must carry real numeric
+        # attack_start/attack_end (from the dataset docs) unless it is
+        # explicitly marked "calibration": true (self-referenced pos_error
+        # only; emits benign-labelled samples and NO attack windows).
+        def _todo(v):
+            return v is None or isinstance(v, str)
+        bad = [fl["flight_id"] for fl in flights
+               if (fl.get("attack") or "benign") not in ("benign", "normal")
+               and not fl.get("calibration")
+               and (_todo(fl.get("attack_start")) or _todo(fl.get("attack_end")))]
+        if bad:
+            print("[whelan] REFUSING to run: attack_start/attack_end are unset "
+                  "or TODO for: " + ", ".join(bad) + "\n  Fill the real "
+                  "intervals from the dataset documentation (or mark the "
+                  "entry \"calibration\": true for interval-free pos_error "
+                  "calibration). No intervals are ever fabricated.")
+            return 2
         all_e, all_w = [], []
         for fl in flights:
             key = (fl.get("attack") or infer_attack(fl.get("flight_id", ""))).lower()
@@ -304,10 +329,28 @@ def main(argv=None) -> int:
             topic, rows = load_gps_from_csv_dir(cdir)
             if not rows:
                 print(f"[whelan] WARN no GPS topic in {cdir}; skipping"); continue
+            self_ref = fl.get("self_ref_until")
+            if self_ref is None and fl.get("self_ref_frac"):
+                ts = [_to_float(r.get("timestamp")) for r in rows]
+                ts = [t for t in ts if t is not None]
+                if ts:
+                    self_ref = float(fl["self_ref_frac"]) * (max(ts) - min(ts)) / US
+            start = fl.get("attack_start")
+            end = fl.get("attack_end")
+            if fl.get("calibration"):        # interval-free: no windows
+                start = end = None
             e, w = ingest_flight(rows, topic, fl["flight_id"], key, outdir,
-                                 fl.get("attack_start"), fl.get("attack_end"),
+                                 start, end,
                                  ref_latlon=ref,
-                                 self_ref_until=fl.get("self_ref_until"))
+                                 self_ref_until=self_ref)
+            if fl.get("calibration") and key not in ("benign", "normal"):
+                # Flight-level ground truth (the dataset's folder label) is
+                # documented; the per-sample interval is not. Label the CLASS
+                # honestly and flag the missing interval - never a window.
+                cls = ATTACK_MAP[key][0]
+                for ev in e:
+                    ev["label_class"] = cls
+                    ev["label_native"] = f"{key}|interval_todo_calibration"
             all_e += e; all_w += w
         write_out(outdir, all_e, all_w, f"manifest({len(flights)} flights)")
         return 0

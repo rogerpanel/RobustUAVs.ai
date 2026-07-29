@@ -13,7 +13,7 @@ Usage:
   python3 ingest_hcrl.py <label_file> <outdir> --scenario type1 \
       [--attack-class dos_flooding] [--limit N] [--gap 1.0]
 """
-import argparse, json, re, sys
+import argparse, csv, json, re, sys
 from pathlib import Path
 
 LINE_RE = re.compile(
@@ -25,12 +25,35 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("label_file"); ap.add_argument("outdir")
     ap.add_argument("--scenario", required=True)
-    ap.add_argument("--attack-class", default="other",
-                    choices=["dos_flooding", "fuzzing", "replay", "other"])
+    ap.add_argument("--attack-class", default=None,
+                    choices=["dos_flooding", "fuzzing", "replay",
+                             "collaborative", "other"],
+                    help="override; default reads the data-derived per-type "
+                         "map results/hcrl_type_signatures.csv (run "
+                         "experiments/hcrl_type_signatures.py). A scenario "
+                         "with >1 measured class maps to 'collaborative'.")
     ap.add_argument("--limit", type=int, default=0, help="cap frame events (0 = all); windows always use the full file")
     ap.add_argument("--gap", type=float, default=1.0, help="max gap (s) inside one attack window")
     a = ap.parse_args()
     outdir = Path(a.outdir); outdir.mkdir(parents=True, exist_ok=True)
+
+    # resolve attack class: explicit override, else the data-derived per-type
+    # map (measured from frames; confirm vs arXiv:2212.09268 before paper).
+    attack_class = a.attack_class
+    if attack_class is None:
+        sig = Path(__file__).resolve().parents[1] / "results" / "hcrl_type_signatures.csv"
+        if sig.exists():
+            for r in csv.DictReader(open(sig)):
+                if r["scenario"] == a.scenario:
+                    classes = r["assigned_classes"].split(";")
+                    attack_class = ("collaborative" if len(classes) > 1
+                                    else classes[0])
+                    break
+        if attack_class is None:
+            print(f"[hcrl] no class for {a.scenario} in signature map and no "
+                  "--attack-class given; defaulting to 'other'")
+            attack_class = "other"
+    a.attack_class = attack_class
 
     events, windows = [], []
     cur = None  # open attack window [t0, t1, count]
