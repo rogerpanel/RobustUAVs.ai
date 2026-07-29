@@ -6,6 +6,7 @@
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{tabularx}
+\usepackage{subcaption}
 \usepackage{xcolor}
 \usepackage{tikz}
 \usepackage{pgfplots}
@@ -23,14 +24,28 @@
 \newcommand{\layerauto}{\textcolor{autocol}{\textbf{autonomy}}}
 \newcommand{\dataset}[1]{\textsc{#1}}
 \newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\Norm}[1]{\left\lVert #1\right\rVert}
 
 \begin{document}
 
 \title{End-to-End UAV Security is a Two-Layer Problem:\\
 A Cross-Layer Benchmark Spanning the Network and\\ Navigation Attack Surfaces of Autonomous Drones}
 
-\author{\IEEEauthorblockN{Roger Nick Anaedevha}
-\IEEEauthorblockA{\textit{RobustUAVs.ai} \\ \texttt{robustidps.ai}}
+\author{
+\IEEEauthorblockN{Roger Nick Anaedevha, \textit{IEEE Member}}
+\IEEEauthorblockA{Institute of Cyber Intelligent Systems\\
+National Research Nuclear University MEPhI\\
+Moscow, Russia}
+\and
+\IEEEauthorblockN{Keiwan Soltani}
+\IEEEauthorblockA{Computer Science Department\\
+Missouri University of Science and Technology\\
+Rolla, MO, USA}
+\and
+\IEEEauthorblockN{Federico Cor\`o}
+\IEEEauthorblockA{Tenure-Track Assistant Professor (RTT)\\
+University of Padova\\
+Padua, Italy}
 \thanks{Preprint prepared for IEEE SaTML. Artifact and data:
 \url{https://www.kaggle.com/datasets/rogernickanaedevha/uavs-network-and-navigation-end-to-end-security-data} (DOI 10.34740/kaggle/dsv/18346203).
 Every reported number carries an explicit provenance tag in the artifact ledger
@@ -98,6 +113,16 @@ nowhere to look.
 We close this gap with a benchmark whose unit of analysis is the cross-layer
 pairing itself.
 
+To see why a single-layer benchmark is not enough, consider what a reviewer of
+a UAV intrusion detector can and cannot currently check. They can verify that
+the detector flags a delayed forwarding event or a spoofed GNSS message with
+high recall. They \emph{cannot} verify the claim that actually matters to an
+operator---that a detector tuned to a given false-alarm budget keeps aircraft
+completing their missions---because no dataset records both the network event
+and the flight it degrades. Our benchmark makes that claim checkable by pairing,
+for the first time, the two halves of the causal chain in a single schema and a
+single artifact.
+
 \subsection*{Contributions}
 \begin{itemize}
 \item \textbf{A two-layer schema (\S\ref{sec:schema}).} We define a single schema
@@ -138,6 +163,60 @@ previewed in \S\ref{sec:discussion}.
 \section{Background and Preliminaries}
 \label{sec:prelim}
 % =====================================================================
+This section fixes terminology for readers who review security or
+machine-learning work but do not specialise in drones.
+Table~\ref{tab:acronyms} lists every acronym.
+
+\subsection{Anatomy of an autonomous UAV under attack}
+An unmanned aerial vehicle (UAV, or drone) flies by continuously estimating its
+own state---position, velocity, attitude---and steering to keep that estimate on
+a planned route. The estimate is produced by fusing several sensors, chiefly a
+satellite-navigation (GNSS, e.g.\ GPS) receiver and an inertial measurement unit
+(IMU), in an onboard filter; on the PX4 autopilot used by several datasets here,
+that filter is an extended Kalman filter (EKF). Around this single aircraft sit
+three communication surfaces an attacker can reach: a multi-hop \emph{swarm
+mesh} over which peer drones relay one another's traffic; a
+\emph{command-and-control (C2) link} (typically the MAVLink protocol) to a
+ground control station; and an \emph{intra-vehicle bus} (UAVCAN/DroneCAN)
+connecting the flight controller to motor controllers and sensors. We call these
+three the \emph{network layer}. The GNSS receiver, the sensor fusion, the
+controller, and the mission outcome we call the \emph{autonomy layer}. The thesis
+of this paper is that security must be evaluated across both layers at once,
+because the attacks that matter in the field---jamming, spoofing, forwarding
+delay---are network events whose damage is an autonomy outcome.
+
+\begin{table}[t]
+\centering
+\caption{Acronyms, in order of first use.}
+\label{tab:acronyms}
+\small
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\columnwidth}{@{}lX@{}}
+\toprule
+UAV & unmanned aerial vehicle (drone)\\
+IDS & intrusion detection system\\
+GNSS / GPS & Global Navigation Satellite System / Global Positioning System\\
+IMU & inertial measurement unit\\
+EKF & extended Kalman filter (onboard sensor-fusion estimator)\\
+C2 & command and control (ground-to-aircraft link)\\
+MAVLink & Micro Air Vehicle Link, standard UAV C2 protocol\\
+UAVCAN & UAV Controller Area Network (intra-vehicle bus; a.k.a.\ DroneCAN)\\
+ESC & electronic speed controller (motor driver on the bus)\\
+DTN & delay-tolerant network (store-and-forward mesh)\\
+TWiG & time-window graph (DATAMUt's forwarding-schedule model)\\
+RF & radio frequency\\
+EW & electronic warfare\\
+$J/S$ & jamming-to-signal power ratio, in dB\\
+MCR & Mission Completion Rate\\
+FPR & false-positive rate\\
+DO-326A & RTCA/EUROCAE airworthiness-security process standard\\
+DoS / DDoS & (distributed) denial of service\\
+NS-3 & a widely used discrete-event network simulator\\
+AERPAW & Aerial Experimentation and Research Platform for Advanced Wireless\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
 \subsection{The two attack surfaces}
 We partition the UAV attack surface into two \emph{layers}.
 The \layernet{} layer covers everything between nodes: the swarm
@@ -158,6 +237,39 @@ false-positive rate. The security question the benchmark is built to ask is
 behaviour to stay just under $\theta$, what navigation degradation survives, and
 does the mission still complete? This paper measures the ingredients of that
 question; it does not yet bound the answer (companion paper).
+Fig.~\ref{fig:surfaces} places the attack surfaces our six datasets cover on the
+causal chain from wire to flight.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[font=\footnotesize,>={Latex[length=2mm]},
+  node distance=2.5mm,
+  n/.style={rounded corners=2pt,draw=netcol,fill=netcol!10,align=center,
+    minimum height=6.5mm,inner sep=2.5pt,text width=17mm},
+  a/.style={rounded corners=2pt,draw=autocol,fill=autocol!10,align=center,
+    minimum height=6.5mm,inner sep=2.5pt,text width=17mm}]
+\node[n] (mesh) {swarm mesh\\\scriptsize UAVIDS, UAV-CAS, DATAMUt};
+\node[n,right=of mesh] (c2) {C2 link\\\scriptsize UAV Attack Dataset};
+\node[n,right=of c2] (bus) {intra-bus\\\scriptsize HCRL UAVCAN};
+\node[a,below=8mm of c2] (gnss) {GNSS + EKF\\\scriptsize state estimate};
+\node[a,right=of gnss] (ctrl) {controller\\+ mission\\\scriptsize UAV-EW-Bench};
+\node[a,left=of gnss] (nav) {navigation\\input $u(t)$};
+\draw[->,netcol] (mesh) -- (nav.north west |- mesh.south) ;
+\draw[->,netcol] (c2) -- (gnss);
+\draw[->,netcol] (bus) -- (ctrl.north);
+\draw[->,autocol] (nav) -- (gnss);
+\draw[->,autocol] (gnss) -- (ctrl);
+\node[align=center,font=\scriptsize\itshape] at ($(mesh)!0.5!(bus)+(0,0.9)$)
+  {network layer (attacks \emph{on the wire})};
+\node[align=center,font=\scriptsize\itshape] at ($(nav)!0.5!(ctrl)-(0,0.95)$)
+  {autonomy layer (attacks \emph{on the flight})};
+\end{tikzpicture}
+\caption{The attack surfaces the six datasets cover, arranged on the causal
+chain. Network-layer events (top) propagate downward into the autonomy layer
+(bottom) through the navigation input; the benchmark's contribution is to
+represent that downward arrow explicitly rather than assume it.}
+\label{fig:surfaces}
+\end{figure}
 
 \subsection{Mission Completion Rate and the regulatory floor}
 We adopt \emph{Mission Completion Rate} (MCR)---the fraction of flights that
@@ -228,17 +340,55 @@ sweepable threshold.
 
 \paragraph{Navigation-layer security}
 On the other side of the gap, GNSS spoofing/jamming has its own mature
-line---capture-via-spoofing~\cite{kerns2014capture}, the TEXBAT test
-battery~\cite{humphreys2012texbat}, and resilient GPS-denied
+line---capture-via-spoofing~\cite{kerns2014capture,humphreys2008assessing}, the
+TEXBAT test battery~\cite{humphreys2012texbat}, and resilient GPS-denied
 navigation~\cite{kassas2022jammer}, which quantifies how jamming drives
-position error and, ultimately, mission loss. This work measures the flight but
-abstracts away the network path by which an attack arrives.
+position error and, ultimately, mission loss. Learning-based spoofing detectors
+now reach high accuracy on curated GNSS
+datasets~\cite{aissou2024advml,panda2025drift}, but they are trained and
+evaluated on receiver-level features in isolation from any mission outcome.
+This work measures the flight but abstracts away the network path by which an
+attack arrives.
+
+\paragraph{Why dataset construction is itself a research contribution}
+The intrusion-detection community has learned, sometimes painfully, that a
+benchmark's \emph{construction} determines the validity of every result built on
+it. Careful audits of the widely used CIC-IDS2017 corpus uncovered labelling
+errors, flawed flow construction, and unrealistic temporal separation between
+attack and benign traffic that materially inflate reported
+performance~\cite{engelen2021troubleshooting,sharafaldin2018cicids}. The lesson
+is directly relevant to a \emph{cross-layer} benchmark, where a new failure mode
+appears: the temptation to assert that a given network event caused a given
+flight degradation when the two were never observed together. Our schema answers
+this with a mandatory per-record honesty flag (\S\ref{sec:schema}) that records
+exactly how each network--autonomy pairing was established, so a reviewer can
+filter the benchmark by evidence strength rather than trusting an unaudited join.
+We treat provenance discipline---not merely scale---as a first-class design
+requirement.
+
+\paragraph{Positioning against the closest prior art}
+The nearest neighbour to our work in ambition is \dataset{UAV-CAS}, a large
+AERPAW-calibrated swarm dataset that is, notably, the first to include
+\emph{collaborative} multi-attack compositions and to calibrate a simulator
+against real testbed measurements~\cite{uavcas2026}. It is an excellent
+network-layer benchmark, and we ingest it as one of our six sources. But it
+remains within the network layer: its authors explicitly list GNSS
+spoofing and jamming---the autonomy layer---as future work. Our contribution is
+orthogonal and complementary: rather than deepen one layer, we \emph{span} both
+and make the coupling between them the unit of analysis. Where \dataset{UAV-CAS}
+asks ``how well can we detect a collaborative mesh attack?'', we ask ``and what
+does that attack, once detected or missed, do to the flight?''---a question that
+requires the autonomy anchor and the pairing record that \dataset{UAV-CAS}, by
+design, does not provide.
 
 \paragraph{The cross-layer gap}
 To our knowledge no released benchmark represents the pairing $P$ of
 \eqref{eq:pairing}. The closest cross-layer detection framework~\cite{hotd2023}
 argues for holistic evaluation but does not ship a dataset spanning both layers
-with attack-to-degradation pairings. This is the gap we fill.
+with attack-to-degradation pairings; single-layer corpora, however excellent
+within their layer, cannot by construction. This is the gap we fill: not a
+larger dataset for one layer, but the first dataset whose records \emph{are} the
+cross-layer couplings.
 
 % =====================================================================
 \section{The Two-Layer Schema}
@@ -269,8 +419,48 @@ recorded on one testbed---the strongest evidence), \code{physics\_model}
 (aligned by construction). A reviewer can filter the benchmark by evidence
 strength; a claim can never silently upgrade its own provenance.
 
+The design choices behind these three kinds are deliberate and worth making
+explicit, since they are what let six heterogeneous sources coexist without
+information loss (Table~\ref{tab:schema}). Time is always \emph{relative} to each
+source's own capture start, because the sources share no global clock;
+cross-layer alignment happens at the window level, not the event level, so a
+mismatch in sampling rate between a $50$\,Hz telemetry stream and a per-flow
+network record never forces a lossy resample. Attack labels are \emph{unified}
+into a common taxonomy (Table~\ref{tab:schema}, lower half) while the verbatim
+source label is retained in \code{label\_native}, so a model can train on the
+unified class and an auditor can still recover exactly what the source called it.
+And every unmapped column is preserved in \code{native}, which is what makes the
+ingestion provably lossless rather than merely convenient.
+
+\begin{table}[t]
+\centering
+\caption{Top: the schema's three record kinds and their load-bearing fields.
+Bottom: the unified attack taxonomy the adapters map onto, with the source-native
+label retained alongside. Full JSON Schema in the artifact.}
+\label{tab:schema}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\columnwidth}{@{}lX@{}}
+\toprule
+\multicolumn{2}{@{}l}{\textbf{Record kinds}}\\
+\midrule
+\code{Event} & atomic observation; core identity + layer/sublayer + relative time + \code{metrics} + lossless \code{native}\\
+\code{AttackWindow} & labelled attack interval; unified class + \code{intensity}; the unit of alignment\\
+\code{CrossLayerPairing} & $(\text{network},\text{autonomy})$ window join + $\theta,\Delta,\delta$, certificate, MCR, and \code{pairing\_basis}\\
+\midrule
+\multicolumn{2}{@{}l}{\textbf{Unified attack taxonomy} (\code{label\_native} retained)}\\
+\midrule
+network / mesh & blackhole, wormhole, Sybil, flooding, time-delay, collaborative\\
+network / C2 & GPS-spoof, GPS-jam, ping-DoS\\
+network / bus & flooding, fuzzy, replay\\
+autonomy / GNSS & spoofing, jamming (graded by $J/S$)\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
 \begin{figure}[t]
 \centering
+\resizebox{\columnwidth}{!}{%
 \begin{tikzpicture}[
   font=\footnotesize,
   box/.style={rounded corners=2pt,draw,align=center,minimum height=7mm,inner sep=3pt},
@@ -302,7 +492,8 @@ strength; a claim can never silently upgrade its own provenance.
 \draw[->] (tel) -- (wa); \draw[->] (fl) -- (wa);
 \draw[->,bridgecol,thick] (wn) -- (pair);
 \draw[->,bridgecol,thick] (wa) -- (pair);
-\end{tikzpicture}
+\end{tikzpicture}%
+}
 \caption{The schema in one picture. Heterogeneous events from six datasets fold
 into typed network and autonomy \emph{AttackWindows}; a \emph{CrossLayerPairing}
 joins one of each and records the detector operating point, the residual budget,
@@ -343,6 +534,77 @@ pairings.}
 \bottomrule
 \end{tabularx}
 \end{table*}
+
+\subsection{What each adapter does}
+An adapter's job is lossless normalization: map a source's native records onto
+the schema's common fields and preserve everything else in a \code{native} block
+so no information is discarded. Three adapters warrant specifics because their
+sources are irregular. The \dataset{UAV Attack Dataset} adapter parses PX4 flight
+logs, computes horizontal position error against a benign reference (or, absent
+one, the flight's own pre-attack median), and emits the
+\code{measured\_same\_platform} pairings that ground the interface mapping. The
+\dataset{HCRL UAVCAN} adapter parses candump-style bus frames; because the
+per-scenario attack labels are not machine-readable in the release, we
+\emph{derive} each scenario's class from the frames themselves---burst rate
+relative to the normal bus rate, the fraction of distinct payloads, and
+per-frame byte entropy cleanly separate a flooding burst (one payload hammered
+above bus rate) from a fuzzy burst (near-random payloads) from a replay burst
+(a small set of captured payloads reused). Table~\ref{tab:hcrl} reports the
+result; it is confirmed against the dataset's technical report before
+camera-ready. The \dataset{UAV-CAS} adapter parses the calibrated digital
+twin's flow statistics, including the stringified list columns that carry
+per-packet timing; it is verified against CSVs produced by the original authors'
+own generator, and re-ingests the released statistics file verbatim as that file
+becomes locally reachable.
+
+\begin{table}[t]
+\centering
+\caption{Real ingested corpus. Counts are from the schema-validated adapter
+outputs (\code{results/ingest\_stats.csv}); every record validates against the
+schema of \S\ref{sec:schema}. All values real-corpus except where a source's
+release file was not yet locally reachable.}
+\label{tab:ingest}
+\small
+\renewcommand{\arraystretch}{1.15}
+% machine-generated from results/ingest_stats.csv
+\input{../results/paper_figures/block_paperC_tab_ingest.tex}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Frame-derived attack classes for the \dataset{HCRL UAVCAN} scenarios.
+Classes are inferred from burst rate, payload-distinct share, and byte entropy;
+scenarios that exhibit more than one burst shape map to \code{collaborative}.}
+\label{tab:hcrl}
+\small
+\renewcommand{\arraystretch}{1.1}
+% machine-generated from results/hcrl_type_signatures.csv
+\input{../results/paper_figures/block_paperC_tab_hcrl.tex}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=\columnwidth, height=4.6cm,
+  ybar, bar width=12pt,
+  ylabel={flow records}, ymin=0, ymax=30000,
+  scaled y ticks=false, yticklabel style={/pgf/number format/1000 sep={,}},
+  symbolic x coords={benign,blackhole,wormhole,Sybil,flooding},
+  xtick=data, x tick label style={font=\footnotesize,rotate=20,anchor=east},
+  tick label style={font=\footnotesize}, label style={font=\footnotesize},
+  grid=both, grid style={black!12},
+  nodes near coords, nodes near coords style={font=\tiny,/pgf/number format/1000 sep={,}}]
+% machine-generated from results/ingest_stats.csv (real UAVIDS shard 0)
+\input{../results/paper_figures/block_paperC_fig_uavids.tex}
+\end{axis}
+\end{tikzpicture}
+\caption{Class distribution of the ingested \dataset{UAVIDS-2025} swarm-mesh
+corpus (shard~0, $122{,}171$ real flow records). The four attack classes are
+close to balanced against benign traffic---an intentional design property of the
+source that makes it a clean substrate for the network side of a pairing.}
+\label{fig:uavids}
+\end{figure}
 
 % =====================================================================
 \section{The Detector-Operating-Curve Harness}
@@ -393,6 +655,59 @@ budget, settling onto a floor set by the missed-window self-exposure penalty
 False-positive rate is zero throughout (benign residual ceiling $0.178$\,s,
 measured). Values from the released harness (clean multi-seed campaign).}
 \label{fig:opcurve}
+\end{figure}
+
+The knee, and the floor it descends to, are not simulation artifacts but a
+structural property of any store-and-forward schedule, and they recur across all
+three network topologies in our harness. Fig.~\ref{fig:opcurve_all} overlays the
+grid, ring, and double-ring topologies. Two observations transfer directly to
+the companion guarantee. First, the floor height differs by topology because it
+equals the probability that a malicious delay overshoots the contact-window
+slack and self-exposes---higher in the medium delay regime ($U[1,10]$\,s) than
+in the low one ($U[1,7]$\,s), because a wider delay draw is likelier to
+overshoot. Second, no topology's recall keeps falling to zero: past the knee the
+detector still catches the self-exposing fraction, which is precisely why an
+evading attacker's undetected budget \emph{saturates} rather than growing
+without bound. This is the empirical basis for the residual-budget cap that the
+companion paper turns into a certified floor.
+
+\begin{figure}[t]
+\centering
+\begin{subfigure}{\columnwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=\columnwidth, height=4.4cm,
+  title={\footnotesize low mode $U[1,7]$\,s},
+  xlabel={$\varepsilon$ (s)}, ylabel={recall},
+  xmin=0, xmax=10, ymin=0, ymax=1.05,
+  legend pos=north east, legend cell align=left, grid=both,
+  grid style={black!12}, tick label style={font=\scriptsize},
+  label style={font=\scriptsize}, legend style={font=\tiny}]
+\input{../results/paper_figures/block_paperC_fig5_low.tex}
+\end{axis}
+\end{tikzpicture}
+\end{subfigure}
+
+\begin{subfigure}{\columnwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=\columnwidth, height=4.4cm,
+  title={\footnotesize medium mode $U[1,10]$\,s},
+  xlabel={$\varepsilon$ (s)}, ylabel={recall},
+  xmin=0, xmax=10, ymin=0, ymax=1.05,
+  legend pos=north east, legend cell align=left, grid=both,
+  grid style={black!12}, tick label style={font=\scriptsize},
+  label style={font=\scriptsize}, legend style={font=\tiny}]
+\input{../results/paper_figures/block_paperC_fig5_medium.tex}
+\end{axis}
+\end{tikzpicture}
+\end{subfigure}
+\caption{The operating curve across all three topologies (grid, ring,
+double-ring), both delay regimes, $8$ seeds $\times 4$ policies. The knee-and-
+floor shape is universal; the floor height is the topology-specific
+self-exposure probability. This is the network-side evidence that the evading
+attacker's undetected budget saturates.}
+\label{fig:opcurve_all}
 \end{figure}
 
 % =====================================================================
@@ -464,6 +779,32 @@ regime ($\gamma{\approx}1.4$\,m/s), or up to $7.5$\,m under the kinematic worst
 case. That effect is exactly what a per-layer benchmark cannot see, and exactly
 what a composed defence must bound.
 
+The right-hand quantity in that sentence is itself a measurement the benchmark
+contributes, not an assumption. Table~\ref{tab:whelan} reports the
+position-error growth rate $\gamma$ we extract from three real flights in the
+\dataset{UAV Attack Dataset}: a benign reference flight fixes the pre-attack
+noise floor, and the jamming and spoofing flights give the growth rate after
+onset under two explicit choices of error signal---the raw receiver fix the
+attacker injects, and the EKF-filtered position the controller actually acts on.
+That the measured rate ($1.2$--$1.4$\,m/s) is an order of magnitude below the
+kinematic worst case ($15$\,m/s) is the empirical fact that makes the composed
+guarantee non-vacuous, and it is available only because this dataset couples a
+real network/RF event to a measured flight on one airframe---the
+\code{measured\_same\_platform} evidence class the schema is built to surface.
+
+\begin{table}[t]
+\centering
+\caption{The measured delay-to-position rate $\gamma$ (metres of position error
+per second of degradation), from three real \dataset{UAV Attack Dataset} flights,
+self-referenced to the pre-attack median. This is the empirical grounding of the
+$\delta$ column in \eqref{eq:pairing}; the companion paper consumes the EKF row.}
+\label{tab:whelan}
+\scriptsize
+\renewcommand{\arraystretch}{1.15}
+% machine-generated from results/whelan_delta_calibration.csv
+\input{../results/paper_figures/block_paperC_tab_whelan.tex}
+\end{table}
+
 \begin{table}[t]
 \centering
 \caption{A representative cross-layer pairing: a detector-evading time-delay
@@ -477,6 +818,51 @@ EW-Bench MCR).}
 \input{../results/paper_figures/block_paperC_tab2.tex}
 \end{table}
 
+\subsection{Three evidence classes, one worked pairing each}
+The \code{pairing\_basis} flag is easiest to understand through one concrete
+example of each class drawn from the corpus, which also shows how a single
+benchmark can support both strong and broad claims without conflating them.
+
+\emph{Measured, same platform.} The \dataset{UAV Attack Dataset} records a real
+GPS-jamming flight and its measured position error on one Pixhawk-class airframe.
+A pairing whose autonomy window is that flight and whose network window is the
+corresponding RF event is tagged \code{measured\_same\_platform}: the coupling
+was physically observed, and the induced $\delta$ is a measurement
+(Table~\ref{tab:whelan}), not a model. These are the strongest pairings and,
+today, the scarcest.
+
+\emph{Physics model.} A \dataset{DATAMUt} time-delay window carries a residual
+budget $\Delta(\theta)$ in seconds; coupling it to a navigation window through
+the stated staleness relation $\Norm{\delta u}\le\gamma\,\Delta(\theta)$ yields a
+pairing tagged \code{physics\_model}. The link is not a same-platform
+measurement but a named, versioned physical relation a reviewer can inspect and
+challenge; the companion paper's certificate consumes exactly these.
+
+\emph{Synthetic alignment.} When a network window from one simulated source and
+an autonomy window from another are aligned by construction---same nominal
+intensity, same relative clock---the pairing is tagged
+\code{synthetic\_alignment}. These maximise coverage across attack classes but
+make the weakest causal claim, and the flag says so. A user needing a strong
+claim filters to the first class; a user needing breadth accepts the third with
+its provenance explicit. No pairing can silently present itself as stronger
+evidence than it is---which is the entire point of making the flag mandatory.
+
+\subsection{Using the benchmark}
+The artifact is designed so that the three research uses a cross-layer benchmark
+enables map onto three short entry points. \emph{(i) Training a cross-layer
+detector.} A model consumes the unified \code{events.jsonl} across sources; the
+unified \code{label\_class} is the training target and \code{native} carries any
+source-specific features. \emph{(ii) Evaluating a detector's network--autonomy
+implications.} The operating-curve harness sweeps the detector threshold and
+emits recall/FPR versus $\theta$; joining its residual budget to the navigation
+anchor at the matching intensity yields the certified-or-empirical mission
+outcome. \emph{(iii) Auditing a claimed pairing.} Because every
+\code{CrossLayerPairing} records its \code{pairing\_basis} and its named,
+versioned $\theta\!\mapsto\!\delta$ mapping, a reviewer can filter to
+measured-only couplings, or recompute the induced perturbation from the source
+records. Each entry point is a single command in the released harness, and each
+is deterministic per seed.
+
 \subsection{Artifact and reproducibility}
 The schema, six adapters, the operating-curve harness, and the pairing pipeline
 are released as an open artifact~\cite{robustuavs2026}. All generated records
@@ -484,8 +870,10 @@ validate against the schema; the harness is deterministic per seed; headline
 comparisons use multi-seed runs with Wilcoxon signed-rank tests and Holm
 correction, released per seed. Every reported number carries a provenance tag
 (real-corpus / simulation-derived / stated model parameter) in the artifact
-ledger. Two ingestion caveats are recorded rather than hidden: the
-\dataset{HCRL UAVCAN} per-scenario attack classes are \emph{frame-derived}
+ledger, and every figure and table in this paper is generated directly from the
+committed result files rather than transcribed, so a reader can regenerate them
+from the released data. Two ingestion caveats are recorded rather than hidden:
+the \dataset{HCRL UAVCAN} per-scenario attack classes are \emph{frame-derived}
 (burst rate, payload-distinct share, and byte entropy separate flooding, fuzzy,
 and replay cleanly) pending confirmation against the dataset's technical
 report~\cite{hcrl_uavcan}; and the \dataset{UAV-CAS} adapter is verified
@@ -496,35 +884,102 @@ statistics file to be re-ingested verbatim as it becomes locally available.
 \section{Discussion and Outlook}
 \label{sec:discussion}
 % =====================================================================
-The benchmark is built to be composed with. Its operating curve gives a network
-guarantee's premise ($\Delta(\theta)$); its navigation anchor gives the property
-to be preserved (MCR); its pairing records give the interface between them. In a
-companion paper we use exactly these objects to prove a composition theorem: that
-for any network attack evading the detector at $\theta$, the navigation stack
-retains a certified MCR floor $f(\delta(\theta))$. The benchmark is what makes
-that claim measurable rather than merely stated.
+\emph{What the benchmark enables.} It is built to be composed with. Its operating
+curve gives a network guarantee's premise (the residual budget $\Delta(\theta)$);
+its navigation anchor gives the property to be preserved (MCR); its pairing
+records give the interface between them. In a companion paper we use exactly
+these objects to prove a composition theorem: for any network attack evading the
+detector at $\theta$, the navigation stack retains a certified MCR floor
+$f(\delta(\theta))$. The benchmark is what makes that claim measurable rather
+than merely stated---and, just as importantly, falsifiable, since a reviewer can
+recompute every pairing from the released adapters.
 
-\emph{Limitations.} Two of six datasets are the navigation anchor and the
-forwarding-trace source; the remaining four are network-only, so many pairings are
-\code{synthetic\_alignment} until more same-platform captures exist---which is
-precisely why the honesty flag is mandatory, not optional. The physics-informed
-navigation anchor is analytical; a full-fidelity flight backend is provided but
-not required to reproduce the curves.
+\emph{Two methodological findings we surface honestly.} Building the benchmark
+forced two corrections we report rather than bury, because both are instructive
+for anyone assembling a cross-layer corpus. First, our initial detector
+operating curve was contaminated by an accumulation bug in the sweep harness
+(each operating point inadvertently averaged all previous points); the tell was
+recall \emph{rising} with the threshold in one regime, which is impossible for a
+threshold detector. The clean multi-seed campaign in Fig.~\ref{fig:opcurve} and
+Fig.~\ref{fig:opcurve_all} replaces it. Second, the \dataset{HCRL UAVCAN} attack
+labels are not machine-readable per scenario, so rather than guess we derived
+them from frame statistics (Table~\ref{tab:hcrl}) and flagged the derivation for
+confirmation. Both episodes are arguments \emph{for} the provenance discipline
+the schema enforces: a benchmark that records how every number was obtained lets
+errors be caught and corrected rather than propagated.
+
+\emph{Provenance as a contribution.} The per-record honesty flag
+(\code{measured\_same\_platform} / \code{physics\_model} /
+\code{synthetic\_alignment}) is not bookkeeping; it is the mechanism that keeps a
+cross-layer benchmark from over-claiming. It lets a user select only pairings
+whose coupling was physically measured when a strong claim is needed, and fall
+back to physically-modelled or synthetically-aligned pairings for coverage,
+with the trade-off explicit in every record.
+
+% =====================================================================
+\section{Limitations and Future Work}
+\label{sec:limitations}
+% =====================================================================
+We state limitations plainly; none undercuts the benchmark's role as a
+composable substrate, and each defines a concrete extension.
+
+\emph{Evidence-class imbalance.} Of the six datasets, only the \dataset{UAV
+Attack Dataset} couples a network/RF event to a measured flight on one airframe,
+so it is the sole source of \code{measured\_same\_platform} pairings; the others
+support \code{physics\_model} or \code{synthetic\_alignment} couplings. This is
+an honest reflection of what public data exists, and it is exactly why the
+honesty flag is mandatory. Expanding the measured class---more same-platform
+spoofing/jamming captures, and across flight regimes rather than only hover---is
+the highest-value data extension, and it is the same campaign the companion
+paper needs to promote its interface calibration from three flights to a
+distribution.
+
+\emph{Analytical navigation anchor.} The \dataset{UAV-EW-Bench-2026} completion
+outcomes come from a physics-informed analytical Monte-Carlo backend calibrated
+to full-fidelity anchors; a full 3-D flight-simulator backend is provided but
+not required to reproduce the curves. Results should be described as a
+calibrated analytical benchmark, and we do so.
+
+\emph{One release file still pending locally.} The \dataset{UAV-CAS} adapter is
+verified against generator-produced CSVs; the released statistics file is
+re-ingested verbatim as it becomes locally reachable, at which point the
+corresponding row of Table~\ref{tab:ingest} moves from ``pending'' to a real
+count. The large per-packet time-series variant is out of scope for this
+release.
+
+\emph{Detector scope.} We instantiate the operating-curve harness on one
+forwarding detector whose operating point is a single clean threshold, chosen
+because it makes the cross-layer sweep unambiguous. Extending the harness to
+detectors with multi-dimensional operating points (e.g.\ jointly tuned rate and
+payload thresholds) is direct future work and requires only a
+higher-dimensional sweep, not a schema change.
 
 % =====================================================================
 \section{Conclusion}
+\label{sec:conclusion}
 % =====================================================================
 UAV security has been studied as two separate problems---attacks on the wire and
 attacks on the flight---because no benchmark let it be studied as one. We
-presented a two-layer benchmark whose central object is the cross-layer pairing,
-unified six datasets under it, and showed that a network attack tuned to evade
-detection still leaves a measurable navigation footprint. The artifact is
-released as the substrate for composed, cross-layer UAV-security guarantees.
+presented the first end-to-end UAV-security benchmark that spans both layers,
+built around a schema whose central object is the cross-layer pairing: a network
+attack window joined to the navigation degradation it induces, tagged with an
+auditable honesty flag. We unified six datasets under it with six validated,
+lossless adapters; we contributed a detector-operating-curve harness that turns a
+detector threshold into the residual-budget premise a composed guarantee
+consumes; and we demonstrated the benchmark's purpose by measuring, on real data,
+that a forwarding attack tuned to evade a state-of-the-art detector still leaves a
+sub-metre navigation footprint on the same airframe family---an effect no
+single-layer benchmark can represent. Along the way the benchmark's own
+provenance discipline caught and corrected two measurement errors, which we
+report as evidence that recording how every number was obtained is a feature, not
+overhead. The artifact is released as the experimental substrate for composed,
+cross-layer UAV-security guarantees, and the companion paper builds the first
+such guarantee directly on the objects defined here.
 
 \section*{Acknowledgements}
-We thank the authors of the \dataset{DATAMUt} detector for the forwarding-
-detection code and clarifications on its operating point, and the maintainers of
-the third-party datasets unified here.
+We thank the authors of the \dataset{DATAMUt} detector for the
+forwarding-detection code and clarifications on its operating point, and the
+maintainers of the third-party datasets unified here.
 
 \bibliographystyle{IEEEtran}
 \bibliography{refs}

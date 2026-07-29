@@ -213,3 +213,116 @@
   title  = {{RobustUAVs.ai: An End-to-End UAV Security Benchmark and Evaluation Harness}},
   year   = {2026}, howpublished = {\url{https://www.kaggle.com/datasets/rogernickanaedevha/uavs-network-and-navigation-end-to-end-security-data}},
   note   = {DOI 10.34740/kaggle/dsv/18346203}}
+
+% ---------- Added 2026-07-29: expansion round (deep-research sweep) ----------
+% Secure state estimation / resilient control (Paper A related work)
+@article{fawzi2014secure,
+  author  = {Fawzi, Hamza and Tabuada, Paulo and Diggavi, Suhas},
+  title   = {{Secure Estimation and Control for Cyber-Physical Systems under Adversarial Attacks}},
+  journal = {IEEE Transactions on Automatic Control},
+  volume  = {59}, number = {6}, pages = {1454--1467}, year = {2014},
+  doi     = {10.1109/TAC.2014.2303233}}
+
+@article{shoukry2017smt,
+  author  = {Shoukry, Yasser and Nuzzo, Pierluigi and Puggelli, Alberto and
+             Sangiovanni-Vincentelli, Alberto L. and Seshia, Sanjit A. and Tabuada, Paulo},
+  title   = {{Secure State Estimation for Cyber-Physical Systems under Sensor Attacks: A Satisfiability Modulo Theory Approach}},
+  journal = {IEEE Transactions on Automatic Control},
+  volume  = {62}, number = {10}, pages = {4917--4932}, year = {2017},
+  doi     = {10.1109/TAC.2017.2676679}}
+
+@article{ding2021survey,
+  author  = {Ding, Derui and Han, Qing-Long and Ge, Xiaohua and Wang, Jun},
+  title   = {{Secure State Estimation and Control of Cyber-Physical Systems: A Survey}},
+  journal = {IEEE Transactions on Systems, Man, and Cybernetics: Systems},
+  volume  = {51}, number = {1}, pages = {176--190}, year = {2021},
+  doi     = {10.1109/TSMC.2020.3041121}}
+
+% Runtime assurance / Simplex (Paper A related work)
+@article{sha2001simplex,
+  author  = {Sha, Lui},
+  title   = {{Using Simplicity to Control Complexity}},
+  journal = {IEEE Software},
+  volume  = {18}, number = {4}, pages = {20--28}, year = {2001},
+  doi     = {10.1109/MS.2001.936213}}
+
+@inproceedings{mehmood2022blackbox,
+  author    = {Mehmood, Usama and Stoller, Scott D. and Grosu, Radu and Roy, Shouvik and
+               Damare, Amol and Smolka, Scott A.},
+  title     = {{The Black-Box Simplex Architecture for Runtime Assurance of Autonomous CPS}},
+  booktitle = {Proc. NASA Formal Methods (NFM)},
+  year      = {2022}, note = {arXiv:2102.12981}}
+
+@inproceedings{cofer2020rta,
+  author    = {Cofer, Darren and Amundson, Isaac and Sattigeri, Ramachandra and others},
+  title     = {{Run-Time Assurance for Learning-Enabled Systems}},
+  booktitle = {Proc. NASA Formal Methods (NFM)},
+  pages     = {361--368}, year = {2020}}
+
+% Time-delay attacks on control (Paper A related work)
+@inproceedings{lou2019timedelay,
+  author    = {Lou, Xin and Tran, Cuong and Yau, David K. Y. and Tan, Rui and
+               Ng, Hongwei and Fu, Tom Zhengjia and Winslett, Marianne},
+  title     = {{Assessing and Mitigating Impact of Time Delay Attack: A Case Study for Power Grid Frequency Control}},
+  booktitle = {Proc. ACM/IEEE Int. Conf. on Cyber-Physical Systems (ICCPS)},
+  pages     = {207--216}, year = {2019},
+  doi       = {10.1145/3302509.3311042}}
+
+@article{etd2023uav,
+  author  = {Wang, Wenxin and others},
+  title   = {{ETD: An Efficient Time Delay Attack Detection Framework for UAV Networks}},
+  journal = {IEEE Transactions on Information Forensics and Security},
+  volume  = {18}, year = {2023}, note = {[VERIFY pages/authors]}}
+
+% GNSS spoofing detection, learning-based (both papers)
+@article{aissou2024advml,
+  author  = {Aissou, Ghilas and Benouadah, Selma and El Alami, Hassan and Rawat, Danda B.},
+  title   = {{Detection of GPS Spoofing Attacks in UAVs Based on Adversarial Machine Learning Model}},
+  journal = {Sensors}, volume = {24}, number = {18}, pages = {6156}, year = {2024},
+  doi     = {10.3390/s24186156}, note = {[VERIFY author list]}}
+
+@misc{panda2025drift,
+  author = {Panda, Deepak Kumar and Guo, Weisi},
+  title  = {{Real-Time Bayesian Detection of Drift-Evasive GNSS Spoofing in Reinforcement Learning Based UAV Deconfliction}},
+  year   = {2025}, howpublished = {arXiv:2507.11173}}
+
+@inproceedings{humphreys2008assessing,
+  author    = {Humphreys, Todd E. and Ledvina, Brent M. and Psiaki, Mark L. and
+               O'Hanlon, Brady W. and Kintner, Paul M.},
+  title     = {{Assessing the Spoofing Threat: Development of a Portable GPS Civilian Spoofer}},
+  booktitle = {Proc. ION GNSS},
+  pages     = {2314--2325}, year = {2008}}
+
+% IDS dataset quality critique (Paper C related work)
+@inproceedings{engelen2021troubleshooting,
+  author    = {Engelen, Gints and Rimmer, Vera and Joosen, Wouter},
+  title     = {{Troubleshooting an Intrusion Detection Dataset: the CICIDS2017 Case Study}},
+  booktitle = {Proc. IEEE Security and Privacy Workshops (WTMC)},
+  pages     = {7--12}, year = {2021},
+  doi       = {10.1109/SPW53761.2021.00009}}
+
+@inproceedings{sharafaldin2018cicids,
+  author    = {Sharafaldin, Iman and Habibi Lashkari, Arash and Ghorbani, Ali A.},
+  title     = {{Toward Generating a New Intrusion Detection Dataset and Intrusion Traffic Characterization}},
+  booktitle = {Proc. Int. Conf. on Information Systems Security and Privacy (ICISSP)},
+  pages     = {108--116}, year = {2018}}
+
+% Mathematical background (both papers)
+@article{gronwall1919,
+  author  = {Gr{\"o}nwall, Thomas H.},
+  title   = {{Note on the Derivatives with Respect to a Parameter of the Solutions of a System of Differential Equations}},
+  journal = {Annals of Mathematics},
+  volume  = {20}, number = {4}, pages = {292--296}, year = {1919}}
+
+@inproceedings{mcallester1999pac,
+  author    = {McAllester, David A.},
+  title     = {{Some PAC-Bayesian Theorems}},
+  booktitle = {Proc. Conf. on Computational Learning Theory (COLT)},
+  pages     = {230--234}, year = {1998}}
+
+@article{kong2024px4ekf,
+  author  = {Meier, Lorenz and Honegger, Dominik and Pollefeys, Marc},
+  title   = {{PX4: A Node-Based Multithreaded Open Source Robotics Framework for Deeply Embedded Platforms}},
+  journal = {Proc. IEEE Int. Conf. on Robotics and Automation (ICRA)},
+  pages   = {6235--6240}, year = {2015},
+  doi     = {10.1109/ICRA.2015.7140074}}

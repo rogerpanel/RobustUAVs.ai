@@ -425,6 +425,141 @@ def block_paperA_tab2():
           "mixed; every row carries its own tag", body)
 
 
+def block_paperC_fig5_alltopo():
+    """Operating curves for all three topologies, one block per mode."""
+    rows = load("theta_operating_curve.csv")
+    scen_style = {"1": ("netcol,mark=*,thick", "grid $4{\\times}4$"),
+                  "2": ("bridgecol,mark=square*,thick", "ring-9"),
+                  "3": ("autocol,mark=diamond*,thick", "double ring")}
+    for mode in ("low", "medium"):
+        body = []
+        for scen, (style, leg) in scen_style.items():
+            pts = sorted((float(r["epsilon"]), float(r["recall"]))
+                         for r in rows
+                         if r["scenario"] == scen and r["mode"] == mode)
+            body.append(f"\\addplot[{style}] coordinates {{{coords(pts)}}};\n"
+                        f"\\addlegendentry{{{leg}}}\n")
+        write(f"block_paperC_fig5_{mode}.tex",
+              "simulation-derived (clean campaign, 8 seeds x 4 policies)",
+              "".join(body))
+
+
+def block_paperC_tab_ingest():
+    rows = load("ingest_stats.csv")
+    label = {"uav_ew_bench_2026": "\\dataset{UAV-EW-Bench-2026}",
+             "uav_attack_whelan": "\\dataset{UAV Attack Dataset} (live sample)",
+             "uavids_2025": "\\dataset{UAVIDS-2025} (shard 0)",
+             "hcrl_uavcan": "\\dataset{HCRL UAVCAN} (10 scenarios)",
+             "uav_cas": "\\dataset{UAV-CAS} (stat)"}
+    body = ["\\begin{tabularx}{\\columnwidth}{@{}Xrr@{}}\n\\toprule\n"
+            "\\textbf{Source (real data ingested)} & \\textbf{Events} & "
+            "\\textbf{Windows}\\\\\n\\midrule\n"]
+    for r in rows:
+        if r["staged"] == "1":
+            body.append(f"{label[r['source']]} & {int(r['events']):,} & "
+                        f"{r['windows']}\\\\\n")
+        else:
+            body.append(f"{label[r['source']]} & \\multicolumn{{2}}{{r}}"
+                        "{adapter ready; file pending}\\\\\n")
+    body.append("\\dataset{DATAMUt} traces & \\multicolumn{2}{r}{generated "
+                "per sweep (15{,}392 hops)}\\\\\n\\bottomrule\n"
+                "\\end{tabularx}\n")
+    write("block_paperC_tab_ingest.tex",
+          "real-corpus counts from results/ingest_stats.csv "
+          "(schema-validated staged outputs)", "".join(body))
+
+
+def block_paperC_tab_whelan():
+    rows = load("whelan_delta_calibration.csv")
+    name = {"benign": "benign (reference)", "gps_jamming": "GPS jamming",
+            "gps_spoofing": "GPS spoofing"}
+    body = ["\\begin{tabularx}{\\columnwidth}"
+            "{@{}Xl r r r r@{}}\n\\toprule\n"
+            "\\textbf{Flight} & \\textbf{Signal} & \\textbf{noise}"
+            " & \\textbf{peak} & \\textbf{$\\gamma_{\\mathrm{lsq}}$} & "
+            "\\textbf{$\\gamma_{\\mathrm{peak}}$}\\\\\n"
+            " & & (m, p95) & (m) & (m/s) & (m/s)\\\\\n\\midrule\n"]
+    for r in rows:
+        g1 = r["gamma_lsq_m_s"] if r["gamma_lsq_m_s"] not in ("", "None") else "--"
+        g2 = r["gamma_peak_m_s"] if r["gamma_peak_m_s"] not in ("", "None") else "--"
+        body.append(f"{name[r['flight']]} & {r['source']} & "
+                    f"{float(r['noise_p95_m']):.2f} & "
+                    f"{float(r['peak_m']):.1f} & {g1} & {g2}\\\\\n")
+    body.append("\\bottomrule\n\\end{tabularx}\n")
+    write("block_paperC_tab_whelan.tex",
+          "real-corpus (3-flight live sample, self-referenced pre-attack "
+          "median; hover regime)", "".join(body))
+
+
+def block_paperC_fig_uavids():
+    """Real UAVIDS-2025 class distribution as a bar chart (122k flows)."""
+    stats = {r["source"]: r for r in load("ingest_stats.csv")}
+    dist = {}
+    for kv in stats["uavids_2025"]["class_distribution"].split(";"):
+        k, v = kv.split(":")
+        dist[k] = int(v)
+    order = ["benign", "blackhole", "wormhole", "sybil", "dos_flooding"]
+    pretty = {"benign": "benign", "blackhole": "blackhole",
+              "wormhole": "wormhole", "sybil": "Sybil",
+              "dos_flooding": "flooding"}
+    coordrows = "".join(f"({pretty[k]},{dist.get(k,0)})" for k in order
+                        if k in dist)
+    body = (f"\\addplot[fill=netcol!55,draw=netcol] coordinates {{{coordrows}}};\n")
+    write("block_paperC_fig_uavids.tex",
+          "real-corpus (UAVIDS-2025 shard 0, 122,171 flows)", body)
+
+
+def block_paperC_tab_hcrl():
+    rows = load("hcrl_type_signatures.csv")
+    pretty = {"dos_flooding": "flooding", "fuzzing": "fuzzy",
+              "replay": "replay"}
+    body = ["\\begin{tabularx}{\\columnwidth}{@{}l r r X@{}}\n\\toprule\n"
+            "\\textbf{Scenario} & \\textbf{Frames} & \\textbf{Bursts} & "
+            "\\textbf{Frame-derived class(es)}\\\\\n\\midrule\n"]
+    for r in rows:
+        cls = ", ".join(pretty.get(c, c) for c in r["assigned_classes"].split(";"))
+        n = int(r["n_normal"]) + int(r["n_attack_frames"])
+        body.append(f"\\code{{{r['scenario']}}} & {n:,} & {r['n_bursts']} & "
+                    f"{cls}\\\\\n")
+    body.append("\\bottomrule\n\\end{tabularx}\n")
+    write("block_paperC_tab_hcrl.tex",
+          "real-corpus frames; class assignment frame-derived (burst rate, "
+          "payload-distinct share, byte entropy) pending report confirmation",
+          "".join(body))
+
+
+def block_paperA_fig_budget():
+    """Measured malicious-delay budgets vs epsilon (scenario 1): what
+    slipped past (undetected) and what was injected in total, mean over
+    seeds x policies; the measured counterpart of Lemma 1."""
+    per = load("composition_perseed.csv")
+    body = []
+    for mode, style_u, style_t in (
+            ("low", "netcol,mark=*,thick", "netcol,dashed"),
+            ("medium", "bridgecol,mark=square*,thick", "bridgecol,dashed")):
+        agg = defaultdict(lambda: [0.0, 0.0, 0])
+        for r in per:
+            if r["scenario"] == "1" and r["mode"] == mode:
+                a = agg[float(r["epsilon"])]
+                a[0] += float(r["delta_undetected_s"])
+                a[1] += float(r["delta_total_s"])
+                a[2] += 1
+        und = sorted((e, v[0] / v[2]) for e, v in agg.items())
+        tot = sorted((e, v[1] / v[2]) for e, v in agg.items())
+        body.append(f"\\addplot[{style_u}] coordinates {{{coords(und, '({:g},{:.2f})')}}};\n"
+                    f"\\addlegendentry{{undetected, {mode} mode}}\n"
+                    f"\\addplot[{style_t}] coordinates {{{coords(tot, '({:g},{:.2f})')}}};\n"
+                    f"\\addlegendentry{{injected total, {mode} mode}}\n")
+    body.append(
+        "\\draw[black,dotted,thick] (axis cs:0.25,0) -- (axis cs:0.25,25);\n"
+        "\\draw[black!60,dashed] (axis cs:0.05,10) -- (axis cs:10,10) "
+        "node[pos=0.02,anchor=south west,font=\\scriptsize] "
+        "{$H\\cdot s = 10$\\,s saturation cap};\n")
+    write("block_paperA_fig_budget.tex",
+          "simulation-derived (hop ledger means over 8 seeds x 4 policies, "
+          "scenario 1)", "".join(body))
+
+
 def main() -> int:
     fig_opcurve()
     fig_mcr_anchor()
@@ -434,9 +569,15 @@ def main() -> int:
     block_paperC_fig3()
     block_paperC_fig4()
     block_paperC_tab2()
+    block_paperC_fig5_alltopo()
+    block_paperC_tab_ingest()
+    block_paperC_tab_whelan()
+    block_paperC_tab_hcrl()
+    block_paperC_fig_uavids()
     block_paperA_fig3()
     block_paperA_fig4_sensitivity()
     block_paperA_tab2()
+    block_paperA_fig_budget()
     ledger()
     return 0
 
