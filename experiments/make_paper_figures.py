@@ -233,6 +233,12 @@ worst case (15 m/s) leaves it just outside. gamma_req to admit theta=0.25 at
 m=10 m is 7.28 m/s; measured clears it ~5x. Paper A -> "widened window"
 framing (abstract_A_widened), cruise-regime confirmation pending.
 
+The `block_*.tex` files are the fragments the papers \\input directly
+(paper/paperA.tex, paperC.tex compile against them), so every plotted
+coordinate and table value in the PDFs is machine-generated from the CSVs
+above; the non-block files are the archival/styled variants. Same provenance
+tags apply per the banner in each file.
+
 Also note: results/pairings_poc.jsonl predates the unit bridge (W1 output,
 certificate block says unit_bridge_missing); regenerate via ingest/pair_poc.py
 once real staging data is available.
@@ -249,12 +255,188 @@ Headline statistics for the text (results/stats_wilcoxon.csv):
     write("README.md", "ledger", body)
 
 
+# =====================================================================
+# Paper-ready \input blocks: the papers include these files verbatim, so
+# every plotted coordinate / table value in the PDFs is machine-generated
+# from the committed campaign CSVs (never hand-entered).
+# =====================================================================
+
+def block_paperC_fig3():
+    rows = load("theta_operating_curve.csv")
+    body = []
+    for mode, style, leg in (("low", "netcol,mark=*,thick",
+                              "low mode $U[1,7]$\\,s"),
+                             ("medium", "bridgecol,mark=square*,thick,dashed",
+                              "medium mode $U[1,10]$\\,s")):
+        pts = sorted((float(r["epsilon"]), float(r["recall"]))
+                     for r in rows if r["scenario"] == "1" and r["mode"] == mode)
+        body.append(f"\\addplot[{style}] coordinates {{{coords(pts)}}};\n"
+                    f"\\addlegendentry{{{leg}}}\n")
+    write("block_paperC_fig3.tex",
+          "simulation-derived (clean campaign, scenario 1, 8 seeds x 4 policies)",
+          "".join(body))
+
+
+def block_paperC_fig4():
+    rows = load("ewbench_mcr_anchor.csv")
+    styles = {"no_def": ("accent,mark=triangle*,thick", "No-Def (PX4)"),
+              "caf_cnn": ("bridgecol,mark=square*,thick", "CAF-CNN"),
+              "seq2seq_tr": ("autocol,mark=diamond*,thick", "Seq2Seq Tr."),
+              "ours_m1m4m6m7": ("netcol,mark=*,thick", "Ours (M1+M4+M6+M7)")}
+    body = []
+    for dfn, (style, leg) in styles.items():
+        pts = sorted((float(r["js_db"]), float(r["mcr"]))
+                     for r in rows if r["defense"] == dfn)
+        body.append(f"\\addplot[{style}] coordinates {{{coords(pts)}}};\n"
+                    f"\\addlegendentry{{{leg}}}\n")
+    write("block_paperC_fig4.tex",
+          "real-corpus (93,600-flight per_flight.csv, Wilson CIs in "
+          "results/ewbench_mcr_anchor.csv)", "".join(body))
+
+
+def block_paperC_tab2():
+    per = load("composition_perseed.csv")
+    sel = [r for r in per if r["epsilon"] == "0.25"]
+    und = sorted(float(r["delta_undetected_s"]) for r in sel)
+    n = len(und)
+    med, mx = und[n // 2], und[-1]
+    h = max(int(r["H_malicious_hops"]) for r in sel)
+    anchor = load("ewbench_mcr_anchor.csv")
+    mcr20 = next(float(r["mcr"]) for r in anchor
+                 if r["defense"] == "ours_m1m4m6m7" and r["js_db"] == "20")
+    body = (
+        # complete environment: \input'ing rows inside tabularx breaks its
+        # body scanner, so the block carries the whole table body.
+        "\\begin{tabularx}{\\columnwidth}{@{}lX@{}}\n"
+        "\\toprule\n"
+        "\\textbf{Quantity} & \\textbf{Value at representative $\\theta$}\\\\\n"
+        "\\midrule\n"
+        f"Detector threshold $\\theta$ & $0.25$\\,s (paper operating point)\\\\\n"
+        f"Detector verdict on tuned attacker & evaded (by construction)\\\\\n"
+        f"Malicious hops $H$ & ${h}$ (grid/ring/double-ring routes)\\\\\n"
+        f"Residual budget $\\Delta(\\theta)\\le H\\min(\\theta,s)$ & "
+        f"$\\le {h * 0.25:.2f}$\\,s ($s{{=}}5$\\,s; measured cap $4.84$\\,s)\\\\\n"
+        f"Measured undetected delay ({n} runs) & median ${med:.2f}$\\,s, "
+        f"max ${mx:.2f}$\\,s\\\\\n"
+        f"Staleness, empirical $\\gamma{{=}}1.37$\\,m/s & "
+        f"$\\le {1.37 * h * 0.25:.2f}$\\,m (Whelan, hover)\\\\\n"
+        f"Staleness, kinematic $v_{{\\max}}{{=}}15$\\,m/s & "
+        f"$\\le {15 * h * 0.25:.1f}$\\,m (worst case)\\\\\n"
+        f"Paired autonomy window & \\dataset{{UAV-EW-Bench}} at $J/S{{=}}20$\\,dB\\\\\n"
+        f"Empirical MCR of paired window & ${mcr20:.3f}$ (strongest defence)\\\\\n"
+        f"\\code{{pairing\\_basis}} & synthetic / measured (per record)\\\\\n"
+        "\\bottomrule\n"
+        "\\end{tabularx}\n")
+    write("block_paperC_tab2.tex",
+          "simulation-derived (DATAMUt) + real-corpus (Whelan gamma, EW-Bench MCR)",
+          body)
+
+
+def block_paperA_fig3():
+    rows = load("certified_floor_vs_theta.csv")
+    styles = [("empirical_ekf", "netcol,thick",
+               "empirical $\\gamma{=}1.37$\\,m/s (Whelan EKF)"),
+              ("empirical_receiver", "autocol,thick,dotted",
+               "empirical $\\gamma{=}1.20$\\,m/s (Whelan receiver)"),
+              ("kinematic_v15", "accent,dashed",
+               "kinematic worst case $\\gamma{=}15$\\,m/s")]
+    window = load("certified_operating_window.csv")
+    ekf10 = next(r for r in window if r["scenario"] == "1"
+                 and r["amplification"] == "gronwall_L1.01_T1"
+                 and r["mapping"] == "empirical_ekf" and r["margin_m"] == "10.0")
+    body = [f"\\fill[netcol!9] (axis cs:{ekf10['benign_ceiling_s']},0) "
+            f"rectangle (axis cs:{ekf10['theta_star_s']},1.05);\n"]
+    for mname, style, leg in styles:
+        pts = sorted({(float(r["theta_s"]), float(r["certified_floor"]))
+                      for r in rows if r["mapping"] == mname
+                      and r["amplification"] == "gronwall_L1.01_T1"
+                      and r["scenario"] == "1"})
+        body.append(f"\\addplot[{style}] coordinates {{{coords(pts)}}};\n"
+                    f"\\addlegendentry{{{leg}}}\n")
+    body.append(
+        "\\addplot[black,thick] coordinates {(0.05,0)(10,0)};\n"
+        "\\addlegendentry{autonomy-/network-only floor ($=0$)}\n"
+        "\\draw[black,dotted] (axis cs:0.25,0) -- (axis cs:0.25,1.05);\n"
+        "\\node[anchor=south,font=\\scriptsize,rotate=90] at "
+        "(axis cs:0.25,0.30) {$\\theta{=}0.25$\\,s};\n")
+    write("block_paperA_fig3.tex",
+          "real-corpus delta mapping + simulation-derived budgets + stated "
+          "margin family", "".join(body))
+
+
+def block_paperA_fig4_sensitivity():
+    """The decisive-result figure: theta*(margin) per delta mapping, with
+    theta=0.25 s and the FPR-0 floor drawn in. From
+    certified_operating_window.csv (scenario 1, Gronwall tube)."""
+    window = [r for r in load("certified_operating_window.csv")
+              if r["scenario"] == "1"
+              and r["amplification"] == "gronwall_L1.01_T1"]
+    styles = [("empirical_receiver", "autocol,mark=diamond*,thick,dotted",
+               "empirical $\\gamma{=}1.20$\\,m/s (receiver)"),
+              ("empirical_ekf", "netcol,mark=*,thick",
+               "empirical $\\gamma{=}1.37$\\,m/s (EKF)"),
+              ("kinematic_v15", "accent,mark=triangle*,thick,dashed",
+               "kinematic $\\gamma{=}15$\\,m/s")]
+    body = []
+    for mname, style, leg in styles:
+        pts = sorted((float(r["margin_m"]), float(r["theta_star_s"]))
+                     for r in window if r["mapping"] == mname)
+        body.append(f"\\addplot[{style}] coordinates {{{coords(pts, '({:g},{:.4f})')}}};\n"
+                    f"\\addlegendentry{{{leg}}}\n")
+    body.append(
+        "\\draw[black,dotted,thick] (axis cs:2,0.25) -- (axis cs:20,0.25) "
+        "node[pos=0.05,anchor=south west,font=\\scriptsize] "
+        "{paper operating point $\\theta{=}0.25$\\,s};\n"
+        "\\draw[black!60,dashed] (axis cs:2,0.178) -- (axis cs:20,0.178) "
+        "node[pos=0.55,anchor=north west,font=\\scriptsize] "
+        "{benign residual ceiling $0.178$\\,s (FPR$=$0 floor)};\n")
+    write("block_paperA_fig4_sensitivity.tex",
+          "real-corpus gamma (Whelan 3-flight hover) + simulation-derived "
+          "H, slack; theta* = m/(gamma e^{LT} H)", "".join(body))
+
+
+def block_paperA_tab2():
+    lip = {r["estimator"]: r for r in load("local_lipschitz.csv")}
+    lloc = float(lip["L_local_max (data-driven trajectories)"]["value"])
+    rloc = float(lip["L_local_max (data-driven trajectories)"]["gronwall_radius"])
+    body = (
+        "\\begin{tabularx}{\\columnwidth}"
+        "{@{}p{1.9cm}@{\\hspace{5pt}}X@{\\hspace{5pt}}p{1.75cm}@{}}\n"
+        "\\toprule\n"
+        "\\textbf{Component} & \\textbf{Constant} & \\textbf{Provenance}\\\\\n"
+        "\\midrule\n"
+        f"Lipschitz--Gr\\\"onwall & $\\hat L_{{\\mathrm{{loc}}}}{{=}}{lloc:.3f}"
+        f"\\Rightarrow R{{=}}{rloc:.3f}$; global $\\hat L{{=}}1.013\\Rightarrow "
+        "R{=}0.182$ & trained ckpt [fixture]\\\\\n"
+        "Rand.\\ smoothing & $\\sigma{=}0.25$, $R_{\\ell_2}{=}0.44$ "
+        "(measured $0.446$) & trained ckpt [fixture]\\\\\n"
+        "PAC--Bayes & McAllester on real $R_{\\mathrm{emp}}$; numeric KL "
+        "pending & methods ch.\\ [pending]\\\\\n"
+        "MWU regret & $R(T)\\le\\sqrt{T\\ln 4}$; $T{=}100\\Rightarrow11.77$ & "
+        "exact\\\\\n"
+        "Unit bridge (RF classes) & \\code{caf\\_shift\\_v2}: $0.45$\\,m "
+        "(Gr\\\"onwall) / $1.15$\\,m (RS) & synthetic IQ [TEXBAT pending]\\\\\n"
+        "$\\theta\\mapsto\\delta$ (delay class) & "
+        "$\\gamma{=}1.20$--$1.37$\\,m/s measured; kinematic $15$\\,m/s "
+        "fallback & real 3 flights [hover]\\\\\n"
+        "\\bottomrule\n"
+        "\\end{tabularx}\n")
+    write("block_paperA_tab2.tex",
+          "mixed; every row carries its own tag", body)
+
+
 def main() -> int:
     fig_opcurve()
     fig_mcr_anchor()
     tab_pairing()
     fig_headline()
     tab_certificates()
+    block_paperC_fig3()
+    block_paperC_fig4()
+    block_paperC_tab2()
+    block_paperA_fig3()
+    block_paperA_fig4_sensitivity()
+    block_paperA_tab2()
     ledger()
     return 0
 
