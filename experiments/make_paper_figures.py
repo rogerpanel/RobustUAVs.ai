@@ -126,11 +126,11 @@ def tab_pairing():
 def fig_headline():
     rows = load("certified_floor_vs_theta.csv")
     styles = {"kinematic_v15": ("accent,dashed",
-                                "certified floor, kinematic worst case ($\\gamma{=}15$ m/s)"),
+                                "kinematic $\\gamma{=}15$\\,m/s"),
               "empirical_ekf": ("netcol,thick",
-                                "certified floor, empirical $\\gamma{=}1.37$ m/s (Whelan EKF)"),
+                                "empirical $\\gamma{=}1.37$ (EKF)"),
               "empirical_receiver": ("autocol,thick,dotted",
-                                     "certified floor, empirical $\\gamma{=}1.20$ m/s (Whelan receiver)")}
+                                     "empirical $\\gamma{=}1.20$ (receiver)")}
     body = ["% Certified floor vs theta, scenario 1, Gronwall tube (local L=1.181),\n"
             "% H=2 malicious hops, margin family {2,5,10,20} m uniform weight.\n"
             "% PARAMETRIC in the delta mapping (the axis this whole question turns on):\n"
@@ -149,7 +149,7 @@ def fig_headline():
         "%   detector -> full delay incl. 60 s missed-window penalties,\n"
         "%   measured Delta_total up to 424 s); network-only = 0 by definition.\n"
         "\\addplot[black,thick] coordinates {(0.05,0)(10,0)};\n"
-        "\\addlegendentry{autonomy-only / network-only certified floor}\n"
+        "\\addlegendentry{autonomy-/network-only ($=0$)}\n"
         "% Certified operating window at the paper operating point theta=0.25 s:\n"
         "%   kinematic:          theta* = 0.243 s (m=20) -> 0.25 s just OUTSIDE\n"
         "%   empirical_ekf:      theta* = 0.267 s (m=2), 1.33 s (m=10) -> INSIDE\n"
@@ -335,11 +335,11 @@ def block_paperC_tab2():
 def block_paperA_fig3():
     rows = load("certified_floor_vs_theta.csv")
     styles = [("empirical_ekf", "netcol,thick",
-               "empirical $\\gamma{=}1.37$\\,m/s (Whelan EKF)"),
+               "empirical $\\gamma{=}1.37$ (EKF)"),
               ("empirical_receiver", "autocol,thick,dotted",
-               "empirical $\\gamma{=}1.20$\\,m/s (Whelan receiver)"),
+               "empirical $\\gamma{=}1.20$ (receiver)"),
               ("kinematic_v15", "accent,dashed",
-               "kinematic worst case $\\gamma{=}15$\\,m/s")]
+               "kinematic $\\gamma{=}15$\\,m/s")]
     window = load("certified_operating_window.csv")
     ekf10 = next(r for r in window if r["scenario"] == "1"
                  and r["amplification"] == "gronwall_L1.01_T1"
@@ -355,9 +355,9 @@ def block_paperA_fig3():
                     f"\\addlegendentry{{{leg}}}\n")
     body.append(
         "\\addplot[black,thick] coordinates {(0.05,0)(10,0)};\n"
-        "\\addlegendentry{autonomy-/network-only floor ($=0$)}\n"
+        "\\addlegendentry{autonomy-/network-only ($=0$)}\n"
         "\\draw[black,dotted] (axis cs:0.25,0) -- (axis cs:0.25,1.05);\n"
-        "\\node[anchor=south,font=\\scriptsize,rotate=90] at "
+        "\\node[anchor=south,font=\\small,rotate=90] at "
         "(axis cs:0.25,0.30) {$\\theta{=}0.25$\\,s};\n")
     write("block_paperA_fig3.tex",
           "real-corpus delta mapping + simulation-derived budgets + stated "
@@ -385,11 +385,11 @@ def block_paperA_fig4_sensitivity():
                     f"\\addlegendentry{{{leg}}}\n")
     body.append(
         "\\draw[black,dotted,thick] (axis cs:2,0.25) -- (axis cs:20,0.25) "
-        "node[pos=0.05,anchor=south west,font=\\scriptsize] "
-        "{paper operating point $\\theta{=}0.25$\\,s};\n"
+        "node[pos=0.04,anchor=south west,font=\\small] "
+        "{paper point $\\theta{=}0.25$\\,s};\n"
         "\\draw[black!60,dashed] (axis cs:2,0.178) -- (axis cs:20,0.178) "
-        "node[pos=0.55,anchor=north west,font=\\scriptsize] "
-        "{benign residual ceiling $0.178$\\,s (FPR$=$0 floor)};\n")
+        "node[pos=0.04,anchor=north west,font=\\small] "
+        "{benign ceiling $0.178$\\,s};\n")
     write("block_paperA_fig4_sensitivity.tex",
           "real-corpus gamma (Whelan 3-flight hover) + simulation-derived "
           "H, slack; theta* = m/(gamma e^{LT} H)", "".join(body))
@@ -553,7 +553,7 @@ def block_paperA_fig_budget():
     body.append(
         "\\draw[black,dotted,thick] (axis cs:0.25,0) -- (axis cs:0.25,25);\n"
         "\\draw[black!60,dashed] (axis cs:0.05,10) -- (axis cs:10,10) "
-        "node[pos=0.02,anchor=south west,font=\\scriptsize] "
+        "node[pos=0.02,anchor=south west,font=\\small] "
         "{$H\\cdot s = 10$\\,s saturation cap};\n")
     write("block_paperA_fig_budget.tex",
           "simulation-derived (hop ledger means over 8 seeds x 4 policies, "
