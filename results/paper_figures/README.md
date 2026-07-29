@@ -35,6 +35,12 @@ worst case (15 m/s) leaves it just outside. gamma_req to admit theta=0.25 at
 m=10 m is 7.28 m/s; measured clears it ~5x. Paper A -> "widened window"
 framing (abstract_A_widened), cruise-regime confirmation pending.
 
+The `block_*.tex` files are the fragments the papers \input directly
+(paper/paperA.tex, paperC.tex compile against them), so every plotted
+coordinate and table value in the PDFs is machine-generated from the CSVs
+above; the non-block files are the archival/styled variants. Same provenance
+tags apply per the banner in each file.
+
 Also note: results/pairings_poc.jsonl predates the unit bridge (W1 output,
 certificate block says unit_bridge_missing); regenerate via ingest/pair_poc.py
 once real staging data is available.
