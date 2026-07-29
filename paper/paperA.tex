@@ -636,8 +636,11 @@ The Lipschitz--Grönwall core gives the deterministic MCR floor; the other three
 extend coverage where it is loose or silent.}
 \label{tab:certs}
 \small
-\renewcommand{\arraystretch}{1.3}
-\begin{tabularx}{\columnwidth}{@{}l l X@{}}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\columnwidth}{@{}
+  >{\hsize=0.82\hsize\raggedright\arraybackslash}X
+  >{\hsize=0.70\hsize\raggedright\arraybackslash}X
+  >{\hsize=1.48\hsize\raggedright\arraybackslash}X@{}}
 \toprule
 \textbf{Certificate} & \textbf{Guarantee type} & \textbf{Unique niche}\\
 \midrule
@@ -687,6 +690,23 @@ Our engine evaluates \eqref{eq:mcallester} against the trained model's measured
 $R_{\mathrm{emp}}$; the single quantity it awaits is the numeric
 $\mathrm{KL}$, which lives in the reference model's methods documentation and is
 flagged pending (Table~\ref{tab:constants}).
+
+\emph{Which certificate governs when.} In practice the four do not compete for
+the same operating point; each is the binding constraint in a different regime,
+and the headline floor is their pointwise combination. For the time-delay class
+this paper foregrounds, the perturbation is a bounded, deterministic state
+staleness, so the Lipschitz--Grönwall tube is the active certificate and sets
+the certified window of \S\ref{sec:instantiation}. Randomized smoothing takes
+over when the perturbation budget is known only statistically---for instance a
+jamming intensity characterised by a distribution rather than a hard bound---since
+its probabilistic radius \eqref{eq:cohen} does not require the deterministic
+worst case. PAC-Bayes binds when the concern is generalisation: a floor certified
+on the training mission mix must survive deployment on unseen missions, and
+\eqref{eq:mcallester} is what carries it across. MWU regret binds last, over the
+\emph{time} axis, when the jammer adapts across a mission rather than holding a
+fixed strategy. A deployment therefore reads the minimum of the four floors at
+its operating point; because their binding regimes are disjoint, that minimum is
+never vacuous for a reason more than one certificate could have prevented.
 
 % =====================================================================
 \section{Instantiation and Evaluation}
