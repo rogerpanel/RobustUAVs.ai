@@ -93,6 +93,9 @@ def _to_feature_l2(delta: "Perturbation"):
 
 PHASE_A = {
     "L_g": 1.01,
+    "L_g_local": 1.181,         # measured local (operating-region) Lipschitz
+                                # on the trained checkpoint (experiments/
+                                # local_lipschitz.py, data-driven trajectories)
     "T": 1.0,
     "eps_out": 0.5,
     "rs_sigma": 0.25,
@@ -104,6 +107,15 @@ PHASE_A = {
     "mcr_certified_target": 0.80,   # Ch.6 wording (certified)
     "mcr_do326a_floor": 0.90,       # DO-326A operational floor (empirical)
 }
+# Two radii, both honest and both reported (P1(b), docs/certified_regime_analysis.md):
+#   0.182 from the global power-iteration L=1.01 (dissertation-reproducing);
+#   0.153 from the measured local L=1.181 over the operating region (tighter,
+#   the defensible number for the paper). The local radius is NOT loose - it is
+#   SMALLER, refuting "the radius is too tight".
+PHASE_A["gronwall_radius_global"] = round(
+    PHASE_A["eps_out"] * math.exp(-PHASE_A["L_g"] * PHASE_A["T"]), 4)
+PHASE_A["gronwall_radius_local"] = round(
+    PHASE_A["eps_out"] * math.exp(-PHASE_A["L_g_local"] * PHASE_A["T"]), 4)
 
 
 @dataclass
@@ -147,8 +159,13 @@ class LipschitzGronwallCertificate:
     name = "lipschitz_gronwall"
 
     def __init__(self, L_g: float = PHASE_A["L_g"], T: float = PHASE_A["T"],
-                 eps_out: float = PHASE_A["eps_out"]):
-        self.L_g, self.T, self.eps_out = L_g, T, eps_out
+                 eps_out: float = PHASE_A["eps_out"], regime: str = "local"):
+        # regime='local' uses the measured operating-region L=1.181 (radius
+        # 0.153, the defensible paper number); 'global' uses L=1.01
+        # (radius 0.182, dissertation-reproducing). Explicit L_g overrides.
+        if L_g == PHASE_A["L_g"] and regime == "local":
+            L_g = PHASE_A["L_g_local"]
+        self.L_g, self.T, self.eps_out, self.regime = L_g, T, eps_out, regime
         self.radius = gronwall_radius(L_g, T, eps_out)
 
     def certify(self, delta: Perturbation) -> CertificateResult:
@@ -257,16 +274,38 @@ class MWURegretCertificate:
 
 
 class PACBayesCertificate:
-    """Theorem 6.3: transfers the certificate from the training corpus to the
-    test-mission distribution. Constants live in the dissertation's methods
-    chapter; recorded here as a named component so pairing records can cite
-    it. Numeric bound port: TODO (needs the methods-chapter constants)."""
+    """Theorem 6.3: transfers the certificate from the training mission
+    distribution to unseen deployment.
+
+    The numeric prior/posterior KL is a methods-chapter constant that is NOT
+    in the ported code (see PENDING_ON_DATA.md), so we cannot emit a single
+    number. What we CAN do honestly is wire the McAllester bound to the
+    trained checkpoint's measured empirical risk and expose the bound as a
+    function of KL: given empirical risk R_emp on m samples, with prob 1-delta
+        R_true <= R_emp + sqrt( (KL + ln(2 sqrt(m)/delta)) / (2m) ).
+    Pass the real R_emp (1 - clean_acc from metrics.json) and a candidate KL;
+    the number is real once the methods-chapter KL replaces the placeholder.
+    """
 
     name = "pac_bayes"
 
-    def certify(self, delta: Perturbation) -> CertificateResult:
-        return CertificateResult(self.name, None,
-                                 {"status": "constants_in_methods_chapter"})
+    def bound(self, r_emp: float, m: int, kl: Optional[float] = None,
+              delta: float = 0.05) -> CertificateResult:
+        if kl is None:
+            return CertificateResult(self.name, None, {
+                "status": "kl_pending",
+                "detail": "McAllester bound wired to real R_emp; the numeric "
+                          "prior/posterior KL is a methods-chapter constant "
+                          "not in the ported code (PENDING_ON_DATA.md). Pass "
+                          "kl to evaluate.",
+                "r_emp": r_emp, "m": m,
+                "form": "R_true <= R_emp + sqrt((KL + ln(2 sqrt(m)/delta))/(2m))"})
+        slack = math.sqrt((kl + math.log(2 * math.sqrt(m) / delta)) / (2 * m))
+        r_true = min(1.0, r_emp + slack)
+        return CertificateResult(self.name, round(1.0 - r_true, 4), {
+            "r_emp": r_emp, "m": m, "kl": kl, "delta": delta,
+            "slack": round(slack, 4), "r_true_upper": round(r_true, 4),
+            "certified_accuracy_floor": round(1.0 - r_true, 4)})
 
 
 REGISTRY = {
@@ -280,8 +319,12 @@ REGISTRY = {
 
 if __name__ == "__main__":
     # self-check against the dissertation table
+    # global regime reproduces the dissertation radius 0.182
+    lg_global = LipschitzGronwallCertificate(regime="global")
+    assert abs(lg_global.radius - 0.18) < 0.005, lg_global.radius
+    # default = local regime, the tighter measured radius 0.153 (P1(b))
     lg = LipschitzGronwallCertificate()
-    assert abs(lg.radius - 0.18) < 0.005, lg.radius
+    assert abs(lg.radius - 0.153) < 0.005, lg.radius
     r = lg.certify(Perturbation("sensor_l2", 0.10, "test"))
     assert r.certified_mcr == 0.80 and r.params["inside_radius"]
 
@@ -318,7 +361,13 @@ if __name__ == "__main__":
     r7 = ss.certify_staleness(theta_s=10.0, n_malicious_hops=2, margin_m=20.0)
     assert r7.params["delta_staleness_s"] == 10.0, r7
 
-    print(f"OK  Gronwall radius={lg.radius:.4f} (dissertation: 0.18); "
+    # PAC-Bayes: pending without KL, real-valued once KL supplied
+    pb = PACBayesCertificate()
+    assert pb.bound(r_emp=0.0, m=256).params["status"] == "kl_pending"
+    assert pb.bound(r_emp=0.0, m=256, kl=5.0).certified_mcr is not None
+
+    print(f"OK  Gronwall radius local={lg.radius:.4f} (L=1.181), "
+          f"global={lg_global.radius:.4f} (dissertation 0.18); "
           f"RS radius={PHASE_A['rs_radius']}; "
           f"MWU bound(T=100)={MWURegretCertificate().bound(100).params['regret_bound']}; "
           f"{bridge_note}")

@@ -63,6 +63,40 @@ V_MAX = 15.0           # m/s, stated kinematic worst-case speed
 L_REF, T_REF = 1.01, 1.0
 AMP = math.exp(L_REF * T_REF)          # 2.746 reference tube amplification
 MARGINS_M = [2.0, 5.0, 10.0, 20.0]     # stated margin family (10 = PX4-class)
+
+
+def load_mappings():
+    """delta mappings: staleness seconds -> position-error metres/second.
+
+    Parametric by design (P2 of the certified-regime follow-up): the
+    kinematic worst case is always available; the empirical rates are read
+    from results/whelan_delta_calibration.csv when the real-corpus
+    calibration has run (receiver = attack-injected error at the estimator
+    input; ekf = filtered error the controller acts on — an EXPLICIT
+    choice, see docs/certified_regime_analysis.md). Conservative pick per
+    source: max over attack flights of the available gamma rates.
+    """
+    mappings = {"kinematic_v15": {
+        "gamma_m_s": V_MAX,
+        "provenance": "stated worst case (v_max=15 m/s)"}}
+    cal = RESULTS / "whelan_delta_calibration.csv"
+    if cal.exists():
+        rows = [r for r in csv.DictReader(open(cal)) if r["flight"] != "benign"]
+        for src in ("receiver", "ekf"):
+            rates = [float(r[k]) for r in rows if r["source"] == src
+                     for k in ("gamma_lsq_m_s", "gamma_peak_m_s")
+                     if r.get(k) not in (None, "", "None")]
+            rates = [x for x in rates if x > 0]
+            if rates:
+                mappings[f"empirical_{src}"] = {
+                    "gamma_m_s": max(rates),
+                    "provenance": ("real-corpus 3-flight Whelan live sample, "
+                                   "hover regime, self-referenced pre-attack "
+                                   "median; conservative max rate")}
+    return mappings
+
+
+MAPPINGS = load_mappings()
 THETA_GRID = [0.25, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 6.5, 7.0, 8.0, 10.0]
 # finer grid for the certified curve itself (sub-0.25 matters: that is where
 # the worst-case kinematic tube fits real corridor margins). 0.178 s is the
@@ -76,6 +110,12 @@ THETA_CURVE = [0.05, 0.1, 0.121, 0.15, BENIGN_CEIL_S, 0.2, 0.243, 0.25, 0.3,
 def floor_for(delta_pos_m: float, amp: float) -> float:
     rho = delta_pos_m * amp
     return sum(1.0 for m in MARGINS_M if rho <= m) / len(MARGINS_M)
+
+
+def floors_all_mappings(delta_stale_s: float, amp: float = AMP) -> dict:
+    """Certified floor per delta mapping for a staleness budget (seconds)."""
+    return {name: floor_for(m["gamma_m_s"] * delta_stale_s, amp)
+            for name, m in MAPPINGS.items()}
 
 
 def holm(pvals):
@@ -116,11 +156,17 @@ def main() -> int:
             "delta_undetected_s": round(v["und"], 3),
             "delta_total_s": round(v["tot"], 3),
             "delta_evade_worst_s": round(d_evade, 3),
+            # legacy kinematic columns (headline conservative)
             "floor_composed": floor_for(V_MAX * v["und"], AMP),
             "floor_composed_worst": floor_for(V_MAX * d_evade, AMP),
             "floor_autonomy_only": floor_for(V_MAX * v["tot"], AMP),
             "floor_network_only": 0.0,
         }
+        for name in MAPPINGS:
+            rows[f"floor_composed__{name}"] = \
+                floors_all_mappings(v["und"])[name]
+            rows[f"floor_autonomy_only__{name}"] = \
+                floors_all_mappings(v["tot"])[name]
         perseed.append(rows)
 
     with open(RESULTS / "composition_perseed.csv", "w", newline="") as fh:
@@ -138,16 +184,19 @@ def main() -> int:
     for theta in THETA_CURVE:
         for scen, H in sorted(Hs.items()):
             d = H * min(theta, SLACK_S)
-            for amp, amp_tag in [(AMP, "gronwall_L1.01_T1"), (1.0, "kinematic_A1")]:
-                curve.append({
-                    "theta_s": theta, "scenario": scen,
-                    "H_malicious_hops": H,
-                    "delta_evade_worst_s": round(d, 3),
-                    "delta_pos_m": round(V_MAX * d, 2),
-                    "tube_m": round(V_MAX * d * amp, 2),
-                    "amplification": amp_tag,
-                    "certified_floor": floor_for(V_MAX * d, amp),
-                })
+            for amp, amp_tag in [(AMP, "gronwall_L1.01_T1"), (1.0, "unamplified_A1")]:
+                for mname, mp in MAPPINGS.items():
+                    g = mp["gamma_m_s"]
+                    curve.append({
+                        "theta_s": theta, "scenario": scen,
+                        "H_malicious_hops": H,
+                        "mapping": mname, "gamma_m_s": g,
+                        "delta_evade_worst_s": round(d, 3),
+                        "delta_pos_m": round(g * d, 3),
+                        "tube_m": round(g * d * amp, 3),
+                        "amplification": amp_tag,
+                        "certified_floor": floor_for(g * d, amp),
+                    })
     with open(RESULTS / "certified_floor_vs_theta.csv", "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(curve[0].keys()))
         w.writeheader()
@@ -160,16 +209,24 @@ def main() -> int:
     # nonempty iff theta* > BENIGN_CEIL_S (measured FPR=0 floor).
     window = []
     for scen, H in sorted(Hs.items()):
-        for amp, amp_tag in [(AMP, "gronwall_L1.01_T1"), (1.0, "kinematic_A1")]:
-            for m in MARGINS_M:
-                theta_star = m / (V_MAX * amp * H)
-                window.append({
-                    "scenario": scen, "H_malicious_hops": H,
-                    "amplification": amp_tag, "margin_m": m,
-                    "theta_star_s": round(theta_star, 4),
-                    "benign_ceiling_s": BENIGN_CEIL_S,
-                    "window_nonempty": int(theta_star > BENIGN_CEIL_S),
-                })
+        for amp, amp_tag in [(AMP, "gronwall_L1.01_T1"), (1.0, "unamplified_A1")]:
+            for mname, mp in MAPPINGS.items():
+                g = mp["gamma_m_s"]
+                for m in MARGINS_M:
+                    theta_star = m / (g * amp * H)
+                    # theta* beyond the slack means the knee saturation
+                    # governs: certified for ALL theta iff g*H*s*amp <= m
+                    saturated_ok = g * H * SLACK_S * amp <= m
+                    window.append({
+                        "scenario": scen, "H_malicious_hops": H,
+                        "amplification": amp_tag, "mapping": mname,
+                        "gamma_m_s": g, "margin_m": m,
+                        "theta_star_s": round(theta_star, 4),
+                        "benign_ceiling_s": BENIGN_CEIL_S,
+                        "window_nonempty": int(theta_star > BENIGN_CEIL_S),
+                        "certified_at_paper_theta_0.25": int(theta_star >= 0.25),
+                        "certified_for_all_theta": int(saturated_ok),
+                    })
     with open(RESULTS / "certified_operating_window.csv", "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(window[0].keys()))
         w.writeheader()
@@ -177,6 +234,29 @@ def main() -> int:
     n_open = sum(r["window_nonempty"] for r in window)
     print(f"[compose] {len(window)} window rows ({n_open} nonempty) -> "
           "results/certified_operating_window.csv")
+
+    # ---- sensitivity: how gentle must the mapping be for theta targets? ----
+    # gamma_req(theta, m) = m / (theta * A * H): the largest error-growth
+    # rate for which theta is still inside the certified window.
+    sens = []
+    for theta_t in (0.25, 0.5, 1.0):
+        for scen, H in sorted(Hs.items()):
+            for amp, amp_tag in [(AMP, "gronwall_L1.01_T1"),
+                                 (1.0, "unamplified_A1")]:
+                for m in MARGINS_M:
+                    g_req = m / (theta_t * amp * H)
+                    row = {"theta_target_s": theta_t, "scenario": scen,
+                           "H_malicious_hops": H, "amplification": amp_tag,
+                           "margin_m": m, "gamma_required_m_s": round(g_req, 3)}
+                    for mname, mp in MAPPINGS.items():
+                        row[f"ok__{mname}"] = int(mp["gamma_m_s"] <= g_req)
+                    sens.append(row)
+    with open(RESULTS / "delta_mapping_sensitivity.csv", "w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(sens[0].keys()))
+        w.writeheader()
+        w.writerows(sens)
+    print(f"[compose] {len(sens)} sensitivity rows -> "
+          "results/delta_mapping_sensitivity.csv")
 
     # ---- Wilcoxon signed-rank + Holm ----
     perseed_idx = defaultdict(dict)
@@ -199,20 +279,24 @@ def main() -> int:
                           "median_diff": round(float(np.median(np.array(med) - np.array(lo))), 3),
                           "p_raw": p})
 
-    # H2: composed floor vs autonomy-only floor (paired, pooled modes)
-    for eps in [f"{t}" for t in THETA_GRID]:
-        a, b = [], []
-        for r in perseed:
-            if r["epsilon"] == eps:
-                a.append(r["floor_composed"])
-                b.append(r["floor_autonomy_only"])
-        diffs = np.array(a) - np.array(b)
-        if len(a) >= 8 and np.any(diffs != 0):
-            stat, p = wilcoxon(a, b)
-            tests.append({"comparison": "floor_composed_vs_autonomy_only",
-                          "epsilon": eps, "n_pairs": len(a),
-                          "median_diff": round(float(np.median(diffs)), 3),
-                          "p_raw": p})
+    # H2: composed floor vs autonomy-only floor (paired, pooled modes),
+    # once per delta mapping
+    for mname in MAPPINGS:
+        ca, cb = f"floor_composed__{mname}", f"floor_autonomy_only__{mname}"
+        for eps in [f"{t}" for t in THETA_GRID]:
+            a, b = [], []
+            for r in perseed:
+                if r["epsilon"] == eps:
+                    a.append(r[ca])
+                    b.append(r[cb])
+            diffs = np.array(a) - np.array(b)
+            if len(a) >= 8 and np.any(diffs != 0):
+                stat, p = wilcoxon(a, b)
+                tests.append({"comparison":
+                              f"floor_composed_vs_autonomy_only__{mname}",
+                              "epsilon": eps, "n_pairs": len(a),
+                              "median_diff": round(float(np.median(diffs)), 3),
+                              "p_raw": p})
 
     # H3: recall medium vs low (paired per scenario/eps/seed/policy)
     rec = list(csv.DictReader(open(RESULTS / "theta_operating_curve_perseed.csv")))
@@ -253,13 +337,17 @@ def main() -> int:
     print(f"[compose] {sig}/{len(tests)} significant after Holm within family")
 
     # console headline
-    print("\ncertified floor vs theta (Gronwall amp, margin family {2,5,10,20} m):")
-    for theta in (0.25, 0.5, 1.0, 2.0, 5.0, 10.0):
-        row = [c for c in curve if c["theta_s"] == theta
-               and c["amplification"] == "gronwall_L1.01_T1"]
-        floors = {c["scenario"]: c["certified_floor"] for c in row}
-        print(f"  theta={theta:>5}: " + "  ".join(
-            f"scen{s}={floors[s]:.2f}" for s in sorted(floors)))
+    for mname, mp in MAPPINGS.items():
+        print(f"\ncertified floor vs theta — mapping {mname} "
+              f"(gamma={mp['gamma_m_s']:.3f} m/s; Gronwall amp; "
+              "margins {2,5,10,20} m; scenario 1):")
+        for theta in (0.178, 0.25, 0.5, 1.0, 2.0, 5.0, 10.0):
+            row = [c for c in curve if c["theta_s"] == theta
+                   and c["amplification"] == "gronwall_L1.01_T1"
+                   and c["mapping"] == mname and c["scenario"] == "1"]
+            if row:
+                print(f"  theta={theta:>6}: floor={row[0]['certified_floor']:.2f} "
+                      f"(tube {row[0]['tube_m']:.2f} m)")
     return 0
 
 

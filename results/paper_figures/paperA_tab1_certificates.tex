@@ -3,7 +3,7 @@
 % Do not hand-edit; re-run the script.
 % Constant column for Paper A Table I (four-certificate architecture).
 % [fixture] = trained/derived on the synthetic Phase-A corpus.
-Lipschitz--Gr\"onwall & $\hat L{=}1.013$ [fixture], $R{=}0.182$; local operating-region $\hat L{=}1.181$ $\Rightarrow R{=}0.153$ (radius is NOT loose)\\
+Lipschitz--Gr\"onwall & global $\hat L{=}1.01 \Rightarrow R{=}0.182$; \textbf{local (operating-region) $\hat L{=}1.181 \Rightarrow R{=}0.153$} (default; the local radius is SMALLER, refuting `too tight')\\
 Randomized smoothing & $\sigma{=}0.25$, $R_{\ell_2}{=}0.44$ (Cohen $\alpha{=}10^{-3}$, $n{=}200$); measured mean radius 0.446 on the trained checkpoint [fixture]\\
 PAC--Bayes & numeric bound pending (constants live in the methods chapter; port before quoting)\\
 MWU regret & $R(T)\le\sqrt{T\ln 4}$; $T{=}100 \Rightarrow 11.77$ (exact)\\

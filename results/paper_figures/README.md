@@ -23,10 +23,17 @@ committed results/ CSVs. Provenance classes:
 | file | replaces | provenance |
 |------|----------|------------|
 | paperC_fig3_opcurve.tex | Paper C Fig. 3 coordinates (**old ones were wrong** - accumulation bug, see docs/certified_regime_analysis.md Finding 0) | simulation-derived |
-| paperC_fig4_mcr_anchor.tex | Paper C Fig. 4 (unchanged) | published-value |
-| paperC_tab2_pairing.tex | Paper C Table II [EXP] rows | simulation-derived + stated model |
-| paperA_fig3_headline.tex | Paper A Fig. 3 (**drafted curve traced the J/S curve on a theta axis; not defensible**) | simulation-derived + margin-family model |
-| paperA_tab1_certificates.tex | Paper A SS6.1 constants / Table I | fixture-derived + exact |
+| paperC_fig4_mcr_anchor.tex | Paper C Fig. 4 | **real-corpus** (93,600-row per_flight.csv; matches draft = draft was real) |
+| paperC_tab2_pairing.tex | Paper C Table II [EXP] rows | simulation-derived + real EW-Bench MCR |
+| paperA_fig3_headline.tex | Paper A Fig. 3 (**drafted curve traced the J/S curve on a theta axis; not defensible**) | **real-corpus delta mapping** (Whelan) + simulation budgets + margin family |
+| paperA_tab1_certificates.tex | Paper A SS6.1 constants / Table I | fixture-derived + exact + measured local L |
+
+DECISIVE real-data result (docs/certified_regime_analysis.md ADDENDUM):
+the empirical Whelan delta mapping (gamma~1.2-1.4 m/s) brings theta=0.25 s
+INSIDE the certified operating window at every corridor margin; the kinematic
+worst case (15 m/s) leaves it just outside. gamma_req to admit theta=0.25 at
+m=10 m is 7.28 m/s; measured clears it ~5x. Paper A -> "widened window"
+framing (abstract_A_widened), cruise-regime confirmation pending.
 
 Also note: results/pairings_poc.jsonl predates the unit bridge (W1 output,
 certificate block says unit_bridge_missing); regenerate via ingest/pair_poc.py

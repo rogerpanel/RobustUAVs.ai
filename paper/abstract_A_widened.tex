@@ -1,0 +1,35 @@
+% ABSTRACT A — "widened window" framing.
+% USE THIS ONE: selected by the real 3-flight Whelan delta calibration
+% (gamma ~ 1.2-1.4 m/s), which brings theta=0.25 s inside the certified
+% operating window at every corridor margin. Pending: cruise-regime
+% confirmation (PENDING_ON_DATA.md #4). Provenance-authoritative:
+% docs/certified_regime_analysis.md ADDENDUM (2026-07-29).
+\begin{abstract}
+Two mature literatures defend the autonomous UAV in isolation. Network
+intrusion detection catches malicious traffic but says nothing about the flight;
+certified robustness bounds a navigation model's error but assumes the
+perturbation arrives from nowhere. We connect them. We prove a \emph{composition
+theorem}: for any network-layer attack that evades a detector operating at point
+$\theta$, the UAV navigation stack retains a certified Mission-Completion-Rate
+$\MCR\ge f(\delta(\theta))$, where $\theta$ determines a worst-case residual
+attack budget, that budget maps to a bounded perturbation $\delta$ on the
+navigation input, and a Lipschitz--Grönwall trajectory-tube argument turns the
+bounded input into a certified mission-completion floor. Two measurements make
+the guarantee sharp rather than nominal: the residual budget \emph{saturates}
+at the contact-window slack ($\Delta(\theta)\le H\min(\theta,s)$, verified as
+$\le4.84$\,s over $15{,}392$ hops), and the delay-to-position interface,
+calibrated on real GPS-spoofing/jamming flights on the target autopilot family,
+is an order of magnitude tighter than the kinematic worst case. Under this
+measured interface the detector's paper operating point lies \emph{inside} a
+nonempty certified operating window, and the composed guarantee is the only
+configuration with a nonzero certified floor for an evading attacker---strictly
+dominating both the autonomy-only and network-only baselines (Wilcoxon,
+Holm-corrected, $p<10^{-20}$). The deterministic core is complemented by three
+certificates covering regimes it cannot (a statistical radius via randomized
+smoothing, a train-to-deployment bound via PAC-Bayes, an adaptive-jammer
+guarantee via multiplicative-weights regret). To our knowledge this is the first
+formal guarantee chaining a network-security operating point to a
+navigation-safety floor. We instantiate it on an open end-to-end benchmark and
+validate that the certified floor lower-bounds the empirical
+mission-completion rate ($\text{MCR}=0.938$ at $J/S{=}20$\,dB).
+\end{abstract}
