@@ -178,7 +178,7 @@ in the months you actually train.
   Box** for the corpus and results — snapshots alone are not an offsite backup.
 
 **Provisioning order** (each step is reversible):
-1. Create the CX52 in Helsinki with an SSH key + your cloud-init/firewall
+1. Create the CPX42 in Helsinki with an SSH key + your cloud-init/firewall
    attached at creation time.
 2. Point Cloudflare A/AAAA at it, proxied.
 3. Install Origin CA cert, bring up the reverse proxy, verify `Full (strict)`.
