@@ -36,44 +36,83 @@ overage.
 
 ## 2. Recommended server
 
-### Primary recommendation — **CX52** (Helsinki, `eu-central`)
+> **Correction (2026-08-01).** An earlier draft of this document recommended a
+> "CX52 at ~€32/mo" based on third-party pricing pages. That plan is **not what
+> the console offers on this account**: the CX family sits under the
+> *Cost-Optimized* tab and is marked *Limited availability*, and this account
+> bills in **USD at the post-June-2026 rates**. Everything below is taken from
+> the actual Helsinki create-server menu.
 
-| | |
-|---|---|
-| vCPU / RAM / disk | 16 vCPU (shared, x86) / **32 GB** / 320 GB NVMe |
-| Advertised price | ~**€32.40/mo** (verify in console; your account bills in USD) |
-| Why | 32 GB is the number that removes the *only* measured hard limit — it lets the UAV-CAS time-series file be ingested at full fidelity with `native` packet arrays retained, instead of forcing `--drop-native-lists`. 320 GB holds the full corpus (3.4 GB) + staging (10.6 GB) + PyTorch/Docker/TeX (~15 GB) + model checkpoints + snapshots with roughly 10x headroom for future datasets. |
+### The menu, as it actually appears (Helsinki, USD, incl. 20 TB traffic)
 
-This is a real upgrade over the `robustidps.ai` box (CPX32: 4 vCPU / 8 GB /
-160 GB): **4x the RAM, 4x the cores, 2x the disk**, for roughly twice the price.
+| Plan | vCPU | RAM | SSD | $/mo | Meets the 16 GB requirement? |
+|---|---:|---:|---:|---:|---|
+| CPX32 | 4 | 8 GB | 160 GB | 41.99 | no (tight) |
+| **CPX42** | **8** | **16 GB** | **320 GB** | **81.99** | **yes** |
+| CPX52 | 12 | 24 GB | 480 GB | 118.99 | yes (over-spec) |
+| CPX62 | 16 | 32 GB | 640 GB | 152.99 | yes + full-fidelity ts |
+| CCX23 (dedicated) | 4 | 16 GB | 160 GB | 101.49 | yes, but +$19 for fewer cores |
+| CCX33 (dedicated) | 8 | 32 GB | 240 GB | 162.99 | yes, but +$81 |
 
-### Budget alternative — **CX42**
-8 vCPU / 16 GB / 160 GB, ~€16.40/mo — i.e. the same price class as the existing
-CPX32 but with double its cores and RAM. Perfectly adequate **provided** the
-UAV-CAS ts ingest is run with `--drop-native-lists` (which the adapter already
-supports precisely for this reason). Choose this if budget is tight; you can
-rescale up to CX52 later without rebuilding (Hetzner rescale keeps the disk).
+Add ~$0.60/mo for the IPv4 address. Helsinki carries no location surcharge
+(Singapore adds $16/mo).
 
-### Not recommended right now — **CCX (dedicated vCPU)**
-The usual argument for dedicated vCPU is timing reproducibility, and this
-project *does* publish per-policy execution times. But the measurement in
-question takes **0.01 s**, so noisy-neighbour variance is irrelevant to it,
-while the June 2026 price adjustment made CCX dramatically more expensive.
-Dedicated vCPU is not worth the premium for this workload.
+### Primary recommendation — **CPX42** (8 vCPU / 16 GB / 320 GB, Helsinki), $81.99/mo
 
-### Not recommended as primary — **CAX (ARM/Ampere)**
-CAX31 (8 vCPU / 16 GB / 160 GB) is the cheapest way to get these specs and the
-whole stack (Python, PyTorch, the C++ replay) builds on ARM. The reason to
-avoid it *as the main node* is scientific, not technical: the paper reports
-execution timings and reviewers will reproduce on x86, so keeping the
-publication host on x86 preserves parity. CAX is an excellent choice for a
-secondary CI/build node later.
+Rationale, tied to the measurements in §1:
+- **16 GB clears the binding constraint.** Measured peak ingest RSS is 0.73 GB;
+  the realistic concurrent load (web + dashboard + an ingest + PyTorch + Docker
+  + TeX) lands around 6–8 GB, so 16 GB runs everything with the corpus
+  comfortably in page cache rather than being re-read from disk.
+- **320 GB is ~9x the 34 GB working set** (3.4 GB corpus + 10.6 GB staging +
+  ~15 GB toolchain + snapshots), leaving room for several more datasets.
+- CPU is not the constraint, so paying for more cores buys nothing here; 8
+  vCPU comes bundled with the RAM tier anyway.
+
+### Why *not* 32 GB (CPX62 / CCX33)
+
+The only thing the extra 16 GB buys is ingesting `UAV-CAS_ts.csv` with the raw
+per-packet arrays retained in `native`, instead of passing `--drop-native-lists`.
+That is a weak justification for **+$71–81/mo ($850–970/yr)**, because: the ts
+file is currently out of scope; the adapter retains every summary metric
+(packets, bytes, duration, rate, fwd/bwd counts) either way; and the paper's
+UAV-CAS analysis uses the *stat* file, not ts. Take CPX42 and pass the flag.
+
+### Why *not* dedicated vCPU (CCX)
+
+The usual argument is timing reproducibility, and this project does publish
+per-policy execution times — but that measurement takes **0.01 s**, so
+noisy-neighbour variance is irrelevant to it. CCX23 costs $19/mo more than
+CPX42 for *half* the cores and *half* the disk. Not worth it here.
+
+### Before ordering: check the **Cost-Optimized** tab
+
+The console's *Cost-Optimized* tab (CX on x86, CAX on Arm64) is marked
+*Limited availability* and is not shown in the screenshots. If a 16 GB option
+has stock in Helsinki it will be materially cheaper than CPX42 — worth one
+click before committing. Caveat: prefer **x86** for the publication host, since
+the paper reports execution timings and reviewers will reproduce on x86; Arm64
+(CAX) is a fine choice for a later CI/build node.
+
+### A legitimate start-small option
+
+**CPX32 (4/8/160, $41.99/mo)** — the same tier as `robustidps.ai` — runs
+everything measured *today* (0.73 GB peak ingest, 0.01 s campaign points,
+490 MB staging). 8 GB gets tight once PyTorch training, the web stack, and
+Docker run concurrently, but Hetzner supports **rescaling up in place**, so
+starting here and moving to CPX42 when the full corpus lands is a defensible,
+reversible choice.
+
+> **Budget warning:** the running `robustidps.ai` CPX32 shows **$16.49/mo** on
+> its overview page, but the create page now quotes **$41.99/mo** for that same
+> tier. The existing server is on grandfathered pre-increase pricing; any *new*
+> server is billed at current rates. Expect the new machine to cost 2.5x
+> (CPX32) to 5x (CPX42) what the current one does.
 
 ### Add-ons
-- **Volume (block storage)** — optional at CX52's 320 GB. If the corpus grows
-  past that, attach a 100 GB Volume (~€0.057/GB/mo ≈ €5.70/mo) and mount it at
-  `data/`, so the corpus can be snapshotted, detached, and resized without
-  touching the OS disk.
+- **Volume (block storage)** — not needed at CPX42's 320 GB. If the corpus later
+  outgrows it, attach a Volume and mount it at `data/`, so the corpus can be
+  snapshotted, detached, and resized without touching the OS disk.
 - **Backups** — enable (20% surcharge). Cheap insurance for a machine that will
   hold months of experiment output.
 - **Location** — **Helsinki (`eu-central`)**: same location as `robustidps.ai`,
@@ -152,7 +191,11 @@ in the months you actually train.
 
 ## 5. One-line summary for the supervisor
 
-> Take **CX52 (16 vCPU / 32 GB / 320 GB) in Helsinki**, roughly €32/mo — the
-> 32 GB is what the corpus parsing actually requires, the rest is headroom;
-> a GPU is a *separate* Hetzner dedicated (GEX) machine added later and linked
-> by vSwitch, because Hetzner Cloud has no GPU instances at all.
+> Take **CPX42 (8 vCPU / 16 GB / 320 GB) in Helsinki, $81.99/mo** -- 16 GB is
+> what the corpus parsing actually requires and 320 GB is ~9x the working set;
+> skip the 32 GB tiers, whose only benefit costs an extra ~$850/yr. Check the
+> *Cost-Optimized* tab first in case a cheaper 16 GB x86 option has stock.
+> Note that a new server costs 2.5-5x the grandfathered price of the existing
+> `robustidps.ai` box. A GPU is a **separate** Hetzner dedicated (GEX) machine
+> added later and linked by vSwitch, because Hetzner Cloud has no GPU
+> instances at all.
