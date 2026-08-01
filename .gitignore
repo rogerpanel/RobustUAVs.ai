@@ -16,3 +16,4 @@ paper/*.log
 paper/*.out
 paper/*.buildlog
 dist/
+paper/paperD_named.tex
