@@ -120,7 +120,7 @@ def package(paper: str) -> Path:
 
 def main() -> int:
     DIST.mkdir(exist_ok=True)
-    for paper in ("paperA", "paperC"):
+    for paper in ("paperA", "paperC", "paperD"):
         package(paper)
     return 0
 
