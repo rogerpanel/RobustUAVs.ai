@@ -130,7 +130,7 @@ April 2026).
 
 The right architecture is therefore two machines, added in sequence:
 
-1. **Now:** the CX52 cloud server is the permanent home for the website, the
+1. **Now:** the CPX42 cloud server is the permanent home for the website, the
    artifact, the schema/adapters, the detector campaign, and CPU experiments.
 2. **When GPU training is needed:** order a GEX dedicated server, and link it to
    the cloud server's private network. Hetzner supports connecting Cloud
