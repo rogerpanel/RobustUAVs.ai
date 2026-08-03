@@ -19,7 +19,7 @@ those are the only ones worth slowing down for.
 | # | Field | Set it to | Changeable later? |
 |---|---|---|---|
 | 1 | **Location** | **Helsinki** (`eu-central`) | **No** — a move means snapshot → new server. Volumes and Primary IPs are location-bound too. |
-| 2 | **Image** | **Ubuntu 24.04 LTS** | Only by *Rebuild*, which **wipes the disk**. |
+| 2 | **Image** | **Ubuntu 26.04 LTS** (Resolute Raccoon) or 24.04 LTS | Only by *Rebuild*, which **wipes the disk**. |
 | 3 | **Type** | Shared vCPU → **x86** tab → **CPX32** | Yes (see §2b of infrastructure.md — but only ever with "CPU and RAM only"). |
 | 4 | **Networking** | Public IPv4 ✅ · Public IPv6 ✅ | Yes. |
 | 5 | **SSH keys** | **Add your public key here** | ⚠️ **No — not via the Console.** |
@@ -49,6 +49,14 @@ cat ~/.ssh/robustuavs.pub          # paste this into Hetzner
 ```
 
 Paste the `.pub` line — never the file without `.pub`.
+
+**Reusing an existing key is fine**, and if you already have keys in the
+project (e.g. one from another server), simply tick them here. Because keys
+cannot be added through the Console afterwards, **tick every key whose private
+half you still control** — selecting several costs nothing, all of them land in
+`/root/.ssh/authorized_keys`, and it is cheap insurance against discovering
+later that one private key is gone. Do not tick a key you no longer trust:
+revoking it means editing `authorized_keys` on the server, not the Console.
 
 **(11) Cloud config — free now, tedious later.** Cloud-init runs *once*, at
 first boot; there is no way to attach it to a running server. Paste
@@ -80,6 +88,42 @@ challenge. That is the main practical reason to prefer Origin CA here.
 (`CAX`) is cheaper per core, but `third_party/datamut` is C++ built on the host
 and the PyTorch/CUDA ecosystem is smoothest on x86; the saving is not worth the
 wheel-availability risk for a paper artifact.
+
+### On the image: 24.04 vs 26.04
+
+Both are LTS. **26.04 (Resolute Raccoon)** has the longer support window and
+Docker publishes a `resolute` pool, so `deploy/cloud-init.yaml` works on it.
+The only rough edge on a four-month-old LTS is third-party apt repositories
+that have not built for the new codename yet — if the Caddy step fails during
+first boot, `apt install caddy` from the distro archive, or point the Cloudsmith
+list at `noble` instead. Nothing else in the cloud config is version-sensitive.
+
+### Skipping the firewall and backups on the first build
+
+Both are safe to leave unchecked now — unlike SSH keys and cloud config,
+**both can be added at any time from the Console**, to a running server, with
+no rebuild and no downtime. Only two things follow from skipping them.
+
+**Without a Cloud Firewall the host firewall is doing all the work.** That is
+acceptable, but only if the machine is actually hardened: `deploy/cloud-init.yaml`
+sets key-only SSH, `ufw` denying everything inbound except 22/80/443, and
+`fail2ban`. If you skip the cloud config *as well*, the server is bare — in that
+case run the hardening block in §2.3 immediately after first login, before
+anything else.
+
+The second consequence is that your origin IPv4 is directly reachable, so the
+Cloudflare proxy can be bypassed by anyone who learns the address. Harmless
+while the host serves nothing, but **add the Cloud Firewall (`80,443/tcp` from
+Cloudflare ranges only) before the artifact URL goes into a submitted paper.**
+
+**Without Backups you have no rollback.** For the first days that is fine —
+there is nothing on the disk that is not in GitHub or on Kaggle. Turn the
+20% option on (~$8.40/mo on CPX32) once the corpus is staged and campaign
+output starts accumulating, i.e. once the disk holds something you cannot
+cheaply regenerate. Two caveats worth knowing early: Backups are **deleted
+with the server**, so they are not a pause mechanism (convert one to a snapshot
+first), and they are not offsite — `restic` to a Hetzner Storage Box still
+belongs on the list.
 
 ### Before you click *Create*
 
@@ -318,11 +362,11 @@ you want a manual approval step.
 
 ```
 [ ]  1. Laptop: ssh-keygen; copy the .pub
-[ ]  2. Hetzner: create CPX32 / Helsinki / Ubuntu 24.04 LTS / x86
-         - SSH key selected            <- cannot be added later
+[ ]  2. Hetzner: create CPX32 / Helsinki / Ubuntu 26.04 LTS / x86
+         - SSH key(s) selected         <- cannot be added later
          - cloud-init pasted           <- first boot only
-         - firewall attached
-         - quantity 1, price ~$41.99
+         - firewall + backups optional <- both attachable any time
+         - quantity 1, price ~$42.59 with the IPv4
 [ ]  3. Cloudflare DNS: A + AAAA + CNAME, grey cloud for now
 [ ]  4. ssh root@IP; cloud-init status --wait; verify the deploy user
 [ ]  5. Origin CA cert -> /etc/caddy/certs; install Caddyfile; reload
