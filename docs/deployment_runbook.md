@@ -162,12 +162,28 @@ Cloudflare dashboard → `robustuavs.ai` → **DNS** → *Add record*:
 | Type | Name | Content | Proxy | TTL |
 |---|---|---|---|---|
 | A | `@` | server IPv4 | Proxied 🟠 | Auto |
-| AAAA | `@` | server IPv6 (`…::1` of the assigned /64) | Proxied 🟠 | Auto |
+| AAAA | `@` | server IPv6 — the `::1` host, **without** the `/64` | Proxied 🟠 | Auto |
 | CNAME | `www` | `robustuavs.ai` | Proxied 🟠 | Auto |
 | A | `artifact` *(optional)* | server IPv4 | Proxied 🟠 | Auto |
 
-Hetzner assigns an IPv6 `/64`, not a single address; use the `::1` host inside
-it — the console shows the exact form under the server's *Networking* tab.
+**The AAAA record needs a single address, not the `/64` Hetzner shows you.**
+The console displays something like `2a01:4f9:c014:d5f2::/64` — that is a
+*prefix*, naming the whole block of 2^64 addresses Hetzner routes to the
+server, and Cloudflare rightly rejects it ("Enter a valid IPv6 address").
+Strip the `/64` and give the host part, which Hetzner configures as `::1`:
+
+```
+console shows   2a01:4f9:c014:d5f2::/64      <- a subnet, not an address
+paste into DNS  2a01:4f9:c014:d5f2::1        <- the server itself
+```
+
+Do not use the bare `…d5f2::` either: an all-zero host part is the
+subnet-router anycast address, not the machine. Confirm what the interface
+actually holds once you can log in:
+
+```bash
+ip -6 addr show scope global      # expect …:d5f2::1/64 on eth0
+```
 
 **Leave the proxy ON (orange 🟠) from the very first save.** The moment a
 record is published grey, the origin IPv4 is scraped into passive-DNS archives
