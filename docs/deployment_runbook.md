@@ -216,11 +216,32 @@ enable **Always Use HTTPS** and **HSTS**.
 
 ### 2.3 First login and hardening
 
+> **The Hetzner web Console is not the way in.** That black screen with
+> `<name> login:` is the server's own local terminal (VNC), so it wants a
+> **Linux account on the machine** — never your Hetzner account e-mail and
+> password. And because you selected an SSH key at creation, Hetzner did *not*
+> generate a root password: **root has no password at all**, so nothing you
+> type at that prompt can succeed. Close the tab and use SSH.
+>
+> If key login genuinely fails, Hetzner Console → the server → **Rescue →
+> Reset root password** issues a one-time password that *does* work at the
+> console. Consider setting a lasting one afterwards (`passwd root`) purely so
+> the VNC escape hatch works if you ever lock yourself out of SSH — it costs
+> nothing, since `PasswordAuthentication no` keeps it unusable over the network
+> and the console itself sits behind your Hetzner login.
+
 ```bash
 ssh root@<SERVER_IPv4>              # first login uses the key from form field 5
 cloud-init status --wait            # wait for the cloud config to finish
 ssh deploy@<SERVER_IPv4>            # from here on, work as `deploy`
 ```
+
+**Did the cloud config actually run?** A quick tell before you even log in:
+the console's login banner shows the hostname. `deploy/cloud-init.yaml` sets it
+to lowercase `robustuavs`, whereas Hetzner derives it from the server *name* if
+no cloud config ran — so a banner reading `RobustUAVs login:` means the box came
+up without one. Confirm properly with `cloud-init status` (expect `status: done`
+and, if it ran, a `deploy` user in `/etc/passwd`).
 
 If you skipped the cloud config, do the equivalent by hand:
 
