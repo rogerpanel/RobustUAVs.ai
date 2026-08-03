@@ -1,0 +1,103 @@
+#cloud-config
+# RobustUAVs.ai — first-boot provisioning for the Hetzner CPX32.
+#
+# Paste this into the "Cloud config" box on the Hetzner create-server form.
+# It only runs ONCE, at first boot, so it cannot be attached afterwards —
+# if you skip it, run docs/deployment_runbook.md §2.3 by hand instead.
+#
+# BEFORE PASTING, replace:
+#   <YOUR_SSH_PUBLIC_KEY>   your ~/.ssh/id_ed25519.pub, one line
+# Everything else is generic.
+
+hostname: robustuavs
+fqdn: robustuavs.ai
+manage_etc_hosts: true
+
+users:
+  - name: deploy
+    # `docker` is added in runcmd instead: the group does not exist yet at
+    # user-creation time, and naming a missing group here aborts the step.
+    groups: [sudo]
+    shell: /bin/bash
+    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+    ssh_authorized_keys:
+      - <YOUR_SSH_PUBLIC_KEY>
+
+# Key-only SSH. Hetzner already installs your selected key for root; this
+# closes password auth entirely and moves day-to-day work to `deploy`.
+ssh_pwauth: false
+disable_root: false
+
+package_update: true
+package_upgrade: true
+packages:
+  - git
+  - curl
+  - ca-certificates
+  - gnupg
+  - ufw
+  - fail2ban
+  - unattended-upgrades
+  - python3-venv
+  - python3-pip
+  - build-essential
+  - rsync
+  - htop
+  - debian-keyring
+  - debian-archive-keyring
+  - apt-transport-https
+
+write_files:
+  # Unattended security upgrades, with an automatic reboot at 04:00 local.
+  - path: /etc/apt/apt.conf.d/20auto-upgrades
+    content: |
+      APT::Periodic::Update-Package-Lists "1";
+      APT::Periodic::Unattended-Upgrade "1";
+  - path: /etc/apt/apt.conf.d/51unattended-upgrades-local
+    content: |
+      Unattended-Upgrade::Automatic-Reboot "true";
+      Unattended-Upgrade::Automatic-Reboot-Time "04:00";
+
+  # Host firewall, in addition to the Hetzner Cloud Firewall. Two layers,
+  # because the cloud firewall is easy to detach by accident.
+  - path: /etc/fail2ban/jail.d/sshd.local
+    content: |
+      [sshd]
+      enabled = true
+      maxretry = 4
+      bantime = 1h
+
+runcmd:
+  # --- Docker (official repo, not the distro's older docker.io) ------------
+  - install -m 0755 -d /etc/apt/keyrings
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+  - chmod a+r /etc/apt/keyrings/docker.asc
+  - >
+    echo "deb [arch=$(dpkg --print-architecture)
+    signed-by=/etc/apt/keyrings/docker.asc]
+    https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable"
+    > /etc/apt/sources.list.d/docker.list
+  - apt-get update
+  - DEBIAN_FRONTEND=noninteractive apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+  - usermod -aG docker deploy
+
+  # --- Caddy (reverse proxy; simplest pairing with a Cloudflare Origin CA) --
+  - curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+  - curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' > /etc/apt/sources.list.d/caddy-stable.list
+  - apt-get update
+  - DEBIAN_FRONTEND=noninteractive apt-get install -y caddy
+
+  # --- Host firewall -------------------------------------------------------
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - ufw allow 22/tcp
+  - ufw allow 80/tcp
+  - ufw allow 443/tcp
+  - ufw --force enable
+  - systemctl enable --now fail2ban
+
+  # --- Application directories, owned by deploy ---------------------------
+  - mkdir -p /srv/robustuavs /srv/data /etc/caddy/certs
+  - chown -R deploy:deploy /srv/robustuavs /srv/data
+
+final_message: "robustuavs.ai base image ready after $UPTIME seconds"

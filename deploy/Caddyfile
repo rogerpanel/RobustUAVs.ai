@@ -1,0 +1,56 @@
+# /etc/caddy/Caddyfile — robustuavs.ai
+#
+# Uses a Cloudflare Origin CA certificate rather than Let's Encrypt, so that
+# nothing has to renew through the Cloudflare proxy and port 80 never needs to
+# be reachable from the public internet (see docs/deployment_runbook.md §2.4).
+#
+# Install the pair produced in the Cloudflare dashboard as:
+#   /etc/caddy/certs/origin.pem   (certificate)
+#   /etc/caddy/certs/origin.key   (private key, chmod 600, owner caddy)
+
+{
+	# No ACME: certificates are supplied manually.
+	email admin@robustuavs.ai
+	admin off
+}
+
+(origin_tls) {
+	tls /etc/caddy/certs/origin.pem /etc/caddy/certs/origin.key
+}
+
+(common) {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options    "nosniff"
+		Referrer-Policy           "strict-origin-when-cross-origin"
+		-Server
+	}
+	log {
+		output file /var/log/caddy/access.log {
+			roll_size 50MiB
+			roll_keep 10
+		}
+	}
+}
+
+robustuavs.ai, www.robustuavs.ai {
+	import origin_tls
+	import common
+
+	# Static site / project landing page.
+	root * /srv/robustuavs/site
+	file_server
+
+	# Benchmark artifact: schema, adapters, results, paper PDFs.
+	handle_path /artifact/* {
+		root * /srv/robustuavs/artifact
+		file_server browse
+		header Cache-Control "public, max-age=3600"
+	}
+
+	# Dashboard, if/when the container is running. Comment out until then.
+	# handle_path /dashboard/* {
+	#     reverse_proxy 127.0.0.1:8501
+	# }
+}
