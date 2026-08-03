@@ -223,6 +223,24 @@ enable **Always Use HTTPS** and **HSTS**.
 > generate a root password: **root has no password at all**, so nothing you
 > type at that prompt can succeed. Close the tab and use SSH.
 >
+> **Run diagnostics on the right machine.** Until `ssh` actually returns a
+> prompt, every command you type is still executing on your laptop. A
+> `cloud-init status` that reports `disabled`, or an `id deploy` that says
+> `no such user`, is describing your local WSL install, not the server.
+> Check `whoami; hostname` if you are unsure which end you are on.
+>
+> **When a login stalls after the host-key line, ask ssh what it is doing:**
+>
+> ```bash
+> ssh -v root@<SERVER_IPv4>          # -v prints each auth step
+> ```
+>
+> Where it stops is the diagnosis. Stalling right after
+> `Offering public key` means the server is alive but slow or wedged in
+> first-boot work; an immediate `Permission denied (publickey)` means the key
+> is simply not in that account's `authorized_keys` — try `deploy@` before
+> assuming the machine is broken.
+>
 > If key login genuinely fails, Hetzner Console → the server → **Rescue →
 > Reset root password** issues a one-time password that *does* work at the
 > console. Consider setting a lasting one afterwards (`passwd root`) purely so
