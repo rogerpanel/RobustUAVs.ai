@@ -236,12 +236,23 @@ cloud-init status --wait            # wait for the cloud config to finish
 ssh deploy@<SERVER_IPv4>            # from here on, work as `deploy`
 ```
 
-**Did the cloud config actually run?** A quick tell before you even log in:
-the console's login banner shows the hostname. `deploy/cloud-init.yaml` sets it
-to lowercase `robustuavs`, whereas Hetzner derives it from the server *name* if
-no cloud config ran — so a banner reading `RobustUAVs login:` means the box came
-up without one. Confirm properly with `cloud-init status` (expect `status: done`
-and, if it ran, a `deploy` user in `/etc/passwd`).
+**Did the cloud config actually run?** Ask the machine, not the screen:
+
+```bash
+cloud-init status --long     # 'status: done' once it has finished
+id deploy                    # the user only exists if the config ran
+hostnamectl                  # 'robustuavs' if cc_set_hostname applied
+```
+
+Do **not** judge by the VNC login banner. `/etc/issue` is rendered when `getty`
+spawns, which happens before cloud-init reaches the hostname module, so the
+console can keep showing the Hetzner-assigned server name (e.g.
+`RobustUAVs login:`) long after the config has run correctly. It is a stale
+string, not a diagnosis.
+
+Expect `cloud-init status` to report `running` for several minutes on first
+boot — `package_upgrade: true` plus Docker and Caddy is a few hundred megabytes
+of apt work. SSH is available throughout; the config simply is not finished yet.
 
 If you skipped the cloud config, do the equivalent by hand:
 
