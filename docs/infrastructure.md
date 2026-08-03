@@ -57,17 +57,29 @@ overage.
 Add ~$0.60/mo for the IPv4 address. Helsinki carries no location surcharge
 (Singapore adds $16/mo).
 
-### Primary recommendation — **CPX42** (8 vCPU / 16 GB / 320 GB, Helsinki), $81.99/mo
+### Primary recommendation — **create as CPX32, rescale to CPX42 on demand**
+
+Create the server as **CPX32** (4 vCPU / 8 GB / 160 GB, $41.99/mo) and rescale
+it up to **CPX42** (8 vCPU / 16 GB, $81.99/mo) using the **"CPU and RAM only"**
+option whenever a heavy week demands it — then rescale back down.
+
+This gives CPX42 capability when it is needed and CPX32 cost the rest of the
+time. The reason to create at the *smaller* tier is Rule 1 in §2b: a server
+created as CPX42 has a 320 GB disk and can never be downgraded, because disks
+cannot shrink. Creating at CPX32 keeps the 160 GB disk and therefore keeps the
+downgrade path open permanently.
 
 Rationale, tied to the measurements in §1:
-- **16 GB clears the binding constraint.** Measured peak ingest RSS is 0.73 GB;
-  the realistic concurrent load (web + dashboard + an ingest + PyTorch + Docker
-  + TeX) lands around 6–8 GB, so 16 GB runs everything with the corpus
-  comfortably in page cache rather than being re-read from disk.
-- **320 GB is ~9x the 34 GB working set** (3.4 GB corpus + 10.6 GB staging +
-  ~15 GB toolchain + snapshots), leaving room for several more datasets.
-- CPU is not the constraint, so paying for more cores buys nothing here; 8
-  vCPU comes bundled with the RAM tier anyway.
+- **16 GB clears the binding constraint when it matters.** Measured peak ingest
+  RSS is 0.73 GB; the realistic concurrent load (web + dashboard + an ingest +
+  PyTorch + Docker + TeX) lands around 6–8 GB. CPX32's 8 GB handles the current
+  workload; CPX42's 16 GB gives comfort during full-corpus ingest and training,
+  with the corpus held in page cache rather than re-read from disk.
+- **160 GB is ~4.7x the 34 GB working set** (3.4 GB corpus + 10.6 GB staging +
+  ~15 GB toolchain + snapshots) — ample, and the 320 GB of a natively-created
+  CPX42 is headroom this project does not need.
+- CPU is not the constraint, so paying for more cores buys nothing here; the
+  extra vCPUs simply come bundled with the RAM tier.
 
 ### Why *not* 32 GB (CPX62 / CCX33)
 
@@ -109,10 +121,98 @@ reversible choice.
 > server is billed at current rates. Expect the new machine to cost 2.5x
 > (CPX32) to 5x (CPX42) what the current one does.
 
+---
+
+## 2b. Cost control: rescaling up/down, and "pausing" the server
+
+Two Hetzner behaviours govern this, and both are counter-intuitive enough to
+cost money if assumed wrongly.
+
+### Rule 1 — a disk can grow but never shrink
+
+Rescaling offers two modes:
+- **"CPU and RAM only"** — keeps the current disk. **Downgrading stays possible.**
+- **CPU, RAM *and* disk** — grows the disk. **This is irreversible**, and it
+  permanently blocks any downgrade to a plan with a smaller disk.
+
+Consequence for the plan chosen above: a server *created* as CPX42 has a
+320 GB disk, and **cannot** later be downgraded to CPX32 (160 GB), because that
+would require shrinking the disk.
+
+**Therefore, to keep the CPX32 ⇄ CPX42 flexibility you asked for, create the
+server as CPX32 (160 GB) and, when you need more, rescale up choosing
+"CPU and RAM only".** You then get CPX42's 8 vCPU / 16 GB while keeping the
+160 GB disk, and you can drop back to CPX32 whenever the work is quiet.
+
+Nothing is lost by this: the measured working set is ~34 GB, so a 160 GB disk
+is still ~4.7x what the project needs — the 320 GB of a natively-created CPX42
+was headroom we do not require.
+
+### Rule 2 — powering off does **not** stop billing
+
+Hetzner bills a cloud server for as long as it *exists*, regardless of power
+state, because the resources stay reserved. Shutting the server down saves
+nothing. To actually stop paying you must **delete** it.
+
+The safe "pause" pattern is therefore:
+
+1. **Snapshot** the server (this is what preserves the machine).
+2. **Delete** the server.
+3. Later, **create a new server from the snapshot** — same disk contents.
+
+Keep the **Primary IP** when deleting (Hetzner lets you retain it for ~$0.60/mo)
+so the Cloudflare DNS records keep pointing at the right address and nothing
+needs re-pointing on resume.
+
+Note that **Backups** (the 20% add-on) are tied to the server and go away with
+it — they are *not* a pause mechanism. Convert a backup to a snapshot first if
+you want to keep it past deletion. Snapshots are billed on the compressed disk
+size at about €0.0143/GB/month.
+
+### What this costs, for a ~40 GB disk
+
+| State | Cost |
+|---|---|
+| CPX42 running | $81.99/mo |
+| CPX32 running | $41.99/mo |
+| **Paused** (snapshot + retained IPv4) | **≈ $1.22/mo** |
+
+Annualised over realistic research rhythms:
+
+| Pattern | Per year | Saving |
+|---|---:|---:|
+| Always-on CPX42 | $991 | — |
+| Always-on CPX32 | $511 | 48% |
+| 6 mo CPX42 + 6 mo CPX32 | $751 | 24% |
+| 4 mo CPX42 + 4 mo CPX32 + 4 mo paused | $506 | 49% |
+| 3 mo CPX42 + 9 mo paused | $259 | 74% |
+
+Billing is **hourly with a monthly cap**, so partial months are pro-rata: a
+CPX42 alive for ten days costs roughly $27, not $82. Short-lived experiment
+servers are genuinely cheap, and you do not need to delete a server to benefit
+from a partial month.
+
+### Recommended operating rhythm for this project
+
+- **Create as CPX32.** Run the website, artifact, and the detector campaign
+  here permanently — this is the tier that must stay up, since it serves
+  `robustuavs.ai`.
+- **Rescale up to CPX42 ("CPU and RAM only") only for heavy weeks** — full
+  corpus ingest, model training, large sweeps — then rescale back down.
+- **Pause only if the site can go offline**: snapshot + delete, retain the
+  Primary IP. Because the site is the public artifact for a submitted paper,
+  full pausing is probably only appropriate before publication or between
+  project phases.
+- A cheaper always-on alternative if the site must stay up while compute
+  pauses: keep a small CPX12/CPX22 serving the static artifact permanently, and
+  create/delete a bigger machine per experiment campaign. The repo supports
+  this: everything is reproducible from `experiments/run_real_corpus.sh`.
+
 ### Add-ons
-- **Volume (block storage)** — not needed at CPX42's 320 GB. If the corpus later
-  outgrows it, attach a Volume and mount it at `data/`, so the corpus can be
-  snapshotted, detached, and resized without touching the OS disk.
+- **Volume (block storage)** — not needed at 160 GB. Note a further advantage
+  of Volumes for this workflow: a Volume **survives server deletion**, so
+  putting `data/` on one lets you delete/recreate the compute node freely
+  without re-downloading the corpus.
 - **Backups** — enable (20% surcharge). Cheap insurance for a machine that will
   hold months of experiment output.
 - **Location** — **Helsinki (`eu-central`)**: same location as `robustidps.ai`,
@@ -130,8 +230,9 @@ April 2026).
 
 The right architecture is therefore two machines, added in sequence:
 
-1. **Now:** the CPX42 cloud server is the permanent home for the website, the
-   artifact, the schema/adapters, the detector campaign, and CPU experiments.
+1. **Now:** the cloud server (CPX32, rescaled up as needed) is the permanent
+   home for the website, the artifact, the schema/adapters, the detector
+   campaign, and CPU experiments.
 2. **When GPU training is needed:** order a GEX dedicated server, and link it to
    the cloud server's private network. Hetzner supports connecting Cloud
    networks to dedicated servers via **vSwitch** (confirm the current procedure
@@ -178,8 +279,8 @@ in the months you actually train.
   Box** for the corpus and results — snapshots alone are not an offsite backup.
 
 **Provisioning order** (each step is reversible):
-1. Create the CPX42 in Helsinki with an SSH key + your cloud-init/firewall
-   attached at creation time.
+1. Create the server as **CPX32** in Helsinki with an SSH key + your
+   cloud-init/firewall attached at creation time.
 2. Point Cloudflare A/AAAA at it, proxied.
 3. Install Origin CA cert, bring up the reverse proxy, verify `Full (strict)`.
 4. `git clone` this repo, `pip install -r requirements.txt`, stage the corpus
@@ -191,10 +292,15 @@ in the months you actually train.
 
 ## 5. One-line summary for the supervisor
 
-> Take **CPX42 (8 vCPU / 16 GB / 320 GB) in Helsinki, $81.99/mo** -- 16 GB is
-> what the corpus parsing actually requires and 320 GB is ~9x the working set;
-> skip the 32 GB tiers, whose only benefit costs an extra ~$850/yr. Check the
-> *Cost-Optimized* tab first in case a cheaper 16 GB x86 option has stock.
+> **Create it as CPX32 (4 vCPU / 8 GB / 160 GB, $41.99/mo) in Helsinki, and
+> rescale up to CPX42 with the "CPU and RAM only" option** whenever a heavy week
+> needs 16 GB -- creating at the bigger tier would give a 320 GB disk that can
+> never shrink, permanently blocking the downgrade path. 160 GB is still ~4.7x
+> the working set. Skip the 32 GB tiers, whose only benefit costs ~$850/yr extra.
+> Check the *Cost-Optimized* tab first in case a cheaper x86 option has stock.
+> To truly pause, snapshot and **delete** the server (a powered-off server is
+> still billed in full) and retain the Primary IP; an idle month then costs
+> about $1.22 instead of $42-82.
 > Note that a new server costs 2.5-5x the grandfathered price of the existing
 > `robustidps.ai` box. A GPU is a **separate** Hetzner dedicated (GEX) machine
 > added later and linked by vSwitch, because Hetzner Cloud has no GPU
