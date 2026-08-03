@@ -14,6 +14,13 @@ fqdn: robustuavs.ai
 manage_etc_hosts: true
 
 users:
+  # `- default` MUST stay first. A `users:` list without it REPLACES the
+  # image's default user, and cloud-init then writes the SSH key Hetzner
+  # injects at creation to the first user in this list instead of root —
+  # so `ssh root@<ip>` stops working on a machine you have not logged into
+  # yet. Keeping `- default` preserves Hetzner's key -> root, and adds
+  # `deploy` alongside it.
+  - default
   - name: deploy
     # `docker` is added in runcmd instead: the group does not exist yet at
     # user-creation time, and naming a missing group here aborts the step.
