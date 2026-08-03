@@ -169,12 +169,28 @@ Cloudflare dashboard → `robustuavs.ai` → **DNS** → *Add record*:
 Hetzner assigns an IPv6 `/64`, not a single address; use the `::1` host inside
 it — the console shows the exact form under the server's *Networking* tab.
 
-**Set the proxy to DNS-only (grey ☁️) while you build**, so you can `curl` the
-origin directly and see real errors instead of Cloudflare's. Switch to Proxied
-(orange) once §2.4 verifies. Remember that the Cloudflare-IPs-only firewall
-rule from §1 will block your direct test — either add your admin IP to that
-rule temporarily, or test over the SSH tunnel:
-`ssh -L 8080:127.0.0.1:80 deploy@<IP>`.
+**Leave the proxy ON (orange 🟠) from the very first save.** The moment a
+record is published grey, the origin IPv4 is scraped into passive-DNS archives
+and stays publicly associated with the domain **forever**, even after you turn
+the proxy on — which quietly defeats the point of the Cloudflare-IPs-only
+firewall rule. Publishing grey "just while building" is a one-way door.
+
+The only thing you give up is direct `curl` diagnostics, and the SSH tunnel
+covers that without exposing anything:
+
+```bash
+ssh -L 8080:127.0.0.1:80 deploy@<SERVER_IPv4>   # then curl http://127.0.0.1:8080/
+```
+
+**Expect Cloudflare error 521 ("web server is down") between saving the record
+and finishing §2.4.** That is correct behaviour, not a misconfiguration: the
+proxy is live but no web server is listening on the origin yet. It clears the
+moment Caddy comes up with the Origin CA certificate.
+
+Before saving, confirm the IPv4 you paste is the **new** server's — Hetzner
+Console → Servers → the CPX32 → *Networking* → Public IPv4. It is easy to
+paste the address of an existing box out of muscle memory, and the resulting
+failure looks like a TLS problem rather than a wrong-host problem.
 
 Then **SSL/TLS → Overview → Full (strict)**, and under *Edge Certificates*
 enable **Always Use HTTPS** and **HSTS**.
@@ -367,10 +383,11 @@ you want a manual approval step.
          - cloud-init pasted           <- first boot only
          - firewall + backups optional <- both attachable any time
          - quantity 1, price ~$42.59 with the IPv4
-[ ]  3. Cloudflare DNS: A + AAAA + CNAME, grey cloud for now
+[ ]  3. Cloudflare DNS: A + AAAA + CNAME, Proxied from the first save
+         (expect error 521 until step 5 — that is normal)
 [ ]  4. ssh root@IP; cloud-init status --wait; verify the deploy user
 [ ]  5. Origin CA cert -> /etc/caddy/certs; install Caddyfile; reload
-[ ]  6. curl the origin; then flip DNS to Proxied; SSL/TLS = Full (strict)
+[ ]  6. SSL/TLS = Full (strict); curl https://robustuavs.ai/ -> 200
 [ ]  7. Server: generate the deploy key; add it read-only on GitHub
 [ ]  8. git clone via the github-robustuavs alias into /srv/robustuavs/repo
 [ ]  9. venv + requirements; stage the corpus; run_real_corpus.sh
