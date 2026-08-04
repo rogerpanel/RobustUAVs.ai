@@ -400,6 +400,24 @@ sudo caddy validate --config /etc/caddy/Caddyfile
 sudo systemctl reload caddy
 ```
 
+Three Caddy failure modes cost real time here; all three look like something
+else:
+
+- **`systemctl reload caddy` always fails** → the Caddyfile has `admin off`.
+  Reload pushes the new config through Caddy's admin API, so with no endpoint
+  the reload errors *while the old process keeps serving its previous config*.
+  The deploy looks successful and the site never changes. Keep the admin
+  endpoint enabled; it binds to localhost:2019 only.
+- **`caddy validate` says "Valid configuration" but the service exits
+  immediately** (`Duration: 3ms`) → validate parses the config without opening
+  files or binding ports, so any runtime resource problem passes it. The cause
+  is only ever in `journalctl -u caddy --no-pager -n 40 | grep -i error`, as an
+  `Error: loading initial config: …` line. A log file under `/var/log` that the
+  `caddy` user cannot write is the classic one — which is why this Caddyfile
+  logs to journald instead (`journalctl -u caddy -f`).
+- **`stapling OCSP … no URL to issuing certificate`** → not an error. Origin CA
+  certificates have no OCSP responder. Ignore it.
+
 Verify, then flip the DNS records to Proxied:
 
 ```bash
