@@ -1,9 +1,25 @@
-# Core dependencies. Nothing here is optional and nothing here pins a C
-# extension, so this file must install cleanly on any Python 3.11+ including
-# very new interpreters.
-fastapi==0.115.6
-uvicorn[standard]==0.34.0
-pydantic==2.10.4
-httpx==0.28.1
-python-multipart==0.0.20
-sqlalchemy==2.0.36
+# Lower bounds, not exact pins — deliberately.
+#
+# The server runs CPython 3.14. An exact pin resolves to a release that
+# predates the interpreter, so no cp314 wheel exists and pip falls back to
+# building from source. For pydantic that means compiling pydantic-core
+# through PyO3, and PyO3 0.22.x refuses to build against anything newer than
+# Python 3.13:
+#
+#   error: the configured Python interpreter version (3.14) is newer than
+#          PyO3's maximum supported version (3.13)
+#
+# The failure is not the pin being "wrong", it is a pin being unable to know
+# about an interpreter released after it. Lower bounds let pip pick a release
+# that ships a wheel for whatever Python the host has, which is the property
+# this file actually needs.
+#
+# For byte-exact reproduction, generate a lockfile on the target host:
+#     pip install -r requirements.txt && pip freeze > requirements.lock
+# and install from that. The lock belongs to the host, not to the repo.
+fastapi>=0.115.6
+uvicorn[standard]>=0.34.0
+pydantic>=2.11
+httpx>=0.28.1
+python-multipart>=0.0.20
+sqlalchemy>=2.0.36

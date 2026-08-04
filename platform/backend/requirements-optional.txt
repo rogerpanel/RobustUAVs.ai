@@ -10,7 +10,9 @@
 # Install only after bringing up platform/docker-compose.yml:
 #     pip install -r requirements-optional.txt
 #
-# Lower bounds rather than exact pins: these track the interpreter, and an
-# exact pin here reintroduces the failure above on the next Python release.
+# Lower bounds rather than exact pins, for the same reason as the core file:
+# an exact pin cannot know about an interpreter released after it, and pip
+# then tries to build a C or Rust extension that does not support the host's
+# Python.
 psycopg[binary]>=3.2.3
 redis>=5.2.1
