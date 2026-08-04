@@ -14,6 +14,7 @@ REPO="${REPO:-/srv/robustuavs/repo}"
 BRANCH="${BRANCH:-main}"
 VENV="${VENV:-/srv/robustuavs/venv}"
 ARTIFACT="${ARTIFACT:-/srv/robustuavs/artifact}"
+SITE="${SITE:-/srv/robustuavs/site}"
 
 log() { printf '\033[1;36m[deploy]\033[0m %s\n' "$*"; }
 
@@ -54,6 +55,11 @@ if [ -d data/staging ] && compgen -G "data/staging/*/events.jsonl" >/dev/null; t
 else
 	log "no staged corpus on this host — skipping schema gate"
 fi
+
+# Publish the landing page.
+log "publishing site -> $SITE"
+mkdir -p "$SITE"
+rsync -a --delete site/ "$SITE/"
 
 # Publish the artifact tree. rsync --delete keeps it an exact mirror of the
 # committed results, so a removed file disappears from the site too.
