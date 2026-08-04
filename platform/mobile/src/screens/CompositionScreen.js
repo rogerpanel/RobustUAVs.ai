@@ -3,7 +3,7 @@ import {
   View, Text, ScrollView, StyleSheet, Pressable, ActivityIndicator,
 } from 'react-native';
 import { api, Unavailable } from '../api/client';
-import { theme } from '../theme';
+import { useTheme } from '../theme';
 import Card from '../components/Card';
 import Chip from '../components/Chip';
 
@@ -25,6 +25,8 @@ const MAPPINGS = [
 const MARGINS = [2, 5, 10, 20];
 
 export default function CompositionScreen() {
+  const { t } = useTheme();
+  const styles = makeStyles(t);
   const [theta, setTheta] = useState(0.25);
   const [mapping, setMapping] = useState('ekf');
   const [margin, setMargin] = useState(10);
@@ -109,7 +111,7 @@ export default function CompositionScreen() {
         </Text>
       </Card>
 
-      {busy ? <ActivityIndicator color={theme.accent} style={{ marginVertical: 20 }} /> : null}
+      {busy ? <ActivityIndicator color={t.accent} style={{ marginVertical: 20 }} /> : null}
 
       {error ? (
         <Card title="Unavailable"><Text style={styles.err}>{error}</Text></Card>
@@ -121,8 +123,8 @@ export default function CompositionScreen() {
           source={result.source}
           subtitle={result.note}
         >
-          <View style={[styles.verdict, { borderColor: inside ? theme.ok : theme.danger }]}>
-            <Text style={[styles.verdictText, { color: inside ? theme.ok : theme.danger }]}>
+          <View style={[styles.verdict, { borderColor: inside ? t.ok : t.danger }]}>
+            <Text style={[styles.verdictText, { color: inside ? t.ok : t.danger }]}>
               {inside ? 'INSIDE the certified window' : 'OUTSIDE the certified window'}
             </Text>
           </View>
@@ -136,9 +138,9 @@ export default function CompositionScreen() {
                v={result.data.certified_mcr ?? 'none at this point'} />
 
           <View style={styles.chips}>
-            <Chip label={p.mapping} color={p.mapping === 'kinematic' ? theme.bridge : theme.ok} />
-            <Chip label={`H = ${p.n_malicious_hops} hops`} color={theme.network} />
-            <Chip label={`slack s = ${p.slack_s} s`} color={theme.network} />
+            <Chip label={p.mapping} color={p.mapping === 'kinematic' ? t.bridge : t.ok} />
+            <Chip label={`H = ${p.n_malicious_hops} hops`} color={t.network} />
+            <Chip label={`slack s = ${p.slack_s} s`} color={t.network} />
           </View>
           <Text style={styles.hint}>{p.mapping_note}</Text>
         </Card>
@@ -159,6 +161,8 @@ export default function CompositionScreen() {
 }
 
 function Row({ k, v }) {
+  const { t } = useTheme();
+  const styles = makeStyles(t);
   return (
     <View style={styles.kv}>
       <Text style={styles.k}>{k}</Text>
@@ -167,20 +171,20 @@ function Row({ k, v }) {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: theme.bg },
+const makeStyles = (t) => StyleSheet.create({
+  screen: { flex: 1, backgroundColor: t.bg },
   content: { padding: 16, paddingBottom: 48 },
-  h1: { color: theme.text, fontSize: 24, fontWeight: '800', marginBottom: 6 },
-  lede: { color: theme.muted, fontSize: 14, lineHeight: 20, marginBottom: 18 },
+  h1: { color: t.text, fontSize: 24, fontWeight: '800', marginBottom: 6 },
+  lede: { color: t.muted, fontSize: 14, lineHeight: 20, marginBottom: 18 },
   row: { flexDirection: 'row', flexWrap: 'wrap' },
   pill: {
-    borderWidth: 1, borderColor: theme.border, borderRadius: 8,
+    borderWidth: 1, borderColor: t.border, borderRadius: 8,
     paddingHorizontal: 12, paddingVertical: 7, marginRight: 8, marginBottom: 8,
   },
-  pillOn: { borderColor: theme.accent, backgroundColor: `${theme.accent}22` },
-  pillText: { color: theme.muted, fontSize: 13, fontWeight: '600' },
-  pillTextOn: { color: theme.accent },
-  hint: { color: theme.muted, fontSize: 11, lineHeight: 16, marginTop: 4 },
+  pillOn: { borderColor: t.accent, backgroundColor: `${t.accent}22` },
+  pillText: { color: t.muted, fontSize: 13, fontWeight: '600' },
+  pillTextOn: { color: t.accent },
+  hint: { color: t.muted, fontSize: 11, lineHeight: 16, marginTop: 4 },
   verdict: {
     borderWidth: 1, borderRadius: 8, paddingVertical: 10, alignItems: 'center',
     marginBottom: 12,
@@ -188,11 +192,11 @@ const styles = StyleSheet.create({
   verdictText: { fontSize: 14, fontWeight: '800', letterSpacing: 0.5 },
   kv: {
     flexDirection: 'row', justifyContent: 'space-between',
-    paddingVertical: 5, borderBottomWidth: 1, borderBottomColor: theme.border,
+    paddingVertical: 5, borderBottomWidth: 1, borderBottomColor: t.border,
   },
-  k: { color: theme.muted, fontSize: 12, flex: 1 },
-  v: { color: theme.text, fontSize: 12, fontWeight: '700' },
+  k: { color: t.muted, fontSize: 12, flex: 1 },
+  v: { color: t.text, fontSize: 12, fontWeight: '700' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 10 },
-  body: { color: theme.text, fontSize: 13, lineHeight: 19 },
-  err: { color: theme.danger, fontSize: 13 },
+  body: { color: t.text, fontSize: 13, lineHeight: 19 },
+  err: { color: t.danger, fontSize: 13 },
 });

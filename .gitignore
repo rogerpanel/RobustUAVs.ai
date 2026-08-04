@@ -25,3 +25,5 @@ platform/mobile/.expo/
 platform/backend/.venv/
 platform/backend/__pycache__/
 platform/backend/app/__pycache__/
+platform/backend/*.db
+platform/.env
