@@ -139,7 +139,7 @@ def fig_headline():
     for mname, (style, label) in styles.items():
         pts = sorted({(float(r["theta_s"]), float(r["certified_floor"]))
                       for r in rows if r["mapping"] == mname
-                      and r["amplification"] == "gronwall_L1.01_T1"
+                      and r["amplification"].startswith("gronwall_")
                       and r["scenario"] == "1"})
         if pts:
             body.append(f"\\addplot[{style}] coordinates {{{coords(pts)}}};\n"
@@ -342,14 +342,14 @@ def block_paperA_fig3():
                "kinematic $\\gamma{=}15$\\,m/s")]
     window = load("certified_operating_window.csv")
     ekf10 = next(r for r in window if r["scenario"] == "1"
-                 and r["amplification"] == "gronwall_L1.01_T1"
+                 and r["amplification"].startswith("gronwall_")
                  and r["mapping"] == "empirical_ekf" and r["margin_m"] == "10.0")
     body = [f"\\fill[netcol!9] (axis cs:{ekf10['benign_ceiling_s']},0) "
             f"rectangle (axis cs:{ekf10['theta_star_s']},1.05);\n"]
     for mname, style, leg in styles:
         pts = sorted({(float(r["theta_s"]), float(r["certified_floor"]))
                       for r in rows if r["mapping"] == mname
-                      and r["amplification"] == "gronwall_L1.01_T1"
+                      and r["amplification"].startswith("gronwall_")
                       and r["scenario"] == "1"})
         body.append(f"\\addplot[{style}] coordinates {{{coords(pts)}}};\n"
                     f"\\addlegendentry{{{leg}}}\n")
@@ -370,7 +370,7 @@ def block_paperA_fig4_sensitivity():
     certified_operating_window.csv (scenario 1, Gronwall tube)."""
     window = [r for r in load("certified_operating_window.csv")
               if r["scenario"] == "1"
-              and r["amplification"] == "gronwall_L1.01_T1"]
+              and r["amplification"].startswith("gronwall_")]
     styles = [("empirical_receiver", "autocol,mark=diamond*,thick,dotted",
                "empirical $\\gamma{=}1.20$\\,m/s (receiver)"),
               ("empirical_ekf", "netcol,mark=*,thick",
