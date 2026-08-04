@@ -16,9 +16,17 @@ Corrected model (docs/certified_regime_analysis.md):
   * Kinematic mapping (staleness_v0, sound worst case): delta_pos =
     v_max * Delta(theta). The Whelan-grounded empirical tightening is
     real-corpus work (Kaggle unreachable this session).
-  * State-space Gronwall tube: rho(theta) = delta_pos(theta) * exp(L*T),
-    reference constants L=1.01, T=1 (amplification 2.746). L for the real
-    closed loop is calibration-pending; we also report the un-amplified
+  * State-space Gronwall tube: rho(theta) = delta_pos(theta) * exp(L*T).
+    L defaults to the MEASURED LOCAL constant 1.181 (experiments/
+    local_lipschitz.py), not the global power-iteration estimate 1.01. The
+    local value is the defensible one because it is LARGER: it is measured
+    along the hidden-state trajectories the integrator actually visits on
+    operating-region inputs, so it does not flatter the bound. Using the
+    global estimate here while the paper's headline figure quotes the local
+    one produced an internal inconsistency (gamma_req 7.28 vs 6.14 m/s at
+    m=10) -- the conclusion was unchanged but two quoted numbers came from a
+    different L than the caption claimed. Override with LIPSCHITZ_L= to
+    reproduce the earlier global-L numbers. We also report the un-amplified
     kinematic tube (A=1) as the lower envelope.
   * Certified floor for corridor margin m: mission certified iff
     rho(theta) <= m. Margin family M = {2, 5, 10, 20} m (stated parameters;
@@ -48,6 +56,7 @@ from __future__ import annotations
 
 import csv
 import math
+import os
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -60,8 +69,12 @@ RESULTS = REPO / "results"
 
 SLACK_S = 5.0          # inter-UAV contact window (Keiwan R2)
 V_MAX = 15.0           # m/s, stated kinematic worst-case speed
-L_REF, T_REF = 1.01, 1.0
-AMP = math.exp(L_REF * T_REF)          # 2.746 reference tube amplification
+# Measured local Lipschitz constant over the operating region. Overridable so
+# the earlier global-L campaign stays reproducible.
+L_REF = float(os.environ.get("LIPSCHITZ_L", "1.181"))
+T_REF = float(os.environ.get("HORIZON_T", "1.0"))
+AMP = math.exp(L_REF * T_REF)          # tube amplification, 3.258 at L=1.181
+AMP_TAG = f"gronwall_L{L_REF:g}_T{T_REF:g}"
 MARGINS_M = [2.0, 5.0, 10.0, 20.0]     # stated margin family (10 = PX4-class)
 
 
@@ -184,7 +197,7 @@ def main() -> int:
     for theta in THETA_CURVE:
         for scen, H in sorted(Hs.items()):
             d = H * min(theta, SLACK_S)
-            for amp, amp_tag in [(AMP, "gronwall_L1.01_T1"), (1.0, "unamplified_A1")]:
+            for amp, amp_tag in [(AMP, AMP_TAG), (1.0, "unamplified_A1")]:
                 for mname, mp in MAPPINGS.items():
                     g = mp["gamma_m_s"]
                     curve.append({
@@ -209,7 +222,7 @@ def main() -> int:
     # nonempty iff theta* > BENIGN_CEIL_S (measured FPR=0 floor).
     window = []
     for scen, H in sorted(Hs.items()):
-        for amp, amp_tag in [(AMP, "gronwall_L1.01_T1"), (1.0, "unamplified_A1")]:
+        for amp, amp_tag in [(AMP, AMP_TAG), (1.0, "unamplified_A1")]:
             for mname, mp in MAPPINGS.items():
                 g = mp["gamma_m_s"]
                 for m in MARGINS_M:
@@ -241,7 +254,7 @@ def main() -> int:
     sens = []
     for theta_t in (0.25, 0.5, 1.0):
         for scen, H in sorted(Hs.items()):
-            for amp, amp_tag in [(AMP, "gronwall_L1.01_T1"),
+            for amp, amp_tag in [(AMP, AMP_TAG),
                                  (1.0, "unamplified_A1")]:
                 for m in MARGINS_M:
                     g_req = m / (theta_t * amp * H)
@@ -343,7 +356,7 @@ def main() -> int:
               "margins {2,5,10,20} m; scenario 1):")
         for theta in (0.178, 0.25, 0.5, 1.0, 2.0, 5.0, 10.0):
             row = [c for c in curve if c["theta_s"] == theta
-                   and c["amplification"] == "gronwall_L1.01_T1"
+                   and c["amplification"] == AMP_TAG
                    and c["mapping"] == mname and c["scenario"] == "1"]
             if row:
                 print(f"  theta={theta:>6}: floor={row[0]['certified_floor']:.2f} "

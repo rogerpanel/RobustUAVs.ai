@@ -848,7 +848,7 @@ $(\cdot)_+$ the positive part. On the calibration flights the linear fit holds
 to within its residual over the full observed degradation interval, giving
 $\tau_{\mathrm{lin}}\approx2$\,s; we adopt that value and note that it
 exceeds the certified window's upper edge under the measured mapping
-($1.33$\,s at a $10$\,m corridor, \S\ref{sec:eval}) by a comfortable margin,
+($1.12$\,s at a $10$\,m corridor, \S\ref{sec:eval}) by a comfortable margin,
 so the entire certified regime lies inside the linear domain and
 \eqref{eq:gamma_quad} is never the binding form for the results we report. It
 would become binding for a detector tuned near the contact-window slack, where
@@ -1149,6 +1149,14 @@ against.}
 \end{figure}
 
 \subsection{Reference constants}
+Every certified quantity in this section uses the \emph{measured local}
+Lipschitz constant, not the global power-iteration estimate. The distinction
+is not cosmetic: the local value is the larger of the two, so it widens the
+trajectory tube and narrows the certified window, and quoting the global one
+would flatter every bound reported here. It also moves the tightest corridor
+across the threshold --- at $m{=}2$\,m the tube is $2.22$\,m, so
+$\theta{=}0.25$\,s is certified for $m\ge5$\,m but not at $2$\,m.
+
 We instantiate the certificate on the reference navigation model, a
 continuous-time graph model of the GNSS constellation and receiver. Global
 power-iteration gives a Lipschitz estimate $\hat L\approx1.01$; measuring the
@@ -1256,7 +1264,7 @@ Fig.~\ref{fig:headline} is the headline result, and it is deliberately
 $\theta=0.25$\,s falls just outside the certified window; under the empirically
 measured mapping it falls \emph{inside} at every corridor margin.
 Fig.~\ref{fig:sensitivity} quantifies how much room there is: the mapping would
-have to steepen past $\gamma_{\mathrm{req}}=7.28$\,m/s (at a $10$\,m corridor)
+have to steepen past $\gamma_{\mathrm{req}}=6.14$\,m/s (at a $10$\,m corridor)
 to push the operating point back out---more than five times the measured rate.
 This is the paper's most consequential finding for the field: what determines
 whether cross-layer certification is useful is a \emph{measurement} of how
@@ -1285,8 +1293,10 @@ $\theta$ for the time-delay class (grid topology, Gr\"onwall tube at the measure
 local $L{=}1.181$, $H{=}2$, corridor-margin family $\{2,5,10,20\}$\,m). Under
 the kinematic worst case (red) $\theta{=}0.25$\,s is just outside the certified
 window; under the empirically measured mapping from real GPS-spoof/jam flights
-($\gamma{\approx}1.2$--$1.4$\,m/s) it is \emph{inside} at every margin (shaded:
-the EKF window $[0.178,1.334]$\,s at $m{=}10$\,m). Both single-layer baselines
+($\gamma{\approx}1.2$--$1.4$\,m/s) it is \emph{inside} at every margin of
+$5$\,m or wider (shaded: the EKF window $[0.178,1.124]$\,s at $m{=}10$\,m);
+at the tightest $2$\,m corridor the tube marginally exceeds the margin
+($2.22$ against $2.00$\,m). Both single-layer baselines
 certify a zero floor for an evading attacker (black).}
 \label{fig:headline}
 \end{figure}
@@ -1314,7 +1324,7 @@ corridor of margin $m$, per interface mapping. A mapping certifies the paper
 operating point iff its curve lies above the $\theta{=}0.25$\,s line; the
 feasible region is bounded below by the measured benign residual ceiling
 ($0.178$\,s, the FPR$=$0 floor). The measured rates clear the requirement
-$\gamma_{\mathrm{req}}{=}7.28$\,m/s at $m{=}10$\,m by ${\sim}5\times$; the
+$\gamma_{\mathrm{req}}{=}6.14$\,m/s at $m{=}10$\,m by ${\sim}4.5\times$; the
 kinematic worst case fails at every margin.}
 \label{fig:sensitivity}
 \end{figure}
@@ -1337,7 +1347,7 @@ Lemma~\ref{lem:residual}---the floor saturates rather than collapsing past the
 knee.
 
 The honest scope: the certified operating window is nonempty but bounded. Under
-the empirically calibrated interface it is $[0.178,\,1.33]$\,s at a $10$\,m
+the empirically calibrated interface it is $[0.178,\,1.12]$\,s at a $10$\,m
 corridor, with the operating point $\theta=0.25$\,s comfortably inside; under
 the conservative kinematic mapping it shrinks to $[0.178,\,0.243]$\,s and
 $\theta=0.25$\,s falls just outside. We claim the former and show the latter as
