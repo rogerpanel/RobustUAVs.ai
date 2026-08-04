@@ -67,18 +67,25 @@ write_files:
 
   # Host firewall, in addition to the Hetzner Cloud Firewall. Two layers,
   # because the cloud firewall is easy to detach by accident.
-  # maxretry 4 is too tight for a host still being set up: every wrong key,
-  # wrong password, and connection killed mid-handshake counts, and a ban
-  # drops the session you are working in and blackholes new ones —
-  # recoverable only through the Hetzner VNC console. SSH here is key-only,
-  # so brute force is not what this jail is really mitigating.
+  # The sshd jail stays OFF: password auth is disabled on this host, so a
+  # brute-force attempt cannot succeed and the jail buys quieter logs rather
+  # than security. Its real cost is banning the operator — aborted
+  # connections count as failures, and a rotating client address (CGNAT,
+  # tethering, a VPN egress pool) defeats any ignoreip whitelist. Enable it
+  # only with a static admin address to whitelist.
   - path: /etc/fail2ban/jail.d/sshd.local
     content: |
       [sshd]
-      enabled  = true
-      maxretry = 10
-      findtime = 10m
-      bantime  = 15m
+      enabled = false
+
+  # Keepalives: a rotating or NAT-ed client address silently kills idle
+  # sessions — the mapping expires, neither peer notices, and the session
+  # hangs instead of closing. Probing keeps the mapping warm.
+  - path: /etc/ssh/sshd_config.d/10-keepalive.conf
+    content: |
+      ClientAliveInterval 30
+      ClientAliveCountMax 6
+      TCPKeepAlive yes
 
 runcmd:
   # --- Docker (official repo, not the distro's older docker.io) ------------
