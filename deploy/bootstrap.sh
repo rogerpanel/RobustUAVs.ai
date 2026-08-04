@@ -111,26 +111,41 @@ ufw allow 80/tcp
 ufw allow 443/tcp
 ufw --force enable
 
-# Whitelist the address this script was invoked from. During first setup you
-# will accumulate failed and aborted auth attempts (wrong key, wrong password,
-# connections killed mid-handshake), and fail2ban counts every one of them.
-# Getting banned mid-provisioning drops the session you are working in and
-# blackholes new ones — recoverable only through the Hetzner VNC console.
-ADMIN_IP="$(echo "${SSH_CLIENT:-}" | awk '{print $1}')"
-IGNORE="127.0.0.1/8 ::1${ADMIN_IP:+ $ADMIN_IP}"
-[ -n "$ADMIN_IP" ] && log "whitelisting $ADMIN_IP in fail2ban"
-
-cat > /etc/fail2ban/jail.d/sshd.local <<EOF
-[sshd]
-enabled  = true
-# 4 is too tight for a host you are still setting up; SSH is key-only here,
-# so brute force is not the threat this jail is actually mitigating.
-maxretry = 10
-findtime = 10m
-bantime  = 15m
-ignoreip = $IGNORE
-EOF
+# The sshd jail is DISABLED by default here, deliberately.
+#
+# Password authentication is off on this host, so a brute-force attempt
+# cannot succeed no matter how many times it runs — the jail buys quieter
+# logs, not security. Against that it carries a real cost: it bans the
+# operator. Aborted connections and wrong-key attempts all count as
+# failures, and if your ISP hands out rotating addresses (CGNAT, mobile
+# tethering, a VPN egress pool) an `ignoreip` whitelist cannot keep up —
+# you get banned on an address you did not have five minutes ago, and the
+# Hetzner VNC console becomes the only way back in.
+#
+# Set FAIL2BAN_SSHD=1 to enable it, e.g. once password auth is confirmed off
+# AND you have a static admin address to whitelist:
+#     FAIL2BAN_SSHD=1 ADMIN_IP=203.0.113.7 bash bootstrap.sh
+if [ "${FAIL2BAN_SSHD:-0}" = "1" ]; then
+	ADMIN_IP="${ADMIN_IP:-$(echo "${SSH_CLIENT:-}" | awk '{print $1}')}"
+	log "enabling the fail2ban sshd jail (ignoreip: ${ADMIN_IP:-none})"
+	{
+		printf '[sshd]\nenabled = true\nmaxretry = 10\nfindtime = 10m\nbantime = 15m\n'
+		printf 'ignoreip = 127.0.0.1/8 ::1%s\n' "${ADMIN_IP:+ $ADMIN_IP}"
+	} > /etc/fail2ban/jail.d/sshd.local
+else
+	log "leaving the fail2ban sshd jail disabled (SSH is key-only)"
+	printf '[sshd]\nenabled = false\n' > /etc/fail2ban/jail.d/sshd.local
+fi
 systemctl enable --now fail2ban
+fail2ban-client reload >/dev/null 2>&1 || true
+
+# Keepalives. A rotating or NAT-ed client address silently kills idle
+# sessions: the mapping expires, the peer never learns, and the session
+# hangs rather than closing. Probing every 30s keeps the mapping warm and
+# turns an unrecoverable hang into a clean disconnect after ~3 minutes.
+printf 'ClientAliveInterval 30\nClientAliveCountMax 6\nTCPKeepAlive yes\n' \
+	> /etc/ssh/sshd_config.d/10-keepalive.conf
+systemctl reload ssh 2>/dev/null || systemctl restart ssh.socket 2>/dev/null || true
 
 # ------------------------------------------------------- unattended upgrades
 cat > /etc/apt/apt.conf.d/20auto-upgrades <<'EOF'
