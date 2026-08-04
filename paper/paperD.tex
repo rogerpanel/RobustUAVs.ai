@@ -385,100 +385,91 @@ navigation-input perturbation any such $a$ can induce.
 \section{Related Work}
 \label{sec:related}
 % =====================================================================
-We organise prior work along the two halves of the paper: what exists on the
-data side (corpora and their construction), and what exists on the guarantee
-side (bounding a model, a controller, or a mission). The recurring gap is that
-each community works within one layer and leaves the interface to assumption.
+Prior work divides along the two halves of this paper---corpora on the data
+side, bounds on the guarantee side---and the same gap recurs on both: each
+community works within one layer and leaves the interface between them to
+assumption.
 
-\paragraph{UAV IDS datasets and surveys}
-Recent taxonomies of AI-enhanced UAV intrusion detection~\cite{islam2025uavids}
-document a proliferation of datasets and a recurring weakness: general-purpose
-network corpora lack UAV-specific protocol semantics, and UAV-specific corpora
-each cover a single sublayer. Notably, models trained on generic benchmarks
-misclassify a large fraction of GPS-spoofing events on real autopilot
-logs~\cite{islam2025uavids}---direct evidence that the network and navigation
-layers cannot be treated as one undifferentiated feature space. FANET security
-surveys~\cite{tsao2022survey,ceviz2024survey} catalogue routing attacks but stop
-at network effect. On the swarm mesh, \dataset{UAVIDS-2025}~\cite{uavids2025,%
-zeng2025uavids} provides $122{,}171$ NS-3 flow records across four attack
-classes; on the C2 link, the \dataset{UAV Attack
-Dataset}~\cite{whelan2020uav,whelan2020novelty} records real PX4 flights under
-GPS spoofing/jamming and MAVLink ping-DoS; on the intra-UAV bus, the
-\dataset{HCRL UAVCAN} dataset~\cite{hcrl_uavcan} captures flooding, fuzzing, and
-replay. Each is authoritative for its sublayer; none reaches the flight.
+\paragraph{UAV corpora, and the discipline of building them}
+Taxonomies of AI-enhanced UAV intrusion detection~\cite{islam2025uavids} report
+a proliferation of datasets alongside a persistent weakness: general-purpose
+network corpora lack UAV protocol semantics, while UAV-specific corpora each
+cover a single sublayer. The consequence is measurable---models trained on
+generic benchmarks misclassify a large fraction of GPS-spoofing events on real
+autopilot logs~\cite{islam2025uavids}---and it is direct evidence that the
+network and navigation layers do not form one undifferentiated feature space.
+FANET surveys~\cite{tsao2022survey,ceviz2024survey} catalogue routing attacks
+but stop at network effect. The individual corpora are authoritative within
+their sublayers: \dataset{UAVIDS-2025}~\cite{uavids2025,zeng2025uavids}
+contributes $122{,}171$ NS-3 mesh flows, the \dataset{UAV Attack
+Dataset}~\cite{whelan2020uav,whelan2020novelty} real PX4 flights under GPS
+spoofing, jamming, and MAVLink ping-DoS, and \dataset{HCRL
+UAVCAN}~\cite{hcrl_uavcan} bus-level flooding, fuzzing, and replay. None reaches
+the flight.
 
-\paragraph{Why dataset construction is itself a contribution}
-The intrusion-detection community has learned that a benchmark's
-\emph{construction} determines the validity of everything built on it. Audits of
-the widely used CIC-IDS2017 corpus uncovered labelling errors, flawed flow
-construction, and unrealistic temporal separation that materially inflate
-reported performance~\cite{engelen2021troubleshooting,sharafaldin2018cicids}. A
-cross-layer benchmark adds a new failure mode: asserting a causal link between a
-network event and a flight degradation that were never observed together. Our
-mandatory per-record honesty flag (\S\ref{sec:schema}) exists precisely to bound
-that risk, making provenance discipline---not merely scale---a design
-requirement.
+How such a corpus is built matters as much as how large it is. Audits of
+CIC-IDS2017 exposed labelling errors, flawed flow construction, and unrealistic
+temporal separation, each of which inflated reported
+performance~\cite{engelen2021troubleshooting,sharafaldin2018cicids}. Spanning
+two layers introduces a further failure mode: asserting a causal link between a
+network event and a flight degradation that were never observed together. The
+mandatory provenance flag of \S\ref{sec:schema} exists to bound precisely that
+risk. Among released datasets the closest in ambition is
+\dataset{UAV-CAS}~\cite{uavcas2026}, an AERPAW-calibrated swarm corpus and the
+first to include collaborative multi-attack compositions; we ingest it as one of
+our six sources. It nonetheless remains a network-layer benchmark---its authors
+list GNSS spoofing and jamming as future work---so where it asks how well a
+collaborative mesh attack can be detected, we ask what that attack, detected or
+missed, does to the aircraft.
 
-\paragraph{Positioning against the closest prior art}
-The nearest neighbour in ambition is \dataset{UAV-CAS}, a large
-AERPAW-calibrated swarm dataset that is the first to include
-\emph{collaborative} multi-attack compositions and to calibrate a simulator
-against real testbed measurements~\cite{uavcas2026}. It is an excellent
-network-layer benchmark and we ingest it as one of our six sources; but it
-remains within the network layer, and its authors explicitly list GNSS spoofing
-and jamming as future work. Our contribution is complementary: rather than
-deepen one layer we \emph{span} both and make the coupling the unit of analysis.
-Where \dataset{UAV-CAS} asks how well a collaborative mesh attack can be
-detected, we ask what that attack, detected or missed, does to the flight.
+\paragraph{Certified robustness, and its lift to control}
+Randomized smoothing~\cite{cohen2019smoothing,salman2019provably} yields a
+probabilistic $\ell_2$ radius that scales to large models, whereas
+Lipschitz-based certification~\cite{pauli2022training,zhang2022rethinking}
+yields deterministic bounds known to be loose globally; neural
+ODEs~\cite{chen2018neuralode} admit the Gr\"onwall-type
+argument~\cite{yan2020robustnode} we adopt. All of these bound a \emph{model's}
+output. Lifting them to sequential decisions, CROP certifies a cumulative-reward
+lower bound under state perturbation~\cite{wu2022crop}, CARRL certifies robust
+actions~\cite{everett2021carrl}, reachability tools bound trajectories of
+network-controlled systems~\cite{ivanov2019verisig,tran2020nnv}, and
+control-theoretic work establishes safety under sensor false-data
+injection~\cite{li2022lqg}. CROP is the nearest analogue to a certified mission
+floor, but it certifies a policy against a \emph{given} perturbation ball and is
+silent on where that ball comes from.
 
-\paragraph{Certified robustness and its lift to control}
-Randomized smoothing~\cite{cohen2019smoothing,salman2019provably} gives a
-probabilistic $\ell_2$ certified radius that scales to large models;
-Lipschitz-based certification~\cite{pauli2022training,zhang2022rethinking} gives
-deterministic bounds that are known to be loose globally. Neural
-ODEs~\cite{chen2018neuralode} admit Gr\"onwall-type robustness
-arguments~\cite{yan2020robustnode}, the continuous-time analogue we use. These
-bound a \emph{model's} output. Lifting to sequential decision-making, CROP
-certifies a cumulative-reward lower bound for policies under state
-perturbations~\cite{wu2022crop} and CARRL certifies robust
-actions~\cite{everett2021carrl}; reachability tools bound trajectories of
-network-controlled systems~\cite{ivanov2019verisig,tran2020nnv}; control-theoretic
-work provides safety under sensor false-data injection~\cite{li2022lqg}. CROP is
-the closest analogue to a certified mission floor, but it certifies a policy
-against a \emph{given} perturbation ball---it does not connect that ball to a
-network-security operating point.
-
-\paragraph{Secure state estimation, runtime assurance, delay attacks}
-A parallel control-theoretic line asks how much sensor corruption an estimator
-can provably tolerate: exact recovery is possible below a sensor-corruption
-threshold~\cite{fawzi2014secure}, the combinatorial search is practical with
-SMT solvers~\cite{shoukry2017smt}, and recent surveys catalogue the
-field~\cite{ding2021survey}. These bound estimation error given \emph{which}
-sensors are compromised; they do not model a detector whose threshold shapes
-what the attacker can inject in the first place---the premise our
-Lemma~\ref{lem:residual} supplies. The Simplex architecture and its
+\paragraph{Estimation, assurance, and delay}
+A parallel control-theoretic literature asks how much sensor corruption an
+estimator can tolerate: exact recovery holds below a corruption
+threshold~\cite{fawzi2014secure}, satisfiability-modulo-theory solvers make the
+combinatorial search practical~\cite{shoukry2017smt}, and recent surveys
+catalogue the field~\cite{ding2021survey}. Such results bound estimation error
+given \emph{which} sensors are compromised, rather than modelling a detector
+whose threshold determines what an attacker may inject at all---the premise
+Lemma~\ref{lem:residual} supplies. Simplex and its
 descendants~\cite{sha2001simplex,mehmood2022blackbox,cofer2020rta} guarantee
 safety by switching from an unverified controller to a verified baseline when a
-monitor fires; our certified window is exactly the region in which the
-high-performance policy may run, and we supply the quantitative boundary such
-architectures otherwise hand-tune. Finally, the effect of injected delay on
-feedback stability is well studied, with detectors based on state-aware
-inference or divergence tests~\cite{lou2019timedelay,etd2023uav,datamut2026};
-these quantify \emph{whether} a delay attack is dangerous or detectable, but
-none carries the surviving delay through to a certified mission floor.
+monitor fires; our certified window is precisely the region in which the
+high-performance policy may run, and we contribute the quantitative boundary
+that such architectures otherwise hand-tune. The destabilising effect of
+injected delay is itself well studied, with detectors built on state-aware
+inference and divergence tests~\cite{lou2019timedelay,etd2023uav,datamut2026},
+but that literature establishes whether a delay attack is dangerous or
+detectable and stops there.
 
-\paragraph{Composing guarantees---the crux}
-The closest prior art composes certificates \emph{within} an ML pipeline.
-\cite{sheikholeslami2021provably} jointly certifies a classifier with a
-detection class, so an input is provably flagged or correctly
-classified---structurally our evade-or-bound dichotomy, but single-layer.
-\cite{yang2022sensing} decomposes end-to-end certified robustness of a two-stage
-sensing$\to$reasoning pipeline, the strongest template for chained
-certification, but stays within perception. Assume-guarantee and contract-based
-CPS design~\cite{pacti2024} give the compositional vocabulary but not
-ML-robustness certificates. None chains a \emph{network-intrusion-detection}
-guarantee to a \emph{navigation} certificate. That is our gap, and closing it
-requires the benchmark and the theorem together.
+\paragraph{Composing guarantees}
+The closest prior art composes certificates \emph{within} a single ML pipeline.
+Sheikholeslami et al.~\cite{sheikholeslami2021provably} jointly certify a
+classifier and a detection class, so that an input is provably either flagged or
+correctly classified---structurally our evade-or-bound dichotomy, but confined
+to one layer. Yang et al.~\cite{yang2022sensing} decompose end-to-end certified
+robustness across a two-stage sensing$\to$reasoning pipeline, the strongest
+existing template for chained certification, though it too remains within
+perception. Assume-guarantee and contract-based CPS design~\cite{pacti2024}
+supplies the compositional vocabulary but no ML-robustness certificates. No
+prior result chains a network-intrusion-detection guarantee to a navigation
+certificate; that is the gap this paper closes, and closing it requires the
+corpus and the theorem together.
 
 % =====================================================================
 \section{The Two-Layer Schema}
@@ -1556,6 +1547,38 @@ property of store-and-forward scheduling and estimator behaviour, not of any one
 simulator.
 
 % =====================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+% =====================================================================
+UAV security has been studied as two separate problems---attacks on the wire and
+attacks on the flight---because nothing let it be studied as one. We built the
+benchmark that makes the coupling representable and then proved, on exactly its
+objects, the guarantee that the coupling enables. The benchmark contributes a
+two-layer schema whose unit is the cross-layer pairing, six validated adapters,
+and a detector-operating-curve harness; the guarantee contributes a residual
+budget that measurement tightens into a \emph{saturating} bound
+$\Delta(\theta)\le H\min(\theta,s)$, an interface rate calibrated on real
+spoofing and jamming flights, and a composition theorem chaining a detector's
+operating point to a certified mission-completion floor.
+
+Three findings survive scrutiny. First, the composed guarantee is the only
+configuration that certifies a nonzero mission floor against a detector-evading
+attacker, dominating both single-layer baselines at every operating point with
+overwhelming statistical significance. Second, the empirically calibrated
+interface---an order of magnitude tighter than the kinematic worst case---brings
+the detector's real operating point inside the certified window, so the
+guarantee is operationally relevant and not merely formal. Third, and most
+consequential for the field, the binding constraint on cross-layer certification
+is the measurement of how attacks propagate into state error, not the proof
+machinery: the interface, not the theorem, decides the outcome. UAV network
+security and UAV autonomy security, we conclude, are not two problems but two
+ends of one certificate.
+
+% NDSS counts 13 pages of BODY; appendices are excluded. This section is
+% reader-orientation for reviewers outside UAV autonomy, so it belongs
+% here rather than consuming body budget.
+% =====================================================================
+% =====================================================================
 \section{Ethics Considerations}
 \label{sec:ethics}
 % =====================================================================
@@ -1602,38 +1625,6 @@ The repository is anonymised for review and will be de-anonymised on acceptance.
 The artifact is available at \url{https://robustuavs.ai}.
 \fi
 
-% =====================================================================
-\section{Conclusion}
-\label{sec:conclusion}
-% =====================================================================
-UAV security has been studied as two separate problems---attacks on the wire and
-attacks on the flight---because nothing let it be studied as one. We built the
-benchmark that makes the coupling representable and then proved, on exactly its
-objects, the guarantee that the coupling enables. The benchmark contributes a
-two-layer schema whose unit is the cross-layer pairing, six validated adapters,
-and a detector-operating-curve harness; the guarantee contributes a residual
-budget that measurement tightens into a \emph{saturating} bound
-$\Delta(\theta)\le H\min(\theta,s)$, an interface rate calibrated on real
-spoofing and jamming flights, and a composition theorem chaining a detector's
-operating point to a certified mission-completion floor.
-
-Three findings survive scrutiny. First, the composed guarantee is the only
-configuration that certifies a nonzero mission floor against a detector-evading
-attacker, dominating both single-layer baselines at every operating point with
-overwhelming statistical significance. Second, the empirically calibrated
-interface---an order of magnitude tighter than the kinematic worst case---brings
-the detector's real operating point inside the certified window, so the
-guarantee is operationally relevant and not merely formal. Third, and most
-consequential for the field, the binding constraint on cross-layer certification
-is the measurement of how attacks propagate into state error, not the proof
-machinery: the interface, not the theorem, decides the outcome. UAV network
-security and UAV autonomy security, we conclude, are not two problems but two
-ends of one certificate.
-
-% NDSS counts 13 pages of BODY; appendices are excluded. This section is
-% reader-orientation for reviewers outside UAV autonomy, so it belongs
-% here rather than consuming body budget.
-% =====================================================================
 \appendix
 
 \section{Background and Terminology}
