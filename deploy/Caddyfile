@@ -1,0 +1,60 @@
+# /etc/caddy/Caddyfile — robustuavs.ai
+#
+# Uses a Cloudflare Origin CA certificate rather than Let's Encrypt, so that
+# nothing has to renew through the Cloudflare proxy and port 80 never needs to
+# be reachable from the public internet (see docs/deployment_runbook.md §2.4).
+#
+# Install the pair produced in the Cloudflare dashboard as:
+#   /etc/caddy/certs/origin.pem   (certificate)
+#   /etc/caddy/certs/origin.key   (private key, chmod 600, owner caddy)
+
+{
+	# No ACME: certificates are supplied manually.
+	email admin@robustuavs.ai
+
+	# Do NOT set `admin off` here. `systemctl reload caddy` works by calling
+	# Caddy's admin API, so disabling it makes every reload fail while the
+	# old process keeps serving the previous config — a silent no-op that
+	# looks like a successful deploy. The endpoint defaults to
+	# localhost:2019 and is not reachable from outside the host.
+}
+
+(origin_tls) {
+	tls /etc/caddy/certs/origin.pem /etc/caddy/certs/origin.key
+}
+
+(common) {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options    "nosniff"
+		Referrer-Policy           "strict-origin-when-cross-origin"
+		-Server
+	}
+	# No `log` directive: access logs go to stderr and therefore to journald,
+	# which the systemd unit already sandboxes correctly. Writing to a file
+	# under /var/log adds a permissions surface that `caddy validate` does
+	# not check, so a broken setup only shows up as an exit at startup.
+	# Read them with:  journalctl -u caddy -f
+}
+
+robustuavs.ai, www.robustuavs.ai {
+	import origin_tls
+	import common
+
+	# Static site / project landing page.
+	root * /srv/robustuavs/site
+	file_server
+
+	# Benchmark artifact: schema, adapters, results, paper PDFs.
+	handle_path /artifact/* {
+		root * /srv/robustuavs/artifact
+		file_server browse
+		header Cache-Control "public, max-age=3600"
+	}
+
+	# Dashboard, if/when the container is running. Comment out until then.
+	# handle_path /dashboard/* {
+	#     reverse_proxy 127.0.0.1:8501
+	# }
+}

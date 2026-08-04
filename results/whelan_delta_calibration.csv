@@ -1,0 +1,7 @@
+flight,source,n_samples,duration_s,noise_p95_m,onset_kind,peak_m,t_peak_s,mean_final_half_m,onset_s,gamma_lsq_m_s,gamma_peak_m_s
+benign,receiver,248,246.0,0.503,3x_noise_p95,1.673,67.0,0.549,,,
+benign,ekf,2463,246.1,0.603,3x_noise_p95,1.506,93.0,0.611,,,
+gps_jamming,receiver,224,222.0,0.408,fix_loss,6.729,189.0,1.849,175.0,-0.0821,0.4805
+gps_jamming,ekf,2217,222.4,0.466,3x_noise_p95,6.998,190.6,1.938,177.1,-0.1133,0.5185
+gps_spoofing,receiver,138,136.0,1.135,3x_noise_p95,14.341,131.0,3.858,119.0,0.2435,1.195
+gps_spoofing,ekf,1365,136.3,0.873,3x_noise_p95,15.571,131.3,3.534,119.9,0.7007,1.365

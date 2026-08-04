@@ -1,0 +1,57 @@
+# Push-to-deploy for robustuavs.ai.
+#
+# NOT active as committed. To enable:
+#     cp deploy/github-actions-deploy.yml.example .github/workflows/deploy.yml
+#     git add .github/workflows/deploy.yml && git commit && git push
+#
+# Requires three repository secrets
+# (GitHub -> Settings -> Secrets and variables -> Actions -> New secret):
+#
+#   DEPLOY_HOST   robustuavs.ai          (or the raw server IPv4)
+#   DEPLOY_USER   deploy
+#   DEPLOY_KEY    the PRIVATE half of a keypair whose PUBLIC half is in
+#                 /home/deploy/.ssh/authorized_keys on the server.
+#                 Generate a dedicated one — do not reuse your laptop key:
+#                     ssh-keygen -t ed25519 -f gh-actions -N ""
+#   DEPLOY_KNOWN_HOSTS   output of:  ssh-keyscan robustuavs.ai
+#
+# Note the direction of trust: this runs `git pull` ON the server, so the
+# server still needs its own read-only deploy key for GitHub. Actions only
+# supplies the trigger, never the repository contents.
+
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Create a "production" environment with required reviewers if you want a
+    # manual approval gate before anything reaches the live host.
+    environment: production
+    steps:
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s' "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
+      - name: Run the deploy script on the server
+        run: |
+          ssh -o BatchMode=yes \
+              "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
+              'BRANCH=main /srv/robustuavs/repo/deploy/deploy.sh'
+
+      - name: Smoke-test the live site
+        run: |
+          code=$(curl -sS -o /dev/null -w '%{http_code}' https://robustuavs.ai/)
+          echo "GET / -> $code"
+          [ "$code" = "200" ]

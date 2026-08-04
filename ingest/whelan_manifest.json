@@ -1,0 +1,21 @@
+[
+  {"flight_id": "benign_live_01",
+   "csv_dir": "data/raw/uav_attack_whelan/benign",
+   "attack": "benign"},
+
+  {"flight_id": "jam_live_01",
+   "csv_dir": "data/raw/uav_attack_whelan/gps_jamming",
+   "attack": "gps_jamming",
+   "calibration": true,
+   "self_ref_frac": 0.25,
+   "attack_start": "TODO: set from Whelan dataset docs (not in the CSVs); then remove the calibration flag",
+   "attack_end": "TODO"},
+
+  {"flight_id": "spoof_live_01",
+   "csv_dir": "data/raw/uav_attack_whelan/gps_spoofing",
+   "attack": "gps_spoofing",
+   "calibration": true,
+   "self_ref_frac": 0.25,
+   "attack_start": "TODO: set from Whelan dataset docs (not in the CSVs); then remove the calibration flag",
+   "attack_end": "TODO"}
+]

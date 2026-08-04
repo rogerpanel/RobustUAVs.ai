@@ -1,0 +1,5 @@
+estimator,value,gronwall_radius
+L_power_random (dissertation),0.9834,0.187
+L_local_max (data-driven trajectories),1.1814,0.1534
+L_local_median,1.1523,0.158
+"S_in2out_max (input->logit slope, small-ball)",1.534,

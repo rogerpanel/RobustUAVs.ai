@@ -1,0 +1,33 @@
+% ABSTRACT A — "narrow / certify-small-detect-large" framing.
+% FALLBACK: use this if cruise-regime data shows the empirical gamma rising
+% toward the kinematic bound (> ~7.3 m/s at a 10 m corridor), pushing
+% theta=0.25 s back outside the certified window. Under the conservative
+% kinematic mapping alone the certified window is [0.178, 0.243] s and the
+% paper operating point sits just outside it. Provenance-authoritative:
+% docs/certified_regime_analysis.md.
+\begin{abstract}
+Two mature literatures defend the autonomous UAV in isolation. Network
+intrusion detection catches malicious traffic but says nothing about the flight;
+certified robustness bounds a navigation model's error but assumes the
+perturbation arrives from nowhere. We connect them. We prove a \emph{composition
+theorem}: for any network-layer attack that evades a detector operating at point
+$\theta$, the UAV navigation stack retains a certified Mission-Completion-Rate
+$\MCR\ge f(\delta(\theta))$, chaining the detector threshold through a saturating
+residual-delay budget ($\Delta(\theta)\le H\min(\theta,s)$, measured cap
+$4.84$\,s over $15{,}392$ hops), a delay-to-position interface, and a
+Lipschitz--Grönwall trajectory tube. The guarantee is honest about its regime:
+the certificate governs a bounded certified operating window rather than the
+whole relaxation range---\emph{certify-small, detect-large}, since large
+perturbations are exactly what the detector is there to catch. Within that
+window the composed guarantee is the only configuration with a nonzero certified
+floor for an evading attacker, strictly dominating the autonomy-only and
+network-only baselines (Wilcoxon, Holm-corrected, $p<10^{-20}$); the window's
+width is set by the delay-to-position mapping, which we bound both by a sound
+kinematic worst case and by a real-flight calibration on the target autopilot
+family. The deterministic core is complemented by three certificates covering
+regimes it cannot (randomized smoothing, PAC-Bayes, multiplicative-weights
+regret). To our knowledge this is the first formal guarantee chaining a
+network-security operating point to a navigation-safety floor. We instantiate it
+on an open end-to-end benchmark and validate that the certified floor
+lower-bounds the empirical mission-completion rate.
+\end{abstract}

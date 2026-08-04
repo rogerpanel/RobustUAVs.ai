@@ -1,0 +1,10 @@
+[
+  {"flight_id": "spoof_live_01", "csv_dir": "data/raw/uav_attack_whelan/live_gps_spoofing/flight01",
+   "attack": "gps_spoofing", "attack_start": 42.0, "attack_end": 190.0,
+   "ref_track": "data/raw/uav_attack_whelan/benign/flight01"},
+  {"flight_id": "jam_live_01", "csv_dir": "data/raw/uav_attack_whelan/live_gps_jamming/flight01",
+   "attack": "gps_jamming", "attack_start": 30.0, "attack_end": 210.0,
+   "self_ref_until": 25.0},
+  {"flight_id": "pingdos_sitl_01", "csv_dir": "data/raw/uav_attack_whelan/sim_ping_dos/flight01",
+   "attack": "ping_dos", "attack_start": 20.0, "attack_end": 120.0}
+]

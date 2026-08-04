@@ -1,0 +1,8 @@
+# Checkpoints are large; metrics.json is the published artifact.
+runs/**/ckpt.pt
+runs/**/*.pt
+runs/**/*.npz
+data/
+__pycache__/
+*.pyc
+.pytest_cache/
