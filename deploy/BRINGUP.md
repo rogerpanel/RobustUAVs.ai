@@ -44,6 +44,11 @@ node --version && npm --version      # expect v20.x
 /srv/robustuavs/venv/bin/python -c "import fastapi, sqlalchemy; print('backend deps ok')"
 ```
 
+The Postgres and Redis drivers are **not** in that file. They live in
+`requirements-optional.txt` and are installed only in section 4, because a
+driver with no wheel for the host's Python must never be able to abort the core
+install — pinning one there once left the API unable to start at all.
+
 ## 4. Postgres and Redis (optional)
 
 Skip this section entirely for a first bring-up — the API falls back to SQLite
@@ -56,6 +61,9 @@ printf 'POSTGRES_PASSWORD=%s\n' "$(openssl rand -base64 24)" > .env
 chmod 600 .env
 docker compose up -d
 docker compose ps                    # both should read healthy
+
+# Only now install the drivers.
+/srv/robustuavs/venv/bin/pip install -r ../platform/backend/requirements-optional.txt
 ```
 
 Both bind to `127.0.0.1` only, so neither is reachable from outside the host.
@@ -148,13 +156,42 @@ Then in a browser:
 
 ---
 
-## Updating later
+## Updating later — the one-liner
 
-One command, from your laptop:
+Same shape as the robustidps.ai one-liner. `deploy.sh` already fetches and
+hard-resets to the tracked branch, so the `git pull` is belt-and-braces rather
+than required:
+
+**On the server:**
+
+```bash
+cd /srv/robustuavs/repo && git pull && ./deploy/deploy.sh
+```
+
+**From your laptop, without logging in:**
 
 ```powershell
-ssh deploy@62.238.48.164 "/srv/robustuavs/repo/deploy/deploy.sh"
+ssh deploy@62.238.48.164 "cd /srv/robustuavs/repo && git pull && ./deploy/deploy.sh"
 ```
+
+Make it a single word by adding this to `~/.bashrc` on the server:
+
+```bash
+echo "alias redeploy='cd /srv/robustuavs/repo && git pull && ./deploy/deploy.sh'" >> ~/.bashrc
+source ~/.bashrc
+```
+
+Then it is just `redeploy`.
+
+Why there is no `docker compose up --build` in it, unlike robustidps.ai: the
+control plane runs under systemd rather than in a container, so `deploy.sh`
+restarts the unit instead. Postgres and Redis are the only containerised
+pieces, and they are optional and long-lived — rebuilding them on every deploy
+would drop the run history for no benefit.
+
+The script ends by printing the HTTP status of `/`, `/app/`, and `/api/health`,
+so a deploy that half-succeeded is visible immediately rather than on the next
+page load.
 
 ## Before the conference
 
