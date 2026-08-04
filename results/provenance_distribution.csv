@@ -1,0 +1,7 @@
+source,acquisition,layer,same_platform,staged,events,windows,event_share_pct,note
+uav_ew_bench_2026,simulation (physics-informed),autonomy,False,1,93600,468,21.68,navigation anchor; completion outcomes are Spatial MCR
+uav_attack_whelan,real testbed,both,True,1,610,0,0.14,the only source observing a network/RF event and the flight it degrades on one airframe
+uavids_2025,simulation (NS-3),network,False,1,122171,4,28.3,swarm mesh flows
+hcrl_uavcan,real testbed,network,False,1,200000,34,46.32,"real bus capture, but no autonomy observation to pair with"
+datamut_sim,simulation (event),network,False,1,15392,0,3.56,sweepable detector operating point
+uav_cas,simulation (digital twin),network,False,0,0,0,0.0,release file not locally reachable
