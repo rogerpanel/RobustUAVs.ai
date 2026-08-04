@@ -67,12 +67,18 @@ write_files:
 
   # Host firewall, in addition to the Hetzner Cloud Firewall. Two layers,
   # because the cloud firewall is easy to detach by accident.
+  # maxretry 4 is too tight for a host still being set up: every wrong key,
+  # wrong password, and connection killed mid-handshake counts, and a ban
+  # drops the session you are working in and blackholes new ones —
+  # recoverable only through the Hetzner VNC console. SSH here is key-only,
+  # so brute force is not what this jail is really mitigating.
   - path: /etc/fail2ban/jail.d/sshd.local
     content: |
       [sshd]
-      enabled = true
-      maxretry = 4
-      bantime = 1h
+      enabled  = true
+      maxretry = 10
+      findtime = 10m
+      bantime  = 15m
 
 runcmd:
   # --- Docker (official repo, not the distro's older docker.io) ------------

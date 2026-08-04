@@ -111,11 +111,24 @@ ufw allow 80/tcp
 ufw allow 443/tcp
 ufw --force enable
 
-cat > /etc/fail2ban/jail.d/sshd.local <<'EOF'
+# Whitelist the address this script was invoked from. During first setup you
+# will accumulate failed and aborted auth attempts (wrong key, wrong password,
+# connections killed mid-handshake), and fail2ban counts every one of them.
+# Getting banned mid-provisioning drops the session you are working in and
+# blackholes new ones — recoverable only through the Hetzner VNC console.
+ADMIN_IP="$(echo "${SSH_CLIENT:-}" | awk '{print $1}')"
+IGNORE="127.0.0.1/8 ::1${ADMIN_IP:+ $ADMIN_IP}"
+[ -n "$ADMIN_IP" ] && log "whitelisting $ADMIN_IP in fail2ban"
+
+cat > /etc/fail2ban/jail.d/sshd.local <<EOF
 [sshd]
-enabled = true
-maxretry = 4
-bantime = 1h
+enabled  = true
+# 4 is too tight for a host you are still setting up; SSH is key-only here,
+# so brute force is not the threat this jail is actually mitigating.
+maxretry = 10
+findtime = 10m
+bantime  = 15m
+ignoreip = $IGNORE
 EOF
 systemctl enable --now fail2ban
 
