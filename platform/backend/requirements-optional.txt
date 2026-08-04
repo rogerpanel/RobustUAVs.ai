@@ -1,0 +1,16 @@
+# Postgres and Redis drivers. NOT installed by default, and deliberately so.
+#
+# The app runs on SQLite and an in-process cache when these are absent, so a
+# driver with no wheel for the host's interpreter must never be able to break
+# the core install. Pinning psycopg[binary]==3.2.3 in requirements.txt did
+# exactly that on Python 3.14 -- no matching wheel existed, pip aborted the
+# whole resolution, and fastapi never installed, so the API failed to start
+# with 203/EXEC.
+#
+# Install only after bringing up platform/docker-compose.yml:
+#     pip install -r requirements-optional.txt
+#
+# Lower bounds rather than exact pins: these track the interpreter, and an
+# exact pin here reintroduces the failure above on the next Python release.
+psycopg[binary]>=3.2.3
+redis>=5.2.1

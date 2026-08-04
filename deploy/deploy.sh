@@ -108,8 +108,14 @@ if systemctl list-unit-files 2>/dev/null | grep -q '^robustuavs-api.service'; th
 	sudo systemctl restart robustuavs-api
 	sleep 2
 	systemctl is-active --quiet robustuavs-api \
-		&& log "control plane up" \
-		|| { log "control plane FAILED — see journalctl -u robustuavs-api"; exit 1; }
+		|| { log "control plane FAILED — journalctl -u robustuavs-api -n 30"; exit 1; }
+	# Prove it answers, not merely that systemd thinks it is up. A unit can be
+	# "active" while the app is failing every request.
+	if curl -fsS --max-time 10 http://127.0.0.1:8000/api/health >/dev/null; then
+		log "control plane up and answering"
+	else
+		log "control plane is active but /api/health does not answer"; exit 1
+	fi
 fi
 
 # Docker stack, only if this deployment defines one.
@@ -117,5 +123,12 @@ if [ -f docker-compose.yml ]; then
 	log "bringing up the docker stack"
 	docker compose up -d --build --remove-orphans
 fi
+
+# Final report. Each line is a fact about the deployment, not a guess.
+log "verification"
+for url in https://robustuavs.ai/ https://robustuavs.ai/app/ https://robustuavs.ai/api/health; do
+	code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 10 "$url" 2>/dev/null || echo "---")
+	printf '         %-40s %s\n' "$url" "$code"
+done
 
 log "deployed $after"
