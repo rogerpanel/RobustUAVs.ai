@@ -133,6 +133,13 @@ EOF
 install -d -o "$DEPLOY_USER" -g "$DEPLOY_USER" /srv/robustuavs /srv/data
 install -d -m755 /etc/caddy/certs
 
+# The Caddyfile logs to /var/log/caddy/access.log. `caddy validate` accepts
+# the config regardless, then the service exits 1 at startup if the directory
+# is not writable by the caddy user — so create it here, not after the fact.
+if id caddy >/dev/null 2>&1; then
+	install -d -m755 -o caddy -g caddy /var/log/caddy
+fi
+
 log "done. Verify key login works BEFORE closing password auth:"
 cat <<EOF
 
