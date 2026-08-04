@@ -18,6 +18,7 @@ BRANCH="${BRANCH:-$(git -C "${REPO:-/srv/robustuavs/repo}" rev-parse --abbrev-re
 VENV="${VENV:-/srv/robustuavs/venv}"
 ARTIFACT="${ARTIFACT:-/srv/robustuavs/artifact}"
 SITE="${SITE:-/srv/robustuavs/site}"
+APP_DIR="${APP_DIR:-/srv/robustuavs/app}"
 
 log() { printf '\033[1;36m[deploy]\033[0m %s\n' "$*"; }
 
@@ -82,6 +83,33 @@ if [ -f deploy/Caddyfile ] && command -v caddy >/dev/null; then
 		sudo caddy validate --config /etc/caddy/Caddyfile
 		sudo systemctl reload caddy
 	fi
+fi
+
+# Interactive client: build the Expo web bundle and publish it to /app.
+# Skipped when node is absent, so a server that only serves the static artifact
+# does not need a JS toolchain installed.
+if [ -d platform/mobile ] && command -v npm >/dev/null; then
+	log "building the web client"
+	( cd platform/mobile && npm ci --silent 2>/dev/null || npm install --silent )
+	( cd platform/mobile && npx expo export --platform web --output-dir dist )
+	mkdir -p "$APP_DIR"
+	rsync -a --delete platform/mobile/dist/ "$APP_DIR/"
+	log "client published -> $APP_DIR"
+else
+	log "npm not present or no client — skipping the web build"
+fi
+
+# Control plane: install deps into the venv and restart the service if the
+# unit is installed. Absent unit means this host serves the static artifact
+# only, which is a valid deployment.
+if systemctl list-unit-files 2>/dev/null | grep -q '^robustuavs-api.service'; then
+	log "restarting the control plane"
+	"$VENV/bin/pip" install --quiet -r platform/backend/requirements.txt
+	sudo systemctl restart robustuavs-api
+	sleep 2
+	systemctl is-active --quiet robustuavs-api \
+		&& log "control plane up" \
+		|| { log "control plane FAILED — see journalctl -u robustuavs-api"; exit 1; }
 fi
 
 # Docker stack, only if this deployment defines one.

@@ -1,0 +1,43 @@
+# Optional Postgres + Redis for the control plane.
+#
+# Neither is required: without DATABASE_URL the API uses SQLite, and without
+# REDIS_URL the cache is in-process. This file exists for the deployment that
+# wants durable multi-process state, not as a prerequisite for running the
+# artifact.
+#
+#   cd platform && docker compose up -d
+#   # then set in /etc/robustuavs/api.env:
+#   #   DATABASE_URL=postgresql+psycopg://robustuavs:...@127.0.0.1/robustuavs
+#   #   REDIS_URL=redis://127.0.0.1:6379/0
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: robustuavs
+      POSTGRES_USER: robustuavs
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in platform/.env}
+    # Loopback only. The database is never reachable from outside the host.
+    ports: ["127.0.0.1:5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U robustuavs -d robustuavs"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--save", "60", "1", "--appendonly", "no"]
+    ports: ["127.0.0.1:6379:6379"]
+    volumes: ["redisdata:/data"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  pgdata:
+  redisdata:

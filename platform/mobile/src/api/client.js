@@ -25,10 +25,19 @@ export class Unavailable extends Error {
   }
 }
 
+let AUTH_TOKEN = null;
+/** Set when a deployment runs with API_TOKENS. There is no login screen by
+ *  design; the token is supplied out of band. */
+export function setToken(token) { AUTH_TOKEN = token || null; }
+
 async function request(path, options = {}) {
   const res = await fetch(`${API_BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json' },
     ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(AUTH_TOKEN ? { Authorization: `Bearer ${AUTH_TOKEN}` } : {}),
+      ...(options.headers || {}),
+    },
   });
 
   if (res.status === 503) {
@@ -54,6 +63,15 @@ export const api = {
 
   certifyStaleness: (body) =>
     request('/api/certify/staleness', { method: 'POST', body: JSON.stringify(body) }),
+
+  runners: () => request('/api/runners'),
+  runs: (limit = 25, kind) =>
+    request(`/api/runs?limit=${limit}${kind ? `&kind=${encodeURIComponent(kind)}` : ''}`),
+  run: (id) => request(`/api/runs/${encodeURIComponent(id)}`),
+  submitRun: (body) =>
+    request('/api/runs', { method: 'POST', body: JSON.stringify(body) }),
+  cancelRun: (id) =>
+    request(`/api/runs/${encodeURIComponent(id)}/cancel`, { method: 'POST' }),
 
   copilotTools: () => request('/api/copilot/tools'),
   ask: (question) =>

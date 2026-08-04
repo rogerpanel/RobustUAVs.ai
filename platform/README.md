@@ -73,8 +73,68 @@ Kinematic → EKF turns *outside the certified window* into *inside* — same
 theorem, same detector setting, opposite verdicts, decided by a measurement.
 That is precisely what a static PDF cannot show.
 
+## Job plane
+
+Runs execute off the request thread on an in-process worker with DB-backed
+state — structurally `backend/task_queue.py` from RobustIDPS.ai, chosen over
+Celery for the same reason: no broker to deploy is one fewer thing that can
+fail on the day of a talk.
+
+Three runners, each declaring **two schemas**:
+
+| | meaning | changing one means |
+|---|---|---|
+| `params` | what the experiment **is** | a different finding |
+| `hyperparams` | how it was **computed** | a robustness claim |
+
+The UI renders them as separate panels. Collapsing them into one form would
+hide exactly the distinction a sceptical reviewer is listening for. Unknown
+keys are rejected rather than ignored, so a demo cannot believe it varied
+something it did not.
+
+    certified_sweep    certified floor across a theta grid
+    sensitivity        how steep gamma would have to get to lose the window
+    mapping_compare    all three mappings at one operating point
+
+## Persistence and auth
+
+`DATABASE_URL` unset -> SQLite. Set -> Postgres. `REDIS_URL` unset -> in-process
+cache. Set -> Redis, demoting back to memory permanently on first error rather
+than flapping mid-demo. `platform/docker-compose.yml` brings up both, bound to
+loopback; neither is required to run the artifact.
+
+Auth is **bearer-token only, with no login or register surface**. With
+`API_TOKENS` unset every endpoint is public, which is correct for a laptop demo
+and for a reviewer running the artifact. Set it and run submission/cancellation
+require `Authorization: Bearer <token>` while the read-only research surface
+stays public — gating that would defeat the point of publishing it. The mode is
+reported by `/api/health` so a deployment that believes it is protected and is
+not can see so at a glance.
+
+## Deploying to /app
+
+`deploy/deploy.sh` builds the Expo web bundle and publishes it to
+`/srv/robustuavs/app`; the Caddyfile serves it at `/app` with an SPA fallback
+and reverse-proxies `/api` to the control plane on loopback. Install the unit
+with:
+
+```bash
+sudo install -m644 deploy/robustuavs-api.service /etc/systemd/system/
+sudo systemctl daemon-reload && sudo systemctl enable --now robustuavs-api
+```
+
+Then `https://robustuavs.ai/` is the landing page, `/artifact/` the research
+tree, and `/app` the interactive client.
+
+## Presenting
+
+The **Home** tab is a cover page for the first slide. The theme toggle there
+switches to the ivory *print* palette — a dark UI washes out badly on a
+projector, and the print palette keeps every status colour distinguishable.
+Both palettes are taken verbatim from robustidps.ai so the two platforms read
+as one family.
+
 ## Not built yet
 
-Job plane (background θ-sweeps and ingest with a WebSocket progress stream),
-Postgres/Redis persistence, and auth. The artifact is public and read-mostly, so
-these are deferred; §4 of the architecture doc gives the build order.
+WebSocket progress streaming (polling is used instead), and ingest as a
+background runner.
