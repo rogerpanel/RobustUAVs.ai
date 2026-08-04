@@ -11,7 +11,10 @@
 set -euo pipefail
 
 REPO="${REPO:-/srv/robustuavs/repo}"
-BRANCH="${BRANCH:-main}"
+# Default to whatever the checkout is already on, NOT a hardcoded `main`.
+# Hardcoding it means an innocent-looking deploy silently switches branches and
+# can delete the very files it is running from.
+BRANCH="${BRANCH:-$(git -C "${REPO:-/srv/robustuavs/repo}" rev-parse --abbrev-ref HEAD 2>/dev/null || echo main)}"
 VENV="${VENV:-/srv/robustuavs/venv}"
 ARTIFACT="${ARTIFACT:-/srv/robustuavs/artifact}"
 SITE="${SITE:-/srv/robustuavs/site}"
