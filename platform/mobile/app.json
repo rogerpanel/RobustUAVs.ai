@@ -5,11 +5,25 @@
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
-    "splash": { "backgroundColor": "#0f1419" },
-    "assetBundlePatterns": ["**/*"],
-    "ios": { "supportsTablet": true, "bundleIdentifier": "ai.robustuavs.app" },
-    "android": { "package": "ai.robustuavs.app" },
-    "web": { "bundler": "metro", "output": "static" },
-    "extra": { "apiBase": "https://robustuavs.ai" }
+    "splash": {
+      "backgroundColor": "#0f1419"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "ai.robustuavs.app"
+    },
+    "android": {
+      "package": "ai.robustuavs.app"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "extra": {
+      "apiBase": "https://robustuavs.ai"
+    }
   }
 }
