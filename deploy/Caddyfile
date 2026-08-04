@@ -11,7 +11,12 @@
 {
 	# No ACME: certificates are supplied manually.
 	email admin@robustuavs.ai
-	admin off
+
+	# Do NOT set `admin off` here. `systemctl reload caddy` works by calling
+	# Caddy's admin API, so disabling it makes every reload fail while the
+	# old process keeps serving the previous config — a silent no-op that
+	# looks like a successful deploy. The endpoint defaults to
+	# localhost:2019 and is not reachable from outside the host.
 }
 
 (origin_tls) {
