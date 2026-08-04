@@ -237,21 +237,43 @@ class StalenessGronwallCertificate:
                  L: float = PHASE_A["L_g"], T: float = PHASE_A["T"]):
         self.v_max, self.slack_s, self.L, self.T = v_max, slack_s, L, T
 
+    # Delay-to-position rates, in metres of position error per second of
+    # staleness. The kinematic bound is always sound but assumes the aircraft
+    # flies at top speed in the wrong direction for the whole interval; the
+    # measured rates come from three real PX4 flights (results/
+    # whelan_delta_calibration.csv) and are ~11x tighter. Which one is used
+    # decides whether theta=0.25 s is certifiable, so it is an explicit
+    # parameter and never a silent default.
+    GAMMA = {
+        "kinematic": 15.0,   # v_max worst case
+        "receiver": 1.20,    # raw receiver fix the attack injects
+        "ekf": 1.37,         # filtered position the controller acts on
+    }
+
     def certify_staleness(self, theta_s: float, n_malicious_hops: int,
-                          margin_m: float) -> CertificateResult:
+                          margin_m: float,
+                          mapping: str = "kinematic") -> CertificateResult:
+        if mapping not in self.GAMMA:
+            raise ValueError(
+                f"unknown delta mapping {mapping!r}; "
+                f"choose one of {sorted(self.GAMMA)}")
+        gamma = self.v_max if mapping == "kinematic" else self.GAMMA[mapping]
         delta_stale = n_malicious_hops * min(theta_s, self.slack_s)
-        delta_pos = self.v_max * delta_stale
+        delta_pos = gamma * delta_stale
         rho = delta_pos * math.exp(self.L * self.T)
         inside = rho <= margin_m
+        note = ("kinematic worst case (sound but ~11x loose)" if mapping == "kinematic"
+                else "measured on 3 real PX4 flights, hover regime; "
+                     "cruise-regime confirmation pending")
         return CertificateResult(
             self.name,
             PHASE_A["mcr_certified_target"] if inside else None,
             {"theta_s": theta_s, "n_malicious_hops": n_malicious_hops,
              "slack_s": self.slack_s,
              "delta_staleness_s": round(delta_stale, 4),
-             "mapping": "staleness_v0: delta_pos = v_max * Delta "
-                        "(kinematic worst case; Whelan tightening pending)",
-             "v_max_m_s": self.v_max,
+             "mapping": mapping,
+             "mapping_note": note,
+             "gamma_m_s": gamma,
              "delta_pos_m": round(delta_pos, 3),
              "L": self.L, "T": self.T,
              "tube_m": round(rho, 3), "margin_m": margin_m,
