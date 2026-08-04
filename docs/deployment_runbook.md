@@ -272,6 +272,57 @@ Expect `cloud-init status` to report `running` for several minutes on first
 boot — `package_upgrade: true` plus Docker and Caddy is a few hundred megabytes
 of apt work. SSH is available throughout; the config simply is not finished yet.
 
+#### Recovering when neither account accepts your key
+
+If `ssh root@` fails but `ssh deploy@` **prompts for a password**, read it as a
+diagnosis rather than an obstacle: the `deploy` user exists (so cloud-init ran
+the users module), no usable key reached either account, and password
+authentication is still on — meaning cloud-init stopped before `ssh_pwauth:
+false`, and `ufw`/`fail2ban`/Docker/Caddy are probably unconfigured too. Do not
+type a password at that prompt; `deploy` has none.
+
+Because password auth is still enabled, the recovery does not need the VNC
+console:
+
+1. Hetzner Console → the server → **Rescue → Reset root password**. This uses
+   the guest agent: no reboot, nothing lost. Copy the password it shows.
+2. From your terminal, `ssh root@<SERVER_IPv4>` and enter it.
+3. Establish what actually happened:
+
+   ```bash
+   cloud-init status --long
+   sudo cat /var/log/cloud-init-output.log | tail -40
+   cat /root/.ssh/authorized_keys /home/deploy/.ssh/authorized_keys
+   ```
+
+4. Install your real key for both accounts. From your laptop:
+
+   ```bash
+   ssh-copy-id root@<SERVER_IPv4>          # uses the reset password once
+   ```
+
+   then, in a root session on the server:
+
+   ```bash
+   install -d -m700 -o deploy -g deploy /home/deploy/.ssh
+   install -m600 -o deploy -g deploy /root/.ssh/authorized_keys \
+           /home/deploy/.ssh/authorized_keys
+   ```
+
+5. Confirm `ssh deploy@<SERVER_IPv4>` logs in with **no** password prompt,
+   then close password auth again and finish the hardening in the block below:
+
+   ```bash
+   sudo sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' \
+            /etc/ssh/sshd_config
+   sudo rm -f /etc/ssh/sshd_config.d/*cloud-init*  # drop-ins outrank the main file
+   sudo systemctl reload ssh
+   sshd -T | grep -i passwordauth                  # must read: no
+   ```
+
+A partial cloud-init is not worth rebuilding the server over — the run is not
+resumable, but every step it missed is in the manual block below.
+
 If you skipped the cloud config, do the equivalent by hand:
 
 ```bash
