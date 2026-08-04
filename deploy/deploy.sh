@@ -104,7 +104,13 @@ fi
 # only, which is a valid deployment.
 if systemctl list-unit-files 2>/dev/null | grep -q '^robustuavs-api.service'; then
 	log "restarting the control plane"
-	"$VENV/bin/pip" install --quiet -r platform/backend/requirements.txt
+	# Not --quiet: when a wheel is missing and pip falls back to a source
+	# build, the reason is in the output and suppressing it turns a legible
+	# error into a bare non-zero exit.
+	if ! "$VENV/bin/pip" install -r platform/backend/requirements.txt; then
+		log "backend dependency install FAILED — see the pip output above"
+		exit 1
+	fi
 	sudo systemctl restart robustuavs-api
 	sleep 2
 	systemctl is-active --quiet robustuavs-api \
