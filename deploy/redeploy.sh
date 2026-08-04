@@ -3,6 +3,7 @@
 #
 #     ./deploy/redeploy.sh          # start it, return immediately
 #     ./deploy/redeploy.sh --watch  # start it and follow the log
+#     ./deploy/redeploy.sh --clean  # also rebuild node_modules from scratch
 #
 # Exists because the equivalent one-liner needs `setsid nohup ... &` with
 # redirections in the right order, and getting that subtly wrong either
@@ -26,7 +27,12 @@ echo "==> pulling"
 git pull --ff-only
 
 echo "==> starting deploy (detached; survives a dropped session)"
-setsid nohup "$REPO/deploy/deploy.sh" > "$LOG" 2>&1 < /dev/null &
+CLEAN=0
+for a in "$@"; do [ "$a" = "--clean" ] && CLEAN=1; done
+[ "$CLEAN" = "1" ] && echo "==> clean install: node_modules will be rebuilt"
+
+CLEAN_NODE_MODULES="$CLEAN" setsid nohup "$REPO/deploy/deploy.sh" \
+	> "$LOG" 2>&1 < /dev/null &
 sleep 1
 
 cat <<MSG

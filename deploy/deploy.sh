@@ -90,6 +90,14 @@ fi
 # does not need a JS toolchain installed.
 if [ -d platform/mobile ] && command -v npm >/dev/null; then
 	log "building the web client"
+	# CLEAN_NODE_MODULES=1 forces a fresh tree. Worth doing after any
+	# package.json change: npm's incremental resolution can prune a package
+	# that a previous tree had hoisted, leaving Expo unable to resolve a
+	# transitive it expects at the project root.
+	if [ "${CLEAN_NODE_MODULES:-0}" = "1" ]; then
+		log "removing node_modules for a clean install"
+		rm -rf platform/mobile/node_modules platform/mobile/package-lock.json
+	fi
 	# No --silent: a failed install or export must be readable in the log.
 	if ! ( cd platform/mobile && { npm ci 2>/dev/null || npm install; } ); then
 		log "npm install FAILED — see the output above"; exit 1
