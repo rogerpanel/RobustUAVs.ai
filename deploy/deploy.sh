@@ -149,10 +149,21 @@ if [ -f docker-compose.yml ]; then
 fi
 
 # Final report. Each line is a fact about the deployment, not a guess.
-log "verification"
-for url in https://robustuavs.ai/ https://robustuavs.ai/app/ https://robustuavs.ai/api/health; do
-	code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 10 "$url" 2>/dev/null || echo "---")
-	printf '         %-40s %s\n' "$url" "$code"
+#
+# Checked against the LOCAL origin, not the public hostname. From the server,
+# https://robustuavs.ai resolves to Cloudflare, and the origin generally cannot
+# route back to itself through the proxy -- which returns 000 (no connection)
+# and looks like an outage when the site is in fact fine. --resolve pins the
+# name to loopback so TLS still matches the certificate, and -k accepts the
+# Origin CA cert, which only Cloudflare is meant to trust.
+log "verification (origin-local; the public path is Cloudflare's to serve)"
+ok=1
+for path in / /app/ /api/health; do
+	code=$(curl -s -o /dev/null -w '%{http_code}' -k --max-time 10 \
+		--resolve "robustuavs.ai:443:127.0.0.1" "https://robustuavs.ai${path}") || code=000
+	case "$code" in 2*|3*) mark="ok" ;; *) mark="FAILED"; ok=0 ;; esac
+	printf '         %-22s %s  %s\n' "$path" "$code" "$mark"
 done
+[ "$ok" = "1" ] || log "one or more endpoints did not answer locally"
 
 log "deployed $after"
