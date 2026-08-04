@@ -1,0 +1,189 @@
+# Bringing the full stack up on robustuavs.ai
+
+Wires the GitHub repo onto the Hetzner server so `https://robustuavs.ai` serves
+the landing page, `/artifact/` the research tree, `/app` the interactive client,
+and `/api` the control plane.
+
+Assumes the server is already reachable and the repo cloned per
+`docs/deployment_runbook.md` (deploy key, `/srv/robustuavs/repo`, Caddy running
+with the Origin CA certificate). Every command runs as `deploy` over SSH from
+PowerShell:
+
+```powershell
+ssh deploy@62.238.48.164
+```
+
+Run the blocks in order and read each result before continuing.
+
+---
+
+## 1. Pull the platform
+
+```bash
+cd /srv/robustuavs/repo
+git fetch origin
+git checkout claude/whelan-uavcas-ingest-u00isn
+git pull
+ls platform/           # expect: backend  mobile  docker-compose.yml  README.md
+```
+
+## 2. Node, for the client build
+
+Expo's web export needs Node 20+. Ubuntu's archive lags, so use NodeSource:
+
+```bash
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+node --version && npm --version      # expect v20.x
+```
+
+## 3. Backend dependencies
+
+```bash
+/srv/robustuavs/venv/bin/pip install -r platform/backend/requirements.txt
+/srv/robustuavs/venv/bin/python -c "import fastapi, sqlalchemy; print('backend deps ok')"
+```
+
+## 4. Postgres and Redis (optional)
+
+Skip this section entirely for a first bring-up — the API falls back to SQLite
+and an in-process cache, and everything works. Add it when you want run history
+to survive across processes.
+
+```bash
+cd /srv/robustuavs/repo/platform
+printf 'POSTGRES_PASSWORD=%s\n' "$(openssl rand -base64 24)" > .env
+chmod 600 .env
+docker compose up -d
+docker compose ps                    # both should read healthy
+```
+
+Both bind to `127.0.0.1` only, so neither is reachable from outside the host.
+
+## 5. Environment file
+
+```bash
+sudo install -d -m 0750 -o deploy -g deploy /etc/robustuavs
+
+# Start from the safe default: no tokens (open), no DB, no Redis.
+sudo tee /etc/robustuavs/api.env >/dev/null <<'EOF'
+# Leave API_TOKENS unset for an open demo. Set it to require a bearer token
+# for run submission; reads stay public either way.
+# API_TOKENS=paste-a-long-random-token-here
+
+# Uncomment only if section 4 was run. Password must match platform/.env.
+# DATABASE_URL=postgresql+psycopg://robustuavs:PASSWORD@127.0.0.1/robustuavs
+# REDIS_URL=redis://127.0.0.1:6379/0
+
+# Optional: any one of these enables narrated copilot answers. With none set
+# the copilot still works, answering from the local result cache.
+# ANTHROPIC_API_KEY=
+# OPENAI_API_KEY=
+# GEMINI_API_KEY=
+# DEEPSEEK_API_KEY=
+EOF
+sudo chown deploy:deploy /etc/robustuavs/api.env
+sudo chmod 600 /etc/robustuavs/api.env
+```
+
+> The file holds API keys and a DB password, so it is `0600` and owned by
+> `deploy`. It is read by systemd, never committed, and never served.
+
+## 6. Install and start the control plane
+
+```bash
+sudo install -m644 deploy/robustuavs-api.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now robustuavs-api
+systemctl status robustuavs-api --no-pager | head -6
+```
+
+Confirm it answers on loopback before exposing it:
+
+```bash
+curl -s http://127.0.0.1:8000/api/health | python3 -m json.tool
+```
+
+Read `auth.mode` in that output. `open` means run submission is public — fine
+for a demo, deliberate rather than accidental. If it should be protected, set
+`API_TOKENS` in step 5 and `sudo systemctl restart robustuavs-api`.
+
+## 7. Publish the routes
+
+```bash
+sudo install -m 0644 deploy/Caddyfile /etc/caddy/Caddyfile
+sudo caddy validate --config /etc/caddy/Caddyfile
+sudo systemctl reload caddy
+```
+
+## 8. Build and deploy everything
+
+```bash
+cd /srv/robustuavs/repo
+./deploy/deploy.sh
+```
+
+This pulls, refreshes the venv, runs the schema gate over any staged corpus,
+publishes `site/` and the artifact tree, builds the Expo web bundle into
+`/srv/robustuavs/app`, and restarts the API. First run takes a few minutes —
+`npm install` dominates.
+
+## 9. Verify from the outside
+
+```bash
+curl -sSI https://robustuavs.ai/            | head -1   # 200
+curl -sSI https://robustuavs.ai/app/        | head -1   # 200
+curl -s   https://robustuavs.ai/api/health  | python3 -m json.tool
+curl -sSI https://robustuavs.ai/artifact/   | head -1   # 200
+```
+
+Then in a browser:
+
+| URL | What it is |
+|---|---|
+| `https://robustuavs.ai` | landing page |
+| `https://robustuavs.ai/app` | interactive client — cover page, live runner, copilot |
+| `https://robustuavs.ai/artifact/` | browsable research tree |
+| `https://robustuavs.ai/api/health` | deployment status |
+
+---
+
+## Updating later
+
+One command, from your laptop:
+
+```powershell
+ssh deploy@62.238.48.164 "/srv/robustuavs/repo/deploy/deploy.sh"
+```
+
+## Before the conference
+
+```bash
+# 1. Warm the caches so the first click in front of an audience is not the
+#    slow one (the certificate engine's first import dominates).
+curl -s https://robustuavs.ai/api/health > /dev/null
+curl -s -X POST https://robustuavs.ai/api/runs \
+     -H 'Content-Type: application/json' \
+     -d '{"kind":"mapping_compare","params":{"theta_s":0.25}}'
+
+# 2. Confirm a run completes end to end.
+curl -s 'https://robustuavs.ai/api/runs?limit=3' | python3 -m json.tool
+
+# 3. Snapshot the server from the Hetzner console, so a mid-demo mistake is
+#    a rollback rather than a rebuild.
+```
+
+On the day: open `/app`, and on the **Home** tab switch to the **print theme**.
+The dark palette washes out on most projectors; the ivory one keeps every
+status colour distinguishable.
+
+## If something fails
+
+| Symptom | Cause and fix |
+|---|---|
+| `/api/health` 502 | API not running: `journalctl -u robustuavs-api -n 40` |
+| `/app` 404 | bundle not built: rerun `./deploy/deploy.sh`, check the npm step |
+| `/app` loads, API calls fail | Caddy serving `/api` from the static root — reinstall the Caddyfile, `handle /api/*` must precede `handle_path /app/*` |
+| `caddy validate` passes, service dead | validate never opens files or binds ports; the real reason is in `journalctl -u caddy -n 40 \| grep -i error` |
+| runs stay `queued` | worker thread dead: restart the API; check `jobs.worker_alive` in `/api/health` |
+| `503` from a result endpoint | not an error — that result has not been produced in this deployment (see `PENDING_ON_DATA.md`) |
