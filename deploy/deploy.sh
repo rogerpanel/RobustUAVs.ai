@@ -90,8 +90,18 @@ fi
 # does not need a JS toolchain installed.
 if [ -d platform/mobile ] && command -v npm >/dev/null; then
 	log "building the web client"
-	( cd platform/mobile && npm ci --silent 2>/dev/null || npm install --silent )
-	( cd platform/mobile && npx expo export --platform web --output-dir dist )
+	# No --silent: a failed install or export must be readable in the log.
+	if ! ( cd platform/mobile && { npm ci 2>/dev/null || npm install; } ); then
+		log "npm install FAILED — see the output above"; exit 1
+	fi
+	if ! ( cd platform/mobile && npx expo export --platform web --output-dir dist ); then
+		log "expo export FAILED — see the output above"; exit 1
+	fi
+	# Only publish once the bundle actually exists. Publishing an empty dist/
+	# with --delete would wipe a previously working /app.
+	if [ ! -f platform/mobile/dist/index.html ]; then
+		log "export produced no index.html — refusing to publish"; exit 1
+	fi
 	mkdir -p "$APP_DIR"
 	rsync -a --delete platform/mobile/dist/ "$APP_DIR/"
 	log "client published -> $APP_DIR"
