@@ -162,7 +162,17 @@ Same shape as the robustidps.ai one-liner. `deploy.sh` already fetches and
 hard-resets to the tracked branch, so the `git pull` is belt-and-braces rather
 than required:
 
-**On the server:**
+**On the server** — one command, detached so a dropped SSH session cannot
+kill a build in progress:
+
+```bash
+/srv/robustuavs/repo/deploy/redeploy.sh
+```
+
+Add `--watch` to follow the log immediately. `Ctrl-C` while watching stops the
+*watching*, never the deploy.
+
+If you would rather run it in the foreground and watch it directly:
 
 ```bash
 cd /srv/robustuavs/repo && git pull && ./deploy/deploy.sh
