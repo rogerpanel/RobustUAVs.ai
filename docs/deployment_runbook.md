@@ -59,8 +59,10 @@ later that one private key is gone. Do not tick a key you no longer trust:
 revoking it means editing `authorized_keys` on the server, not the Console.
 
 **(11) Cloud config — free now, tedious later.** Cloud-init runs *once*, at
-first boot; there is no way to attach it to a running server. Paste
-`deploy/cloud-init.yaml` (replace `<YOUR_SSH_PUBLIC_KEY>` first). It installs
+first boot; there is no way to attach it to a running server. Paste **the
+contents of** `deploy/cloud-init.yaml` — the whole file, starting with the
+`#cloud-config` line — not the path to it. Replace `<YOUR_SSH_PUBLIC_KEY>`
+first. It installs
 Docker, Caddy, `ufw`, `fail2ban`, unattended security upgrades, and creates the
 non-root `deploy` user the rest of this runbook uses. Skipping it is not fatal —
 §2.3 does the same work by hand — but it is the cheapest ten seconds on the page.
@@ -271,6 +273,42 @@ string, not a diagnosis.
 Expect `cloud-init status` to report `running` for several minutes on first
 boot — `package_upgrade: true` plus Docker and Caddy is a few hundred megabytes
 of apt work. SSH is available throughout; the config simply is not finished yet.
+
+#### Symptom: cloud-init reports `done` but nothing was configured
+
+```
+extended_status: degraded done
+recoverable_errors:
+  WARNING:
+    - Unhandled non-multipart (text/x-not-multipart) userdata: 'b'deploy/cloud-init.yaml'...'
+```
+
+That warning is unambiguous: the Cloud config box received the **path**
+`deploy/cloud-init.yaml` instead of the file's contents. Cloud-init requires
+user-data to begin with a recognised header — `#cloud-config` — so an arbitrary
+string is filed as unhandled and silently ignored. `status: done` only means
+cloud-init finished its run, not that it did anything; `degraded` is the tell.
+
+The machine is therefore stock Ubuntu: no `deploy` user, no `ufw`, no
+`fail2ban`, no Docker, no Caddy, and **password authentication still enabled**.
+
+Two ways forward, both fine:
+
+- **Rebuild** (cleanest while the disk still holds nothing): Console → the
+  server → *Rebuild* → same image, pasting the full file contents this time.
+  This wipes the disk and re-runs first boot, and it regenerates the SSH host
+  key, so clear the stale entry afterwards:
+  `ssh-keygen -R <SERVER_IPv4>`.
+- **Configure by hand** using the block below. Nothing in the cloud config is
+  magic; it is the same commands.
+
+Do not rebuild while the console is your only way in — get SSH working first,
+or you are relying on VNC typing to recover a machine you cannot reach.
+
+> **`ssh deploy@…` prompting for a password does not prove the user exists.**
+> OpenSSH deliberately prompts for unknown accounts as well, to prevent user
+> enumeration. Confirm with `id deploy` **on the server**, never by inference
+> from a prompt.
 
 #### Recovering when neither account accepts your key
 
