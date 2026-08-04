@@ -53,8 +53,19 @@ robustuavs.ai, www.robustuavs.ai {
 		header Cache-Control "public, max-age=3600"
 	}
 
-	# Dashboard, if/when the container is running. Comment out until then.
-	# handle_path /dashboard/* {
-	#     reverse_proxy 127.0.0.1:8501
-	# }
+	# Control-plane API. Placed before the SPA handler so /api never falls
+	# through to the static bundle and returns index.html for a JSON request.
+	handle /api/* {
+		reverse_proxy 127.0.0.1:8000
+	}
+
+	# The interactive client (Expo web export). try_files sends unknown
+	# sub-paths back to index.html so client-side routing survives a refresh.
+	handle_path /app/* {
+		root * /srv/robustuavs/app
+		try_files {path} /index.html
+		file_server
+		header Cache-Control "public, max-age=300"
+	}
+	redir /app /app/ permanent
 }

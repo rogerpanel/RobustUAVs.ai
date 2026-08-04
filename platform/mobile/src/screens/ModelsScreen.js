@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { api } from '../api/client';
-import { theme, provenanceStyle, certStatusStyle } from '../theme';
+import { useTheme, provenanceStyle, certStatusStyle } from '../theme';
 import Card from '../components/Card';
 import Chip from '../components/Chip';
 
@@ -9,6 +9,8 @@ import Chip from '../components/Chip';
  *  adding a row to the backend registry adds it here for free -- the same
  *  indirection that let RobustIDPS ship three detectors without a UI change. */
 export default function ModelsScreen() {
+  const { t } = useTheme();
+  const styles = makeStyles(t);
   const [data, setData] = useState(null);
   const [cat, setCat] = useState(null);
   const [err, setErr] = useState(null);
@@ -18,7 +20,7 @@ export default function ModelsScreen() {
   }, [cat]);
 
   if (err) return <Center><Text style={styles.err}>{err}</Text></Center>;
-  if (!data) return <Center><ActivityIndicator color={theme.accent} /></Center>;
+  if (!data) return <Center><ActivityIndicator color={t.accent} /></Center>;
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
@@ -37,10 +39,10 @@ export default function ModelsScreen() {
       {data.models.map((m) => (
         <Card key={m.model_id} title={m.display_name} subtitle={m.summary} source={m.source}>
           <View style={styles.chips}>
-            <Chip label={m.category} color={theme.network} />
-            <Chip {...provenanceStyle[m.provenance]} />
+            <Chip label={m.category} color={t.network} />
+            <Chip {...provenanceStyle(t)[m.provenance]} />
             {m.certificate_status !== 'not_applicable'
-              ? <Chip {...certStatusStyle[m.certificate_status]} /> : null}
+              ? <Chip {...certStatusStyle(t)[m.certificate_status]} /> : null}
           </View>
           {Object.keys(m.constants || {}).length ? (
             <View style={styles.constants}>
@@ -58,22 +60,25 @@ export default function ModelsScreen() {
   );
 }
 
-const Center = ({ children }) => <View style={styles.center}>{children}</View>;
+const Center = ({ children }) => {
+  const { t } = useTheme();
+  return <View style={makeStyles(t).center}>{children}</View>;
+};
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: theme.bg },
-  center: { flex: 1, backgroundColor: theme.bg, alignItems: 'center', justifyContent: 'center' },
+const makeStyles = (t) => StyleSheet.create({
+  screen: { flex: 1, backgroundColor: t.bg },
+  center: { flex: 1, backgroundColor: t.bg, alignItems: 'center', justifyContent: 'center' },
   content: { padding: 16, paddingBottom: 48 },
-  h1: { color: theme.text, fontSize: 24, fontWeight: '800', marginBottom: 12 },
+  h1: { color: t.text, fontSize: 24, fontWeight: '800', marginBottom: 12 },
   row: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 12 },
-  pill: { borderWidth: 1, borderColor: theme.border, borderRadius: 8, paddingHorizontal: 11, paddingVertical: 6, marginRight: 8, marginBottom: 8 },
-  pillOn: { borderColor: theme.accent, backgroundColor: `${theme.accent}22` },
-  pillText: { color: theme.muted, fontSize: 12, fontWeight: '600' },
-  pillTextOn: { color: theme.accent },
+  pill: { borderWidth: 1, borderColor: t.border, borderRadius: 8, paddingHorizontal: 11, paddingVertical: 6, marginRight: 8, marginBottom: 8 },
+  pillOn: { borderColor: t.accent, backgroundColor: `${t.accent}22` },
+  pillText: { color: t.muted, fontSize: 12, fontWeight: '600' },
+  pillTextOn: { color: t.accent },
   chips: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 6 },
   constants: { marginTop: 6 },
-  constant: { color: theme.text, fontSize: 11, fontFamily: 'monospace', marginTop: 2 },
-  ck: { color: theme.muted },
-  caveat: { color: theme.bridge, fontSize: 11, marginTop: 8, lineHeight: 16 },
-  err: { color: theme.danger, padding: 20 },
+  constant: { color: t.text, fontSize: 11, fontFamily: 'monospace', marginTop: 2 },
+  ck: { color: t.muted },
+  caveat: { color: t.bridge, fontSize: 11, marginTop: 8, lineHeight: 16 },
+  err: { color: t.danger, padding: 20 },
 });

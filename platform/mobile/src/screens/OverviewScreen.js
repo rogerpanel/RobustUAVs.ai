@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import { api, Unavailable, API_BASE } from '../api/client';
-import { theme } from '../theme';
+import { useTheme } from '../theme';
 import Card from '../components/Card';
 import Chip from '../components/Chip';
 
@@ -9,6 +9,8 @@ import Chip from '../components/Chip';
  *  including the fact that the released measured_same_platform pairing count
  *  is zero, which is the number a reviewer will look for first. */
 export default function OverviewScreen() {
+  const { t } = useTheme();
+  const styles = makeStyles(t);
   const [health, setHealth] = useState(null);
   const [prov, setProv] = useState(null);
   const [note, setNote] = useState(null);
@@ -44,7 +46,7 @@ export default function OverviewScreen() {
             {health.providers.map((p) => (
               <Chip key={p.name}
                     label={p.active ? `${p.name} ●` : p.name}
-                    color={p.active ? theme.ok : p.configured ? theme.network : theme.muted} />
+                    color={p.active ? t.ok : p.configured ? t.network : t.muted} />
             ))}
           </View>
           <Text style={styles.hint}>
@@ -52,7 +54,7 @@ export default function OverviewScreen() {
             from the local result cache rather than failing.
           </Text>
         </Card>
-      ) : <ActivityIndicator color={theme.accent} />}
+      ) : <ActivityIndicator color={t.accent} />}
 
       {totals ? (
         <Card title="Corpus provenance" source={prov ? 'results/provenance_distribution.csv' : null}
@@ -76,20 +78,24 @@ export default function OverviewScreen() {
   );
 }
 
-const Row = ({ k, v }) => (
-  <View style={styles.kv}><Text style={styles.k}>{k}</Text><Text style={styles.v}>{String(v)}</Text></View>
-);
+const Row = ({ k, v }) => {
+  const { t } = useTheme();
+  const styles = makeStyles(t);
+  return (
+    <View style={styles.kv}><Text style={styles.k}>{k}</Text><Text style={styles.v}>{String(v)}</Text></View>
+  );
+};
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: theme.bg },
+const makeStyles = (t) => StyleSheet.create({
+  screen: { flex: 1, backgroundColor: t.bg },
   content: { padding: 16, paddingBottom: 48 },
-  h1: { color: theme.text, fontSize: 26, fontWeight: '800' },
-  lede: { color: theme.muted, fontSize: 14, lineHeight: 20, marginBottom: 18, marginTop: 4 },
-  kv: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5, borderBottomWidth: 1, borderBottomColor: theme.border },
-  k: { color: theme.muted, fontSize: 12, flex: 1 },
-  v: { color: theme.text, fontSize: 12, fontWeight: '700' },
+  h1: { color: t.text, fontSize: 26, fontWeight: '800' },
+  lede: { color: t.muted, fontSize: 14, lineHeight: 20, marginBottom: 18, marginTop: 4 },
+  kv: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5, borderBottomWidth: 1, borderBottomColor: t.border },
+  k: { color: t.muted, fontSize: 12, flex: 1 },
+  v: { color: t.text, fontSize: 12, fontWeight: '700' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 10 },
-  hint: { color: theme.muted, fontSize: 11, lineHeight: 16, marginTop: 6 },
-  warn: { borderLeftWidth: 3, borderLeftColor: theme.bridge, paddingLeft: 10, marginTop: 12 },
-  warnText: { color: theme.text, fontSize: 12, lineHeight: 18 },
+  hint: { color: t.muted, fontSize: 11, lineHeight: 16, marginTop: 6 },
+  warn: { borderLeftWidth: 3, borderLeftColor: t.bridge, paddingLeft: 10, marginTop: 12 },
+  warnText: { color: t.text, fontSize: 12, lineHeight: 18 },
 });

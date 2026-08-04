@@ -1,14 +1,15 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { theme } from '../theme';
+import { useTheme } from '../theme';
 
-/** A provenance / status chip. Deliberately always rendered, never hidden:
- *  a number without its evidence class is the thing this project refuses to
- *  ship. */
-export default function Chip({ label, color = theme.muted }) {
+/** A provenance / status chip. Always rendered, never hidden: a number without
+ *  its evidence class is the thing this project refuses to ship. */
+export default function Chip({ label, color }) {
+  const { t } = useTheme();
+  const c = color || t.muted;
   return (
-    <View style={[styles.chip, { borderColor: color }]}>
-      <Text style={[styles.text, { color }]} numberOfLines={1}>{label}</Text>
+    <View style={[styles.chip, { borderColor: c }]}>
+      <Text style={[styles.text, { color: c }]} numberOfLines={1}>{label}</Text>
     </View>
   );
 }

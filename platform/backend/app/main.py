@@ -9,11 +9,13 @@ Run:
 """
 from __future__ import annotations
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from . import copilot, registry, results
+from . import auth, copilot, db, registry, results, runners  # noqa: F401
+from . import jobs
+from .cache import cache
 from .llm import provider_status
 
 app = FastAPI(
@@ -34,16 +36,74 @@ app.add_middleware(
 )
 
 
+@app.on_event("startup")
+def _startup() -> None:
+    db.init_db()
+    jobs.start_worker()
+
+
 @app.get("/api/health", tags=["meta"])
 def health() -> dict:
-    files = results.available()
     return {
         "status": "ok",
         "models": len(registry.REGISTRY),
         "copilot_tools": len(copilot.TOOLS),
-        "result_files": len(files),
+        "result_files": len(results.available()),
         "providers": provider_status(),
+        "database": db.backend_name(),
+        "cache": cache.status(),
+        "auth": auth.status(),
+        "jobs": jobs.queue_status(),
     }
+
+
+# -------------------------------------------------------------------- runs --
+
+class RunRequest(BaseModel):
+    kind: str
+    label: str = ""
+    # Two dicts, never one. Which of the two a value lives in is the
+    # difference between "we found something" and "it is robust to how we
+    # computed it", and the API must not blur that.
+    params: dict = {}
+    hyperparams: dict = {}
+
+
+@app.get("/api/runners", tags=["runs"])
+def api_runners() -> dict:
+    return {"runners": runners.schemas()}
+
+
+@app.post("/api/runs", tags=["runs"])
+def api_submit(req: RunRequest, _=Depends(auth.require_write)) -> dict:
+    try:
+        return jobs.submit(req.kind, req.params, req.hyperparams, req.label)
+    except KeyError:
+        raise HTTPException(404, {"error": f"no runner '{req.kind}'",
+                                  "available": sorted(jobs.RUNNERS)})
+    except ValueError as exc:
+        raise HTTPException(400, str(exc))
+
+
+@app.get("/api/runs", tags=["runs"])
+def api_runs(limit: int = Query(25, ge=1, le=200),
+             kind: str | None = Query(None)) -> dict:
+    return {"runs": jobs.recent(limit=limit, kind=kind)}
+
+
+@app.get("/api/runs/{run_id}", tags=["runs"])
+def api_run(run_id: str) -> dict:
+    run = jobs.get(run_id)
+    if run is None:
+        raise HTTPException(404, f"no run '{run_id}'")
+    return run
+
+
+@app.post("/api/runs/{run_id}/cancel", tags=["runs"])
+def api_cancel(run_id: str, _=Depends(auth.require_write)) -> dict:
+    if jobs.get(run_id) is None:
+        raise HTTPException(404, f"no run '{run_id}'")
+    return {"run_id": run_id, "cancelling": jobs.cancel(run_id)}
 
 
 # ---------------------------------------------------------------- registry --
