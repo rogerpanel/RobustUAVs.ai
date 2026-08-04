@@ -42,6 +42,13 @@
   .scroll { overflow-x: auto; }
   footer { margin-top: 3.5rem; padding-top: 1.5rem; border-top: 1px solid var(--rule); color: var(--muted); font-size: .9rem; }
   .status { display: inline-block; padding: .15rem .5rem; border: 1px solid var(--rule); border-radius: 999px; font-size: .8rem; color: var(--muted); }
+  .cta {
+    display: inline-block; margin-top: 1rem; padding: .55rem 1.1rem;
+    background: var(--accent); color: var(--bg); border-radius: 8px;
+    font-weight: 600; text-decoration: none;
+  }
+  .cta:hover { filter: brightness(1.08); }
+  .also { color: var(--muted); font-size: .9rem; margin-top: .75rem; }
 </style>
 </head>
 <body>
@@ -74,6 +81,20 @@ second.</p>
     mission-completion floor.</small>
   </div>
 </div>
+
+<h2>Try it</h2>
+
+<p>The certified verdict is parametric in the mapping used to turn network delay
+into position error &mdash; the kinematic worst case puts the detector's
+operating point <code>&theta;&nbsp;=&nbsp;0.25&nbsp;s</code> outside the
+certified window, the measured mapping puts it comfortably inside. That is the
+kind of claim a static PDF cannot show, so the mapping is a live control rather
+than a footnote.</p>
+
+<p><a class="cta" href="/app/">Open the interactive client &rarr;</a></p>
+
+<p class="also">Runs against the live certificate engine on this server. Also:
+<a href="/api/health">/api/health</a> for deployment status.</p>
 
 <h2>The six sources</h2>
 
