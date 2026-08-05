@@ -161,6 +161,26 @@ EOF
 install -d -o "$DEPLOY_USER" -g "$DEPLOY_USER" /srv/robustuavs /srv/data
 install -d -m755 /etc/caddy/certs
 
+# Swap. Hetzner Cloud images ship with none, and the Expo/metro web export is
+# the largest memory consumer this host ever runs. Without swap an OOM does not
+# merely kill the build: the box thrashes hard enough that sshd cannot get
+# scheduled to write its version string, and every login attempt fails with
+# "Connection timed out during banner exchange" -- locking the operator out of
+# the machine that is failing. Swap turns that outage into a slow build.
+if ! swapon --show=NAME --noheadings | grep -q .; then
+	log "creating a 4G swap file (none configured)"
+	fallocate -l 4G /swapfile || dd if=/dev/zero of=/swapfile bs=1M count=4096
+	chmod 600 /swapfile
+	mkswap /swapfile >/dev/null
+	swapon /swapfile
+	grep -q '^/swapfile' /etc/fstab || echo '/swapfile none swap sw 0 0' >> /etc/fstab
+	# Prefer RAM, but allow swap rather than invoking the OOM killer.
+	printf 'vm.swappiness=10\n' > /etc/sysctl.d/99-swappiness.conf
+	sysctl -q -p /etc/sysctl.d/99-swappiness.conf
+else
+	log "swap already configured — leaving it alone"
+fi
+
 # The Caddyfile logs to /var/log/caddy/access.log. `caddy validate` accepts
 # the config regardless, then the service exits 1 at startup if the directory
 # is not writable by the caddy user — so create it here, not after the fact.
