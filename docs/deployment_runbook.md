@@ -310,6 +310,62 @@ or you are relying on VNC typing to recover a machine you cannot reach.
 > enumeration. Confirm with `id deploy` **on the server**, never by inference
 > from a prompt.
 
+#### Symptom: intermittent `kex_exchange_identification: read: Connection reset`
+
+Connections are refused mid-handshake, seemingly at random: several in a row
+fail, then one succeeds and authenticates normally. Disabling `fail2ban` changes
+nothing, `iptables` shows no REJECT rule, and the server is otherwise healthy.
+
+The cause is **`PerSourcePenalties`**, introduced in OpenSSH 9.8 and enabled by
+default. Ubuntu 26.04 ships OpenSSH 10.2, so it is on. sshd tracks source
+addresses whose connections terminate badly — dropped before authentication
+completes, interrupted during the handshake, killed mid-session — and then drops
+new connections from that address *at key exchange*, with an exponentially
+growing penalty window. It is fail2ban built into sshd, which is exactly why
+turning fail2ban off has no effect.
+
+A single flaky link is enough to start the cascade: each dropped session adds a
+penalty, and every impatient `Ctrl-C` during the resulting slow connect adds
+another. Confirm from the server (any connection that does land will do):
+
+```bash
+journalctl -u ssh -n 200 --no-pager | grep -i penal | tail -20
+# Penalising 41.x.x.x:0 for 120 seconds (grace-exceeded)
+```
+
+Switch it off — an operator address that reconnects constantly is not the threat
+model this feature exists for, and key-only auth already closes the door it
+guards:
+
+```bash
+printf 'PerSourcePenalties no\n' | sudo tee /etc/ssh/sshd_config.d/99-no-penalties.conf
+sudo sshd -t && sudo systemctl reload ssh
+```
+
+`sshd -t` validates the config before the reload, and `reload` never drops
+established sessions — so this cannot lock you out even if it is wrong.
+
+To keep the feature but exempt yourself, use `PerSourcePenaltyExemptList` with
+your address instead. That is the better choice for a static office IP and the
+worse one behind a VPN with rotating egress, since the exemption then covers an
+address you do not keep.
+
+Prevention matters more than the fix: add keepalives client-side so an idle
+session is never reaped in the first place. In `~/.ssh/config`:
+
+```
+Host <SERVER_IPv4> robustuavs
+    User deploy
+    ServerAliveInterval 20
+    ServerAliveCountMax 6
+    TCPKeepAlive yes
+```
+
+> A successful `ssh -v` that reaches `Authenticated to … using "publickey"` is
+> proof the server, the key, and sshd are all fine. When that line appears in
+> one attempt and the next attempt resets, the problem is rate limiting, not
+> configuration — do not go looking for a broken key.
+
 #### Recovering when neither account accepts your key
 
 If `ssh root@` fails but `ssh deploy@` **prompts for a password**, read it as a
