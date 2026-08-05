@@ -366,6 +366,50 @@ Host <SERVER_IPv4> robustuavs
 > one attempt and the next attempt resets, the problem is rate limiting, not
 > configuration — do not go looking for a broken key.
 
+#### Symptom: `Connection timed out during banner exchange`
+
+Distinct from the resets above, and diagnosed differently. The TCP connection is
+accepted, then sshd never writes even its version string. sshd is not refusing
+you — it cannot get scheduled. The server is out of memory, thrashing, or out of
+disk.
+
+On this host the cause is almost always the **Expo/metro web export**. Hetzner
+Cloud images ship with **no swap**, so on an 8 GB CPX32 a metro bundle that
+overruns takes the whole machine down rather than just itself, and the operator
+loses SSH to the machine that is failing.
+
+`deploy/redeploy.sh` makes this easy to do repeatedly without noticing: it
+launches the build **detached**, so an `ssh … redeploy.sh` whose connection dies
+has still started a build on the server. Retrying then adds another. Its
+concurrency guard only catches a build that is still alive; it cannot catch one
+that already exhausted the box.
+
+Recovery, in order:
+
+1. **Stop retrying.** Each attempt may add load to a machine that is already
+   over its limit.
+2. **Reboot from the Hetzner Cloud panel** (Server → Power → Reset). No login
+   required, and it clears memory pressure and sshd's penalty table together.
+3. Get in during the first quiet minute and add swap before anything else:
+
+   ```bash
+   sudo fallocate -l 4G /swapfile && sudo chmod 600 /swapfile
+   sudo mkswap /swapfile && sudo swapon /swapfile
+   echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+   free -h
+   ```
+
+`deploy/bootstrap.sh` now does this on a fresh host, and `deploy/deploy.sh`
+refuses to start a build with under 1.5 GB available and no swap, caps V8's heap
+at 2 GB, and runs npm and expo under `nice`/`ionice` so that a runaway bundle
+loses the scheduler fight with sshd instead of winning it.
+
+> Read the three failures as distinct diagnoses, not variations on "SSH is
+> broken": **reset at kex** is rate limiting (`PerSourcePenalties`), **connection
+> closed** is sshd exiting (host keys, config), and **banner-exchange timeout**
+> is the host being starved. Only the last one means the machine itself is in
+> trouble.
+
 #### Recovering when neither account accepts your key
 
 If `ssh root@` fails but `ssh deploy@` **prompts for a password**, read it as a

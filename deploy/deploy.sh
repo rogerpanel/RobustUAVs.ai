@@ -85,6 +85,31 @@ fi
 # does not need a JS toolchain installed.
 if [ -d platform/mobile ] && command -v npm >/dev/null; then
 	log "building the web client"
+
+	# Metro is the largest memory consumer on this host. Left uncapped on a
+	# machine with no swap it can take the box down hard enough that sshd
+	# cannot get scheduled -- logins then fail with "Connection timed out
+	# during banner exchange" and the only way back in is a panel reboot.
+	# Two guards, because a build that fails is recoverable and a host that
+	# is unreachable is not:
+	#
+	#   1. Refuse to start without enough headroom. Better a skipped build
+	#      than an unreachable server.
+	#   2. Cap V8's heap and run at low priority, so even a runaway bundle
+	#      loses the scheduler fight with sshd rather than winning it.
+	avail_mb=$(awk '/MemAvailable/ {print int($2/1024)}' /proc/meminfo 2>/dev/null || echo 99999)
+	swap_mb=$(awk '/SwapTotal/ {print int($2/1024)}' /proc/meminfo 2>/dev/null || echo 0)
+	min_mb="${MIN_BUILD_MB:-1500}"
+	if [ "$avail_mb" -lt "$min_mb" ] && [ "$swap_mb" -lt 1024 ]; then
+		log "only ${avail_mb}MB available and ${swap_mb}MB swap — REFUSING to build"
+		log "         the previous bundle stays published; add swap (deploy/bootstrap.sh)"
+		log "         or set MIN_BUILD_MB to override once you know it fits"
+		exit 1
+	fi
+	log "memory: ${avail_mb}MB available, ${swap_mb}MB swap"
+	export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=2048}"
+	NICE="nice -n 10"
+	command -v ionice >/dev/null && NICE="$NICE ionice -c3"
 	# CLEAN_NODE_MODULES=1 forces a fresh tree. Worth doing after any
 	# package.json change: npm's incremental resolution can prune a package
 	# that a previous tree had hoisted, leaving Expo unable to resolve a
@@ -94,10 +119,10 @@ if [ -d platform/mobile ] && command -v npm >/dev/null; then
 		rm -rf platform/mobile/node_modules platform/mobile/package-lock.json
 	fi
 	# No --silent: a failed install or export must be readable in the log.
-	if ! ( cd platform/mobile && { npm ci 2>/dev/null || npm install; } ); then
+	if ! ( cd platform/mobile && { $NICE npm ci 2>/dev/null || $NICE npm install; } ); then
 		log "npm install FAILED — see the output above"; exit 1
 	fi
-	if ! ( cd platform/mobile && npx expo export --platform web --output-dir dist ); then
+	if ! ( cd platform/mobile && $NICE npx expo export --platform web --output-dir dist ); then
 		log "expo export FAILED — see the output above"; exit 1
 	fi
 	# Only publish once the bundle actually exists. Publishing an empty dist/
