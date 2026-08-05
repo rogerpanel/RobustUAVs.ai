@@ -61,7 +61,7 @@ always surfaced to the client as a chip.
 cd platform/mobile
 npm install
 npm run web        # or: npm start, then scan the QR code
-npm run build:web  # static bundle -> dist/, deployable to /app on the origin
+npm run build:web  # static bundle -> dist/, published to the origin's web root
 ```
 
 Four tabs today: Overview, Composition, Registry, Copilot.
@@ -111,20 +111,21 @@ stays public — gating that would defeat the point of publishing it. The mode i
 reported by `/api/health` so a deployment that believes it is protected and is
 not can see so at a glance.
 
-## Deploying to /app
+## Deploying to the domain root
 
 `deploy/deploy.sh` builds the Expo web bundle and publishes it to
-`/srv/robustuavs/app`; the Caddyfile serves it at `/app` with an SPA fallback
-and reverse-proxies `/api` to the control plane on loopback. Install the unit
-with:
+`/srv/robustuavs/app`; the Caddyfile serves that directory at the domain root
+with an SPA fallback and reverse-proxies `/api` to the control plane on
+loopback. Install the unit with:
 
 ```bash
 sudo install -m644 deploy/robustuavs-api.service /etc/systemd/system/
 sudo systemctl daemon-reload && sudo systemctl enable --now robustuavs-api
 ```
 
-Then `https://robustuavs.ai/` is the landing page, `/artifact/` the research
-tree, and `/app` the interactive client.
+Then `https://robustuavs.ai/` is the interactive client and `/artifact/` the
+browsable research tree. `/app`, where the client used to live, is a permanent
+redirect to `/`.
 
 ## Presenting
 

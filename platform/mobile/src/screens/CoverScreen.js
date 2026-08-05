@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, Pressable } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Pressable, Linking } from 'react-native';
 import { api, API_BASE } from '../api/client';
 import { useTheme, fonts } from '../theme';
 import Chip from '../components/Chip';
@@ -14,6 +14,17 @@ import Chip from '../components/Chip';
  * measured_same_platform pairings), because a cover page that only shows
  * favourable figures is the kind of artifact this project argues against.
  */
+/** Carried over from the static landing page this screen replaced. Counts are
+ *  the ingested totals, and match results/provenance_distribution.csv. */
+const SOURCES = [
+  ['UAV-EW-Bench', 'autonomy · mission/GNSS', '93,600 flights'],
+  ['UAVIDS-2025', 'network · mesh', '122,171 flows'],
+  ['DATAMUt (sim)', 'network · mesh', 'per-hop traces'],
+  ['HCRL UAVCAN', 'network · intra-bus', '10 scenarios'],
+  ['UAV Attack Dataset', 'autonomy · GNSS', '3 live flights'],
+  ['UAV-CAS', 'network · mesh', 'flow statistics'],
+];
+
 export default function CoverScreen({ navigation }) {
   const { t, mode, toggle } = useTheme();
   const s = styles(t);
@@ -52,6 +63,27 @@ export default function CoverScreen({ navigation }) {
         <Tile t={t} accent={t.info} title="Copilot"
               body="Ask about the corpus or the guarantee; every answer cites the committed file it came from."
               onPress={() => navigation.navigate('Copilot')} />
+      </View>
+
+      <Text style={s.h2}>The six sources</Text>
+      <View style={s.table}>
+        {SOURCES.map((r) => (
+          <View key={r[0]} style={s.tr}>
+            <Text style={[s.td, s.tdName]}>{r[0]}</Text>
+            <Text style={[s.td, s.tdLayer]}>{r[1]}</Text>
+            <Text style={[s.td, s.tdCount]}>{r[2]}</Text>
+          </View>
+        ))}
+      </View>
+
+      <Text style={s.h2}>Artifact and data</Text>
+      <View style={s.links}>
+        <LinkRow t={t} label="/artifact/"
+                 note="schema, adapters, certificate engine, every committed result"
+                 href="/artifact/" />
+        <LinkRow t={t} label="Kaggle corpus"
+                 note="all six datasets and the DATAMUt program · DOI 10.34740/kaggle/dsv/18346203"
+                 href="https://www.kaggle.com/datasets/rogernickanaedevha/uavs-network-and-navigation-end-to-end-security-data" />
       </View>
 
       <View style={s.honest}>
@@ -94,6 +126,16 @@ export default function CoverScreen({ navigation }) {
   );
 }
 
+function LinkRow({ t, label, note, href }) {
+  const s = styles(t);
+  return (
+    <Pressable onPress={() => Linking.openURL(href)} style={s.link}>
+      <Text style={s.linkLabel}>{label} &rarr;</Text>
+      <Text style={s.linkNote}>{note}</Text>
+    </Pressable>
+  );
+}
+
 function Tile({ t, title, body, accent, onPress }) {
   const s = styles(t);
   return (
@@ -125,6 +167,30 @@ const styles = (t) => StyleSheet.create({
   },
   tileTitle: { color: t.text, fontSize: 15, fontWeight: '700', fontFamily: fonts.display },
   tileBody: { color: t.muted, fontSize: 12, lineHeight: 18, marginTop: 5 },
+  h2: {
+    color: t.text, fontSize: 13, fontWeight: '800', letterSpacing: 0.6,
+    textTransform: 'uppercase', marginTop: 20, marginBottom: 8,
+    fontFamily: fonts.display,
+  },
+  table: {
+    borderWidth: 1, borderColor: t.border, borderRadius: 10,
+    backgroundColor: t.panel, overflow: 'hidden',
+  },
+  tr: {
+    flexDirection: 'row', paddingVertical: 8, paddingHorizontal: 12,
+    borderBottomWidth: 1, borderBottomColor: t.border,
+  },
+  td: { fontSize: 11, lineHeight: 16 },
+  tdName: { color: t.text, fontWeight: '700', flex: 2.2 },
+  tdLayer: { color: t.muted, flex: 2.6 },
+  tdCount: { color: t.muted, flex: 1.8, textAlign: 'right' },
+  links: { marginBottom: 4 },
+  link: {
+    borderWidth: 1, borderColor: t.border, borderRadius: 10,
+    backgroundColor: t.panel, padding: 12, marginBottom: 8,
+  },
+  linkLabel: { color: t.accent, fontSize: 13, fontWeight: '700', fontFamily: fonts.mono },
+  linkNote: { color: t.muted, fontSize: 11, lineHeight: 16, marginTop: 3 },
   honest: {
     borderLeftWidth: 3, borderLeftColor: t.bridge, paddingLeft: 12,
     marginTop: 14, marginBottom: 20,

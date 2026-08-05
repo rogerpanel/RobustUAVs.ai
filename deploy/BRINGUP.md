@@ -1,8 +1,9 @@
 # Bringing the full stack up on robustuavs.ai
 
 Wires the GitHub repo onto the Hetzner server so `https://robustuavs.ai` serves
-the landing page, `/artifact/` the research tree, `/app` the interactive client,
-and `/api` the control plane.
+the interactive client at the domain root, `/artifact/` the research tree, and
+`/api` the control plane. There is no separate static landing page: the client
+*is* the site, and `/app` is a permanent redirect to `/` for old links.
 
 Assumes the server is already reachable and the repo cloned per
 `docs/deployment_runbook.md` (deploy key, `/srv/robustuavs/repo`, Caddy running
@@ -133,14 +134,15 @@ cd /srv/robustuavs/repo
 
 This pulls, refreshes the venv, runs the schema gate over any staged corpus,
 publishes `site/` and the artifact tree, builds the Expo web bundle into
-`/srv/robustuavs/app`, and restarts the API. First run takes a few minutes —
+`/srv/robustuavs/app` (served at `/`), and restarts the API. First run takes a
+few minutes —
 `npm install` dominates.
 
 ## 9. Verify from the outside
 
 ```bash
 curl -sSI https://robustuavs.ai/            | head -1   # 200
-curl -sSI https://robustuavs.ai/app/        | head -1   # 200
+curl -sSI https://robustuavs.ai/app         | head -1   # 301 -> /
 curl -s   https://robustuavs.ai/api/health  | python3 -m json.tool
 curl -sSI https://robustuavs.ai/artifact/   | head -1   # 200
 ```
@@ -149,8 +151,8 @@ Then in a browser:
 
 | URL | What it is |
 |---|---|
-| `https://robustuavs.ai` | landing page |
-| `https://robustuavs.ai/app` | interactive client — cover page, live runner, copilot |
+| `https://robustuavs.ai` | interactive client — cover page, live runner, copilot |
+| `https://robustuavs.ai/app` | permanent redirect to `/` (kept for old links) |
 | `https://robustuavs.ai/artifact/` | browsable research tree |
 | `https://robustuavs.ai/api/health` | deployment status |
 
@@ -199,7 +201,8 @@ restarts the unit instead. Postgres and Redis are the only containerised
 pieces, and they are optional and long-lived — rebuilding them on every deploy
 would drop the run history for no benefit.
 
-The script ends by printing the HTTP status of `/`, `/app/`, and `/api/health`,
+The script ends by printing the HTTP status of `/`, `/api/health`, `/artifact/`
+and the `/app` redirect,
 so a deploy that half-succeeded is visible immediately rather than on the next
 page load.
 
@@ -220,7 +223,8 @@ curl -s 'https://robustuavs.ai/api/runs?limit=3' | python3 -m json.tool
 #    a rollback rather than a rebuild.
 ```
 
-On the day: open `/app`, and on the **Home** tab switch to the **print theme**.
+On the day: open `https://robustuavs.ai`, and on the **Home** tab switch to the
+**print theme**.
 The dark palette washes out on most projectors; the ivory one keeps every
 status colour distinguishable.
 
@@ -229,8 +233,8 @@ status colour distinguishable.
 | Symptom | Cause and fix |
 |---|---|
 | `/api/health` 502 | API not running: `journalctl -u robustuavs-api -n 40` |
-| `/app` 404 | bundle not built: rerun `./deploy/deploy.sh`, check the npm step |
-| `/app` loads, API calls fail | Caddy serving `/api` from the static root — reinstall the Caddyfile, `handle /api/*` must precede `handle_path /app/*` |
+| `/` 404 or blank | bundle not built: rerun `./deploy/deploy.sh`, check the npm step |
+| site loads, API calls fail | Caddy answering `/api` from the SPA — reinstall the Caddyfile; `handle /api/*` must precede the root `handle` block |
 | `caddy validate` passes, service dead | validate never opens files or binds ports; the real reason is in `journalctl -u caddy -n 40 \| grep -i error` |
 | runs stay `queued` | worker thread dead: restart the API; check `jobs.worker_alive` in `/api/health` |
 | `503` from a result endpoint | not an error — that result has not been produced in this deployment (see `PENDING_ON_DATA.md`) |

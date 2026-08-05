@@ -195,7 +195,7 @@ Six groups, mirroring the paper's structure rather than RobustIDPS's:
 The user-facing requirement is a live demonstration surface reachable from a
 phone during a talk or a review. Expo gives one codebase for iOS, Android, and
 web; the web build deploys to the same Caddy origin as the static artifact, so
-`robustuavs.ai` serves the landing page and `/app` serves the interactive
+`robustuavs.ai` serves the interactive
 client, with no second host to operate.
 
 ---
