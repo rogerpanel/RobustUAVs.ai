@@ -12,9 +12,19 @@
  */
 import Constants from 'expo-constants';
 
+/**
+ * Origin first, config second.
+ *
+ * On the web the client is served from the same origin as the API, so the page
+ * it loaded from is always the correct answer -- and asking it keeps the build
+ * host-agnostic, which a hardcoded https://robustuavs.ai does not: the same
+ * bundle then works on the server, on a staging host, and against a local
+ * `uvicorn` with no rebuild. Native builds have no `window`, so they fall
+ * through to `extra.apiBase`.
+ */
 const API_BASE =
-  Constants?.expoConfig?.extra?.apiBase ??
-  (typeof window !== 'undefined' && window.location?.origin) ??
+  (typeof window !== 'undefined' && window.location?.origin) ||
+  Constants?.expoConfig?.extra?.apiBase ||
   'http://localhost:8000';
 
 export class Unavailable extends Error {

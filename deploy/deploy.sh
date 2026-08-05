@@ -17,7 +17,7 @@ REPO="${REPO:-/srv/robustuavs/repo}"
 BRANCH="${BRANCH:-$(git -C "${REPO:-/srv/robustuavs/repo}" rev-parse --abbrev-ref HEAD 2>/dev/null || echo main)}"
 VENV="${VENV:-/srv/robustuavs/venv}"
 ARTIFACT="${ARTIFACT:-/srv/robustuavs/artifact}"
-SITE="${SITE:-/srv/robustuavs/site}"
+# The client is served from the domain root; there is no separate static site.
 APP_DIR="${APP_DIR:-/srv/robustuavs/app}"
 
 log() { printf '\033[1;36m[deploy]\033[0m %s\n' "$*"; }
@@ -60,11 +60,6 @@ else
 	log "no staged corpus on this host — skipping schema gate"
 fi
 
-# Publish the landing page.
-log "publishing site -> $SITE"
-mkdir -p "$SITE"
-rsync -a --delete site/ "$SITE/"
-
 # Publish the artifact tree. rsync --delete keeps it an exact mirror of the
 # committed results, so a removed file disappears from the site too.
 log "publishing artifact -> $ARTIFACT"
@@ -106,15 +101,19 @@ if [ -d platform/mobile ] && command -v npm >/dev/null; then
 		log "expo export FAILED — see the output above"; exit 1
 	fi
 	# Only publish once the bundle actually exists. Publishing an empty dist/
-	# with --delete would wipe a previously working /app.
+	# with --delete would wipe the whole site, which is now this bundle.
 	if [ ! -f platform/mobile/dist/index.html ]; then
 		log "export produced no index.html — refusing to publish"; exit 1
 	fi
 	mkdir -p "$APP_DIR"
 	rsync -a --delete platform/mobile/dist/ "$APP_DIR/"
-	log "client published -> $APP_DIR"
+	log "client published -> $APP_DIR (served at /)"
 else
-	log "npm not present or no client — skipping the web build"
+	# The client IS the site now, so skipping the build leaves whatever was
+	# published last time. That is the right behaviour -- never serve nothing --
+	# but it must be loud, or a host without node silently freezes the site.
+	log "npm not present or no client — SKIPPING the web build"
+	log "         the site keeps serving the previously published bundle"
 fi
 
 # Control plane: install deps into the venv and restart the service if the
@@ -158,7 +157,7 @@ fi
 # Origin CA cert, which only Cloudflare is meant to trust.
 log "verification (origin-local; the public path is Cloudflare's to serve)"
 ok=1
-for path in / /app/ /api/health; do
+for path in / /api/health /artifact/ /app; do
 	code=$(curl -s -o /dev/null -w '%{http_code}' -k --max-time 10 \
 		--resolve "robustuavs.ai:443:127.0.0.1" "https://robustuavs.ai${path}") || code=000
 	case "$code" in 2*|3*) mark="ok" ;; *) mark="FAILED"; ok=0 ;; esac
