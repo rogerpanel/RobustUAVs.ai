@@ -42,9 +42,11 @@ robustuavs.ai, www.robustuavs.ai {
 	import origin_tls
 	import common
 
-	# Static site / project landing page.
-	root * /srv/robustuavs/site
-	file_server
+	# Control-plane API. First, so /api never falls through to the SPA
+	# handler and answers a JSON request with index.html.
+	handle /api/* {
+		reverse_proxy 127.0.0.1:8000
+	}
 
 	# Benchmark artifact: schema, adapters, results, paper PDFs.
 	handle_path /artifact/* {
@@ -53,19 +55,28 @@ robustuavs.ai, www.robustuavs.ai {
 		header Cache-Control "public, max-age=3600"
 	}
 
-	# Control-plane API. Placed before the SPA handler so /api never falls
-	# through to the static bundle and returns index.html for a JSON request.
-	handle /api/* {
-		reverse_proxy 127.0.0.1:8000
+	# The client used to live here. Kept as a permanent redirect so links in
+	# the runbook, the papers, and anyone's bookmarks keep working.
+	handle /app* {
+		redir * / permanent
 	}
 
-	# The interactive client (Expo web export). try_files sends unknown
-	# sub-paths back to index.html so client-side routing survives a refresh.
-	handle_path /app/* {
+	# The interactive client IS the site. try_files sends unknown sub-paths
+	# back to index.html so client-side routing survives a refresh.
+	#
+	# Serving it from the domain root also fixes an asset bug: Expo's export
+	# references its bundle at the absolute path /_expo/static/js/web/…, which
+	# under a /app/ prefix resolved against the old static root and 404'd.
+	handle {
 		root * /srv/robustuavs/app
 		try_files {path} /index.html
 		file_server
+
+		# Hashed bundles may be cached hard; the SPA shell must not be, or a
+		# deploy lands on the origin and the browser keeps serving the old
+		# index.html pointing at a bundle that no longer exists.
+		@shell path / /index.html
 		header Cache-Control "public, max-age=300"
+		header @shell Cache-Control "no-cache, must-revalidate"
 	}
-	redir /app /app/ permanent
 }
