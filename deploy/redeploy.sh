@@ -23,8 +23,18 @@ if pgrep -f "$REPO/deploy/deploy.sh" >/dev/null 2>&1; then
 	exit 0
 fi
 
-echo "==> pulling"
-git pull --ff-only
+# Fetch only -- deliberately NOT `git pull`.
+#
+# deploy.sh already fetches and `git reset --hard origin/$BRANCH`, which
+# recovers from any local mess on the deploy host. A pull here cannot do that:
+# it refuses to merge over a modified or untracked file and aborts the whole
+# script, so the very reset that would have fixed the problem never runs. That
+# turned one dirty file into a permanently blocked deploy.
+#
+# The deploy host is a checkout, not a workspace. Local edits there are not
+# something to preserve.
+echo "==> fetching"
+git fetch --prune origin "$(git rev-parse --abbrev-ref HEAD)" || true
 
 echo "==> starting deploy (detached; survives a dropped session)"
 CLEAN=0
