@@ -1,54 +1,39 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { NavigationContainer, DarkTheme, DefaultTheme } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Text } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import CoverScreen from './src/screens/CoverScreen';
-import OverviewScreen from './src/screens/OverviewScreen';
-import CompositionScreen from './src/screens/CompositionScreen';
-import RunsScreen from './src/screens/RunsScreen';
-import ModelsScreen from './src/screens/ModelsScreen';
-import CopilotScreen from './src/screens/CopilotScreen';
+import Shell from './src/layout/Shell';
 import { ThemeProvider, useTheme } from './src/theme';
 
-const Tab = createBottomTabNavigator();
-const icon = (glyph) => ({ color }) => <Text style={{ color, fontSize: 17 }}>{glyph}</Text>;
-
-function Shell() {
-  const { t, mode } = useTheme();
-  const base = mode === 'dark' ? DarkTheme : DefaultTheme;
-  const navTheme = {
-    ...base,
-    colors: { ...base.colors, background: t.bg, card: t.panel, border: t.border,
-              text: t.text, primary: t.accent },
-  };
+/**
+ * Navigation lives in `src/layout/Shell.js`, which is a responsive
+ * three-column layout rather than a tab navigator: left rail, centre, right
+ * rail on a desktop, collapsing to centre-plus-bottom-tabs on a phone with
+ * both rails reachable as overlays.
+ *
+ * react-navigation is no longer wired in here. The app has one level of
+ * navigation and no history to manage, and the drawer navigator would have
+ * pulled in `gesture-handler` and `reanimated` -- the two packages most often
+ * responsible for an Expo web export failing. Screens still receive a
+ * `navigation` prop with `navigate`, so swapping a real navigator back in
+ * would touch this file and Shell.js only.
+ */
+function Themed() {
+  const { mode } = useTheme();
   return (
-    <NavigationContainer theme={navTheme}>
+    <>
       <StatusBar style={mode === 'dark' ? 'light' : 'dark'} />
-      <Tab.Navigator
-        screenOptions={{
-          headerShown: false,
-          tabBarActiveTintColor: t.accent,
-          tabBarInactiveTintColor: t.muted,
-          tabBarStyle: { backgroundColor: t.panel, borderTopColor: t.border },
-          tabBarLabelStyle: { fontSize: 10 },
-        }}>
-        <Tab.Screen name="Home" component={CoverScreen} options={{ tabBarIcon: icon('◆') }} />
-        <Tab.Screen name="Overview" component={OverviewScreen} options={{ tabBarIcon: icon('◈') }} />
-        <Tab.Screen name="Composition" component={CompositionScreen} options={{ tabBarIcon: icon('⟶') }} />
-        <Tab.Screen name="Runs" component={RunsScreen} options={{ tabBarIcon: icon('▶') }} />
-        <Tab.Screen name="Registry" component={ModelsScreen} options={{ tabBarIcon: icon('▤') }} />
-        <Tab.Screen name="Copilot" component={CopilotScreen} options={{ tabBarIcon: icon('✦') }} />
-      </Tab.Navigator>
-    </NavigationContainer>
+      <Shell />
+    </>
   );
 }
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <Shell />
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <Themed />
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }
