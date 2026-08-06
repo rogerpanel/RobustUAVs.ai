@@ -295,3 +295,43 @@ def api_uav_fleet_step(body: FleetStep) -> dict:
 def api_uav_fleet_reset(body: FleetReset) -> dict:
     return uav.fleet_reset(body.session, body.n, body.corridor_m,
                            body.mapping, body.js_db)
+
+
+# ------------------------------------------------------------ evaluation --
+#
+# The analysis surface: robustness, ablations, ROC, statistics, calibration,
+# federated learning. Every endpoint reads committed results; `calibration`
+# deliberately reports that it cannot be computed and says exactly what input
+# is missing, rather than returning a surrogate curve.
+
+from . import evaluation  # noqa: E402
+
+
+@app.get("/api/eval/robustness", tags=["evaluation"])
+def api_eval_robustness() -> dict:
+    return evaluation.robustness()
+
+
+@app.get("/api/eval/ablations", tags=["evaluation"])
+def api_eval_ablations() -> dict:
+    return evaluation.ablations()
+
+
+@app.get("/api/eval/roc", tags=["evaluation"])
+def api_eval_roc() -> dict:
+    return evaluation.roc()
+
+
+@app.get("/api/eval/statistics", tags=["evaluation"])
+def api_eval_statistics() -> dict:
+    return evaluation.statistics()
+
+
+@app.get("/api/eval/calibration", tags=["evaluation"])
+def api_eval_calibration() -> dict:
+    return evaluation.calibration()
+
+
+@app.get("/api/eval/federated", tags=["evaluation"])
+def api_eval_federated() -> dict:
+    return evaluation.federated()

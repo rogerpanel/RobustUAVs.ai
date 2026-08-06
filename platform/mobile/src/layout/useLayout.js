@@ -3,26 +3,25 @@ import { useWindowDimensions } from 'react-native';
 /**
  * One breakpoint hook, so every component agrees on what "narrow" means.
  *
- * Both rails are the same width. They carry different content, but a layout
- * whose two edges differ by 36 px reads as a mistake rather than as a
- * hierarchy, and symmetry costs nothing here.
+ * Both rails are 150 px, matching robustidps.ai. That is narrow enough that
+ * many labels overflow, which is the point: the rails scroll horizontally, so
+ * an overflowing label is reachable rather than clipped, and the centre column
+ * keeps the width. At 196 px the two rails together ate 392 px of a 1280 px
+ * screen -- nearly a third of it -- for navigation nobody reads while working.
  *
- * 196 px is deliberately tight: it holds a section label and an item title at
- * 12 px, and anything longer is handled by horizontal scrolling inside the
- * rail rather than by widening it or truncating with an ellipsis. Giving the
- * centre column the space is the right trade -- the rails are for getting
- * somewhere, the centre is what you came to read.
+ * They are the same width on both sides. A layout whose two edges differ by a
+ * few dozen pixels reads as a mistake rather than as a hierarchy.
  */
-export const RAIL_W = 196;
+export const RAIL_W = 150;
 
 export function useLayout() {
   const { width, height } = useWindowDimensions();
 
-  // 196 + 196 + ~600 centre + gutters. Below that the right rail folds first,
+  // 150 + 150 + ~640 centre + gutters. Below that the right rail folds first,
   // because navigation must survive longer than context.
-  const wide = width >= 1120;
-  const medium = width >= 780 && width < 1120;
-  const compact = width < 780;
+  const wide = width >= 1040;
+  const medium = width >= 720 && width < 1040;
+  const compact = width < 720;
 
   // Phones in landscape are short, not narrow: a 58 px tab bar plus a 46 px
   // header leaves too little for content, so the header collapses first.
@@ -38,7 +37,7 @@ export function useLayout() {
     showLeftRail: wide || medium,
     showRightRail: wide,
     showTabs: compact,
-    contentMax: wide ? 900 : 760,
+    contentMax: wide ? 980 : 820,
     hit: compact ? 46 : 34,
     gutter: compact ? 12 : 18,
   };

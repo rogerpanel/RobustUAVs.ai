@@ -45,6 +45,30 @@ export const LEFT_GROUPS = [
     ],
   },
   {
+    label: 'Evaluation',
+    items: [
+      { key: 'Robustness', glyph: '◐', title: 'Robustness', grounded: true,
+        blurb: 'Certified floor as the detector loosens' },
+      { key: 'Ablations', glyph: '◑', title: 'Ablation studies', grounded: true,
+        blurb: 'What each component is responsible for' },
+      { key: 'ROC', glyph: '◭', title: 'Detector ROC', grounded: true,
+        blurb: 'Recall, FPR, and the θ_eff generalisation' },
+      { key: 'Statistics', glyph: '∑', title: 'Statistical tests', grounded: true,
+        blurb: 'Wilcoxon signed-rank + Holm' },
+      { key: 'Calibration', glyph: '◔', title: 'Calibration (ECE)', grounded: false,
+        blurb: 'Why it is not computable yet' },
+    ],
+  },
+  {
+    label: 'Build',
+    items: [
+      { key: 'AgentStudio', glyph: '⚒', title: 'Agent Studio', grounded: true,
+        blurb: 'Compose and submit an experiment' },
+      { key: 'Federated', glyph: '⇄', title: 'Federated Learning', grounded: false,
+        blurb: 'M7 FedGTD, the MWU defender' },
+    ],
+  },
+  {
     label: 'Experiments',
     items: [
       { key: 'Runs', glyph: '▶', title: 'Runs',
