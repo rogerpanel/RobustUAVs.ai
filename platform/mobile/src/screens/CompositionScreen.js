@@ -6,6 +6,7 @@ import { api, Unavailable } from '../api/client';
 import { useTheme } from '../theme';
 import Card from '../components/Card';
 import Chip from '../components/Chip';
+import { recordContext } from '../state/context';
 
 /**
  * The headline screen: an interactive version of the paper's Figure 3.
@@ -41,6 +42,19 @@ export default function CompositionScreen() {
         theta_s: theta, n_malicious_hops: 2, margin_m: margin, mapping,
       });
       setResult(r);
+      const p = r?.data?.params;
+      if (p) {
+        recordContext({
+          routeKey: 'Composition',
+          label: `θ=${theta}s · ${mapping} · m=${margin}m`,
+          question: `On the Composition screen at θ = ${theta} s with the `
+            + `${mapping} mapping and a ${margin} m corridor, the tube is `
+            + `${p.tube_m} m and the point is `
+            + `${p.inside_tube ? 'inside' : 'outside'} the certified window. `
+            + `Explain what decides that, and cite the file.`,
+          data: p,
+        });
+      }
     } catch (e) {
       setError(e instanceof Unavailable ? `Not produced yet: ${e.message}` : e.message);
     } finally {

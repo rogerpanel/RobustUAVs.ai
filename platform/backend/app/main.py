@@ -335,3 +335,49 @@ def api_eval_calibration() -> dict:
 @app.get("/api/eval/federated", tags=["evaluation"])
 def api_eval_federated() -> dict:
     return evaluation.federated()
+
+
+# ---------------------------------------------------------------- upload --
+#
+# Bring-your-own-data. The file is streamed and sampled rather than loaded:
+# a 1 GB CSV read whole is several GB resident, and this host has already been
+# taken down once by a memory spike. Nothing is retained.
+
+from fastapi import File, UploadFile  # noqa: E402
+
+from . import upload as upload_mod  # noqa: E402
+
+
+@app.post("/api/upload/analyse", tags=["upload"])
+async def api_upload_analyse(file: UploadFile = File(...)) -> dict:
+    chunks: list[bytes] = []
+    total = 0
+    while True:
+        chunk = await file.read(1 << 20)          # 1 MiB at a time
+        if not chunk:
+            break
+        total += len(chunk)
+        if total > upload_mod.MAX_BYTES:
+            chunks.append(chunk[:upload_mod.MAX_BYTES - (total - len(chunk))])
+            break
+        chunks.append(chunk)
+    name = file.filename or "upload.csv"
+    if not name.lower().endswith((".csv", ".tsv", ".txt")):
+        raise HTTPException(
+            415, f"'{name}': only delimited text is supported today. "
+                 "ULOG, PCAP and Parquet are the obvious next formats and are "
+                 "not implemented — see docs/idps_transfer_map.md.")
+    return upload_mod.analyse_csv(iter(chunks), filename=name)
+
+
+class FlyRequest(BaseModel):
+    summary: dict
+    corridor_m: float = 10.0
+    mapping: str = "ekf"
+    n_malicious_hops: int = 2
+
+
+@app.post("/api/upload/fly", tags=["upload"])
+def api_upload_fly(body: FlyRequest) -> dict:
+    return upload_mod.fly(body.summary, body.corridor_m, body.mapping,
+                          body.n_malicious_hops)

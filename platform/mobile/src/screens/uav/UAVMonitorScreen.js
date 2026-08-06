@@ -7,6 +7,7 @@ import { uavApi } from '../../api/uav';
 import { useTheme, fonts } from '../../theme';
 import LineChart from '../../components/LineChart';
 import { ScreenHeader, Panel, Unavailable, KV } from './parts';
+import { recordContext } from '../../state/context';
 
 const JS_STEPS = [0, 5, 10, 15, 20, 25, 30, 35, 40];
 
@@ -38,7 +39,21 @@ export default function UAVMonitorScreen() {
 
   const load = useCallback(async (v) => {
     setBusy(true);
-    try { setPoint(await uavApi.operatingPoint(v)); }
+    try {
+      const pt = await uavApi.operatingPoint(v);
+      setPoint(pt);
+      const passing = pt.configurations.filter((c) => c.passes_floor).map((c) => c.label);
+      recordContext({
+        routeKey: 'UAVMonitor',
+        label: `J/S = ${v} dB`,
+        question: `At J/S = ${v} dB the configurations score `
+          + pt.configurations.map((c) => `${c.label} ${(c.mcr * 100).toFixed(1)}%`).join(', ')
+          + `. ${passing.length ? passing.join(' and ') + ' clear' : 'None clears'} `
+          + `the DO-326A 0.90 floor. Why, and what does the certified floor say `
+          + `at the same point?`,
+        data: pt,
+      });
+    }
     catch (e) { setError(e.message); }
     finally { setBusy(false); }
   }, []);

@@ -8,6 +8,7 @@ import { useLayout } from './useLayout';
 import LeftRail from './LeftRail';
 import RightRail from './RightRail';
 import { DEFAULT_ROUTE, ROUTES, TAB_KEYS, routeMeta } from './nav';
+import HowTo from './HowTo';
 
 import MilestonesScreen from '../screens/MilestonesScreen';
 import CoverScreen from '../screens/CoverScreen';
@@ -33,6 +34,7 @@ import StatisticsScreen from '../screens/eval/StatisticsScreen';
 import CalibrationScreen from '../screens/eval/CalibrationScreen';
 import FederatedScreen from '../screens/eval/FederatedScreen';
 import AgentStudioScreen from '../screens/eval/AgentStudioScreen';
+import UploadScreen from '../screens/eval/UploadScreen';
 
 const SCREENS = {
   Milestones: MilestonesScreen,
@@ -59,6 +61,7 @@ const SCREENS = {
   Calibration: CalibrationScreen,
   Federated: FederatedScreen,
   AgentStudio: AgentStudioScreen,
+  Upload: UploadScreen,
 };
 
 /**
@@ -133,7 +136,19 @@ export default function Shell() {
 
           <View style={s.centreBody}>
             <View style={[s.centreInner, { maxWidth: L.contentMax }]}>
-              <Screen navigation={navigation} />
+              {/* The guide is rendered here, from the route's own metadata,
+                  rather than inside each screen. A page therefore cannot ship
+                  without one, and the wording lives beside the navigation
+                  entry it describes. */}
+              {meta.steps ? (
+                <View style={s.howToWrap}>
+                  <HowTo routeKey={route} title={meta.title}
+                         steps={meta.steps} tip={meta.tip} />
+                </View>
+              ) : null}
+              <View style={{ flex: 1 }}>
+                <Screen navigation={navigation} />
+              </View>
             </View>
           </View>
 
@@ -216,6 +231,7 @@ const styles = (t, L) => StyleSheet.create({
   centre: { flex: 1, backgroundColor: t.bg },
   centreBody: { flex: 1, alignItems: 'center' },
   centreInner: { flex: 1, width: '100%' },
+  howToWrap: { paddingHorizontal: 16, paddingTop: 14 },
 
   topbar: {
     flexDirection: 'row', alignItems: 'center',
