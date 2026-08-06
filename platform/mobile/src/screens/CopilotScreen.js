@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, ScrollView, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { api } from '../api/client';
 import { useTheme } from '../theme';
 import Card from '../components/Card';
 import Chip from '../components/Chip';
+import { subscribeContext, clearContext } from '../state/context';
 
 const SUGGESTIONS = [
   'Is theta = 0.25 s inside the certified window?',
@@ -21,6 +22,12 @@ export default function CopilotScreen() {
   const [q, setQ] = useState('');
   const [turns, setTurns] = useState([]);
   const [busy, setBusy] = useState(false);
+  // Chips built from what the user has actually just done elsewhere in the
+  // app. A chip is not a canned prompt: it carries the numbers that screen
+  // produced, so the copilot answers about their session rather than in
+  // general.
+  const [ctx, setCtx] = useState([]);
+  useEffect(() => subscribeContext(setCtx), []);
 
   const ask = async (question) => {
     const text = (question ?? q).trim();
@@ -40,6 +47,23 @@ export default function CopilotScreen() {
     <View style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.h1}>Copilot</Text>
+        {ctx.length > 0 ? (
+          <Card title="From what you have looked at"
+                subtitle="Each chip carries the result that screen produced.">
+            <View style={styles.chips}>
+              {ctx.map((c) => (
+                <Pressable key={`${c.routeKey}-${c.label}`} onPress={() => ask(c.question)}
+                           style={styles.ctxChip} accessibilityRole="button">
+                  <Text style={styles.ctxChipText}>{c.label}</Text>
+                </Pressable>
+              ))}
+            </View>
+            <Pressable onPress={clearContext} style={styles.clearCtx}>
+              <Text style={styles.clearCtxText}>clear context</Text>
+            </Pressable>
+          </Card>
+        ) : null}
+
         {turns.length === 0 ? (
           <Card title="Ask about the benchmark or the guarantee"
                 subtitle="Answers are assembled from the committed result files and cite them.">
@@ -84,6 +108,15 @@ export default function CopilotScreen() {
 }
 
 const makeStyles = (t) => StyleSheet.create({
+  chips: { flexDirection: 'row', flexWrap: 'wrap' },
+  ctxChip: {
+    borderWidth: 1, borderColor: t.accent, backgroundColor: `${t.accent}14`,
+    borderRadius: 7, paddingHorizontal: 10, paddingVertical: 7,
+    marginRight: 6, marginBottom: 6,
+  },
+  ctxChipText: { color: t.accent, fontSize: 11, fontWeight: '700' },
+  clearCtx: { alignSelf: 'flex-start', paddingVertical: 6 },
+  clearCtxText: { color: t.muted, fontSize: 10, fontWeight: '600' },
   screen: { flex: 1, backgroundColor: t.bg },
   content: { padding: 16, paddingBottom: 24 },
   h1: { color: t.text, fontSize: 24, fontWeight: '800', marginBottom: 12 },
