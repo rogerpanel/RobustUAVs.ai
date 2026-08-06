@@ -3,24 +3,30 @@ import { useWindowDimensions } from 'react-native';
 /**
  * One breakpoint hook, so every component agrees on what "narrow" means.
  *
- * The thresholds are chosen from what has to fit rather than from device
- * marketing widths: the left rail needs 232 px to hold a section label plus an
- * item title without wrapping, the right rail 260 px, and the centre column is
- * unreadable below about 340 px. 1180 and 820 fall out of those sums.
+ * Both rails are the same width. They carry different content, but a layout
+ * whose two edges differ by 36 px reads as a mistake rather than as a
+ * hierarchy, and symmetry costs nothing here.
  *
- * Returned as booleans rather than a single enum because most call sites ask
- * one question ("do I show the rail?"), and a string comparison invites the
- * mistake of testing for the wrong tier.
+ * 196 px is deliberately tight: it holds a section label and an item title at
+ * 12 px, and anything longer is handled by horizontal scrolling inside the
+ * rail rather than by widening it or truncating with an ellipsis. Giving the
+ * centre column the space is the right trade -- the rails are for getting
+ * somewhere, the centre is what you came to read.
  */
-export const LEFT_RAIL_W = 232;
-export const RIGHT_RAIL_W = 268;
+export const RAIL_W = 196;
 
 export function useLayout() {
   const { width, height } = useWindowDimensions();
 
-  const wide = width >= 1180;    // both rails pinned open
-  const medium = width >= 820 && width < 1180;  // left rail pinned, right on demand
-  const compact = width < 820;   // neither pinned; bottom tabs carry navigation
+  // 196 + 196 + ~600 centre + gutters. Below that the right rail folds first,
+  // because navigation must survive longer than context.
+  const wide = width >= 1120;
+  const medium = width >= 780 && width < 1120;
+  const compact = width < 780;
+
+  // Phones in landscape are short, not narrow: a 58 px tab bar plus a 46 px
+  // header leaves too little for content, so the header collapses first.
+  const shortViewport = height < 480;
 
   return {
     width,
@@ -28,19 +34,12 @@ export function useLayout() {
     wide,
     medium,
     compact,
-    /** Rails that are permanently visible at this size. */
+    shortViewport,
     showLeftRail: wide || medium,
     showRightRail: wide,
-    /** Bottom tabs exist only where there is no left rail to replace them. */
     showTabs: compact,
-    /**
-     * Centre column cap. Long-form text past ~72 characters per line is
-     * measurably harder to scan, and on a 27-inch monitor an uncapped column
-     * is exactly that.
-     */
-    contentMax: wide ? 860 : 720,
-    /** Touch targets grow on phones; pointer targets need less. */
-    hit: compact ? 46 : 36,
-    gutter: compact ? 14 : 20,
+    contentMax: wide ? 900 : 760,
+    hit: compact ? 46 : 34,
+    gutter: compact ? 12 : 18,
   };
 }

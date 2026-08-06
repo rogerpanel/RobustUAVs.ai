@@ -201,3 +201,97 @@ async def api_ask(body: Ask) -> dict:
     if not body.question.strip():
         raise HTTPException(400, "question must not be empty")
     return await copilot.answer(body.question)
+
+
+# ------------------------------------------------- UAV / Aerial Defense --
+#
+# The Chapter 6 operator surface, ported from robustidps.ai's `uav` plugin.
+# Reads live from the committed results, so a page whose result file is absent
+# returns 503 through the same ResultUnavailable path as everything else
+# rather than inventing a number to fill the panel.
+
+from . import uav  # noqa: E402
+
+
+@app.get("/api/uav/overview", tags=["uav"])
+def api_uav_overview() -> dict:
+    return uav.overview()
+
+
+@app.get("/api/uav/ew-bench/curves", tags=["uav"])
+def api_uav_curves() -> dict:
+    return uav.ew_curves()
+
+
+@app.get("/api/uav/ew-bench/operating-point", tags=["uav"])
+def api_uav_operating_point(js_db: float = Query(20.0, ge=0, le=40)) -> dict:
+    return uav.ew_operating_point(js_db)
+
+
+@app.get("/api/uav/certificates", tags=["uav"])
+def api_uav_certificates() -> dict:
+    return uav.certificates()
+
+
+@app.get("/api/uav/swarm/snapshots", tags=["uav"])
+def api_uav_swarm() -> dict:
+    return uav.swarm_snapshots()
+
+
+@app.get("/api/uav/gnss/sky", tags=["uav"])
+def api_uav_gnss(seed: int | None = None) -> dict:
+    return uav.gnss_sky(seed)
+
+
+@app.get("/api/uav/perception/catalog", tags=["uav"])
+def api_uav_attack_catalog() -> dict:
+    return uav.attack_catalog()
+
+
+@app.get("/api/uav/dossier", tags=["uav"])
+def api_uav_dossier() -> dict:
+    return uav.dossier()
+
+
+class MissionPlan(BaseModel):
+    text: str
+    format: str = "text"
+
+
+@app.post("/api/uav/mission-plan/review", tags=["uav"])
+def api_uav_mission_plan(body: MissionPlan) -> dict:
+    return uav.review_mission_plan(body.text, body.format)
+
+
+class FleetStep(BaseModel):
+    session: str = "demo"
+    attacks: dict[str, str] | None = None
+    js_db: float | None = None
+    dt_s: float = 1.0
+    corridor_m: float | None = None
+    mapping: str | None = None
+
+
+class FleetReset(BaseModel):
+    session: str = "demo"
+    n: int = 4
+    corridor_m: float = 10.0
+    mapping: str = "ekf"
+    js_db: float = 10.0
+
+
+@app.get("/api/uav/fleet", tags=["uav"])
+def api_uav_fleet(session: str = "demo") -> dict:
+    return uav.fleet_state(session)
+
+
+@app.post("/api/uav/fleet/step", tags=["uav"])
+def api_uav_fleet_step(body: FleetStep) -> dict:
+    return uav.fleet_step(body.session, body.attacks, body.js_db, body.dt_s,
+                          body.corridor_m, body.mapping)
+
+
+@app.post("/api/uav/fleet/reset", tags=["uav"])
+def api_uav_fleet_reset(body: FleetReset) -> dict:
+    return uav.fleet_reset(body.session, body.n, body.corridor_m,
+                           body.mapping, body.js_db)
