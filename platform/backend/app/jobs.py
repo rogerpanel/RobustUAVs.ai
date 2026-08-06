@@ -181,7 +181,8 @@ def start_worker() -> None:
 # Submission and queries
 # --------------------------------------------------------------------------
 
-def submit(kind: str, params: dict, hyperparams: dict, label: str = "") -> dict:
+def submit(kind: str, params: dict, hyperparams: dict, label: str = "",
+           session: str = "anon") -> dict:
     runner = RUNNERS.get(kind)
     if runner is None:
         raise KeyError(kind)
@@ -198,7 +199,7 @@ def submit(kind: str, params: dict, hyperparams: dict, label: str = "") -> dict:
     run_id = f"run_{uuid.uuid4().hex[:12]}"
     db = SessionLocal()
     try:
-        row = Run(run_id=run_id, kind=kind, label=label or runner.title,
+        row = Run(session=session, run_id=run_id, kind=kind, label=label or runner.title,
                   status="queued", params=merged_p, hyperparams=merged_h,
                   provenance=runner.provenance)
         db.add(row)
@@ -227,10 +228,19 @@ def get(run_id: str) -> dict | None:
         db.close()
 
 
-def recent(limit: int = 25, kind: str | None = None) -> list[dict]:
+def recent(limit: int = 25, kind: str | None = None,
+           session: str | None = None) -> list[dict]:
+    """Most recent runs, scoped to one session when given.
+
+    `session=None` means every run, which is what a maintainer inspecting the
+    deployment wants. The HTTP layer always passes a session, so a visitor sees
+    only their own.
+    """
     db = SessionLocal()
     try:
         q = db.query(Run).order_by(Run.created_at.desc())
+        if session:
+            q = q.filter(Run.session == session)
         if kind:
             q = q.filter(Run.kind == kind)
         rows = q.limit(limit).all()

@@ -13,7 +13,7 @@ from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from . import auth, copilot, db, registry, results, runners  # noqa: F401
+from . import auth, copilot, db, registry, results, runners, sessions  # noqa: F401
 from . import jobs
 from .cache import cache
 from .llm import provider_status
@@ -43,8 +43,10 @@ def _startup() -> None:
 
 
 @app.get("/api/health", tags=["meta"])
-def health() -> dict:
+def health(session: str = Depends(sessions.session_id)) -> dict:
     return {
+        "session": session,
+        "rate": sessions.rate_state(session),
         "status": "ok",
         "models": len(registry.REGISTRY),
         "copilot_tools": len(copilot.TOOLS),
@@ -75,9 +77,11 @@ def api_runners() -> dict:
 
 
 @app.post("/api/runs", tags=["runs"])
-def api_submit(req: RunRequest, _=Depends(auth.require_write)) -> dict:
+def api_submit(req: RunRequest, _=Depends(auth.require_write),
+               session: str = Depends(sessions.session_id)) -> dict:
     try:
-        return jobs.submit(req.kind, req.params, req.hyperparams, req.label)
+        return jobs.submit(req.kind, req.params, req.hyperparams, req.label,
+                           session=session)
     except KeyError:
         raise HTTPException(404, {"error": f"no runner '{req.kind}'",
                                   "available": sorted(jobs.RUNNERS)})
@@ -87,8 +91,12 @@ def api_submit(req: RunRequest, _=Depends(auth.require_write)) -> dict:
 
 @app.get("/api/runs", tags=["runs"])
 def api_runs(limit: int = Query(25, ge=1, le=200),
-             kind: str | None = Query(None)) -> dict:
-    return {"runs": jobs.recent(limit=limit, kind=kind)}
+             kind: str | None = Query(None),
+             session: str = Depends(sessions.session_id)) -> dict:
+    # Scoped to the caller. Two visitors driving the platform at once each see
+    # their own history rather than a shared stream.
+    return {"runs": jobs.recent(limit=limit, kind=kind, session=session),
+            "session": session}
 
 
 @app.get("/api/runs/{run_id}", tags=["runs"])
@@ -181,6 +189,11 @@ def api_certify_staleness(req: StalenessRequest) -> dict:
 
 class Ask(BaseModel):
     question: str
+    # A visitor may supply their own provider key rather than spend the
+    # deployment's shared allowance. It is used for that one request and never
+    # stored, logged or echoed back.
+    provider: str | None = None
+    api_key: str | None = None
 
 
 @app.get("/api/copilot/tools", tags=["copilot"])
@@ -197,10 +210,16 @@ def api_tool(name: str, params: dict | None = None) -> dict:
 
 
 @app.post("/api/copilot/ask", tags=["copilot"])
-async def api_ask(body: Ask) -> dict:
+async def api_ask(body: Ask,
+                  session: str = Depends(sessions.session_id)) -> dict:
     if not body.question.strip():
         raise HTTPException(400, "question must not be empty")
-    return await copilot.answer(body.question)
+    # Only the shared key is metered. A visitor spending their own key is not
+    # consuming a resource this deployment pays for.
+    if not body.api_key:
+        sessions.check_rate(session, "llm")
+    return await copilot.answer(body.question,
+                                provider=body.provider, api_key=body.api_key)
 
 
 # ------------------------------------------------- UAV / Aerial Defense --
@@ -281,19 +300,23 @@ class FleetReset(BaseModel):
 
 
 @app.get("/api/uav/fleet", tags=["uav"])
-def api_uav_fleet(session: str = "demo") -> dict:
+def api_uav_fleet(session: str = Depends(sessions.session_id)) -> dict:
+    # Keyed on the visitor, not on a shared "demo" string: two people flying
+    # the fleet at once were previously stepping the same simulation.
     return uav.fleet_state(session)
 
 
 @app.post("/api/uav/fleet/step", tags=["uav"])
-def api_uav_fleet_step(body: FleetStep) -> dict:
-    return uav.fleet_step(body.session, body.attacks, body.js_db, body.dt_s,
+def api_uav_fleet_step(body: FleetStep,
+                       session: str = Depends(sessions.session_id)) -> dict:
+    return uav.fleet_step(session, body.attacks, body.js_db, body.dt_s,
                           body.corridor_m, body.mapping)
 
 
 @app.post("/api/uav/fleet/reset", tags=["uav"])
-def api_uav_fleet_reset(body: FleetReset) -> dict:
-    return uav.fleet_reset(body.session, body.n, body.corridor_m,
+def api_uav_fleet_reset(body: FleetReset,
+                        session: str = Depends(sessions.session_id)) -> dict:
+    return uav.fleet_reset(session, body.n, body.corridor_m,
                            body.mapping, body.js_db)
 
 
@@ -349,7 +372,9 @@ from . import upload as upload_mod  # noqa: E402
 
 
 @app.post("/api/upload/analyse", tags=["upload"])
-async def api_upload_analyse(file: UploadFile = File(...)) -> dict:
+async def api_upload_analyse(file: UploadFile = File(...),
+                             session: str = Depends(sessions.session_id)) -> dict:
+    sessions.check_rate(session, "upload")
     chunks: list[bytes] = []
     total = 0
     while True:

@@ -50,7 +50,32 @@ class Completion:
     synthetic: bool
 
 
-def active_provider() -> Optional[Provider]:
+# Anthropic is first in PROVIDERS and therefore the default whenever the
+# deployment carries a key. That is deliberate: the shared allowance should
+# spend on one known-good provider rather than on whichever key happens to be
+# set, and the copilot's answers are quoted in a talk.
+DEFAULT_PROVIDER = "anthropic"
+
+
+def by_name(name: str | None) -> Optional[Provider]:
+    if not name:
+        return None
+    for p in PROVIDERS:
+        if p.name == name:
+            return p
+    return None
+
+
+def active_provider(prefer: str | None = None) -> Optional[Provider]:
+    """The provider a request will use.
+
+    `prefer` names a provider the caller supplied a key for, so it wins over
+    the deployment's own configuration. Otherwise the first provider with a
+    configured key wins, which puts Anthropic first.
+    """
+    chosen = by_name(prefer)
+    if chosen is not None:
+        return chosen
     for p in PROVIDERS:
         if os.environ.get(p.env_key):
             return p
@@ -68,12 +93,20 @@ def provider_status() -> list[dict]:
     ]
 
 
-async def complete(system: str, prompt: str, max_tokens: int = 900) -> Completion:
-    p = active_provider()
+async def complete(system: str, prompt: str, max_tokens: int = 900,
+                   provider: str | None = None,
+                   api_key: str | None = None) -> Completion:
+    """Answer with a real provider when one is reachable, else synthetically.
+
+    `api_key`, when given, is the caller's own and is used for this one call:
+    it is never written to the environment, never persisted, and never included
+    in a response. `provider` selects which of the four it belongs to.
+    """
+    p = active_provider(prefer=provider if api_key else None)
     if p is None:
         return _synthetic(system, prompt)
     try:
-        return await _dispatch(p, system, prompt, max_tokens)
+        return await _dispatch(p, system, prompt, max_tokens, api_key=api_key)
     except Exception as exc:  # noqa: BLE001 - any provider failure degrades, never 500s
         out = _synthetic(system, prompt)
         return Completion(
@@ -82,8 +115,13 @@ async def complete(system: str, prompt: str, max_tokens: int = 900) -> Completio
             provider=p.name, model=p.model, synthetic=True)
 
 
-async def _dispatch(p: Provider, system: str, prompt: str, n: int) -> Completion:
-    key = os.environ[p.env_key]
+async def _dispatch(p: Provider, system: str, prompt: str, n: int,
+                    api_key: str | None = None) -> Completion:
+    # Caller key first, deployment key second. Reading the environment only as
+    # a fallback keeps a supplied key from ever being written into it.
+    key = api_key or os.environ.get(p.env_key)
+    if not key:
+        raise RuntimeError(f"no key available for {p.name}")
     async with httpx.AsyncClient(timeout=TIMEOUT) as c:
         if p.name == "anthropic":
             r = await c.post(p.url, headers={

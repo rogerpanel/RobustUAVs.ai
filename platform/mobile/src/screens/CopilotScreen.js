@@ -5,6 +5,7 @@ import { useTheme } from '../theme';
 import Card from '../components/Card';
 import Chip from '../components/Chip';
 import { subscribeContext, clearContext } from '../state/context';
+import ProviderMenu from '../components/ProviderMenu';
 
 const SUGGESTIONS = [
   'Is theta = 0.25 s inside the certified window?',
@@ -28,13 +29,16 @@ export default function CopilotScreen() {
   // general.
   const [ctx, setCtx] = useState([]);
   useEffect(() => subscribeContext(setCtx), []);
+  // Provider choice and an optional caller key. Held here for the life of the
+  // page and never persisted -- see components/ProviderMenu.js.
+  const [llm, setLlm] = useState({ provider: 'anthropic', apiKey: null });
 
   const ask = async (question) => {
     const text = (question ?? q).trim();
     if (!text || busy) return;
     setBusy(true); setQ('');
     try {
-      const r = await api.ask(text);
+      const r = await api.ask(text, llm.provider, llm.apiKey);
       setTurns((t) => [...t, r]);
     } catch (e) {
       setTurns((t) => [...t, { question: text, answer: `Error: ${e.message}`, error: true }]);
@@ -46,6 +50,9 @@ export default function CopilotScreen() {
   return (
     <View style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.topbar}>
+          <ProviderMenu provider={llm.provider} apiKey={llm.apiKey} onChange={setLlm} />
+        </View>
         <Text style={styles.h1}>Copilot</Text>
         {ctx.length > 0 ? (
           <Card title="From what you have looked at"
@@ -108,6 +115,7 @@ export default function CopilotScreen() {
 }
 
 const makeStyles = (t) => StyleSheet.create({
+  topbar: { flexDirection: 'row', marginBottom: 10 },
   chips: { flexDirection: 'row', flexWrap: 'wrap' },
   ctxChip: {
     borderWidth: 1, borderColor: t.accent, backgroundColor: `${t.accent}14`,

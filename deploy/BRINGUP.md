@@ -84,8 +84,14 @@ sudo tee /etc/robustuavs/api.env >/dev/null <<'EOF'
 # DATABASE_URL=postgresql+psycopg://robustuavs:PASSWORD@127.0.0.1/robustuavs
 # REDIS_URL=redis://127.0.0.1:6379/0
 
-# Optional: any one of these enables narrated copilot answers. With none set
-# the copilot still works, answering from the local result cache.
+# Claude is the default provider and the one the copilot uses when a visitor
+# supplies no key of their own. Setting it means every visitor gets narrated
+# answers on YOUR account, so it is metered: 30 answers per session per hour,
+# enforced in app/sessions.py. A visitor who supplies their own key in the
+# copilot's provider menu bypasses that meter and spends their own credits.
+#
+# The limiter is in-process, so with N uvicorn workers the real ceiling is
+# 30xN. Watch spend for the first week of any public link.
 # ANTHROPIC_API_KEY=
 # OPENAI_API_KEY=
 # GEMINI_API_KEY=

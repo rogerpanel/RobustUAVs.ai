@@ -51,6 +51,8 @@ class Run(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     run_id = Column(String(40), unique=True, index=True, nullable=False)
     kind = Column(String(40), nullable=False, index=True)
+    # Which visitor submitted this. Not a credential -- see app/sessions.py.
+    session = Column(String(64), default="anon", index=True)
     label = Column(String(200), default="")
 
     status = Column(String(20), default="queued", index=True)  # queued|running|done|failed|cancelled
@@ -91,6 +93,20 @@ def _iso(v: dt.datetime | None) -> str | None:
 
 def init_db() -> None:
     Base.metadata.create_all(bind=engine)
+
+    # SQLite created before `session` existed will not gain the column from
+    # create_all, which only creates missing tables. One idempotent ALTER is
+    # cheaper than a migration framework for a single additive column.
+    try:
+        with engine.begin() as conn:
+            cols = {r[1] for r in conn.exec_driver_sql("PRAGMA table_info(runs)")}
+            if cols and "session" not in cols:
+                conn.exec_driver_sql(
+                    "ALTER TABLE runs ADD COLUMN session VARCHAR(64) DEFAULT 'anon'")
+    except Exception:
+        # Postgres path, or a backend without PRAGMA. create_all handles a
+        # fresh database; an existing one is the operator's to migrate.
+        pass
 
 
 def get_db() -> Iterator[Session]:
