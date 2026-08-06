@@ -254,11 +254,13 @@ def retrieve(question: str) -> list[dict]:
             for name in list(dict.fromkeys(hits))[:3]]
 
 
-async def answer(question: str) -> dict:
+async def answer(question: str, provider: str | None = None,
+                 api_key: str | None = None) -> dict:
     retrieved = retrieve(question)
     context = "\n\n".join(
         f"### tool: {r['tool']}\n{r['result']}" for r in retrieved)
-    c = await complete(SYSTEM, f"Question: {question}\n\nRetrieved:\n{context}")
+    c = await complete(SYSTEM, f"Question: {question}\n\nRetrieved:\n{context}",
+                       provider=provider, api_key=api_key)
     return {
         "question": question,
         "answer": c.text,

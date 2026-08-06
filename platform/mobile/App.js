@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import Shell from './src/layout/Shell';
+import EthicsGate, { hasAccepted } from './src/screens/EthicsGate';
 import { ThemeProvider, useTheme } from './src/theme';
 
 /**
@@ -20,10 +21,14 @@ import { ThemeProvider, useTheme } from './src/theme';
  */
 function Themed() {
   const { mode } = useTheme();
+  // The ethical-use notice gates the whole application, not a single page.
+  // Checked once on mount so an accepted visitor never sees it again, and
+  // re-shown for everyone when ACCEPT_VERSION changes.
+  const [accepted, setAccepted] = React.useState(() => hasAccepted());
   return (
     <>
       <StatusBar style={mode === 'dark' ? 'light' : 'dark'} />
-      <Shell />
+      {accepted ? <Shell /> : <EthicsGate onAccept={() => setAccepted(true)} />}
     </>
   );
 }
