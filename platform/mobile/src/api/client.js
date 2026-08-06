@@ -11,6 +11,7 @@
  *    always see which committed file a number came from.
  */
 import Constants from 'expo-constants';
+import { sessionId } from '../state/session';
 
 /**
  * Origin first, config second.
@@ -45,6 +46,9 @@ export async function request(path, options = {}) {
     ...options,
     headers: {
       'Content-Type': 'application/json',
+      // Scopes the fleet, the run list and the rate allowance to this browser.
+      // Not a credential -- see platform/backend/app/sessions.py.
+      'X-Session-Id': sessionId(),
       ...(AUTH_TOKEN ? { Authorization: `Bearer ${AUTH_TOKEN}` } : {}),
       ...(options.headers || {}),
     },
@@ -84,8 +88,16 @@ export const api = {
     request(`/api/runs/${encodeURIComponent(id)}/cancel`, { method: 'POST' }),
 
   copilotTools: () => request('/api/copilot/tools'),
-  ask: (question) =>
-    request('/api/copilot/ask', { method: 'POST', body: JSON.stringify({ question }) }),
+  // A caller-supplied key is sent for this one request and is never stored
+  // here, in localStorage, or on the server.
+  ask: (question, provider, apiKey) =>
+    request('/api/copilot/ask', {
+      method: 'POST',
+      body: JSON.stringify({
+        question,
+        ...(apiKey ? { provider, api_key: apiKey } : {}),
+      }),
+    }),
 };
 
 export { API_BASE };
