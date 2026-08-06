@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet, Linking } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Linking } from 'react-native';
 import { api, API_BASE } from '../api/client';
 import { useTheme, fonts } from '../theme';
 import { CERTIFICATES, EXTERNAL_LINKS } from './nav';
-import { RIGHT_RAIL_W } from './useLayout';
+import Rail from './Rail';
+import { RAIL_W } from './useLayout';
 
 /**
  * Context rather than navigation: what this deployment is, what it can
@@ -27,8 +28,7 @@ export default function RightRail({ onDismiss, compact = false }) {
   }, []);
 
   return (
-    <View style={s.rail}>
-      <ScrollView contentContainerStyle={s.body}>
+    <Rail side="right" compact={compact}>
 
         <Section t={t} label="Deployment">
           {err ? (
@@ -87,13 +87,12 @@ export default function RightRail({ onDismiss, compact = false }) {
           ))}
         </Section>
 
-        {compact ? (
-          <Pressable onPress={onDismiss} style={s.close} accessibilityRole="button">
-            <Text style={s.closeText}>Close</Text>
-          </Pressable>
-        ) : null}
-      </ScrollView>
-    </View>
+      {compact ? (
+        <Pressable onPress={onDismiss} style={s.close} accessibilityRole="button">
+          <Text style={s.closeText}>Close</Text>
+        </Pressable>
+      ) : null}
+    </Rail>
   );
 }
 
@@ -117,21 +116,18 @@ function Pill({ t, k, v, tone }) {
   );
 }
 
+// Inside the rail's horizontal scroller a Text with no cap expands instead of
+// wrapping, turning every paragraph into one long line. Nav labels want that
+// (scroll to read the end); prose does not, so prose gets an explicit width.
+const TEXT_W = (compact) => (compact ? 300 : RAIL_W - 24);
+
 const styles = (t, compact) => StyleSheet.create({
-  rail: {
-    width: compact ? '100%' : RIGHT_RAIL_W,
-    flex: 1,
-    backgroundColor: t.panel,
-    borderLeftWidth: compact ? 0 : 1,
-    borderLeftColor: t.border,
-  },
-  body: { padding: 14, paddingBottom: 40 },
-  section: { marginBottom: 20 },
+  section: { marginBottom: 16, paddingHorizontal: 12, width: TEXT_W(compact) + 24 },
   sectionLabel: {
     color: t.muted, fontSize: 9, fontWeight: '800', letterSpacing: 1.1,
     textTransform: 'uppercase', marginBottom: 8,
   },
-  chips: { flexDirection: 'row', flexWrap: 'wrap' },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', maxWidth: TEXT_W(compact) },
   pill: {
     flexDirection: 'row', alignItems: 'center',
     borderWidth: 1, borderColor: t.border, borderRadius: 6,
@@ -139,19 +135,20 @@ const styles = (t, compact) => StyleSheet.create({
   },
   pillK: { color: t.muted, fontSize: 9.5, marginRight: 4 },
   pillV: { color: t.text, fontSize: 9.5, fontWeight: '700' },
-  mono: { color: t.muted, fontSize: 9.5, fontFamily: fonts.mono, marginTop: 6 },
+  mono: { maxWidth: TEXT_W(compact), color: t.muted, fontSize: 9.5, fontFamily: fonts.mono, marginTop: 6 },
   monoInline: { fontFamily: fonts.mono, fontSize: 10 },
   cert: { marginBottom: 9 },
   certHead: { flexDirection: 'row', alignItems: 'center', marginBottom: 2 },
   dot: { width: 6, height: 6, borderRadius: 3, marginRight: 6 },
-  certName: { color: t.text, fontSize: 11.5, fontWeight: '700' },
-  note: { color: t.muted, fontSize: 10.5, lineHeight: 15.5 },
-  bad: { color: t.danger, fontSize: 11 },
+  certName: { maxWidth: TEXT_W(compact), color: t.text, fontSize: 11.5, fontWeight: '700' },
+  note: { maxWidth: TEXT_W(compact), color: t.muted, fontSize: 10.5, lineHeight: 15.5 },
+  bad: { maxWidth: TEXT_W(compact), color: t.danger, fontSize: 11 },
   link: {
+    width: TEXT_W(compact),
     borderWidth: 1, borderColor: t.border, borderRadius: 8,
     padding: 9, marginBottom: 6,
   },
-  linkLabel: { color: t.accent, fontSize: 11.5, fontWeight: '700' },
+  linkLabel: { maxWidth: TEXT_W(compact), color: t.accent, fontSize: 11.5, fontWeight: '700' },
   close: {
     borderWidth: 1, borderColor: t.border, borderRadius: 8,
     paddingVertical: 12, alignItems: 'center', marginTop: 6,

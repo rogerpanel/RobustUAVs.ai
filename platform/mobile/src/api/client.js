@@ -40,7 +40,7 @@ let AUTH_TOKEN = null;
  *  design; the token is supplied out of band. */
 export function setToken(token) { AUTH_TOKEN = token || null; }
 
-async function request(path, options = {}) {
+export async function request(path, options = {}) {
   const res = await fetch(`${API_BASE}${path}`, {
     ...options,
     headers: {

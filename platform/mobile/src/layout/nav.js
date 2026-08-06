@@ -5,13 +5,14 @@
  *
  * Keeping it as data rather than as JSX inside each presentation is what makes
  * the three stay in sync -- a route added here appears in all of them, and the
- * mobile tab bar cannot silently drift from the desktop sidebar.
+ * phone tab bar cannot silently drift from the desktop sidebar.
  *
- * The grouping mirrors robustidps.ai's sidebar: short uppercase section labels
- * over a dense list, so a viewer scans headings first and items second.
+ * The UAV / Aerial Defense group is the Chapter 6 operator surface, ported from
+ * robustidps.ai. `grounded: false` marks a page whose figures are illustrative
+ * rather than read from a committed result; the page says so on its face, and
+ * the rail shows a dot so it is visible before you open it.
  */
 
-/** Primary operations. Left rail on wide screens, drawer on narrow ones. */
 export const LEFT_GROUPS = [
   {
     label: 'Results',
@@ -20,6 +21,27 @@ export const LEFT_GROUPS = [
         blurb: 'What the campaign has established' },
       { key: 'Composition', glyph: '⟶', title: 'Composition',
         blurb: 'θ ↦ Δ ↦ δ ↦ MCR, computed live' },
+    ],
+  },
+  {
+    label: 'UAV / Aerial Defense',
+    items: [
+      { key: 'UAVMonitor', glyph: '✈', title: 'UAV Monitor', grounded: true,
+        blurb: 'MCR vs jamming, four configurations' },
+      { key: 'SwarmGraph', glyph: '⬡', title: 'Swarm Graph', grounded: true,
+        blurb: 'Mesh under delay and intrusion' },
+      { key: 'FleetDemo', glyph: '◉', title: 'Live Fleet Demo', grounded: false,
+        blurb: 'Flights moving under attack, in real time' },
+      { key: 'GNSSSpoof', glyph: '✳', title: 'GNSS Spoof Monitor', grounded: false,
+        blurb: 'Sky plot and the measured γ' },
+      { key: 'Certification', glyph: '✓', title: 'Certification Dashboard', grounded: true,
+        blurb: 'The four certificates and two floors' },
+      { key: 'MissionPlan', glyph: '☰', title: 'Mission Plan Review', grounded: true,
+        blurb: 'Preconditions the theorem needs' },
+      { key: 'Perception', glyph: '⚡', title: 'Perception Tester', grounded: false,
+        blurb: 'Adversarial attack suite' },
+      { key: 'Dossier', glyph: '▦', title: 'Assurance Dossier', grounded: true,
+        blurb: 'Evidence table, including the empty class' },
     ],
   },
   {
@@ -49,7 +71,6 @@ export const LEFT_GROUPS = [
   },
 ];
 
-/** Flat list, for the router and for resolving a key to its metadata. */
 export const ROUTES = LEFT_GROUPS.flatMap((g) => g.items);
 export const DEFAULT_ROUTE = 'Milestones';
 
@@ -58,18 +79,12 @@ export function routeMeta(key) {
 }
 
 /**
- * The five that earn a permanent slot under the thumb. Everything else stays
- * one tap away behind "More" -- a tab bar with eight items has no target big
- * enough to hit reliably on a phone, which defeats the point of having one.
+ * The four that earn a permanent slot under the thumb. Everything else stays
+ * one tap away behind "More" -- a tab bar with fourteen items has no target
+ * big enough to hit reliably, which defeats the point of having one.
  */
-export const TAB_KEYS = ['Milestones', 'Composition', 'Runs', 'Copilot'];
+export const TAB_KEYS = ['Milestones', 'UAVMonitor', 'FleetDemo', 'Composition'];
 
-/**
- * Right rail: reference and context rather than navigation. Sections are
- * rendered by RightRail itself, since each has a different shape (live chips,
- * static facts, external links) and forcing them into one item schema would
- * cost more than it saves.
- */
 export const EXTERNAL_LINKS = [
   { label: 'Artifact tree', href: '/artifact/',
     note: 'schema, adapters, engine, results' },
@@ -79,7 +94,6 @@ export const EXTERNAL_LINKS = [
     note: 'live deployment status' },
 ];
 
-/** The four certificates, with the honest status of each. */
 export const CERTIFICATES = [
   { name: 'Lipschitz–Grönwall', tone: 'ok',
     note: 'proved and empirically verified; the paper’s weight sits here' },

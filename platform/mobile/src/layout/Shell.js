@@ -17,6 +17,15 @@ import RunsScreen from '../screens/RunsScreen';
 import ModelsScreen from '../screens/ModelsScreen';
 import CopilotScreen from '../screens/CopilotScreen';
 
+import UAVMonitorScreen from '../screens/uav/UAVMonitorScreen';
+import SwarmGraphScreen from '../screens/uav/SwarmGraphScreen';
+import FleetDemoScreen from '../screens/uav/FleetDemoScreen';
+import GNSSSpoofScreen from '../screens/uav/GNSSSpoofScreen';
+import CertificationScreen from '../screens/uav/CertificationScreen';
+import MissionPlanScreen from '../screens/uav/MissionPlanScreen';
+import PerceptionScreen from '../screens/uav/PerceptionScreen';
+import DossierScreen from '../screens/uav/DossierScreen';
+
 const SCREENS = {
   Milestones: MilestonesScreen,
   Cover: CoverScreen,
@@ -25,6 +34,15 @@ const SCREENS = {
   Runs: RunsScreen,
   Registry: ModelsScreen,
   Copilot: CopilotScreen,
+  // UAV / Aerial Defense -- the Chapter 6 operator surface.
+  UAVMonitor: UAVMonitorScreen,
+  SwarmGraph: SwarmGraphScreen,
+  FleetDemo: FleetDemoScreen,
+  GNSSSpoof: GNSSSpoofScreen,
+  Certification: CertificationScreen,
+  MissionPlan: MissionPlanScreen,
+  Perception: PerceptionScreen,
+  Dossier: DossierScreen,
 };
 
 /**
