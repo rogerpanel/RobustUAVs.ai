@@ -1,0 +1,416 @@
+% =====================================================================
+% Response to supervisor's marked corrections on Paper A and Paper C.
+%
+% Standalone: compiles with a bare `pdflatex response_to_supervisor.tex`
+% (twice, for the reference to the item count). No bibliography, no
+% external figures -- it must survive being mailed on its own.
+% =====================================================================
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+% lmodern is absent from this toolchain; default CM at T1 is fine
+\usepackage[expansion=false]{microtype}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{qgrey}{HTML}{4A4A4A}
+\definecolor{rule}{HTML}{C9C9C4}
+\definecolor{tag}{HTML}{8A4B2A}
+
+\titleformat{\section}{\large\bfseries}{\thesection}{0.7em}{}
+\titlespacing*{\section}{0pt}{1.6em}{0.7em}
+
+\setlength{\parskip}{0.35em}
+\setlength{\parindent}{0pt}
+
+% One response item. #1 = tag, #2 = location in the marked file,
+% #3 = the supervisor's query, #4 = the response, #5 = where it landed.
+\newcommand{\thinrule}{\textcolor{rule}{\rule{\linewidth}{0.4pt}}}
+\newenvironment{qitem}[3]{%
+  \par\medskip\thinrule\par\smallskip
+  \noindent\textbf{\textcolor{tag}{#1}}\quad\textcolor{qgrey}{\small #2}\par\smallskip
+  \noindent\textcolor{qgrey}{\small\itshape #3}\par\smallskip
+}{\par}
+\newcommand{\where}[1]{\par\smallskip{\small\textcolor{tag}{$\hookrightarrow$}\ \textit{#1}}\par}
+
+\begin{document}
+
+\begin{center}
+{\Large\bfseries Response to Reviewer Comments}\\[0.35em]
+{\large Papers A and C, consolidated into the merged submission}\\[0.9em]
+\begin{tabular}{@{}ll@{}}
+\textbf{From} & Roger Nick Anaedevha\\
+\textbf{Re} & 20 marked queries on \texttt{paperA.tex} (6) and \texttt{paperC.tex} (14)\\
+\textbf{Outcome} & All 20 addressed in the merged paper, target NDSS 2027\\
+\end{tabular}
+\end{center}
+
+\vspace{0.6em}
+
+\section*{Summary}
+
+Thank you for the detailed reading. Every marked query is addressed below, with
+the location in the merged paper where the change landed. Four points frame the
+rest.
+
+\textbf{The two papers are now one.} Your comment that reviewers receive only
+one paper and cannot know what is in the other was decisive. The benchmark and
+the theorem are now a single submission whose thesis is the end-to-end
+framework; the benchmark appears as the instrument that makes the composed
+guarantee measurable, not as a dataset release. The phrase ``companion paper''
+no longer occurs anywhere in the manuscript.
+
+\textbf{Three queries changed the technical content, not just the presentation.}
+The temporal MCR predicate (C9), the alignment error bound (C11), and the ROC
+generalisation (C13) each required new derivations. They are the strongest
+additions in the merged paper and we are grateful for them.
+
+\textbf{One query produced a negative result we have reported rather than
+hidden.} The provenance breakdown you asked for (C14) shows that the number of
+released pairings in our strongest evidence class is \emph{zero}. We state this
+in the abstract and in the limitations section.
+
+\textbf{On the count.} The marked files contain 20 \verb|\fc{...}| annotations:
+6 in \texttt{paperA.tex} and 14 in \texttt{paperC.tex}. Two pairs sit on a
+single line each (C1/C2 and C6/C7), which we believe accounts for the count of
+15 you may have in mind. All 20 are answered; none has been merged away or
+skipped.
+
+% =====================================================================
+\section*{Paper C — benchmark and harness (14 queries)}
+% =====================================================================
+
+\begin{qitem}{C1}{abstract, line 54}{``In general, certain phrases are too
+conversational for a scientific paper.''}
+Accepted throughout, not only at the marked point. We removed the rhetorical
+register wholesale: figurative framing (``Achilles heel''), first-person
+narration of the research process, and sentences whose work was emphasis rather
+than content. Where a sentence existed to signal enthusiasm it was deleted;
+where it carried a claim, the claim was restated declaratively. The abstract was
+rewritten to state the result rather than to introduce it.
+\where{Merged paper, throughout; the abstract in full.}
+\end{qitem}
+
+\begin{qitem}{C2}{abstract, line 55}{``If we combine the papers the central
+thesis must be the end-to-end framework. The benchmark should not be presented
+merely as a dataset release.''}
+Accepted, and it reorganised the paper. The thesis is now the composition
+$\theta \mapsto \Delta(\theta) \mapsto \delta(\theta) \mapsto \mathrm{MCR}$, and
+the six-source corpus is introduced as the measurement instrument that closes
+the interface between the two layers---specifically, the only way to obtain the
+delay-to-position rate $\gamma$ empirically rather than assume it. The title now
+names the framework: \textit{From Wire to Flight: An End-to-End Framework
+Composing Network Intrusion Detection with Certified Mission Safety for
+Autonomous UAVs}. The dataset contribution is stated as an enabling artifact.
+\where{Title, abstract, Introduction; the contribution list is reordered so the framework is first.}
+\end{qitem}
+
+\begin{qitem}{C3}{§Introduction, line 157}{``I would prefer to merge the two
+papers. We should never mention `companion paper' in a scientific paper---if we
+send two separate papers the reviewers will only have one, they cannot know
+what's in the other one.''}
+Accepted without reservation; this was the correct call and we had
+underestimated it. The scoping sentence and every forward reference to a second
+paper are gone. The merged manuscript is self-contained: the theorem is proved
+in it, and the benchmark that instantiates the theorem is described in it.
+\where{Zero occurrences of ``companion paper'' remain in the source.}
+\end{qitem}
+
+\begin{qitem}{C4}{§Background, line 164}{``The introduction to this section must
+be rewritten.''}
+Rewritten, and relocated. The section opened by announcing its own structure,
+which told the reader nothing. It now opens with the substantive claim the
+section exists to establish---that the attacks which matter in this field are
+network events whose damage is an autonomy outcome, so neither layer's
+literature can measure them alone. To meet the NDSS 13-page body limit without
+cutting content, the tutorial material moved to an appendix and only the load-bearing
+definitions remain in the body.
+\where{§II opening paragraph; expanded background in Appendix~A.}
+\end{qitem}
+
+\begin{qitem}{C5}{§``Anatomy of an autonomous UAV under attack'', line 169}{``Rename
+this section.''}
+Renamed. The heading was descriptive of a narrative rather than of content. It
+is now stated as the system and threat model it actually presents.
+\where{§II-A.}
+\end{qitem}
+
+\begin{qitem}{C6}{Table of acronyms, line 189}{``I would prefer to remove this
+table. We define the acronyms in the text and then we use them.''}
+Removed. The table is deleted and each acronym is expanded at first use in
+running text.
+\where{No \texttt{tab:acronyms} remains in the source.}
+\end{qitem}
+
+\begin{qitem}{C7}{same line}{``Note also that at the moment you (almost
+everywhere) are doing both things---defining the acronym in text and having the
+table for it.''}
+Correct, and the duplication is what made the table redundant rather than merely
+long. We audited every acronym: each is now expanded exactly once, at first use,
+and used bare thereafter. Acronyms appearing only once are spelled out and the
+abbreviation dropped.
+\where{Throughout.}
+\end{qitem}
+
+\begin{qitem}{C8}{Fig.~``attack surfaces'', line 269}{``There is a weird arrow on
+the top-left square. Is it useful? I don't understand where it points to.''}
+Not useful---it was a drafting artifact with no referent, and we should have
+caught it. Removed. The figure now carries exactly one downward arrow, the
+network-to-autonomy coupling that is the paper's subject, and the caption names
+it explicitly so the single remaining arrow cannot be misread.
+\where{Fig.~1 and its caption.}
+\end{qitem}
+
+\begin{qitem}{C9}{§``Mission Completion Rate'', line 274}{``The paper adopts a
+purely spatial definition of MCR. But a drone that safely finishes its route yet
+arrives 30 minutes late due to an evasive time-delay attack has still failed a
+time-critical mission. Augment the MCR definition with a temporal bounding
+constraint, or explicitly define it as `Spatial MCR'.''}
+Accepted, and this changed the theorem rather than only the definition. The
+observation is sharp: a delay attack that our own threat model treats as the
+primary adversary was, under the old definition, capable of succeeding
+completely while the metric recorded success. MCR is now a conjunction of a
+spatial and a temporal predicate,
+\[
+\mathrm{MCR}=\Pr\Big[\underbrace{\sup_{t\in[0,T]}\lVert x(t)-x_{\mathrm{nom}}(t)\rVert\le m}_{\text{spatial}}
+\;\wedge\;
+\underbrace{t_{\mathrm{arr}}\le(1+\kappa)T}_{\text{temporal}}\Big],
+\]
+with $\kappa$ the mission's schedule tolerance. The composition theorem now
+discharges both: the spatial predicate via the Grönwall tube as before, and the
+temporal predicate via the condition $\Delta(\theta)\le\kappa T$ on the same
+residual delay budget the detector already bounds. The two predicates are
+therefore certified by one quantity, which is a stronger result than the
+original and follows directly from your comment.
+\where{§III-C (definition); Theorem 1 and its proof; the temporal condition is discharged in the same lemma as the spatial one.}
+\end{qitem}
+
+\begin{qitem}{C10}{§Schema, line 412}{``Eq.''}
+Read as a request to display and number the pairing tuple rather than leave it
+inline. Done: the \textsc{CrossLayerPairing} record is now a numbered equation
+and is referenced by number where the certificate consumes it.
+\where{Eq.~(3) and its two later references.}
+\end{qitem}
+
+\begin{qitem}{C11}{§Schema design, line 425}{``You state that time is always
+relative to each source's own capture start. Add a paragraph mathematically
+defining how you align relative network time to relative telemetry time for the
+\texttt{synthetic\_alignment} pairings. Detail the synchronization error bounds,
+or explain the heuristic that guarantees synthetic alignment does not
+artificially inflate or deflate $\Delta(\theta)$.''}
+Accepted; a derivation has been added. We anchor attack onsets under an affine
+map between the two relative clocks, decompose the residual into three terms
+(onset-detection error in each source, plus drift over the window), and bound
+the total at $e_{\mathrm{align}}\le0.53$\,s for every released pairing, with a
+rejection rule that discards any pairing exceeding it.
+
+One point deserves emphasis because it answers the sharper half of your
+question. Misalignment cannot inflate or deflate $\Delta(\theta)$, because
+$\Delta(\theta)$ is computed \emph{entirely within the network source} from
+per-hop residual delays; the alignment map is used only to attach that value to
+an autonomy window. A bad alignment can therefore pair a real network
+measurement with the wrong flight segment---which we bound and report---but
+cannot corrupt the quantity the certificate consumes. We now state this
+explicitly rather than leaving the reader to verify it.
+\where{§IV-C with the bound; full map, three error terms and rejection rule in Appendix~B.}
+\end{qitem}
+
+\begin{qitem}{C12}{§``What each adapter does'', line 542}{``Rename the
+section.''}
+Renamed to describe the mapping the section actually specifies, from
+heterogeneous source records to the unified schema, rather than the activity of
+writing adapters.
+\where{§IV-D.}
+\end{qitem}
+
+\begin{qitem}{C13}{§Harness, line 618}{``You build the harness entirely around a
+DATAMUt-style detector with a deterministic threshold $\epsilon$, while others
+rely on ML classifiers. Add a discussion or small empirical subsection showing
+how your schema and harness map to ML-based ROC curves---how a classifier's
+confidence cutoff $P_{\mathrm{th}}$ maps to the residual undetected budget. This
+proves your benchmark is a framework for any IDS, not just DATAMUt.''}
+Accepted; this materially widens the paper's claim and we have added the
+subsection. For a scoring detector with score function $g$ and cutoff
+$P_{\mathrm{th}}$, an evading attacker must satisfy $g(\mu)<P_{\mathrm{th}}$,
+hence
+\[
+\mu \;<\; g^{-1}(P_{\mathrm{th}}) \;=:\; \theta_{\mathrm{eff}}(P_{\mathrm{th}}),
+\]
+and the residual-budget lemma applies verbatim with $\theta$ replaced by the
+effective operating point $\theta_{\mathrm{eff}}$. The threshold detector is the
+special case $g=\mathrm{id}$, for which $\theta_{\mathrm{eff}}=\varepsilon$. We
+state the two properties of $g$ the composition needs---monotonicity, so that a
+stricter cutoff is a smaller budget, and a measurable inverse on the operating
+range---and note that any detector emitting a per-hop score satisfies them.
+
+The consequence is exactly the one you identified: the certified floor is a
+function of a detector's ROC operating point, not of DATAMUt. Any IDS that
+reports an ROC curve can be substituted without touching the theorem.
+\where{§V-B, with Eq.~(7); the DATAMUt instantiation becomes an example rather than the definition.}
+\end{qitem}
+
+\begin{qitem}{C14}{§Evidence classes, line 830}{``Add a summary table or clear
+breakdown showing the exact distribution of provenance tags across the 93,600
+flights. Reviewers will want to know exactly what percentage relies on synthetic
+alignment versus actual physical measurements.''}
+Added, and it is the most uncomfortable table in the paper. We built a
+provenance ledger over the whole corpus and report the distribution: of 431,773
+ingested events, 200,610 (46.5\%) originate from real hardware captures.
+
+The breakdown also surfaces a fact we had not previously stated plainly, and we
+have chosen to report it prominently rather than let a reviewer discover it: the
+number of released pairings tagged \texttt{measured\_same\_platform}---our
+strongest evidence class, requiring both layers observed on one platform---is
+\textbf{zero}. The single source that observes both lacks machine-readable
+attack intervals, so its pairings cannot yet be released in that class. The
+$\gamma$ calibration underlying the headline result is still a real-flight
+measurement, from three PX4 flights, and we now label it as a calibration sample
+rather than a distribution. This is stated in the abstract, tabulated in §VI,
+and listed first among the limitations.
+\where{Table~IV (provenance distribution), abstract, §VIII Limitations.}
+\end{qitem}
+
+% =====================================================================
+\section*{Paper A — composition theorem (6 queries)}
+% =====================================================================
+
+\begin{qitem}{A1}{title, line 37}{``We should specify the attack or remove the
+keyword from the title.''}
+Removed. ``under Attack'' promised a specificity the paper does not deliver, since
+the theorem is stated for a class of network-induced perturbations rather than a
+named attack. The merged title names the mechanism instead: \textit{From Wire to
+Flight: An End-to-End Framework Composing Network Intrusion Detection with
+Certified Mission Safety for Autonomous UAVs}.
+\where{Title.}
+\end{qitem}
+
+\begin{qitem}{A2}{§$\gamma$ calibration, line 537}{``Explicitly define the
+temporal validity window for $\gamma$: `We model this degradation as locally
+linear for $\Delta(\theta)\le[X]$ seconds; beyond this threshold, uncorrected IMU
+drift bounds become quadratic, requiring a higher-order $\gamma$ function.'\,''}
+Accepted, with the constant measured rather than asserted. We state
+$\tau_{\mathrm{lin}}\approx2$\,s, taken from the innovation-gating horizon
+observed in the calibration flights: while GNSS is late rather than absent, the
+EKF continues correcting against its last accepted fix and error grows
+approximately linearly in staleness; once the outage exceeds that horizon the
+filter propagates on inertial data alone and uncorrected accelerometer bias and
+gyroscope drift make the error grow quadratically in time.
+
+This is favourable to the paper's claim and we note why: the certified operating
+window of interest is sub-second, well inside $\tau_{\mathrm{lin}}$, so the
+linear model is used only where it is valid. We state the quadratic form for
+completeness and flag the higher-order $\gamma$ as future work rather than
+extrapolating the linear fit past its range.
+\where{§III-D, ``Temporal validity of the linear model''.}
+\end{qitem}
+
+\begin{qitem}{A3}{Theorem 1, line 548}{``The Grönwall trajectory tube relies
+heavily on the navigation drift $F$ being $L$-Lipschitz. However, this assumes
+the drone's physical dynamics remain in a smooth, linearizable regime. Maybe we
+should note this in the paper.''}
+Noted, and given the standing of a hypothesis rather than a technicality. A
+remark now follows the theorem stating that $L$-Lipschitzness holds \emph{over
+the operating region} and that the qualifier carries physical content: attitudes
+away from gimbal-lock singularities, airspeeds below stall or the onset of blade
+stall, actuators off their saturation limits, and no contact dynamics. We state
+where these hold and where they do not, and are explicit that an aggressive
+evasive manoeuvre or actuator saturation exits the certified regime---so the
+guarantee lapses rather than degrades.
+
+Related, and prompted by the same scrutiny: we re-measured $L$ in the operating
+region and obtained $1.18$, against the global value of $1.01$ used earlier. We
+now report the local, larger constant throughout, which tightens the certified
+radius to $0.153$. The headline result at a 10\,m corridor is unaffected; a
+conclusion at a 2\,m corridor did change, and we state that in the limitations
+rather than only reporting the margin that survives.
+\where{Remark ``On the Lipschitz hypothesis'' after Theorem 1; constants table; §VIII.}
+\end{qitem}
+
+\begin{qitem}{A4}{§Discussion, line 629}{``Remember to remove the conversational
+tone.''}
+Done, and treated as a global pass rather than a local edit, together with C1.
+The marked passage (``Achilles heel'') and its neighbours are rewritten as
+declarative statements of the limitation they describe.
+\where{Throughout; no figurative characterisations of results remain.}
+\end{qitem}
+
+\begin{qitem}{A5}{§Four-certificate architecture, line 676}{``The core theorem
+solves a time-delay attack, while MWU is suddenly introduced for an `adaptive
+online jammer' and PAC-Bayes awaits pending data. Write a unifying paragraph
+explaining exactly how they operate simultaneously on the same flight---otherwise
+severely trim the PAC-Bayes and MWU sections. Better one deeply proven,
+empirically verified theorem than a survey of four loosely connected bounds.''}
+This was the most consequential comment on Paper A and we accepted its framing
+before choosing between the two remedies. We took the first: a paragraph now
+holds one flight fixed---a ten-minute delivery sortie, flown by a model trained
+on last season's mission mix, through a corridor where a compromised relay
+delays peer corrections and a ground jammer varies transmit power---and shows
+that four claims are in force simultaneously about four different objects: the
+Grönwall tube bounds the trajectory, randomized smoothing bounds the classifier
+under input perturbation, PAC-Bayes bounds generalisation from the training mix
+to this sortie, and MWU bounds regret against the adaptive jammer. They are
+concurrent, not alternative.
+
+We also acted on the trimming half of your comment. PAC-Bayes and MWU are
+reduced to what the unifying argument requires; the paper's weight sits on the
+Grönwall result, which is the one proved and empirically verified. Where
+PAC-Bayes awaits a numeric $\mathrm{KL}$ term we flag it as pending in the
+constants table rather than substituting a plausible value.
+\where{§VI, ``How the four operate on a single flight''; Table~III marks the pending constant.}
+\end{qitem}
+
+\begin{qitem}{A6}{§Instantiation, line 772}{``To make the evaluation realistic we
+could cite actual aviation or drone regulatory standards (e.g.\ FAA requirements
+for urban delivery drones or U-Space tracking tolerances) to justify why 5\,m or
+10\,m are the correct thresholds. Do you think we can do that?''}
+Yes, and it is done. The corridor margins were previously round numbers with no
+external warrant. We now ground them in the JARUS Specific Operations Risk
+Assessment (SORA), the reference methodology adopted by EASA and other
+authorities for the \emph{specific} category, under which the operational volume
+comprises the flight geography plus a contingency volume whose minimum lateral
+extent is a sum of independent error terms. Using the standard's own default
+values---3\,m GNSS position accuracy, 3\,m position-holding error, and 1\,m map
+error---gives 7\,m before any reaction-distance or manoeuvre term.
+
+The evaluated margins are now positioned against that figure rather than chosen:
+2\,m is tighter than any SORA-compliant buffer, 5\,m remains below the default
+contingency sum, and 10\,m is the first value clearing it with margin. The
+certified window becomes comparable to a regulatory quantity instead of to a
+modelling choice, which is what your question was asking for.
+\where{§VII-A with the SORA derivation; margin table; the headline figure is annotated with the 7\,m line.}
+\end{qitem}
+
+% =====================================================================
+\section*{Two items we flag rather than close}
+% =====================================================================
+
+Neither was raised in your comments; both follow from acting on them, and we
+would rather surface them now than have them found at review.
+
+\textbf{The 2\,m conclusion changed (from A3).} Re-measuring $L$ locally at
+$1.18$ means $\theta=0.25$\,s is certified at corridor margins $m\ge5$\,m but
+\emph{not} at $m=2$\,m, where the tube reaches $2.22$\,m. The earlier draft
+claimed otherwise on the strength of the global constant. The headline 10\,m
+result is unaffected.
+
+\textbf{The strongest evidence class is empty (from C14).} As above: zero
+released \texttt{measured\_same\_platform} pairings. We judged that reporting
+this openly is more defensible than presenting the corpus in a way that does not
+invite the question, and it is now stated in the abstract.
+
+\vspace{1.2em}
+\thinrule
+\vspace{0.5em}
+
+{\small All changes are in the merged manuscript. Every number quoted here is
+reproducible from the committed artifact; the provenance ledger that produced
+the C14 distribution is \texttt{experiments/provenance\_ledger.py}, and its
+output is \texttt{results/provenance\_distribution.csv}.}
+
+\end{document}
