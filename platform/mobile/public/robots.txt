@@ -1,0 +1,10 @@
+# robustuavs.ai — research artifact for an NDSS 2027 submission.
+User-agent: *
+Allow: /
+# The artifact tree is a browsable directory listing of the committed research
+# files. It is public on purpose, but it is thousands of small files and has no
+# search value, so keep crawlers out of it and let them read the pages instead.
+Disallow: /artifact/
+Disallow: /api/
+
+Sitemap: https://robustuavs.ai/sitemap.xml

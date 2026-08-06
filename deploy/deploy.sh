@@ -138,6 +138,19 @@ if [ -d platform/mobile ] && command -v npm >/dev/null; then
 	if [ ! -f platform/mobile/dist/index.html ]; then
 		log "export produced no index.html — refusing to publish"; exit 1
 	fi
+
+	# Crawlable metadata. Expo emits a shell with an empty root div, which is
+	# what a crawler that does not run JavaScript caches -- so the same markup
+	# gains meta tags, JSON-LD and a noscript block carrying the substance.
+	# Static files under public/ are copied by hand because expo export does
+	# not pick them up.
+	log "injecting SEO metadata"
+	( cd platform/mobile && node scripts/inject-seo.mjs dist ) \
+		|| { log "SEO injection FAILED"; exit 1; }
+	if [ -d platform/mobile/public ]; then
+		cp -a platform/mobile/public/. platform/mobile/dist/
+		log "         robots.txt and sitemap.xml published"
+	fi
 	mkdir -p "$APP_DIR"
 	rsync -a --delete platform/mobile/dist/ "$APP_DIR/"
 	log "client published -> $APP_DIR (served at /)"
