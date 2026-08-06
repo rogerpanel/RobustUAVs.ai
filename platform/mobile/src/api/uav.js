@@ -16,6 +16,7 @@ export const uavApi = {
   swarm: () => request('/api/uav/swarm/snapshots'),
   gnss: (seed) => request(`/api/uav/gnss/sky${seed != null ? `?seed=${seed}` : ''}`),
   attackCatalog: () => request('/api/uav/perception/catalog'),
+  fleetCatalog: () => request('/api/uav/fleet/catalog'),
   dossier: () => request('/api/uav/dossier'),
   reviewPlan: (text, format = 'text') =>
     request('/api/uav/mission-plan/review', {

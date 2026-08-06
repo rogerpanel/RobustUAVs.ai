@@ -23,7 +23,7 @@ import math
 import random
 import sys
 import time
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Literal
 
@@ -429,24 +429,77 @@ def attack_catalog() -> dict:
 # ========================================================= fleet simulator ==
 
 UAVKind = Literal["delivery", "patrol", "search_rescue", "logistics"]
-AttackKind = Literal["none", "spoof_gnss", "jam_link", "delay_relay", "pgd", "gaussian"]
 
-# Per-attack effect per second. `delay_relay` is this project's own addition:
-# it is the class the composition theorem covers, and it acts on staleness
-# rather than on link quality, which is why it has its own column.
-ATTACK_DAMAGE: dict[str, dict[str, float]] = {
-    "none":        {"link": 0.0,  "gnss": 0.00, "stale_s": 0.00, "battery": 0.5, "stealth": 1.0},
-    "gaussian":    {"link": 5.0,  "gnss": 0.05, "stale_s": 0.00, "battery": 1.0, "stealth": 0.1},
-    "pgd":         {"link": 0.0,  "gnss": 0.55, "stale_s": 0.00, "battery": 1.0, "stealth": 0.4},
-    "spoof_gnss":  {"link": 2.0,  "gnss": 0.80, "stale_s": 0.00, "battery": 1.0, "stealth": 0.5},
-    "jam_link":    {"link": 35.0, "gnss": 0.10, "stale_s": 0.00, "battery": 1.0, "stealth": 0.1},
-    "delay_relay": {"link": 3.0,  "gnss": 0.05, "stale_s": 0.22, "battery": 1.0, "stealth": 0.8},
+# The nine attack classes a UAV faces at this level, in two families.
+#
+# The gradient/optimisation family (FGSM, PGD, C&W, DeepFool, Gaussian) is the
+# perception surface Chapter 6 evaluates, ported from robustidps.ai so the two
+# platforms name the same things the same way. The physical family (GNSS spoof,
+# link jam, relay delay, label flip) is what this paper's composition addresses.
+#
+# `stealth` is the field that matters: it scales how hard a class is to detect,
+# and `delay_relay` is deliberately the stealthiest because staying under theta
+# is exactly what an evading adversary does. That is the whole reason the
+# certificate has to bind when the detector does not fire.
+ATTACKS: dict[str, dict[str, Any]] = {
+    "none": {"label": "None", "family": "-", "link": 0.0, "gnss": 0.00,
+             "stale_s": 0.00, "battery": 0.5, "stealth": 1.0, "progress": 1.0,
+             "note": "Nominal flight."},
+    "fgsm": {"label": "FGSM", "family": "gradient", "link": 0.0, "gnss": 0.06,
+             "stale_s": 0.00, "battery": 0.7, "stealth": 0.2, "progress": 0.92,
+             "note": "Single-step gradient sign. Cheapest and weakest."},
+    "pgd": {"label": "PGD", "family": "gradient", "link": 0.0, "gnss": 0.13,
+            "stale_s": 0.00, "battery": 0.8, "stealth": 0.4, "progress": 0.78,
+            "note": "Iterated FGSM with projection. The strong baseline."},
+    "cw": {"label": "C&W", "family": "optimisation", "link": 0.0, "gnss": 0.20,
+           "stale_s": 0.00, "battery": 0.8, "stealth": 0.7, "progress": 0.65,
+           "note": "Minimises perturbation subject to misclassification."},
+    "deepfool": {"label": "DeepFool", "family": "geometric", "link": 0.0, "gnss": 0.16,
+                 "stale_s": 0.00, "battery": 0.8, "stealth": 0.6, "progress": 0.72,
+                 "note": "Walks to the nearest decision boundary."},
+    "gaussian": {"label": "Gaussian noise", "family": "baseline", "link": 1.2,
+                 "gnss": 0.02, "stale_s": 0.00, "battery": 0.7, "stealth": 0.1,
+                 "progress": 0.96,
+                 "note": "Control condition. A defence failing here fails everything."},
+    "gnss_spoof": {"label": "GNSS spoof", "family": "physical", "link": 0.6,
+                   "gnss": 0.19, "stale_s": 0.00, "battery": 0.8, "stealth": 0.5,
+                   "progress": 0.62,
+                   "note": "Drives position error directly."},
+    "jam_link": {"label": "Link jam", "family": "physical", "link": 4.5,
+                 "gnss": 0.03, "stale_s": 0.00, "battery": 0.9, "stealth": 0.1,
+                 "progress": 0.55,
+                 "note": "Drives the EW-Bench J/S axis. Loud, and easily caught."},
+    "delay_relay": {"label": "Relay delay", "family": "network", "link": 0.5,
+                    "gnss": 0.01, "stale_s": 0.055, "battery": 0.7, "stealth": 0.85,
+                    "progress": 0.46,
+                    "note": "The class the composition theorem covers. Stealthiest "
+                            "by design: it hides under theta, and it costs TIME "
+                            "rather than accuracy."},
+    "label_flip": {"label": "Label flip", "family": "poisoning", "link": 0.0,
+                   "gnss": 0.00, "stale_s": 0.00, "battery": 0.7, "stealth": 0.9,
+                   "progress": 0.85,
+                   "note": "Training-time poisoning; shows as degraded detection "
+                           "rather than as a flight anomaly."},
 }
+AttackKind = str
 
-# Detection coverage per configuration, matching the EW-Bench defence set.
 DEFENSE_CATCH = {"no_def": 0.0, "caf_cnn": 0.55, "seq2seq_tr": 0.70, "ours_m1m4m6m7": 0.95}
-
 GAMMA = {"kinematic": 15.0, "receiver": 1.195, "ekf": 1.365}
+
+MAX_FLEET = 8
+NOMINAL_MISSION_S = 70.0     # T: the schedule the mission was planned against
+KAPPA = 0.25                 # tolerated schedule overrun, from the temporal MCR
+
+
+def attack_catalogue_fleet() -> dict:
+    return {
+        "attacks": [{"id": k, **{kk: vv for kk, vv in v.items() if kk != "progress"}}
+                    for k, v in ATTACKS.items()],
+        "families": sorted({v["family"] for v in ATTACKS.values() if v["family"] != "-"}),
+        "max_fleet": MAX_FLEET,
+        "mission": {"nominal_s": NOMINAL_MISSION_S, "kappa": KAPPA,
+                    "deadline_s": NOMINAL_MISSION_S * (1 + KAPPA)},
+    }
 
 
 @dataclass
@@ -458,47 +511,59 @@ class UAVState:
     battery_pct: float = 100.0
     link_quality_pct: float = 100.0
     gnss_spoof_confidence: float = 0.0
-    # This project's quantity: accumulated undetected staleness, in seconds.
     staleness_s: float = 0.0
     autopilot_mode: str = "nominal"
+    rtl_steps: int = 0
     x: float = 0.0
     y: float = 0.0
     z: float = 80.0
     heading_deg: float = 0.0
-    # Nominal track, so the client can draw the deviation the theorem bounds.
     nom_x: float = 0.0
     nom_y: float = 0.0
     deviation_m: float = 0.0
     last_attack: str = "none"
     attack_caught: bool = False
+    n_detections: int = 0
+    n_attack_steps: int = 0
     completed: bool | None = None
+    # Temporal predicate: when the mission actually finished, against the
+    # deadline. This is the half of MCR that a delay attack defeats while every
+    # spatial curve still reports success.
+    t_arr_s: float | None = None
+    on_time: bool | None = None
     t_s: float = 0.0
+    # Bounded per-UAV history for the end-of-flight plots.
+    history: list = field(default_factory=list)
 
     def as_dict(self) -> dict:
-        return asdict(self)
+        d = asdict(self)
+        d["detection_rate"] = (round(self.n_detections / self.n_attack_steps, 3)
+                               if self.n_attack_steps else None)
+        return d
 
 
 @dataclass
 class Fleet:
-    uavs: list[UAVState]
+    uavs: list
     t_s: float = 0.0
     corridor_m: float = 10.0
     mapping: str = "ekf"
     js_db: float = 10.0
+    n_steps: int = 0
 
 
 _STORE: dict[str, Fleet] = {}
 _MAX_SESSIONS = 64
+HISTORY_CAP = 400          # ~6.5 min at 1 Hz; bounded so a long demo cannot grow without limit
 
 
 def _spawn(n: int, seed: int = 42) -> Fleet:
     kinds = ["delivery", "patrol", "search_rescue", "logistics"]
-    defenses = ["ours_m1m4m6m7", "ours_m1m4m6m7", "seq2seq_tr", "caf_cnn", "no_def"]
+    defenses = ["ours_m1m4m6m7", "ours_m1m4m6m7", "seq2seq_tr", "caf_cnn",
+                "no_def", "ours_m1m4m6m7", "seq2seq_tr", "caf_cnn"]
     rng = random.Random(seed)
     uavs = []
     for i in range(n):
-        # Lay the fleet out on a ring so the nominal tracks do not overlap and
-        # a viewer can tell the aircraft apart without reading labels.
         ang = 2 * math.pi * i / max(1, n)
         r = 160.0
         uavs.append(UAVState(
@@ -516,10 +581,8 @@ def _spawn(n: int, seed: int = 42) -> Fleet:
 def fleet_reset(session: str, n: int = 4, corridor_m: float = 10.0,
                 mapping: str = "ekf", js_db: float = 10.0) -> dict:
     if len(_STORE) >= _MAX_SESSIONS:
-        # Bounded rather than unbounded: this is a demo surface on a shared
-        # host, and a session map that only grows is a slow memory leak.
         _STORE.clear()
-    f = _spawn(max(1, min(n, 8)))
+    f = _spawn(max(1, min(int(n), MAX_FLEET)))
     f.corridor_m, f.mapping, f.js_db = corridor_m, mapping, js_db
     _STORE[session] = f
     return snapshot(session)
@@ -531,7 +594,7 @@ def fleet_state(session: str) -> dict:
     return snapshot(session)
 
 
-def fleet_step(session: str, attacks: dict[str, str] | None = None,
+def fleet_step(session: str, attacks: dict | None = None,
                js_db: float | None = None, dt_s: float = 1.0,
                corridor_m: float | None = None, mapping: str | None = None) -> dict:
     if session not in _STORE:
@@ -548,31 +611,32 @@ def fleet_step(session: str, attacks: dict[str, str] | None = None,
     rng = random.Random(int(time.time() * 1000) % 2_000_000_000)
     gamma = GAMMA[f.mapping]
     f.t_s += dt_s
+    f.n_steps += 1
 
     for u in f.uavs:
         attack = attacks.get(u.uav_id, "none")
-        if attack not in ATTACK_DAMAGE:
+        if attack not in ATTACKS:
             attack = "none"
-        dmg = ATTACK_DAMAGE[attack]
+        a = ATTACKS[attack]
         catch = DEFENSE_CATCH.get(u.defense, 0.0)
 
-        # A stealthy attack is proportionally harder to catch. `delay_relay`
-        # is deliberately the stealthiest: staying under theta is exactly what
-        # an evading adversary does, and the point of the composition is that
-        # the certificate still binds when the detector does not fire.
-        effective = catch * (1.0 - 0.6 * dmg["stealth"]) if attack != "none" else 0.0
+        effective = catch * (1.0 - 0.6 * a["stealth"]) if attack != "none" else 0.0
         caught = attack != "none" and rng.random() < effective
         u.last_attack, u.attack_caught = attack, caught
+        if attack != "none":
+            u.n_attack_steps += 1
+            if caught:
+                u.n_detections += 1
         u.t_s = f.t_s
 
         if attack != "none" and not caught:
-            u.gnss_spoof_confidence = min(1.0, u.gnss_spoof_confidence + dmg["gnss"] * dt_s)
-            u.staleness_s = min(60.0, u.staleness_s + dmg["stale_s"] * dt_s)
+            u.gnss_spoof_confidence = min(1.0, u.gnss_spoof_confidence + a["gnss"] * dt_s)
+            u.staleness_s = min(60.0, u.staleness_s + a["stale_s"] * dt_s)
         else:
             u.gnss_spoof_confidence = max(0.0, u.gnss_spoof_confidence - 0.15 * dt_s)
             u.staleness_s = max(0.0, u.staleness_s - 0.10 * dt_s)
 
-        link_loss = dmg["link"] * dt_s + max(0.0, (f.js_db - 10) * 0.4 * dt_s)
+        link_loss = a["link"] * dt_s + max(0.0, (f.js_db - 10) * 0.4 * dt_s)
         u.link_quality_pct = max(0.0, u.link_quality_pct - link_loss)
         if attack == "none" and u.link_quality_pct < 100:
             u.link_quality_pct = min(100.0, u.link_quality_pct + 1.5 * dt_s)
@@ -583,19 +647,15 @@ def fleet_step(session: str, attacks: dict[str, str] | None = None,
         elif u.autopilot_mode != "nominal" and u.gnss_spoof_confidence < 0.3:
             u.autopilot_mode = "nominal"
 
-        u.battery_pct = max(0.0, u.battery_pct - dmg["battery"] * dt_s)
+        u.rtl_steps = u.rtl_steps + 1 if u.autopilot_mode == "rtl" else 0
+        u.battery_pct = max(0.0, u.battery_pct - a["battery"] * dt_s)
 
-        # Nominal track: a steady circuit the aircraft would fly unattacked.
         ang = math.radians(u.heading_deg)
         speed = 12.0
         u.nom_x = round(u.nom_x + speed * math.cos(ang) * dt_s, 1)
         u.nom_y = round(u.nom_y + speed * math.sin(ang) * dt_s, 1)
         u.heading_deg = round((u.heading_deg + 4.0 * dt_s) % 360, 1)
 
-        # Actual track: nominal plus the perturbation the interface predicts.
-        # delta = gamma * staleness is the same mapping the certificate uses,
-        # so the deviation drawn on screen and the tube in the theorem are the
-        # same quantity rather than two unrelated animations.
         delta = gamma * u.staleness_s + 3.0 * u.gnss_spoof_confidence
         drift = rng.uniform(-0.6, 0.6)
         bearing = ang + math.pi / 2
@@ -604,72 +664,118 @@ def fleet_step(session: str, attacks: dict[str, str] | None = None,
         u.z = round(max(20.0, u.z + rng.uniform(-0.5, 0.5)), 1)
         u.deviation_m = round(math.dist((u.x, u.y), (u.nom_x, u.nom_y)), 2)
 
-        if u.autopilot_mode == "rtl":
+        # Progress. Each attack class carries its own progress multiplier, so a
+        # stealthy delay costs schedule while a loud jam costs the mission.
+        # A finished flight is finished: RTL after arrival must not walk its
+        # progress back down, or the tile contradicts its own completed flag.
+        if u.completed is not None:
+            pass
+        elif u.autopilot_mode == "rtl":
             u.mission_progress_pct = max(0.0, u.mission_progress_pct - 5 * dt_s)
-        elif u.completed is None:
+        else:
             rate = 1.5 if u.autopilot_mode == "nominal" else 0.4
             if attack != "none" and not caught:
-                rate *= 0.3
+                rate *= a["progress"]
             u.mission_progress_pct = min(100.0, u.mission_progress_pct + rate * dt_s)
 
         if u.completed is None:
-            # Spatial failure: outside the corridor. Temporal failure: out of
-            # energy or returning to launch with the mission barely begun.
+            deadline = NOMINAL_MISSION_S * (1 + KAPPA)
             if u.deviation_m > f.corridor_m:
-                u.completed = False
+                u.completed = False; u.t_arr_s = round(f.t_s, 1); u.on_time = None
             elif u.mission_progress_pct >= 100.0:
                 u.completed = True
-            elif u.battery_pct < 5.0 or (u.autopilot_mode == "rtl"
-                                         and u.mission_progress_pct < 20.0):
-                u.completed = False
+                u.t_arr_s = round(f.t_s, 1)
+                u.on_time = u.t_arr_s <= deadline
+            elif u.battery_pct < 5.0 or u.rtl_steps >= 12:
+                u.completed = False; u.t_arr_s = round(f.t_s, 1); u.on_time = None
+            elif f.t_s > deadline:
+                # Still flying past the deadline: the temporal predicate has
+                # already failed even though the aircraft is inside its corridor.
+                u.on_time = False
+
+        u.history.append({
+            "t": round(f.t_s, 1),
+            "progress": round(u.mission_progress_pct, 1),
+            "deviation_m": u.deviation_m,
+            "staleness_s": round(u.staleness_s, 3),
+            "link": round(u.link_quality_pct, 1),
+            "gnss": round(u.gnss_spoof_confidence, 3),
+            "battery": round(u.battery_pct, 1),
+            "attack": attack,
+            "caught": caught,
+        })
+        if len(u.history) > HISTORY_CAP:
+            del u.history[0]
 
     return snapshot(session)
 
 
-def snapshot(session: str) -> dict:
+def snapshot(session: str, with_history: bool = True) -> dict:
     f = _STORE[session]
     done = [u for u in f.uavs if u.completed is True]
     failed = [u for u in f.uavs if u.completed is False]
     decided = len(done) + len(failed)
     gamma = GAMMA[f.mapping]
+    deadline = NOMINAL_MISSION_S * (1 + KAPPA)
 
-    # Certified tube for the worst staleness currently in the air, using the
-    # same locally-measured L as everything else in this repository.
     worst = max((u.staleness_s for u in f.uavs), default=0.0)
     L, T = 1.181, 1.0
     tube = gamma * worst * math.exp(L * T)
 
-    return {
+    # Spatial MCR: finished inside the corridor. Temporal MCR: finished by the
+    # deadline. Their conjunction is what the paper certifies -- reporting only
+    # the first is what the supervisor's correction was about.
+    on_time = [u for u in done if u.on_time]
+    late = [u for u in f.uavs if u.on_time is False]
+
+    out = {
         "session": session,
         "t_s": round(f.t_s, 1),
+        "n_steps": f.n_steps,
         "js_db": f.js_db,
         "corridor_m": f.corridor_m,
         "mapping": f.mapping,
         "gamma_m_s": gamma,
-        "uavs": [u.as_dict() for u in f.uavs],
+        "mission": {"nominal_s": NOMINAL_MISSION_S, "kappa": KAPPA,
+                    "deadline_s": deadline},
+        "uavs": [u.as_dict() if with_history
+                 else {k: v for k, v in u.as_dict().items() if k != "history"}
+                 for u in f.uavs],
         "fleet": {
             "n": len(f.uavs),
             "n_completed": len(done),
             "n_failed": len(failed),
             "n_in_flight": len(f.uavs) - decided,
+            "n_late": len(late),
             "spatial_mcr": round(len(done) / decided, 3) if decided else None,
+            "temporal_mcr": round(len(on_time) / decided, 3) if decided else None,
+            "composed_mcr": round(len(on_time) / len(f.uavs), 3) if decided == len(f.uavs) else None,
             "max_deviation_m": round(max((u.deviation_m for u in f.uavs), default=0.0), 2),
+            "mean_detection_rate": _mean_detection(f),
         },
         "certificate": {
             "worst_staleness_s": round(worst, 3),
             "tube_m": round(tube, 3),
             "inside_corridor": tube <= f.corridor_m,
             "amplification": f"gronwall_L{L:g}_T{T:g}",
-            "reading": "The tube is γ·Δ·e^{LT} with the same γ and L the "
-                       "certificate engine uses, so the deviation drawn here "
-                       "and the bound in the theorem are one quantity.",
+            "temporal_budget_s": round(KAPPA * NOMINAL_MISSION_S, 2),
+            "temporal_holds": worst * max(1, len(f.uavs)) <= KAPPA * NOMINAL_MISSION_S,
+            "reading": "Two predicates. Spatially the tube is gamma*Delta*e^{LT} "
+                       "against the corridor; temporally the accumulated delay is "
+                       "against kappa*T. A relay delay can satisfy the first and "
+                       "break the second, which is exactly the case a purely "
+                       "spatial MCR misses.",
         },
         "provenance": "synthetic_alignment",
-        "note": "The simulator's dynamics are illustrative. The γ that converts "
-                "staleness to position error, and the L that amplifies it, are "
-                "both measured (results/whelan_delta_calibration.csv, "
-                "results/local_lipschitz.csv).",
+        "note": "Flight dynamics are illustrative. gamma and L are measured "
+                "(results/whelan_delta_calibration.csv, results/local_lipschitz.csv).",
     }
+    return out
+
+
+def _mean_detection(f) -> float | None:
+    rates = [u.n_detections / u.n_attack_steps for u in f.uavs if u.n_attack_steps]
+    return round(sum(rates) / len(rates), 3) if rates else None
 
 
 def overview() -> dict:

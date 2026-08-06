@@ -7,14 +7,7 @@ import { uavApi } from '../../api/uav';
 import { useTheme, fonts } from '../../theme';
 import { ScreenHeader, Panel, Unavailable, KV, Tag } from './parts';
 
-const ATTACKS = [
-  { id: 'none', label: 'None' },
-  { id: 'delay_relay', label: 'Relay delay', hero: true },
-  { id: 'spoof_gnss', label: 'GNSS spoof' },
-  { id: 'jam_link', label: 'Link jam' },
-  { id: 'pgd', label: 'PGD' },
-  { id: 'gaussian', label: 'Noise' },
-];
+const FLEET_SIZES = [1, 2, 3, 4, 5, 6, 7, 8];
 const MAPPINGS = [
   { id: 'kinematic', label: 'Kinematic', note: 'v_max = 15 m/s' },
   { id: 'receiver', label: 'Receiver', note: 'γ = 1.195 m/s' },
@@ -44,6 +37,8 @@ export default function FleetDemoScreen() {
   const s = styles(t);
 
   const [snap, setSnap] = useState(null);
+  const [catalog, setCatalog] = useState(null);
+  const [fleetSize, setFleetSize] = useState(4);
   const [error, setError] = useState(null);
   const [running, setRunning] = useState(false);
   const [attacks, setAttacks] = useState({});
@@ -57,15 +52,16 @@ export default function FleetDemoScreen() {
     setRunning(false);
     try {
       setSnap(await uavApi.fleetReset({
-        session: 'demo', n: 4, corridor_m: corridor, mapping, js_db: js,
+        n: fleetSize, corridor_m: corridor, mapping, js_db: js,
       }));
       setAttacks({});
       setError(null);
     } catch (e) { setError(e.message); }
-  }, [corridor, mapping, js]);
+  }, [corridor, mapping, js, fleetSize]);
 
   useEffect(() => {
-    uavApi.fleet('demo').then(setSnap).catch((e) => setError(e.message));
+    uavApi.fleetCatalog().then(setCatalog).catch(() => {});
+    uavApi.fleet().then(setSnap).catch((e) => setError(e.message));
   }, []);
 
   const step = useCallback(async () => {
@@ -75,8 +71,7 @@ export default function FleetDemoScreen() {
     inflight.current = true;
     try {
       setSnap(await uavApi.fleetStep({
-        session: 'demo', attacks, js_db: js, dt_s: 1.0,
-        corridor_m: corridor, mapping,
+        attacks, js_db: js, dt_s: 1.0, corridor_m: corridor, mapping,
       }));
     } catch (e) {
       setError(e.message); setRunning(false);
@@ -112,6 +107,21 @@ export default function FleetDemoScreen() {
 
       <Panel title="Fleet" subtitle={`t = ${snap.t_s}s · corridor ${snap.corridor_m} m · γ = ${snap.gamma_m_s} m/s`}>
         <FleetMap snap={snap} size={size} t={t} />
+        <Text style={s.sub}>Fleet size</Text>
+        <View style={s.row}>
+          {FLEET_SIZES.map((n) => (
+            <Pressable key={n} onPress={() => setFleetSize(n)}
+                       style={[s.pill, fleetSize === n && s.pillOn]}>
+              <Text style={[s.pillText, fleetSize === n && { color: t.accent }]}>{n}</Text>
+            </Pressable>
+          ))}
+        </View>
+        <Text style={s.hint}>
+          {fleetSize === snap.fleet.n
+            ? `${snap.fleet.n} aircraft airborne.`
+            : `Reset to fly ${fleetSize} (currently ${snap.fleet.n}).`}
+        </Text>
+
         <View style={s.controls}>
           <Pressable onPress={() => setRunning((r) => !r)}
                      style={[s.btn, running ? s.btnStop : s.btnGo]}>
@@ -127,6 +137,35 @@ export default function FleetDemoScreen() {
           </Pressable>
         </View>
       </Panel>
+
+      <Panel title="Mission outcome" subtitle={`deadline ${snap.mission?.deadline_s ?? '—'} s = (1 + κ)·T, κ = ${snap.mission?.kappa ?? '—'}`}>
+        <View style={s.mcrRow}>
+          <Mcr t={t} label="Spatial MCR" v={snap.fleet.spatial_mcr}
+               note="stayed inside the corridor" />
+          <Mcr t={t} label="Temporal MCR" v={snap.fleet.temporal_mcr}
+               note="arrived by the deadline" />
+          <Mcr t={t} label="Composed" v={snap.fleet.composed_mcr}
+               note="both, which is what is certified" />
+        </View>
+        <KV k="completed" v={snap.fleet.n_completed} />
+        <KV k="failed" v={snap.fleet.n_failed} tone={snap.fleet.n_failed ? t.danger : undefined} />
+        <KV k="late" v={snap.fleet.n_late} tone={snap.fleet.n_late ? t.bridge : undefined} />
+        <KV k="in flight" v={snap.fleet.n_in_flight} />
+        <KV k="mean detection rate"
+            v={snap.fleet.mean_detection_rate == null ? 'no attacks yet'
+               : `${(snap.fleet.mean_detection_rate * 100).toFixed(0)}%`} />
+        <Text style={s.hint}>
+          When Spatial exceeds Temporal, aircraft are finishing safely but late —
+          the failure mode a purely spatial metric cannot see, and the reason MCR
+          is a conjunction of two predicates rather than one.
+        </Text>
+      </Panel>
+
+      {snap.uavs.some((u) => (u.history ?? []).length > 3) ? (
+        <Panel title="Flight timelines" subtitle="mission progress against the deadline">
+          <Timeline snap={snap} width={size} t={t} />
+        </Panel>
+      ) : null}
 
       <Panel title="Certified tube"
              subtitle="ρ = γ·Δ·e^{LT}, with L = 1.181 measured over the operating region"
@@ -204,24 +243,38 @@ export default function FleetDemoScreen() {
               {u.attack_caught ? <Tag label="detected" color={t.ok} /> : null}
               {u.completed === true ? <Tag label="completed" color={t.ok} /> : null}
               {u.completed === false ? <Tag label="failed" color={t.danger} /> : null}
+              {u.detection_rate != null
+                ? <Tag label={`caught ${(u.detection_rate * 100).toFixed(0)}%`} color={t.info} /> : null}
+              {u.t_arr_s != null && u.completed
+                ? <Tag label={`arrived ${u.t_arr_s}s`}
+                       color={u.on_time ? t.ok : t.bridge} /> : null}
+              {u.on_time === false
+                ? <Tag label="LATE" color={t.bridge} /> : null}
             </View>
 
             <View style={s.row}>
-              {ATTACKS.map((a) => {
+              {(catalog?.attacks ?? [{ id: 'none', label: 'None' }]).map((a) => {
                 const on = (attacks[u.uav_id] ?? 'none') === a.id;
+                const hero = a.id === 'delay_relay';
                 return (
                   <Pressable key={a.id}
                              onPress={() => setAttacks((p) => ({ ...p, [u.uav_id]: a.id }))}
                              style={[s.chip, on && s.pillOn,
-                                     a.hero && !on && { borderColor: t.bridge }]}>
+                                     hero && !on && { borderColor: t.bridge }]}
+                             accessibilityLabel={`${a.label}: ${a.note ?? ''}`}>
                     <Text style={[s.chipText, on && { color: t.accent },
-                                  a.hero && !on && { color: t.bridge }]}>
+                                  hero && !on && { color: t.bridge }]}>
                       {a.label}
                     </Text>
                   </Pressable>
                 );
               })}
             </View>
+            {attacks[u.uav_id] && attacks[u.uav_id] !== 'none' && catalog ? (
+              <Text style={s.attackNote}>
+                {catalog.attacks.find((a) => a.id === attacks[u.uav_id])?.note}
+              </Text>
+            ) : null}
           </View>
         ))}
       </Panel>
@@ -246,6 +299,72 @@ export default function FleetDemoScreen() {
         <Text style={s.hint}>{snap.note}</Text>
       </Panel>
     </ScrollView>
+  );
+}
+
+function Mcr({ t, label, v, note }) {
+  const s = styles(t);
+  const pct = v == null ? null : Math.round(v * 100);
+  const tone = v == null ? t.muted : v >= 0.9 ? t.ok : v >= 0.5 ? t.bridge : t.danger;
+  return (
+    <View style={s.mcrCell}>
+      <Text style={s.mcrLabel}>{label}</Text>
+      <Text style={[s.mcrValue, { color: tone }]}>
+        {pct == null ? '—' : `${pct}%`}
+      </Text>
+      <Text style={s.mcrNote}>{note}</Text>
+    </View>
+  );
+}
+
+/**
+ * Mission progress per aircraft against wall-clock time, with the deadline
+ * drawn in. A line that reaches the top to the RIGHT of the deadline rule is a
+ * flight that succeeded spatially and failed temporally -- the case this whole
+ * panel exists to make visible.
+ */
+function Timeline({ snap, width, t }) {
+  const h = 160;
+  const pad = { l: 34, r: 10, tp: 10, b: 22 };
+  const iw = width - pad.l - pad.r;
+  const ih = h - pad.tp - pad.b;
+  const tMax = Math.max(snap.mission?.deadline_s ?? 90, snap.t_s, 10);
+  const X = (x) => pad.l + (x / tMax) * iw;
+  const Y = (y) => pad.tp + ih - (y / 100) * ih;
+  const palette = [t.ok, t.network, t.info, t.bridge, t.accent, t.danger,
+                   t.autonomy, t.muted];
+  const dl = snap.mission?.deadline_s;
+
+  return (
+    <Svg width={width} height={h}>
+      {[0, 50, 100].map((v) => (
+        <Line key={v} x1={pad.l} y1={Y(v)} x2={width - pad.r} y2={Y(v)}
+              stroke={t.border} strokeWidth={1} />
+      ))}
+      <SvgText x={pad.l - 5} y={Y(100) + 4} fill={t.muted} fontSize="9"
+               textAnchor="end">100%</SvgText>
+      <SvgText x={pad.l - 5} y={Y(0) + 4} fill={t.muted} fontSize="9"
+               textAnchor="end">0</SvgText>
+      {dl ? (
+        <>
+          <Line x1={X(dl)} y1={pad.tp} x2={X(dl)} y2={pad.tp + ih}
+                stroke={t.bridge} strokeWidth={1.5} strokeDasharray="5,4" />
+          <SvgText x={X(dl)} y={h - 6} fill={t.bridge} fontSize="9"
+                   textAnchor="middle">deadline {dl}s</SvgText>
+        </>
+      ) : null}
+      {snap.uavs.map((u, i) => {
+        const hist = u.history ?? [];
+        if (hist.length < 2) return null;
+        const d = hist.map((p, j) =>
+          `${j === 0 ? 'M' : 'L'}${X(p.t).toFixed(1)},${Y(p.progress).toFixed(1)}`).join(' ');
+        return (
+          <Path key={u.uav_id} d={d} stroke={palette[i % palette.length]}
+                strokeWidth={1.8} fill="none"
+                opacity={u.completed === false ? 0.45 : 1} />
+        );
+      })}
+    </Svg>
   );
 }
 
@@ -350,5 +469,14 @@ const styles = (t) => StyleSheet.create({
   uavKind: { color: t.muted, fontSize: 10.5 },
   tags: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 6, marginBottom: 4 },
   body: { color: t.text, fontSize: 12.5, lineHeight: 19, marginBottom: 8 },
+  attackNote: { color: t.muted, fontSize: 10, lineHeight: 15, marginTop: 2, fontStyle: 'italic' },
+  mcrRow: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 10 },
+  mcrCell: { flexGrow: 1, flexBasis: '30%', paddingRight: 8, marginBottom: 6 },
+  mcrLabel: {
+    color: t.muted, fontSize: 9, fontWeight: '800', letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  mcrValue: { fontSize: 26, fontWeight: '800', fontFamily: fonts.display },
+  mcrNote: { color: t.muted, fontSize: 9.5, lineHeight: 13.5 },
   em: { color: t.bridge, fontWeight: '700' },
 });

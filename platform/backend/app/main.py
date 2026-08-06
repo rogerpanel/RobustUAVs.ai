@@ -262,6 +262,11 @@ def api_uav_gnss(seed: int | None = None) -> dict:
     return uav.gnss_sky(seed)
 
 
+@app.get("/api/uav/fleet/catalog", tags=["uav"])
+def api_uav_fleet_catalog() -> dict:
+    return uav.attack_catalogue_fleet()
+
+
 @app.get("/api/uav/perception/catalog", tags=["uav"])
 def api_uav_attack_catalog() -> dict:
     return uav.attack_catalog()

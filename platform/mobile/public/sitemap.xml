@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  The client is a single-page application, so every route below serves the same
+  HTML. They are listed anyway: a crawler that renders JavaScript resolves each
+  to distinct content, and one that does not still gets the shared static
+  description rather than nothing. See docs/seo.md.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://robustuavs.ai/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://robustuavs.ai/#/Composition</loc><priority>0.9</priority></url>
+  <url><loc>https://robustuavs.ai/#/UAVMonitor</loc><priority>0.9</priority></url>
+  <url><loc>https://robustuavs.ai/#/FleetDemo</loc><priority>0.8</priority></url>
+  <url><loc>https://robustuavs.ai/#/Certification</loc><priority>0.8</priority></url>
+  <url><loc>https://robustuavs.ai/#/Robustness</loc><priority>0.7</priority></url>
+  <url><loc>https://robustuavs.ai/#/Dossier</loc><priority>0.7</priority></url>
+  <url><loc>https://robustuavs.ai/#/Upload</loc><priority>0.6</priority></url>
+</urlset>
