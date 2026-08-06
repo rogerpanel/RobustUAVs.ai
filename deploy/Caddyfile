@@ -78,5 +78,11 @@ robustuavs.ai, www.robustuavs.ai {
 		@shell path / /index.html
 		header Cache-Control "public, max-age=300"
 		header @shell Cache-Control "no-cache, must-revalidate"
+
+		# Crawler files must be served as themselves rather than falling
+		# through try_files to index.html, which would hand a search engine
+		# an HTML page where it asked for robots.txt.
+		@crawl path /robots.txt /sitemap.xml
+		header @crawl Content-Type "text/plain; charset=utf-8"
 	}
 }
