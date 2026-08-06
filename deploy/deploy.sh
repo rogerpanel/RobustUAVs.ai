@@ -30,6 +30,14 @@ git fetch --prune origin "$BRANCH"
 before=$(git rev-parse HEAD)
 git checkout "$BRANCH"
 git reset --hard "origin/$BRANCH"
+
+# Remove untracked files that would collide with a future checkout. A file
+# written by a build step and later committed upstream blocks the checkout with
+# "untracked working tree files would be overwritten", and `reset --hard` alone
+# does not clear it. `-d` without `-x` leaves ignored paths untouched, so
+# node_modules, dist/, data/raw and data/staging all survive.
+git clean -fd
+
 after=$(git rev-parse HEAD)
 
 if [ "$before" = "$after" ]; then
