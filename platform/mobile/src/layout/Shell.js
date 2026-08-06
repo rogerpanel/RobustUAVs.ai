@@ -26,6 +26,14 @@ import MissionPlanScreen from '../screens/uav/MissionPlanScreen';
 import PerceptionScreen from '../screens/uav/PerceptionScreen';
 import DossierScreen from '../screens/uav/DossierScreen';
 
+import RobustnessScreen from '../screens/eval/RobustnessScreen';
+import AblationsScreen from '../screens/eval/AblationsScreen';
+import ROCScreen from '../screens/eval/ROCScreen';
+import StatisticsScreen from '../screens/eval/StatisticsScreen';
+import CalibrationScreen from '../screens/eval/CalibrationScreen';
+import FederatedScreen from '../screens/eval/FederatedScreen';
+import AgentStudioScreen from '../screens/eval/AgentStudioScreen';
+
 const SCREENS = {
   Milestones: MilestonesScreen,
   Cover: CoverScreen,
@@ -43,6 +51,14 @@ const SCREENS = {
   MissionPlan: MissionPlanScreen,
   Perception: PerceptionScreen,
   Dossier: DossierScreen,
+  // Evaluation + Build.
+  Robustness: RobustnessScreen,
+  Ablations: AblationsScreen,
+  ROC: ROCScreen,
+  Statistics: StatisticsScreen,
+  Calibration: CalibrationScreen,
+  Federated: FederatedScreen,
+  AgentStudio: AgentStudioScreen,
 };
 
 /**

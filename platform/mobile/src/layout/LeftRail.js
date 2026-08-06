@@ -69,32 +69,32 @@ export default function LeftRail({ route, onNavigate, compact = false, onDismiss
 
 const styles = (t, compact) => StyleSheet.create({
   brand: {
-    paddingHorizontal: 12, paddingTop: 14, paddingBottom: 10,
+    paddingHorizontal: 9, paddingTop: 12, paddingBottom: 9,
     borderBottomWidth: 1, borderBottomColor: t.border,
   },
   wordmark: {
-    color: t.text, fontSize: compact ? 20 : 16, fontWeight: '800',
+    color: t.text, fontSize: compact ? 20 : 14, fontWeight: '800',
     letterSpacing: -0.4, fontFamily: fonts.display,
   },
   eyebrow: {
-    color: t.muted, fontSize: 8.5, fontWeight: '700', letterSpacing: 1.1,
+    color: t.muted, fontSize: 8, fontWeight: '700', letterSpacing: 1,
     textTransform: 'uppercase', marginTop: 3,
   },
   group: { marginBottom: 12 },
   groupLabel: {
-    color: t.muted, fontSize: 8.5, fontWeight: '800', letterSpacing: 1,
-    textTransform: 'uppercase', paddingHorizontal: 12, marginBottom: 4,
+    color: t.muted, fontSize: 8, fontWeight: '800', letterSpacing: 0.9,
+    textTransform: 'uppercase', paddingHorizontal: 9, marginBottom: 3,
   },
   row: {
     flexDirection: 'row', alignItems: 'center',
-    paddingHorizontal: 12, paddingVertical: compact ? 10 : 6,
-    minHeight: compact ? 46 : 30,
+    paddingHorizontal: 9, paddingVertical: compact ? 10 : 5,
+    minHeight: compact ? 46 : 26,
     borderLeftWidth: 2, borderLeftColor: 'transparent',
   },
   rowOn: { backgroundColor: `${t.accent}1A`, borderLeftColor: t.accent },
-  glyph: { color: t.muted, fontSize: 12, width: 19 },
+  glyph: { color: t.muted, fontSize: 11, width: 16 },
   rowText: { flexShrink: 0, paddingRight: 8 },
-  title: { color: t.muted, fontSize: compact ? 13.5 : 12, fontWeight: '600' },
+  title: { color: t.muted, fontSize: compact ? 13.5 : 11, fontWeight: '600' },
   titleOn: { color: t.text, fontWeight: '700' },
   blurb: { color: t.muted, fontSize: 10, marginTop: 1 },
   illus: {
@@ -103,7 +103,7 @@ const styles = (t, compact) => StyleSheet.create({
   },
   themeBtn: {
     borderTopWidth: 1, borderTopColor: t.border,
-    paddingVertical: 11, alignItems: 'center',
+    paddingVertical: 9, alignItems: 'center',
   },
-  themeText: { color: t.muted, fontSize: 10.5, fontWeight: '600' },
+  themeText: { color: t.muted, fontSize: 9.5, fontWeight: '600' },
 });

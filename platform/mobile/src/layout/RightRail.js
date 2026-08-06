@@ -119,13 +119,13 @@ function Pill({ t, k, v, tone }) {
 // Inside the rail's horizontal scroller a Text with no cap expands instead of
 // wrapping, turning every paragraph into one long line. Nav labels want that
 // (scroll to read the end); prose does not, so prose gets an explicit width.
-const TEXT_W = (compact) => (compact ? 300 : RAIL_W - 24);
+const TEXT_W = (compact) => (compact ? 300 : RAIL_W - 18);
 
 const styles = (t, compact) => StyleSheet.create({
-  section: { marginBottom: 16, paddingHorizontal: 12, width: TEXT_W(compact) + 24 },
+  section: { marginBottom: 14, paddingHorizontal: 9, width: TEXT_W(compact) + 18 },
   sectionLabel: {
-    color: t.muted, fontSize: 9, fontWeight: '800', letterSpacing: 1.1,
-    textTransform: 'uppercase', marginBottom: 8,
+    color: t.muted, fontSize: 8, fontWeight: '800', letterSpacing: 0.9,
+    textTransform: 'uppercase', marginBottom: 6,
   },
   chips: { flexDirection: 'row', flexWrap: 'wrap', maxWidth: TEXT_W(compact) },
   pill: {
@@ -140,15 +140,15 @@ const styles = (t, compact) => StyleSheet.create({
   cert: { marginBottom: 9 },
   certHead: { flexDirection: 'row', alignItems: 'center', marginBottom: 2 },
   dot: { width: 6, height: 6, borderRadius: 3, marginRight: 6 },
-  certName: { maxWidth: TEXT_W(compact), color: t.text, fontSize: 11.5, fontWeight: '700' },
-  note: { maxWidth: TEXT_W(compact), color: t.muted, fontSize: 10.5, lineHeight: 15.5 },
+  certName: { maxWidth: TEXT_W(compact), color: t.text, fontSize: 10.5, fontWeight: '700' },
+  note: { maxWidth: TEXT_W(compact), color: t.muted, fontSize: 9.5, lineHeight: 14 },
   bad: { maxWidth: TEXT_W(compact), color: t.danger, fontSize: 11 },
   link: {
     width: TEXT_W(compact),
     borderWidth: 1, borderColor: t.border, borderRadius: 8,
     padding: 9, marginBottom: 6,
   },
-  linkLabel: { maxWidth: TEXT_W(compact), color: t.accent, fontSize: 11.5, fontWeight: '700' },
+  linkLabel: { maxWidth: TEXT_W(compact), color: t.accent, fontSize: 10.5, fontWeight: '700' },
   close: {
     borderWidth: 1, borderColor: t.border, borderRadius: 8,
     paddingVertical: 12, alignItems: 'center', marginTop: 6,
