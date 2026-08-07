@@ -70,12 +70,12 @@ export const LEFT_GROUPS = [
       { key: 'GNSSSpoof', glyph: '✳', title: 'GNSS Spoof Monitor', grounded: false,
         blurb: 'Sky plot and the measured γ',
         steps: [
-          "Read the sky plot: red satellites are flagged as spoofed, size scales with confidence.",
-          "Tap resample to redraw — the plot is illustrative, and this makes that obvious.",
-          "Scroll to 'Measured interface'. Those γ values are the real content of this page.",
-          "Compare 1.195/1.365 m/s against the 15 m/s kinematic bound — roughly 11× tighter.",
+          "Press ▶ run the spoof. It steps through six phases: nominal, probing, power match, capture, walk-off, detected.",
+          "Watch the mean C/N₀ during Capture — it reads HEALTHY. A signal-strength monitor passes this.",
+          "Watch position error climb once Walk-off begins. It is γ × capture time, the same γ the certificate uses.",
+          "Change the mapping to Kinematic and press remark / reset: the same capture walks off 11× faster and detection fires far sooner.",
         ],
-        tip: "The Whelan corpus records position error, not per-satellite C/N₀, so the plot cannot be measured."  },
+        tip: "The phase timings and the sky plot are illustrative; γ is measured on three real PX4 flights."  },
       { key: 'Certification', glyph: '✓', title: 'Certification Dashboard', grounded: true,
         blurb: 'The four certificates and two floors',
         steps: [

@@ -28,6 +28,25 @@ const API_BASE =
   Constants?.expoConfig?.extra?.apiBase ||
   'http://localhost:8000';
 
+/**
+ * The endpoint does not exist on this server.
+ *
+ * Distinct from `Unavailable` on purpose. A 503 means the endpoint is there and
+ * its result has not been produced -- a data gap. A 404 means the client is
+ * asking for something this API does not have, which is almost always a client
+ * newer than the deployed backend. Reporting the second as the first sends the
+ * reader to PENDING_ON_DATA.md when the actual fix is to restart the API.
+ */
+export class NotDeployed extends Error {
+  constructor(path) {
+    super(`This build calls ${path}, which the deployed API does not serve. `
+      + 'The client and the control plane are out of step — the API needs the '
+      + 'same commit the client was built from.');
+    this.name = 'NotDeployed';
+    this.path = path;
+  }
+}
+
 export class Unavailable extends Error {
   constructor(name, detail) {
     super(detail ?? `${name} has not been produced in this deployment`);
@@ -58,6 +77,7 @@ export async function request(path, options = {}) {
     const body = await res.json().catch(() => ({}));
     throw new Unavailable(body?.detail?.unavailable ?? path, body?.detail?.error);
   }
+  if (res.status === 404) throw new NotDeployed(path);
   if (!res.ok) {
     const body = await res.text().catch(() => '');
     throw new Error(`${res.status} ${res.statusText}${body ? `: ${body}` : ''}`);

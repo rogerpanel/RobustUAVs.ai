@@ -85,13 +85,24 @@ export function Tag({ label, color }) {
 export function Unavailable({ message }) {
   const { t } = useTheme();
   const s = styles(t);
+  // A 404 is a version mismatch, not a data gap. Labelling it "not produced"
+  // would send the reader to PENDING_ON_DATA.md when the fix is to redeploy,
+  // so the two cases get different headings and different advice.
+  const stale = typeof message === 'string'
+    && (message.includes('does not serve') || message.startsWith('404'));
   return (
-    <View style={s.unavail}>
-      <Text style={s.unavailTitle}>Not produced in this deployment</Text>
+    <View style={[s.unavail, stale && { borderLeftColor: t.danger }]}>
+      <Text style={[s.unavailTitle, stale && { color: t.danger }]}>
+        {stale ? 'Client and API are out of step' : 'Not produced in this deployment'}
+      </Text>
       <Text style={s.unavailBody}>{message}</Text>
       <Text style={s.unavailHint}>
-        Data-gated items are listed in PENDING_ON_DATA.md. This is a missing
-        input, not a failure.
+        {stale
+          ? 'This page needs an endpoint the running control plane does not '
+            + 'have. Redeploy so the API matches this build: '
+            + './deploy/redeploy.sh on the server.'
+          : 'Data-gated items are listed in PENDING_ON_DATA.md. This is a '
+            + 'missing input, not a failure.'}
       </Text>
     </View>
   );
