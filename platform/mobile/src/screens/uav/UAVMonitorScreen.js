@@ -103,7 +103,8 @@ export default function UAVMonitorScreen() {
           series={series}
           width={chartW}
           height={chartW < 420 ? 200 : 260}
-          xLabel="J/S (dB)"
+          xLabel="J/S"
+          xUnit=" dB"
           yLabel="Spatial MCR"
           threshold={{ y: curves.floor.mcr, label: `${curves.floor.label} ${curves.floor.mcr}`, color: t.bridge }}
           marker={{ x: js, label: `${js} dB` }}
