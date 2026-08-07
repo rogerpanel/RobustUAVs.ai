@@ -16,6 +16,7 @@ const MAPPINGS = [
   { id: 'ekf', label: 'EKF', note: 'γ = 1.365 m/s' },
 ];
 const CORRIDORS = [2, 5, 10, 20];
+const SLOTS = 4;
 
 /**
  * Bring your own data: upload a UAV dataset, analyse it, then fly it through
@@ -31,7 +32,13 @@ export default function UploadScreen() {
   const { width } = useWindowDimensions();
   const s = styles(t);
 
+  // Two modes. Single is the fast path; multi is where cross-validation,
+  // cross-attack coverage and distribution shift live, because none of those
+  // questions can be asked of one capture.
+  const [mode, setMode] = useState('single');
   const [file, setFile] = useState(null);
+  const [slots, setSlots] = useState(Array(SLOTS).fill(null));   // {file, summary}
+  const [comparison, setComparison] = useState(null);
   const [summary, setSummary] = useState(null);
   const [verdict, setVerdict] = useState(null);
   const [busy, setBusy] = useState(null);   // 'analyse' | 'fly' | null
@@ -104,7 +111,62 @@ export default function UploadScreen() {
     finally { setBusy(null); }
   }, [summary, corridor, mapping]);
 
+  const pickSlot = useCallback((i) => {
+    if (Platform.OS !== 'web' || typeof document === 'undefined') return;
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.csv,.tsv,.txt,text/csv';
+    input.onchange = () => {
+      const f = input.files && input.files[0];
+      if (!f) return;
+      setSlots((prev) => prev.map((v, j) => (j === i ? { file: f, summary: null } : v)));
+      setComparison(null);
+    };
+    input.click();
+  }, []);
+
+  const analyseAll = useCallback(async () => {
+    setBusy('multi'); setError(null); setComparison(null);
+    try {
+      const next = [...slots];
+      // Sequential rather than parallel: four concurrent 1 GB uploads would
+      // put the server back in the memory state that took it down before.
+      for (let i = 0; i < next.length; i += 1) {
+        const slot = next[i];
+        if (!slot?.file || slot.summary) continue;
+        const body = new FormData();
+        body.append('file', slot.file);
+        const res = await fetch(`${API_BASE}/api/upload/analyse`, { method: 'POST', body });
+        const json = await res.json();
+        if (!res.ok || !json.ok) throw new Error(json.detail ?? json.error ?? `HTTP ${res.status}`);
+        next[i] = { ...slot, summary: json };
+        setSlots([...next]);
+      }
+      const summaries = next.filter((x) => x?.summary).map((x) => x.summary);
+      if (summaries.length < 2) throw new Error('Load at least two datasets to compare.');
+      const cmp = await request('/api/upload/compare', {
+        method: 'POST',
+        body: JSON.stringify({ summaries, corridor_m: corridor, mapping }),
+      });
+      if (!cmp.ok) throw new Error(cmp.reason ?? 'comparison failed');
+      setComparison(cmp);
+      recordContext({
+        routeKey: 'Upload',
+        label: `compared ${cmp.n_datasets} datasets`,
+        question: `I compared ${cmp.n_datasets} UAV datasets. Schema agreement `
+          + `(Jaccard) is ${cmp.schema_agreement.jaccard}, leave-one-out MAE on `
+          + `the delay p95 is ${cmp.cross_validation?.mae_s ?? 'n/a'} s, and `
+          + `${cmp.consensus.n_inside_corridor} of ${cmp.n_datasets} certify inside `
+          + `a ${cmp.corridor_m} m corridor. What does that say about whether the `
+          + `interface mapping transfers across platforms?`,
+        data: { schema: cmp.schema_agreement, cv: cmp.cross_validation },
+      });
+    } catch (e) { setError(e.message); }
+    finally { setBusy(null); }
+  }, [slots, corridor, mapping]);
+
   const chartW = Math.min(width - 60, 640);
+  const loaded = slots.filter((x) => x?.file).length;
 
   return (
     <ScrollView style={s.screen} contentContainerStyle={s.content}>
@@ -117,6 +179,65 @@ export default function UploadScreen() {
         source="platform/backend/app/upload.py"
       />
 
+      <Panel title="Mode">
+        <View style={s.row}>
+          {[
+            { id: 'single', label: 'Single dataset', note: 'schema, statistics, one certified verdict' },
+            { id: 'multi', label: 'Multiple datasets', note: 'cross-validation, cross-attack, distribution shift' },
+          ].map((m) => (
+            <Pressable key={m.id} onPress={() => { setMode(m.id); setError(null); }}
+                       style={[s.modeBtn, mode === m.id && s.modeOn]}>
+              <Text style={[s.modeLabel, mode === m.id && { color: t.accent }]}>{m.label}</Text>
+              <Text style={s.modeNote}>{m.note}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </Panel>
+
+      {mode === 'multi' ? (
+        <>
+          <Panel title={`Datasets (${loaded} of ${SLOTS})`}
+                 subtitle="Two to four captures. Different platforms, seasons or attack conditions is the interesting case.">
+            {slots.map((slot, i) => (
+              <View key={i} style={s.slot}>
+                <Pressable onPress={() => pickSlot(i)} style={s.slotPick}>
+                  <Text style={s.slotText} numberOfLines={1}>
+                    {slot?.file ? `▣  ${slot.file.name}` : `⬆  dataset ${i + 1}`}
+                  </Text>
+                  {slot?.file ? (
+                    <Text style={s.slotMeta}>
+                      {(slot.file.size / 1e6).toFixed(1)} MB
+                      {slot.summary ? ` · ${slot.summary.n_rows.toLocaleString()} rows` : ' · not parsed'}
+                    </Text>
+                  ) : null}
+                </Pressable>
+                {slot?.file ? (
+                  <Pressable onPress={() => { setSlots((p) => p.map((v, j) => (j === i ? null : v))); setComparison(null); }}
+                             style={s.slotClear}>
+                    <Text style={s.slotClearText}>✕</Text>
+                  </Pressable>
+                ) : null}
+              </View>
+            ))}
+            <Pressable onPress={analyseAll} disabled={loaded < 2 || busy === 'multi'}
+                       style={[s.action, (loaded < 2 || busy) && s.actionOff]}>
+              <Text style={s.actionText}>
+                {busy === 'multi' ? 'analysing…' : `Analyse ${loaded} datasets`}
+              </Text>
+            </Pressable>
+            {error ? <Text style={s.err}>{error}</Text> : null}
+            <Text style={s.hint}>
+              Files are parsed one at a time, not in parallel: four concurrent
+              gigabyte uploads is exactly the memory spike that has taken this
+              host down before.
+            </Text>
+          </Panel>
+
+          {comparison ? <Comparison c={comparison} t={t} s={s} width={chartW} /> : null}
+        </>
+      ) : null}
+
+      {mode === 'single' ? (
       <Panel title="1 · Choose a file" subtitle="CSV, TSV or delimited text, up to 1 GB">
         <Pressable onPress={pick} style={s.pick}>
           <Text style={s.pickText}>
@@ -141,10 +262,11 @@ export default function UploadScreen() {
         </Pressable>
         {error ? <Text style={s.err}>{error}</Text> : null}
       </Panel>
+      ) : null}
 
-      {busy === 'analyse' ? <ActivityIndicator color={t.accent} /> : null}
+      {mode === 'single' && busy === 'analyse' ? <ActivityIndicator color={t.accent} /> : null}
 
-      {summary ? (
+      {mode === 'single' && summary ? (
         <>
           <Panel title="2 · Detected schema" accent={t.ok}>
             <KV k="rows" v={summary.n_rows.toLocaleString()} />
@@ -217,13 +339,13 @@ export default function UploadScreen() {
         </>
       ) : null}
 
-      {verdict && !verdict.ok ? (
+      {mode === 'single' && verdict && !verdict.ok ? (
         <Panel title="Cannot certify this file" accent={t.bridge}>
           <Text style={s.body}>{verdict.detail}</Text>
         </Panel>
       ) : null}
 
-      {verdict && verdict.ok ? (
+      {mode === 'single' && verdict && verdict.ok ? (
         <>
           {verdict.from_delay ? (
             <Panel title="4 · Certified verdict"
@@ -274,6 +396,138 @@ export default function UploadScreen() {
         </>
       ) : null}
     </ScrollView>
+  );
+}
+
+/**
+ * Cross-dataset findings.
+ *
+ * Ordered by what a reviewer asks first: do the files even describe the same
+ * thing (schema), does the interface constant transfer (leave-one-out), which
+ * attack classes are learnable across the set (coverage), and are the captures
+ * from the same regime at all (shift).
+ */
+function Comparison({ c, t, s, width }) {
+  const cv = c.cross_validation;
+  const cls = c.cross_attack.classes;
+  return (
+    <>
+      <Panel title="Verdict per dataset"
+             accent={c.consensus.unanimous ? t.ok : t.bridge}>
+        {c.per_dataset.map((v) => (
+          <View key={v.filename} style={s.cmpRow}>
+            <Text style={s.cmpName} numberOfLines={1}>{v.filename}</Text>
+            {v.from_delay ? (
+              <>
+                <Text style={s.cmpVal}>θ₉₅ {v.from_delay.theta_p95_s} s</Text>
+                <Text style={s.cmpVal}>tube {v.from_delay.tube_m} m</Text>
+                <Text style={[s.cmpVerdict, {
+                  color: v.from_delay.inside_corridor ? t.ok : t.danger,
+                }]}>
+                  {v.from_delay.inside_corridor ? 'inside' : 'outside'}
+                </Text>
+              </>
+            ) : <Text style={s.cmpVal}>no delay column</Text>}
+          </View>
+        ))}
+        <Text style={s.hint}>{c.consensus.reading}</Text>
+      </Panel>
+
+      <Panel title="Schema agreement"
+             subtitle={`Jaccard ${c.schema_agreement.jaccard} across ${c.n_datasets} files`}>
+        <KV k="roles in every file" v={c.schema_agreement.common_roles.join(', ') || 'none'}
+            tone={t.ok} />
+        <KV k="roles missing somewhere"
+            v={c.schema_agreement.roles_missing_somewhere.join(', ') || 'none'}
+            tone={c.schema_agreement.roles_missing_somewhere.length ? t.bridge : undefined} />
+        <Text style={s.hint}>{c.schema_agreement.reading}</Text>
+      </Panel>
+
+      {cv?.available ? (
+        <Panel title="Leave-one-out cross-validation"
+               subtitle={`k = ${cv.k}, MAE ${cv.mae_s} s on the delay p95`}
+               accent={cv.mae_s < 0.05 ? t.ok : t.bridge}>
+          {cv.folds.map((f) => (
+            <View key={f.held_out} style={s.cmpRow}>
+              <Text style={s.cmpName} numberOfLines={1}>{f.held_out}</Text>
+              <Text style={s.cmpVal}>obs {f.observed_p95_s}</Text>
+              <Text style={s.cmpVal}>pred {f.predicted_p95_s}</Text>
+              <Text style={[s.cmpVerdict, {
+                color: (f.rel_error ?? 1) < 0.25 ? t.ok : t.bridge,
+              }]}>
+                {f.rel_error == null ? '—' : `${(f.rel_error * 100).toFixed(0)}%`}
+              </Text>
+            </View>
+          ))}
+          <Text style={s.hint}>{cv.reading}</Text>
+        </Panel>
+      ) : (
+        <Panel title="Leave-one-out cross-validation" accent={t.bridge}>
+          <Text style={s.hint}>{cv?.reason ?? 'not available for this set'}</Text>
+        </Panel>
+      )}
+
+      <Panel title="Cross-attack coverage"
+             subtitle="which classes each dataset carries">
+        {cls.length === 0 ? (
+          <Text style={s.hint}>No label column detected in any file.</Text>
+        ) : (
+          <>
+            <View style={s.matrixHead}>
+              <Text style={[s.mCell, s.mName]}>dataset</Text>
+              {cls.map((k) => (
+                <Text key={k} style={s.mCell} numberOfLines={1}>{k}</Text>
+              ))}
+            </View>
+            {c.cross_attack.matrix.map((r) => (
+              <View key={r.filename} style={s.matrixRow}>
+                <Text style={[s.mCell, s.mName]} numberOfLines={1}>{r.filename}</Text>
+                {cls.map((k) => (
+                  <Text key={k} style={[s.mCell, {
+                    color: r.present[k] ? t.ok : t.border, fontWeight: '800',
+                  }]}>{r.present[k] ? '●' : '○'}</Text>
+                ))}
+              </View>
+            ))}
+            <View style={s.matrixRow}>
+              <Text style={[s.mCell, s.mName, { color: t.muted }]}>coverage</Text>
+              {cls.map((k) => (
+                <Text key={k} style={[s.mCell, {
+                  color: c.cross_attack.coverage[k] === c.n_datasets ? t.ok : t.bridge,
+                }]}>{c.cross_attack.coverage[k]}/{c.n_datasets}</Text>
+              ))}
+            </View>
+          </>
+        )}
+        <Text style={s.hint}>{c.cross_attack.reading}</Text>
+        <Text style={s.hint}>{c.cross_attack.note}</Text>
+      </Panel>
+
+      <Panel title="Distribution shift">
+        {c.distribution_shift.roles.length === 0 ? (
+          <Text style={s.hint}>No numeric role shared by two or more files.</Text>
+        ) : c.distribution_shift.roles.map((r) => (
+          <View key={r.role} style={s.shiftBlock}>
+            <View style={s.cmpRow}>
+              <Text style={s.cmpName}>{r.role.replace(/_/g, ' ')}</Text>
+              <Text style={[s.cmpVerdict, { color: r.shifted ? t.bridge : t.ok }]}>
+                ×{r.spread_ratio} {r.shifted ? 'shifted' : 'consistent'}
+              </Text>
+            </View>
+            {r.per_dataset.map((x) => (
+              <Text key={x.filename} style={s.shiftLine}>
+                {x.filename} · mean {x.mean} · p95 {x.p95}
+              </Text>
+            ))}
+          </View>
+        ))}
+        <Text style={s.hint}>{c.distribution_shift.reading}</Text>
+      </Panel>
+
+      <Panel title="Before you quote this" accent={t.bridge}>
+        <Text style={s.body}>{c.caveat}</Text>
+      </Panel>
+    </>
   );
 }
 
@@ -343,4 +597,33 @@ const styles = (t) => StyleSheet.create({
     alignItems: 'center', marginBottom: 10,
   },
   verdictText: { fontSize: 13, fontWeight: '800', letterSpacing: 0.5 },
+  modeBtn: {
+    borderWidth: 1, borderColor: t.border, borderRadius: 9, padding: 11,
+    marginRight: 8, marginBottom: 8, flexGrow: 1, flexBasis: '44%',
+  },
+  modeOn: { borderColor: t.accent, backgroundColor: `${t.accent}14` },
+  modeLabel: { color: t.text, fontSize: 12.5, fontWeight: '700' },
+  modeNote: { color: t.muted, fontSize: 10, marginTop: 2 },
+  slot: { flexDirection: 'row', alignItems: 'center', marginBottom: 7 },
+  slotPick: {
+    flex: 1, borderWidth: 1, borderColor: t.border, borderStyle: 'dashed',
+    borderRadius: 8, paddingVertical: 11, paddingHorizontal: 11,
+  },
+  slotText: { color: t.text, fontSize: 12, fontWeight: '600' },
+  slotMeta: { color: t.muted, fontSize: 9.5, marginTop: 2 },
+  slotClear: { width: 34, height: 34, alignItems: 'center', justifyContent: 'center' },
+  slotClearText: { color: t.muted, fontSize: 13 },
+  cmpRow: {
+    flexDirection: 'row', alignItems: 'center', paddingVertical: 5,
+    borderBottomWidth: 1, borderBottomColor: t.border,
+  },
+  cmpName: { color: t.text, fontSize: 11, fontFamily: fonts.mono, flex: 1.6 },
+  cmpVal: { color: t.muted, fontSize: 10.5, flex: 1, textAlign: 'right' },
+  cmpVerdict: { fontSize: 10.5, fontWeight: '800', flex: 0.9, textAlign: 'right' },
+  matrixHead: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: t.border, paddingBottom: 4 },
+  matrixRow: { flexDirection: 'row', paddingVertical: 4, borderBottomWidth: 1, borderBottomColor: t.border },
+  mCell: { flex: 1, fontSize: 9.5, color: t.muted, textAlign: 'center' },
+  mName: { flex: 2, textAlign: 'left', fontFamily: fonts.mono, color: t.text },
+  shiftBlock: { marginBottom: 8 },
+  shiftLine: { color: t.muted, fontSize: 10, fontFamily: fonts.mono, marginTop: 2 },
 });

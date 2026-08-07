@@ -271,6 +271,33 @@ def api_uav_fleet_catalog() -> dict:
     return uav.attack_catalogue_fleet()
 
 
+class GnssRun(BaseModel):
+    n_sats: int = 9
+    n_spoofed: int = 2
+    js_db: float = 0.0
+    mapping: str = "ekf"
+    detect_threshold_m: float = 8.0
+    dt_s: float = 1.0
+
+
+@app.get("/api/uav/gnss/run", tags=["uav"])
+def api_gnss_run(session: str = Depends(sessions.session_id)) -> dict:
+    return uav.gnss_run_state(session)
+
+
+@app.post("/api/uav/gnss/run/step", tags=["uav"])
+def api_gnss_run_step(body: GnssRun,
+                      session: str = Depends(sessions.session_id)) -> dict:
+    return uav.gnss_run_step(session, body.dt_s)
+
+
+@app.post("/api/uav/gnss/run/reset", tags=["uav"])
+def api_gnss_run_reset(body: GnssRun,
+                       session: str = Depends(sessions.session_id)) -> dict:
+    return uav.gnss_run_reset(session, body.n_sats, body.n_spoofed, body.js_db,
+                              body.mapping, body.detect_threshold_m)
+
+
 @app.get("/api/uav/perception/catalog", tags=["uav"])
 def api_uav_attack_catalog() -> dict:
     return uav.attack_catalog()
@@ -409,6 +436,21 @@ class FlyRequest(BaseModel):
     corridor_m: float = 10.0
     mapping: str = "ekf"
     n_malicious_hops: int = 2
+
+
+class CompareRequest(BaseModel):
+    summaries: list[dict]
+    corridor_m: float = 10.0
+    mapping: str = "ekf"
+    n_malicious_hops: int = 2
+
+
+@app.post("/api/upload/compare", tags=["upload"])
+def api_upload_compare(body: CompareRequest) -> dict:
+    if len(body.summaries) > 4:
+        raise HTTPException(400, "at most four datasets can be compared at once")
+    return upload_mod.compare(body.summaries, body.corridor_m, body.mapping,
+                              body.n_malicious_hops)
 
 
 @app.post("/api/upload/fly", tags=["upload"])

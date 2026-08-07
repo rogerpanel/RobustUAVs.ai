@@ -364,3 +364,180 @@ def fly(summary: dict, corridor_m: float = 10.0, mapping: str = "ekf",
                      "They are not calibrated to the uploaded platform. Treat "
                      "the verdict as indicative until γ is re-measured on it.")
     return out
+
+
+# ------------------------------------------------------------- multi-set --
+#
+# Comparing several uploads is a different question from analysing one, and it
+# is the question that matters for a fleet operator: does the interface
+# calibration hold across platforms, seasons and attack conditions, or was it
+# fitted to one capture?
+#
+# Everything below is computed from the per-file summaries already produced by
+# `analyse_csv`, so a comparison costs no extra parsing and no extra memory.
+
+def compare(summaries: list[dict], corridor_m: float = 10.0,
+            mapping: str = "ekf", n_malicious_hops: int = 2) -> dict:
+    """Cross-dataset analysis over 2-4 uploaded files."""
+    named = [s for s in summaries if s and s.get("ok")]
+    if len(named) < 2:
+        return {"ok": False,
+                "reason": "need at least two parsed datasets to compare"}
+
+    verdicts = [{"filename": s.get("filename"), **fly(s, corridor_m, mapping, n_malicious_hops)}
+                for s in named]
+
+    # ---- schema agreement -------------------------------------------------
+    role_sets = [set(s.get("detected_roles", {}).keys()) for s in named]
+    common = set.intersection(*role_sets) if role_sets else set()
+    union = set.union(*role_sets) if role_sets else set()
+    schema = {
+        "common_roles": sorted(common),
+        "roles_missing_somewhere": sorted(union - common),
+        "jaccard": round(len(common) / len(union), 3) if union else 0.0,
+        "reading": "Roles present in every file are the ones a cross-dataset "
+                   "claim can rest on. Anything in the second list is available "
+                   "in some captures and not others, so a metric built on it is "
+                   "not comparable across the set.",
+    }
+
+    # ---- leave-one-out cross-validation over the interface ----------------
+    #
+    # The interface constant this project cares about is gamma, and the honest
+    # test of it is whether a value fitted WITHOUT a dataset predicts that
+    # dataset. Fitting on all of them and reporting the fit would be circular.
+    loo = _leave_one_out(named, mapping, n_malicious_hops)
+
+    # ---- cross-attack matrix ---------------------------------------------
+    attacks = _attack_matrix(named)
+
+    # ---- distribution shift ----------------------------------------------
+    shift = _shift(named)
+
+    inside = [v for v in verdicts if v.get("from_delay", {}).get("inside_corridor")]
+    return {
+        "ok": True,
+        "n_datasets": len(named),
+        "mapping": mapping,
+        "corridor_m": corridor_m,
+        "per_dataset": verdicts,
+        "schema_agreement": schema,
+        "cross_validation": loo,
+        "cross_attack": attacks,
+        "distribution_shift": shift,
+        "consensus": {
+            "n_inside_corridor": len(inside),
+            "unanimous": len(inside) in (0, len(verdicts)),
+            "reading": "A split verdict is the interesting outcome: the same "
+                       "theorem, the same corridor, and the certificate binds on "
+                       "some captures and not others. That is a statement about "
+                       "the platforms, not about the proof.",
+        },
+        "caveat": "gamma and L are this project's measured constants, from three "
+                  "PX4 hover flights. Cross-dataset agreement here is evidence "
+                  "the mapping transfers; disagreement is evidence it does not, "
+                  "and neither is a re-calibration.",
+    }
+
+
+def _leave_one_out(named: list[dict], mapping: str, hops: int) -> dict:
+    """Predict each dataset's delay p95 from the mean of the others."""
+    vals = []
+    for s in named:
+        col = s.get("detected_roles", {}).get("delay_s")
+        by = {c["name"]: c for c in s.get("columns", [])}
+        p95 = by.get(col, {}).get("p95") if col else None
+        vals.append((s.get("filename"), float(p95) if p95 is not None else None))
+
+    usable = [(n, v) for n, v in vals if v is not None]
+    if len(usable) < 2:
+        return {"available": False,
+                "reason": "fewer than two datasets carry a delay-like column"}
+
+    folds = []
+    for i, (name, held) in enumerate(usable):
+        others = [v for j, (_, v) in enumerate(usable) if j != i]
+        pred = sum(others) / len(others)
+        err = abs(pred - held)
+        folds.append({
+            "held_out": name,
+            "observed_p95_s": round(held, 5),
+            "predicted_p95_s": round(pred, 5),
+            "abs_error_s": round(err, 5),
+            "rel_error": round(err / held, 3) if held else None,
+        })
+    mae = sum(f["abs_error_s"] for f in folds) / len(folds)
+    return {
+        "available": True,
+        "k": len(folds),
+        "folds": folds,
+        "mae_s": round(mae, 5),
+        "reading": "Leave-one-out over the delay distribution. A small mean "
+                   "absolute error means the captures agree about what the "
+                   "network does; a large one means at least one was recorded "
+                   "under conditions the others do not represent.",
+    }
+
+
+def _attack_matrix(named: list[dict]) -> dict:
+    """Which attack classes appear in which dataset, from the label column."""
+    rows = []
+    classes: set[str] = set()
+    for s in named:
+        col = s.get("detected_roles", {}).get("label")
+        by = {c["name"]: c for c in s.get("columns", [])}
+        vals = by.get(col, {}).get("values_preview", []) if col else []
+        seen = {str(v).strip().lower() for v in vals if str(v).strip()}
+        classes |= seen
+        rows.append({"filename": s.get("filename"), "column": col,
+                     "classes": sorted(seen)})
+    ordered = sorted(classes)
+    return {
+        "classes": ordered,
+        "matrix": [{"filename": r["filename"],
+                    "present": {c: (c in r["classes"]) for c in ordered}}
+                   for r in rows],
+        "coverage": {c: sum(1 for r in rows if c in r["classes"]) for c in ordered},
+        "reading": "A class present in one dataset and absent from the rest "
+                   "cannot be cross-validated: a detector trained on the others "
+                   "has never seen it. That is the continual-learning gap, and "
+                   "it is visible here before any model is trained.",
+        "note": "Classes come from the label column's distinct-value preview, "
+                "which is capped at 12 values per file — a dataset with more "
+                "classes than that will be under-reported.",
+    }
+
+
+def _shift(named: list[dict]) -> dict:
+    """How far apart the datasets are on each shared numeric role."""
+    roles = ("delay_s", "position_error_m", "js_db")
+    out = []
+    for role in roles:
+        stats = []
+        for s in named:
+            col = s.get("detected_roles", {}).get(role)
+            if not col:
+                continue
+            c = next((x for x in s.get("columns", []) if x["name"] == col), None)
+            if c and c.get("kind") == "numeric":
+                stats.append({"filename": s.get("filename"), "column": col,
+                              "mean": c["mean"], "p95": c["p95"], "std": c["std"]})
+        if len(stats) < 2:
+            continue
+        means = [x["mean"] for x in stats]
+        lo, hi = min(means), max(means)
+        # Ratio rather than difference: these roles have different units, and a
+        # ratio is the only comparison that survives that.
+        out.append({
+            "role": role,
+            "per_dataset": stats,
+            "spread_ratio": round(hi / lo, 3) if lo else None,
+            "shifted": bool(lo and hi / lo > 1.5),
+        })
+    return {
+        "roles": out,
+        "reading": "A spread ratio above about 1.5 on the delay role means the "
+                   "captures were taken under materially different network "
+                   "conditions, so a single theta chosen across them describes "
+                   "none of them well.",
+    }

@@ -515,7 +515,7 @@ AttackKind = str
 DEFENSE_CATCH = {"no_def": 0.0, "caf_cnn": 0.55, "seq2seq_tr": 0.70, "ours_m1m4m6m7": 0.95}
 GAMMA = {"kinematic": 15.0, "receiver": 1.195, "ekf": 1.365}
 
-MAX_FLEET = 8
+MAX_FLEET = 12
 NOMINAL_MISSION_S = 70.0     # T: the schedule the mission was planned against
 KAPPA = 0.25                 # tolerated schedule overrun, from the temporal MCR
 
@@ -588,8 +588,11 @@ HISTORY_CAP = 400          # ~6.5 min at 1 Hz; bounded so a long demo cannot gro
 
 def _spawn(n: int, seed: int = 42) -> Fleet:
     kinds = ["delivery", "patrol", "search_rescue", "logistics"]
+    # Cycled so a 12-aircraft fleet still carries every configuration and the
+    # comparison stays legible: 6 framework, 3 seq2seq, 2 CAF-CNN, 1 unprotected.
     defenses = ["ours_m1m4m6m7", "ours_m1m4m6m7", "seq2seq_tr", "caf_cnn",
-                "no_def", "ours_m1m4m6m7", "seq2seq_tr", "caf_cnn"]
+                "no_def", "ours_m1m4m6m7", "seq2seq_tr", "caf_cnn",
+                "ours_m1m4m6m7", "ours_m1m4m6m7", "seq2seq_tr", "ours_m1m4m6m7"]
     rng = random.Random(seed)
     uavs = []
     for i in range(n):
@@ -857,4 +860,142 @@ def dossier() -> dict:
                      "source observing both layers lacks machine-readable "
                      "attack intervals.",
         "source": "results/provenance_distribution.csv",
+    }
+
+
+# ============================================== GNSS spoof, as a process ====
+#
+# The sky plot alone is a photograph. A spoof is a sequence: the attacker
+# transmits below the real constellation, raises power until the receiver's
+# tracking loops prefer the counterfeit, walks the solution away, and the
+# position error grows. Each phase looks different on the plot, and stepping
+# through them is what makes the page teach something.
+#
+# Phases follow the standard account of a lift-off spoof. Timings are
+# illustrative; the position error is not free-running -- it is
+# gamma * (elapsed capture time), the same gamma the certificate consumes, so
+# the error on this page and the tube on the Composition page are one quantity.
+
+GNSS_PHASES = [
+    {"id": "nominal", "label": "Nominal",
+     "detail": "Receiver tracking the real constellation. Spoof transmitter idle."},
+    {"id": "probing", "label": "Probing",
+     "detail": "Attacker transmits below the real signal power. Nothing is "
+               "captured yet, but the noise floor rises slightly."},
+    {"id": "power_match", "label": "Power match",
+     "detail": "Counterfeit power reaches parity. Tracking loops become "
+               "ambiguous — the moment a monitor watching C/N0 alone can catch it."},
+    {"id": "capture", "label": "Capture",
+     "detail": "Counterfeit exceeds the real signal. Loops lock to the spoofer. "
+               "C/N0 looks HEALTHY, which is why a signal-strength check passes."},
+    {"id": "walk_off", "label": "Walk-off",
+     "detail": "The spoofer walks the solution away at gamma metres per second "
+               "of capture. This is where position error accumulates."},
+    {"id": "detected", "label": "Detected / RTL",
+     "detail": "Cross-check against INS and fleet consensus disagrees beyond "
+               "threshold. Autopilot falls back to inertial navigation."},
+]
+
+_GNSS_RUNS: dict[str, dict] = {}
+
+
+def gnss_run_reset(session: str, n_sats: int = 9, n_spoofed: int = 2,
+                   js_db: float = 0.0, mapping: str = "ekf",
+                   detect_threshold_m: float = 8.0) -> dict:
+    _GNSS_RUNS[session] = {
+        "t_s": 0.0, "phase": 0, "captured_s": 0.0, "pos_error_m": 0.0,
+        "n_sats": max(4, min(int(n_sats), 12)),
+        "n_spoofed": max(0, min(int(n_spoofed), int(n_sats))),
+        "js_db": js_db, "mapping": mapping if mapping in GAMMA else "ekf",
+        "detect_threshold_m": detect_threshold_m,
+        "history": [], "detected_at_s": None,
+    }
+    return gnss_run_state(session)
+
+
+def gnss_run_step(session: str, dt_s: float = 1.0) -> dict:
+    if session not in _GNSS_RUNS:
+        gnss_run_reset(session)
+    r = _GNSS_RUNS[session]
+    r["t_s"] += dt_s
+    t = r["t_s"]
+
+    # Phase schedule. Held as thresholds rather than a state machine because the
+    # user can rewind by resetting, and a pure function of t cannot desynchronise.
+    if r["detected_at_s"] is not None:
+        r["phase"] = 5
+    elif t < 4:
+        r["phase"] = 0
+    elif t < 9:
+        r["phase"] = 1
+    elif t < 13:
+        r["phase"] = 2
+    elif t < 17:
+        r["phase"] = 3
+    else:
+        r["phase"] = 4
+
+    gamma = GAMMA[r["mapping"]]
+    if r["phase"] >= 4 and r["detected_at_s"] is None:
+        r["captured_s"] += dt_s
+        r["pos_error_m"] = round(gamma * r["captured_s"], 3)
+    elif r["detected_at_s"] is not None:
+        # Inertial fallback: error stops growing at the spoof rate and decays as
+        # the filter re-converges on the last trusted fix.
+        r["pos_error_m"] = round(max(0.0, r["pos_error_m"] - 0.6 * dt_s), 3)
+
+    if r["detected_at_s"] is None and r["pos_error_m"] > r["detect_threshold_m"]:
+        r["detected_at_s"] = round(t, 1)
+        r["phase"] = 5
+
+    snap = gnss_run_state(session, advance=False)
+    r["history"].append({
+        "t": round(t, 1),
+        "phase": r["phase"],
+        "pos_error_m": r["pos_error_m"],
+        "mean_cno": snap["sky"]["mean_cno_healthy_db_hz"],
+        "spoof_conf": snap["mean_spoof_confidence"],
+    })
+    if len(r["history"]) > 300:
+        del r["history"][0]
+    return snap
+
+
+def gnss_run_state(session: str, advance: bool = True) -> dict:
+    if session not in _GNSS_RUNS:
+        gnss_run_reset(session)
+    r = _GNSS_RUNS[session]
+    phase = GNSS_PHASES[r["phase"]]
+
+    # Counterfeit power by phase. The tell is the RELATIONSHIP between the
+    # spoofed and healthy C/N0, not either alone -- which is the point.
+    strength = [0.05, 0.25, 0.55, 0.88, 0.93, 0.30][r["phase"]]
+    spoofed_now = 0 if r["phase"] == 0 else r["n_spoofed"]
+
+    sky = gnss_sky(seed=int(r["t_s"]) * 7919, n_spoofed=spoofed_now,
+                   spoof_strength=strength, js_db=r["js_db"], n_sats=r["n_sats"])
+    confs = [s["spoof_confidence"] for s in sky["satellites"]]
+    mean_conf = round(sum(confs) / len(confs), 3) if confs else 0.0
+
+    return {
+        "session": session,
+        "t_s": round(r["t_s"], 1),
+        "phase_index": r["phase"],
+        "phase": phase,
+        "phases": GNSS_PHASES,
+        "captured_s": round(r["captured_s"], 1),
+        "pos_error_m": r["pos_error_m"],
+        "gamma_m_s": GAMMA[r["mapping"]],
+        "mapping": r["mapping"],
+        "detect_threshold_m": r["detect_threshold_m"],
+        "detected_at_s": r["detected_at_s"],
+        "mean_spoof_confidence": mean_conf,
+        "sky": sky,
+        "history": r["history"],
+        "reading": "Position error is gamma x capture time, with the same gamma "
+                   "the certificate engine consumes. The Capture phase is the "
+                   "one that matters: C/N0 reads healthy, so a signal-strength "
+                   "monitor passes it, and only a cross-check against inertial "
+                   "or fleet consensus disagrees.",
+        "provenance": "synthetic_alignment",
     }

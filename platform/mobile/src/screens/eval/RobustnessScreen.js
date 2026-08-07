@@ -48,7 +48,7 @@ export default function RobustnessScreen() {
         <View nativeID="robustness-chart">
         <LineChart
           width={w} height={w < 420 ? 200 : 250}
-          xLabel="θ (s)" yLabel="certified floor" yMin={0} yMax={1.05}
+          xLabel="θ" yLabel="certified floor" xUnit=" s" yMin={0} yMax={1.05}
           marker={{ x: d.paper_theta_s, label: `θ = ${d.paper_theta_s}` }}
           series={d.series.map((ss) => ({
             key: ss.mapping, label: ss.label, color: colors[ss.mapping] ?? t.accent,

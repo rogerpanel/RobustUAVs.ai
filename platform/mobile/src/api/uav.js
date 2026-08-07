@@ -22,6 +22,11 @@ export const uavApi = {
   },
   attackCatalog: () => request('/api/uav/perception/catalog'),
   fleetCatalog: () => request('/api/uav/fleet/catalog'),
+  gnssRun: () => request('/api/uav/gnss/run'),
+  gnssRunStep: (body) => request('/api/uav/gnss/run/step',
+    { method: 'POST', body: JSON.stringify(body ?? {}) }),
+  gnssRunReset: (body) => request('/api/uav/gnss/run/reset',
+    { method: 'POST', body: JSON.stringify(body ?? {}) }),
   dossier: () => request('/api/uav/dossier'),
   reviewPlan: (text, format = 'text') =>
     request('/api/uav/mission-plan/review', {
