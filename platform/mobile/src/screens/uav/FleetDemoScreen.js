@@ -8,7 +8,7 @@ import { useTheme, fonts } from '../../theme';
 import { ScreenHeader, Panel, Unavailable, KV, Tag } from './parts';
 import { recordContext } from '../../state/context';
 
-const FLEET_SIZES = [1, 2, 3, 4, 5, 6, 7, 8];
+const FLEET_SIZES = [1, 2, 3, 4, 5, 6, 8, 10, 12];
 const MAPPINGS = [
   { id: 'kinematic', label: 'Kinematic', note: 'v_max = 15 m/s' },
   { id: 'receiver', label: 'Receiver', note: 'γ = 1.195 m/s' },
@@ -111,7 +111,7 @@ export default function FleetDemoScreen() {
       <ScreenHeader
         eyebrow="UAV / Aerial Defense"
         title="Live Fleet Demo"
-        lede="Four aircraft flying a circuit. Inject an attack per aircraft and
+        lede="Up to twelve aircraft flying a circuit. Inject an attack per aircraft and
               watch the track separate from its nominal path — the separation is
               γ·Δ, the same quantity the certificate bounds."
         grounded={false}

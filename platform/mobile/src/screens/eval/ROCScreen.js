@@ -39,7 +39,7 @@ export default function ROCScreen() {
         <View nativeID="roc-chart">
         <LineChart
           width={w} height={w < 420 ? 200 : 250}
-          xLabel="ε (s)" yLabel="recall" yMin={0} yMax={1.05}
+          xLabel="ε" yLabel="recall" xUnit=" s" yMin={0} yMax={1.05}
           marker={{ x: 5, label: 'contact window' }}
           series={d.curves.map((c, i) => ({
             key: c.label, label: c.label, color: palette[i % palette.length],
