@@ -49,16 +49,34 @@ export default function FleetDemoScreen() {
   const timer = useRef(null);
   const inflight = useRef(false);
 
-  const reset = useCallback(async () => {
+  // Takes the size explicitly rather than reading state. Calling this straight
+  // after setFleetSize would otherwise use the previous value -- the state
+  // update has not applied yet at that point.
+  const resetTo = useCallback(async (n) => {
     setRunning(false);
     try {
       setSnap(await uavApi.fleetReset({
-        n: fleetSize, corridor_m: corridor, mapping, js_db: js,
+        n, corridor_m: corridor, mapping, js_db: js,
       }));
       setAttacks({});
       setError(null);
     } catch (e) { setError(e.message); }
-  }, [corridor, mapping, js, fleetSize]);
+  }, [corridor, mapping, js]);
+
+  const reset = useCallback(() => resetTo(fleetSize), [resetTo, fleetSize]);
+
+  /**
+   * Picking a size flies that many immediately.
+   *
+   * It used to set the number and wait for a separate Reset, with a hint
+   * explaining that. That is a bad trade: the hint is easy to miss, and a
+   * control that appears selected while the map shows something else is
+   * simply wrong. Resetting is instant, so there is nothing to defer.
+   */
+  const changeFleetSize = useCallback((n) => {
+    setFleetSize(n);
+    resetTo(n);
+  }, [resetTo]);
 
   useEffect(() => {
     uavApi.fleetCatalog().then(setCatalog).catch(() => {});
@@ -128,16 +146,15 @@ export default function FleetDemoScreen() {
         <Text style={s.sub}>Fleet size</Text>
         <View style={s.row}>
           {FLEET_SIZES.map((n) => (
-            <Pressable key={n} onPress={() => setFleetSize(n)}
+            <Pressable key={n} onPress={() => changeFleetSize(n)}
                        style={[s.pill, fleetSize === n && s.pillOn]}>
               <Text style={[s.pillText, fleetSize === n && { color: t.accent }]}>{n}</Text>
             </Pressable>
           ))}
         </View>
         <Text style={s.hint}>
-          {fleetSize === snap.fleet.n
-            ? `${snap.fleet.n} aircraft airborne.`
-            : `Reset to fly ${fleetSize} (currently ${snap.fleet.n}).`}
+          {snap.fleet.n} aircraft airborne, launched from the corpus. Changing
+          the size relaunches immediately and clears any injected attacks.
         </Text>
 
         <View style={s.controls}>
