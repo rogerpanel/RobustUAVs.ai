@@ -3,6 +3,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useTheme, fonts } from '../theme';
 import { LEFT_GROUPS } from './nav';
 import Rail from './Rail';
+import { Wordmark } from '../components/Logo';
 
 /**
  * Primary navigation. Pinned on wide and medium screens, and the body of the
@@ -18,10 +19,7 @@ export default function LeftRail({ route, onNavigate, compact = false, onDismiss
 
   const header = (
     <View style={s.brand}>
-      <Text style={s.wordmark} numberOfLines={1}>
-        RobustUAVs<Text style={{ color: t.accent }}>.ai</Text>
-      </Text>
-      <Text style={s.eyebrow}>NDSS 2027 · artifact</Text>
+      <Wordmark size={compact ? 18 : 13} subtitle="NDSS 2027 · artifact" />
     </View>
   );
 

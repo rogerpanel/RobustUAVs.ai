@@ -35,7 +35,13 @@ export default function AblationsScreen() {
     <ScrollView style={s.screen} contentContainerStyle={s.content}>
       <ScreenHeader eyebrow="Evaluation" title="Ablation studies"
         lede="What each part of the composition is responsible for."
-        grounded source={ms.source} />
+        grounded source={ms.source}
+        exportData={d}
+        exportCsv={ms.grid.map((r) => ({
+          theta_target_s: r.theta_target_s, margin_m: r.margin_m,
+          gamma_required_m_s: r.gamma_required_m_s,
+          ...Object.fromEntries(Object.entries(r.ok).map(([k, v]) => [`ok_${k}`, v ? 1 : 0])),
+        }))} />
 
       <Panel title="Interface mapping" subtitle={ms.question}>
         <View style={s.thead}>
