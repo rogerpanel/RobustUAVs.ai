@@ -37,9 +37,15 @@ export default function RobustnessScreen() {
       <ScreenHeader eyebrow="Evaluation" title="Robustness"
         lede="How the certified floor holds as the detector is loosened, under
               each θ ↦ δ mapping."
-        grounded source={d.source} />
+        grounded source={d.source}
+        exportData={d} exportSvgId="robustness-chart"
+        exportCsv={d.series.flatMap((ss) => ss.points.map((pt) => ({
+          mapping: ss.mapping, theta_s: pt.theta_s, delta_pos_m: pt.delta_pos_m,
+          tube_m: pt.tube_m, certified_floor: pt.certified_floor,
+        })))} />
 
       <Panel title="Certified floor vs θ" subtitle="the vertical rule is the paper's operating point">
+        <View nativeID="robustness-chart">
         <LineChart
           width={w} height={w < 420 ? 200 : 250}
           xLabel="θ (s)" yLabel="certified floor" yMin={0} yMax={1.05}
@@ -49,6 +55,7 @@ export default function RobustnessScreen() {
             points: ss.points.map((p) => ({ x: p.theta_s, y: p.certified_floor })),
           }))}
         />
+        </View>
       </Panel>
 
       <Panel title="Where each mapping stops binding">

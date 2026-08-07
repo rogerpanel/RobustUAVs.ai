@@ -41,7 +41,8 @@ export default function PerceptionScreen() {
               carry."
         grounded={false}
         source="models/uav_defense/attacks/"
-      />
+        exportData={d}
+        exportCsv={d.attacks} />
 
       <Panel title="Not executable here" accent={t.bridge}>
         <Text style={s.body}>{d.note}</Text>

@@ -28,9 +28,15 @@ export default function ROCScreen() {
       <ScreenHeader eyebrow="Evaluation" title="Detector operating curve"
         lede="Recall against the threshold ε, per scenario and attack mode.
               False-positive rate is identically zero across the whole grid."
-        grounded source={d.source} />
+        grounded source={d.source}
+        exportData={d} exportSvgId="roc-chart"
+        exportCsv={d.curves.flatMap((c) => c.points.map((pt) => ({
+          curve: c.label, epsilon: pt.epsilon, recall: pt.recall,
+          fpr: pt.fpr, precision: pt.precision, n_runs: pt.n_runs,
+        })))} />
 
       <Panel title="Recall vs ε">
+        <View nativeID="roc-chart">
         <LineChart
           width={w} height={w < 420 ? 200 : 250}
           xLabel="ε (s)" yLabel="recall" yMin={0} yMax={1.05}
@@ -40,6 +46,7 @@ export default function ROCScreen() {
             points: c.points.map((p) => ({ x: p.epsilon, y: p.recall })),
           }))}
         />
+        </View>
         <KV k="FPR across the entire grid"
             v={d.fpr_is_identically_zero ? '0.000 — identically zero' : 'non-zero somewhere'}
             tone={d.fpr_is_identically_zero ? t.ok : t.bridge} />

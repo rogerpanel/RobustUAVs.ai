@@ -55,8 +55,8 @@ export default function CopilotScreen() {
         </View>
         <Text style={styles.h1}>Copilot</Text>
         {ctx.length > 0 ? (
-          <Card title="From what you have looked at"
-                subtitle="Each chip carries the result that screen produced.">
+          <Card title="Your results"
+                subtitle="One chip per page you have run something on. Each carries that page's actual numbers — tap to ask about them.">
             <View style={styles.chips}>
               {ctx.map((c) => (
                 <Pressable key={`${c.routeKey}-${c.label}`} onPress={() => ask(c.question)}

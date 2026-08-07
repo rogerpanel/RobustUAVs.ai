@@ -6,6 +6,7 @@ import Svg, { Circle, Line, Path, Rect, Text as SvgText } from 'react-native-svg
 import { uavApi } from '../../api/uav';
 import { useTheme, fonts } from '../../theme';
 import { ScreenHeader, Panel, Unavailable, KV, Tag } from './parts';
+import { recordContext } from '../../state/context';
 
 const FLEET_SIZES = [1, 2, 3, 4, 5, 6, 7, 8];
 const MAPPINGS = [
@@ -70,9 +71,21 @@ export default function FleetDemoScreen() {
     if (inflight.current) return;
     inflight.current = true;
     try {
-      setSnap(await uavApi.fleetStep({
+      const r = await uavApi.fleetStep({
         attacks, js_db: js, dt_s: 1.0, corridor_m: corridor, mapping,
-      }));
+      });
+      setSnap(r);
+      if (r.fleet.spatial_mcr != null) {
+        recordContext({
+          routeKey: 'FleetDemo',
+          label: `fleet ${r.fleet.n} · spatial ${r.fleet.spatial_mcr} / temporal ${r.fleet.temporal_mcr}`,
+          question: `A ${r.fleet.n}-aircraft run under the ${r.mapping} mapping gave `
+            + `spatial MCR ${r.fleet.spatial_mcr} but temporal MCR ${r.fleet.temporal_mcr}, `
+            + `with ${r.fleet.n_late} aircraft late against a ${r.mission.deadline_s} s `
+            + `deadline. Explain the gap between the two predicates.`,
+          data: r.fleet,
+        });
+      }
     } catch (e) {
       setError(e.message); setRunning(false);
     } finally { inflight.current = false; }
@@ -103,6 +116,11 @@ export default function FleetDemoScreen() {
               γ·Δ, the same quantity the certificate bounds."
         grounded={false}
         source="simulator; γ and L measured"
+        exportData={snap}
+        exportSvgId="fleet-timeline"
+        exportCsv={snap.uavs.flatMap((u) => (u.history ?? []).map((h) => ({
+          uav_id: u.uav_id, defense: u.defense, ...h,
+        })))}
       />
 
       <Panel title="Fleet" subtitle={`t = ${snap.t_s}s · corridor ${snap.corridor_m} m · γ = ${snap.gamma_m_s} m/s`}>
@@ -336,7 +354,7 @@ function Timeline({ snap, width, t }) {
   const dl = snap.mission?.deadline_s;
 
   return (
-    <Svg width={width} height={h}>
+    <Svg width={width} height={h} nativeID="fleet-timeline">
       {[0, 50, 100].map((v) => (
         <Line key={v} x1={pad.l} y1={Y(v)} x2={width - pad.r} y2={Y(v)}
               stroke={t.border} strokeWidth={1} />

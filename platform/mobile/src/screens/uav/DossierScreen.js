@@ -33,7 +33,8 @@ export default function DossierScreen() {
               cannot currently evidence."
         grounded
         source={d.source}
-      />
+        exportData={d}
+        exportCsv={d.sources} />
 
       <Panel title="Totals">
         <KV k="ingested events" v={d.totals.events.toLocaleString()} />

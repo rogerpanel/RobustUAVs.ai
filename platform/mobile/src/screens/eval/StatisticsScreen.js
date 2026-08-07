@@ -18,7 +18,11 @@ export default function StatisticsScreen() {
   return (
     <ScrollView style={s.screen} contentContainerStyle={s.content}>
       <ScreenHeader eyebrow="Evaluation" title="Statistical tests"
-        lede={d.method} grounded source={d.source} />
+        lede={d.method} grounded source={d.source}
+        exportData={d}
+        exportCsv={d.families.flatMap((f) => f.points.map((pt) => ({
+          comparison: f.comparison, ...pt,
+        })))} />
 
       <Panel title="Headline" accent={t.ok}>
         <Text style={s.body}>{d.reading}</Text>

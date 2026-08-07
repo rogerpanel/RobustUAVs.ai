@@ -309,7 +309,9 @@ def swarm_snapshots() -> dict:
 
 # ====================================================== GNSS spoof monitor ==
 
-def gnss_sky(seed: int | None = None) -> dict:
+def gnss_sky(seed: int | None = None, n_spoofed: int = 2,
+             spoof_strength: float = 0.82, js_db: float = 0.0,
+             n_sats: int = 9) -> dict:
     """Sky plot with per-satellite spoof confidence.
 
     Illustrative rather than measured, and labelled as such. The Whelan corpus
@@ -318,11 +320,22 @@ def gnss_sky(seed: int | None = None) -> dict:
     without that caveat would imply a measurement that does not exist.
     """
     rng = random.Random(seed if seed is not None else int(time.time()) // 10)
-    spoofed = {3, 5}
+    n_sats = max(4, min(int(n_sats), 12))
+    n_spoofed = max(0, min(int(n_spoofed), n_sats))
+    # Spread the spoofed satellites rather than taking the first N: a spoofer
+    # overpowering one patch of sky is a different signature from one
+    # overpowering a spread, and the plot should be able to show either.
+    spoofed = set(rng.sample(range(1, n_sats + 1), n_spoofed)) if n_spoofed else set()
     sats = []
-    for sv in range(1, 10):
-        cno = (41 + rng.uniform(-1, 1)) if sv in spoofed else (32 + rng.uniform(-3, 8))
-        conf = (0.82 + rng.uniform(-0.05, 0.08)) if sv in spoofed else (0.08 + rng.uniform(0, 0.06))
+    for sv in range(1, n_sats + 1):
+        # Jamming raises the noise floor for everyone, so C/N0 falls with J/S
+        # while a spoofer's own signal stays conspicuously strong. That gap is
+        # the classic tell, and it is what makes the two controls interact.
+        jam_loss = 0.45 * js_db
+        cno = ((41 + rng.uniform(-1, 1)) if sv in spoofed
+               else max(12.0, 32 + rng.uniform(-3, 8) - jam_loss))
+        conf = ((spoof_strength + rng.uniform(-0.05, 0.06)) if sv in spoofed
+                else min(0.6, 0.08 + rng.uniform(0, 0.06) + 0.012 * js_db))
         sats.append({
             "sv": f"G{sv:02d}",
             "azimuth_deg": (sv * 47) % 360,
@@ -331,12 +344,28 @@ def gnss_sky(seed: int | None = None) -> dict:
             "spoof_confidence": round(conf, 3),
             "spoofed": sv in spoofed,
         })
-    n_spoofed = sum(1 for s in sats if s["spoofed"])
+    flagged = sum(1 for s in sats if s["spoofed"])
+    healthy = [s for s in sats if not s["spoofed"]]
+    mean_cno = round(sum(s["cno_db_hz"] for s in healthy) / len(healthy), 1) if healthy else 0.0
+    # Under 4 usable satellites there is no position fix at all, which is a
+    # different failure from a spoofed one and worth naming separately.
+    usable = sum(1 for s in sats if s["cno_db_hz"] >= 25.0)
+    if usable < 4:
+        mode = "no fix"
+    elif flagged:
+        mode = "GNSS-degraded"
+    else:
+        mode = "nominal"
     return {
         "satellites": sats,
-        "n_spoofed": n_spoofed,
-        "mode": "GNSS-degraded" if n_spoofed else "nominal",
-        "fallback": "INS + visual odometry" if n_spoofed else None,
+        "n_spoofed": flagged,
+        "n_sats": len(sats),
+        "js_db": js_db,
+        "spoof_strength": spoof_strength,
+        "mean_cno_healthy_db_hz": mean_cno,
+        "n_usable": usable,
+        "mode": mode,
+        "fallback": ("INS + visual odometry" if mode != "nominal" else None),
         "measured_reference": {
             "gamma_receiver_m_s": 1.195,
             "gamma_ekf_m_s": 1.365,

@@ -14,7 +14,12 @@ export const uavApi = {
   operatingPoint: (jsDb) => request(`/api/uav/ew-bench/operating-point?js_db=${jsDb}`),
   certificates: () => request('/api/uav/certificates'),
   swarm: () => request('/api/uav/swarm/snapshots'),
-  gnss: (seed) => request(`/api/uav/gnss/sky${seed != null ? `?seed=${seed}` : ''}`),
+  gnss: (opts = {}) => {
+    const q = new URLSearchParams(
+      Object.entries(opts).filter(([, v]) => v != null).map(([k, v]) => [k, String(v)]),
+    ).toString();
+    return request(`/api/uav/gnss/sky${q ? `?${q}` : ''}`);
+  },
   attackCatalog: () => request('/api/uav/perception/catalog'),
   fleetCatalog: () => request('/api/uav/fleet/catalog'),
   dossier: () => request('/api/uav/dossier'),

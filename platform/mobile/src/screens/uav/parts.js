@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTheme, fonts } from '../../theme';
+import ExportMenu from '../../components/ExportMenu';
 
 /**
  * The chrome every page in this group shares.
@@ -12,13 +13,23 @@ import { useTheme, fonts } from '../../theme';
  * a simulator output as a measurement.
  */
 
-export function ScreenHeader({ eyebrow, title, lede, grounded, source }) {
+export function ScreenHeader({ eyebrow, title, lede, grounded, source,
+                               exportData, exportCsv, exportSvgId }) {
   const { t } = useTheme();
   const s = styles(t);
+  const exportable = exportData != null || exportCsv != null || exportSvgId != null;
   return (
     <View style={s.header}>
-      <Text style={s.eyebrow}>{eyebrow}</Text>
-      <Text style={s.h1}>{title}</Text>
+      <View style={s.titleRow}>
+        <View style={{ flex: 1 }}>
+          <Text style={s.eyebrow}>{eyebrow}</Text>
+          <Text style={s.h1}>{title}</Text>
+        </View>
+        {exportable ? (
+          <ExportMenu title={title} data={exportData} csv={exportCsv}
+                      svgId={exportSvgId} sources={source} />
+        ) : null}
+      </View>
       {lede ? <Text style={s.lede}>{lede}</Text> : null}
       <View style={s.badges}>
         <View style={[s.badge, { borderColor: grounded ? t.ok : t.bridge }]}>
@@ -88,6 +99,7 @@ export function Unavailable({ message }) {
 
 const styles = (t) => StyleSheet.create({
   header: { marginBottom: 14 },
+  titleRow: { flexDirection: 'row', alignItems: 'flex-start' },
   eyebrow: {
     color: t.accent, fontSize: 9.5, fontWeight: '800', letterSpacing: 1.3,
     textTransform: 'uppercase', marginBottom: 5,

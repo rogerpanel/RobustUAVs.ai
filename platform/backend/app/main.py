@@ -258,8 +258,12 @@ def api_uav_swarm() -> dict:
 
 
 @app.get("/api/uav/gnss/sky", tags=["uav"])
-def api_uav_gnss(seed: int | None = None) -> dict:
-    return uav.gnss_sky(seed)
+def api_uav_gnss(seed: int | None = None,
+                 n_spoofed: int = Query(2, ge=0, le=12),
+                 spoof_strength: float = Query(0.82, ge=0.0, le=1.0),
+                 js_db: float = Query(0.0, ge=0.0, le=40.0),
+                 n_sats: int = Query(9, ge=4, le=12)) -> dict:
+    return uav.gnss_sky(seed, n_spoofed, spoof_strength, js_db, n_sats)
 
 
 @app.get("/api/uav/fleet/catalog", tags=["uav"])
