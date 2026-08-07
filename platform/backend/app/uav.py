@@ -27,6 +27,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Literal
 
+from . import corpus as corpus_mod
 from . import results
 
 REPO = Path(__file__).resolve().parents[3]
@@ -563,6 +564,15 @@ class UAVState:
     t_s: float = 0.0
     # Bounded per-UAV history for the end-of-flight plots.
     history: list = field(default_factory=list)
+    # Where this aircraft came from. Rendered per-tile, so a viewer can see the
+    # fleet is instantiated from committed captures rather than invented.
+    mission: str = ""
+    receiver: str = ""
+    campaign_js_db: float | None = None
+    campaign_mcr: float | None = None
+    uplink_residual_s: float = 0.0
+    bus_signature: dict | None = None
+    provenance: dict | None = None
 
     def as_dict(self) -> dict:
         d = asdict(self)
@@ -574,6 +584,9 @@ class UAVState:
 @dataclass
 class Fleet:
     uavs: list
+    links: list = field(default_factory=list)
+    corpus_backed: bool = False
+    corpus_note: str = ""
     t_s: float = 0.0
     corridor_m: float = 10.0
     mapping: str = "ekf"
@@ -587,6 +600,50 @@ HISTORY_CAP = 400          # ~6.5 min at 1 Hz; bounded so a long demo cannot gro
 
 
 def _spawn(n: int, seed: int = 42) -> Fleet:
+    """Instantiate from the committed corpus, falling back loudly if it cannot.
+
+    The fallback is deliberately noisy rather than silent: a fleet that looks
+    identical whether or not the corpus is reachable would let a broken
+    deployment demo as a working one.
+    """
+    try:
+        drawn = corpus_mod.sample_fleet(n, seed=seed)
+        backed = bool(drawn)
+        note = ("Instantiated from the committed corpus: EW-Bench for the "
+                "defence and J/S, DATAMUt for per-hop residuals, UAVIDS for the "
+                "mesh class prior, HCRL for the bus signature, Whelan for γ.")
+    except Exception as exc:  # noqa: BLE001
+        drawn, backed = [], False
+        note = f"Corpus unavailable ({type(exc).__name__}); fleet is synthetic."
+
+    rng = random.Random(seed)
+    kinds = ["delivery", "patrol", "search_rescue", "logistics"]
+    uavs = []
+    for i in range(n):
+        d = drawn[i] if i < len(drawn) else {}
+        ang = 2 * math.pi * i / max(1, n)
+        r = 160.0
+        uavs.append(UAVState(
+            uav_id=f"UAV-{i + 1:02d}",
+            kind=kinds[i % len(kinds)],
+            defense=d.get("defense", "ours_m1m4m6m7"),
+            mission=d.get("mission", ""),
+            receiver=d.get("receiver", ""),
+            campaign_js_db=d.get("js_db"),
+            campaign_mcr=d.get("campaign_mcr"),
+            uplink_residual_s=d.get("uplink_residual_s", 0.0),
+            bus_signature=d.get("bus_signature"),
+            provenance=d.get("provenance"),
+            x=round(r * math.cos(ang), 1), y=round(r * math.sin(ang), 1),
+            nom_x=round(r * math.cos(ang), 1), nom_y=round(r * math.sin(ang), 1),
+            z=round(rng.uniform(60, 120), 1),
+            heading_deg=round((math.degrees(ang) + 90) % 360, 1),
+        ))
+    links = corpus_mod.sample_mesh([u.uav_id for u in uavs], seed=seed)
+    return Fleet(uavs=uavs, links=links, corpus_backed=backed, corpus_note=note)
+
+
+def _spawn_legacy(n: int, seed: int = 42) -> Fleet:
     kinds = ["delivery", "patrol", "search_rescue", "logistics"]
     # Cycled so a 12-aircraft fleet still carries every configuration and the
     # comparison stays legible: 6 framework, 3 seq2seq, 2 CAF-CNN, 1 unprotected.
@@ -739,6 +796,25 @@ def fleet_step(session: str, attacks: dict | None = None,
         if len(u.history) > HISTORY_CAP:
             del u.history[0]
 
+    # Mesh links degrade with the state of the aircraft at each end. A jammed
+    # aircraft cannot relay, so its links fail; a delayed one adds its own
+    # staleness to every link it carries. That is what makes clustering emerge
+    # rather than be declared.
+    by_id = {u.uav_id: u for u in f.uavs}
+    for lk in f.links:
+        a, b = by_id.get(lk["src"]), by_id.get(lk["dst"])
+        if not a or not b:
+            continue
+        worst_link = min(a.link_quality_pct, b.link_quality_pct)
+        stale = max(a.staleness_s, b.staleness_s)
+        lk["residual_s"] = round(lk["baseline_s"] + stale, 4)
+        if worst_link < 25 or lk["residual_s"] > 5.0:
+            lk["state"] = "jammed"
+        elif lk["residual_s"] > 0.25:
+            lk["state"] = "delayed"
+        else:
+            lk["state"] = "trust"
+
     return snapshot(session)
 
 
@@ -797,6 +873,15 @@ def snapshot(session: str, with_history: bool = True) -> dict:
                        "against kappa*T. A relay delay can satisfy the first and "
                        "break the second, which is exactly the case a purely "
                        "spatial MCR misses.",
+        },
+        "mesh": {
+            "links": f.links,
+            "clusters": corpus_mod.clusters([u.uav_id for u in f.uavs], f.links),
+        },
+        "corpus": {
+            "backed": f.corpus_backed,
+            "note": f.corpus_note,
+            "sources": corpus_mod.availability(),
         },
         "provenance": "synthetic_alignment",
         "note": "Flight dynamics are illustrative. gamma and L are measured "
