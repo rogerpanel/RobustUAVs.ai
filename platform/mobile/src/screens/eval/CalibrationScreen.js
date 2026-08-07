@@ -28,7 +28,7 @@ export default function CalibrationScreen() {
         lede="Expected Calibration Error is not derivable from what this
               deployment carries. This page states why rather than omitting the
               question."
-        grounded={false} source={d.tracked_in} />
+        grounded={false} source={d.tracked_in} exportData={d} />
 
       <Panel title="Not available" accent={t.bridge}>
         <KV k="metric" v={d.metric} />

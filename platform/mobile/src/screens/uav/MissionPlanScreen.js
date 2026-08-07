@@ -53,7 +53,8 @@ export default function MissionPlanScreen() {
               not thereby certified safe."
         grounded
         source="deterministic rule set"
-      />
+        exportData={out}
+        exportCsv={out?.findings} />
 
       <Panel title="Plan" subtitle="Paste a plan, or edit the sample.">
         <TextInput

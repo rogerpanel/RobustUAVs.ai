@@ -34,7 +34,9 @@ export default function CertificationScreen() {
               four different objects on the same flight."
         grounded
         source="certificates/engine.py"
-      />
+        exportData={d}
+        exportCsv={d.certificates.map((c) => ({ id: c.id, name: c.name, status: c.status,
+          ...Object.fromEntries(Object.entries(c.values).map(([k, v]) => [k, v ?? ''])) }))} />
 
       <Panel title="Two floors — never conflate them" accent={t.bridge}>
         <KV k="Ch.6 §6.6 certified MCR at 20 dB" v={d.floors.certified_mcr_at_20db} />

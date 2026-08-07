@@ -90,6 +90,10 @@ const jsonld = {
 };
 
 const head = `
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="alternate icon" href="/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <meta name="theme-color" content="#0F172A">
   <meta name="description" content="${DESC}">
   <meta name="keywords" content="${KEYWORDS}">
   <meta name="author" content="Roger Nick Anaedevha">

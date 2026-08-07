@@ -18,7 +18,7 @@ export default function FederatedScreen() {
   return (
     <ScrollView style={s.screen} contentContainerStyle={s.content}>
       <ScreenHeader eyebrow="Build" title="Federated Learning"
-        lede={d.model} grounded={false} source={d.source} />
+        lede={d.model} grounded={false} source={d.source} exportData={d} />
 
       <Panel title="Role in the composition" accent={t.info}>
         <Text style={s.body}>{d.role}</Text>

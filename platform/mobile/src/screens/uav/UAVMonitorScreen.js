@@ -88,10 +88,17 @@ export default function UAVMonitorScreen() {
               is the DO-326A 0.90 operational floor."
         grounded
         source={curves.source}
+        exportData={{ curves, operating_point: point }}
+        exportSvgId="uav-mcr-chart"
+        exportCsv={curves.curves.flatMap((c) => c.points.map((pt) => ({
+          defense: c.defense, label: c.label, js_db: pt.js_db, mcr: pt.mcr,
+          ci_low: pt.ci_low, ci_high: pt.ci_high, n: pt.n,
+        })))}
       />
 
       <Panel title="Mission completion vs jamming"
              subtitle={`${curves.provenance} · shaded band is the Wilson 95% CI`}>
+        <View nativeID="uav-mcr-chart">
         <LineChart
           series={series}
           width={chartW}
@@ -101,6 +108,7 @@ export default function UAVMonitorScreen() {
           threshold={{ y: curves.floor.mcr, label: `${curves.floor.label} ${curves.floor.mcr}`, color: t.bridge }}
           marker={{ x: js, label: `${js} dB` }}
         />
+        </View>
         <View style={s.holds}>
           {curves.curves.map((c) => (
             <Text key={c.defense} style={s.holdsRow}>
