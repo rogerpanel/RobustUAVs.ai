@@ -111,9 +111,9 @@ export default function FleetDemoScreen() {
       <ScreenHeader
         eyebrow="UAV / Aerial Defense"
         title="Live Fleet Demo"
-        lede="Up to twelve aircraft flying a circuit. Inject an attack per aircraft and
-              watch the track separate from its nominal path — the separation is
-              γ·Δ, the same quantity the certificate bounds."
+        lede="Up to twelve aircraft, instantiated from the committed corpus and linked
+              by a peer mesh whose delays come from measured hops. Inject an attack
+              per aircraft and watch the tracks separate and the mesh partition."
         grounded={false}
         source="simulator; γ and L measured"
         exportData={snap}
@@ -155,6 +155,40 @@ export default function FleetDemoScreen() {
           </Pressable>
         </View>
       </Panel>
+
+      {snap.mesh ? (
+        <Panel title="Mesh"
+               subtitle={`${snap.mesh.links.length} peer links · ${snap.mesh.clusters.n_clusters} cluster${snap.mesh.clusters.n_clusters === 1 ? '' : 's'}`}
+               accent={snap.mesh.clusters.partitioned ? t.danger : t.ok}>
+          <View style={s.mcrRow}>
+            <Mcr t={t} label="Clusters" v={null}
+                 raw={snap.mesh.clusters.n_clusters}
+                 note={snap.mesh.clusters.partitioned ? 'fleet is partitioned' : 'mesh is whole'} />
+            <Mcr t={t} label="Isolated" v={null}
+                 raw={snap.mesh.clusters.n_isolated}
+                 note="aircraft with no healthy peer" />
+            <Mcr t={t} label="Links down" v={null}
+                 raw={snap.mesh.links.filter((l) => l.state === 'jammed').length}
+                 note={`of ${snap.mesh.links.length}`} />
+          </View>
+          {snap.mesh.clusters.groups.map((g, i) => (
+            <View key={i} style={s.clusterRow}>
+              <Text style={s.clusterLabel}>
+                {g.length === 1 ? 'isolated' : `group ${i + 1}`}
+              </Text>
+              <Text style={[s.clusterIds, g.length === 1 && { color: t.danger }]}>
+                {g.join(' · ')}
+              </Text>
+            </View>
+          ))}
+          <Text style={s.hint}>{snap.mesh.clusters.reading}</Text>
+          <Text style={s.hint}>
+            Link delays start from real measured hops and grow with the staleness
+            of the aircraft at either end, so a partition is something the
+            simulation arrives at rather than something it declares.
+          </Text>
+        </Panel>
+      ) : null}
 
       <Panel title="Mission outcome" subtitle={`deadline ${snap.mission?.deadline_s ?? '—'} s = (1 + κ)·T, κ = ${snap.mission?.kappa ?? '—'}`}>
         <View style={s.mcrRow}>
@@ -248,6 +282,14 @@ export default function FleetDemoScreen() {
               <Text style={s.uavId}>{u.uav_id}</Text>
               <Text style={s.uavKind}>{u.kind.replace(/_/g, ' ')} · {u.defense}</Text>
             </View>
+            {u.mission ? (
+              <Text style={s.uavCorpus}>
+                {u.mission.replace(/_/g, ' ')} · {u.receiver}
+                {u.campaign_js_db != null ? ` · campaign J/S ${u.campaign_js_db} dB` : ''}
+                {u.campaign_mcr != null ? ` · MCR ${u.campaign_mcr}` : ''}
+                {u.uplink_residual_s ? ` · uplink ${u.uplink_residual_s}s` : ''}
+              </Text>
+            ) : null}
 
             <View style={s.tags}>
               <Tag label={u.autopilot_mode.replace(/_/g, ' ')}
@@ -297,6 +339,31 @@ export default function FleetDemoScreen() {
         ))}
       </Panel>
 
+      {snap.corpus ? (
+        <Panel title="Where this fleet came from"
+               accent={snap.corpus.backed ? t.ok : t.bridge}>
+          <Text style={s.body}>{snap.corpus.note}</Text>
+          {Object.entries(snap.corpus.sources).map(([name, src]) => (
+            <View key={name} style={s.srcRow}>
+              <View style={[s.srcDot, {
+                backgroundColor: src.available ? t.ok : t.bridge,
+              }]} />
+              <View style={{ flex: 1 }}>
+                <Text style={s.srcName}>{name}</Text>
+                <Text style={s.srcGives}>{src.gives}</Text>
+                <Text style={s.srcFile}>{src.source}</Text>
+              </View>
+              <Text style={s.srcN}>{src.n || '—'}</Text>
+            </View>
+          ))}
+          <Text style={s.hint}>
+            UAV-CAS contributes nothing because its release file is not reachable
+            in this deployment. The sampler leaves the gap rather than quietly
+            redistributing the other five sources' weight over it.
+          </Text>
+        </Panel>
+      ) : null}
+
       <Panel title="What is real here and what is not">
         <Text style={s.body}>
           The flight dynamics are illustrative — this is not a PX4 SITL run. Two
@@ -320,15 +387,16 @@ export default function FleetDemoScreen() {
   );
 }
 
-function Mcr({ t, label, v, note }) {
+function Mcr({ t, label, v, note, raw }) {
   const s = styles(t);
   const pct = v == null ? null : Math.round(v * 100);
-  const tone = v == null ? t.muted : v >= 0.9 ? t.ok : v >= 0.5 ? t.bridge : t.danger;
+  const tone = raw != null ? t.text
+    : v == null ? t.muted : v >= 0.9 ? t.ok : v >= 0.5 ? t.bridge : t.danger;
   return (
     <View style={s.mcrCell}>
       <Text style={s.mcrLabel}>{label}</Text>
       <Text style={[s.mcrValue, { color: tone }]}>
-        {pct == null ? '—' : `${pct}%`}
+        {raw != null ? raw : pct == null ? '—' : `${pct}%`}
       </Text>
       <Text style={s.mcrNote}>{note}</Text>
     </View>
@@ -403,6 +471,23 @@ function FleetMap({ snap, size, t }) {
           <Line x1={size * f} y1={0} x2={size * f} y2={size} stroke={t.border} strokeWidth={0.5} />
         </React.Fragment>
       ))}
+
+      {/* Peer links first, so aircraft draw over them. Colour is the link's
+          own state: green trusted, amber delayed, red jammed. */}
+      {(snap.mesh?.links ?? []).map((lk) => {
+        const a = snap.uavs.find((u) => u.uav_id === lk.src);
+        const b = snap.uavs.find((u) => u.uav_id === lk.dst);
+        if (!a || !b) return null;
+        const col = lk.state === 'jammed' ? t.danger
+          : lk.state === 'delayed' ? t.bridge : t.ok;
+        return (
+          <Line key={`${lk.src}-${lk.dst}`}
+                x1={S(a.x)} y1={S(a.y)} x2={S(b.x)} y2={S(b.y)}
+                stroke={col} strokeWidth={lk.state === 'jammed' ? 0.8 : 1.2}
+                opacity={lk.state === 'jammed' ? 0.35 : 0.55}
+                strokeDasharray={lk.state === 'trust' ? undefined : '3,3'} />
+        );
+      })}
 
       {snap.uavs.map((u, i) => {
         const c = colors[i % colors.length];
@@ -496,5 +581,21 @@ const styles = (t) => StyleSheet.create({
   },
   mcrValue: { fontSize: 26, fontWeight: '800', fontFamily: fonts.display },
   mcrNote: { color: t.muted, fontSize: 9.5, lineHeight: 13.5 },
+  clusterRow: { flexDirection: 'row', alignItems: 'baseline', paddingVertical: 3 },
+  clusterLabel: {
+    color: t.muted, fontSize: 9.5, fontWeight: '800', width: 66,
+    textTransform: 'uppercase', letterSpacing: 0.5,
+  },
+  clusterIds: { color: t.text, fontSize: 11, fontFamily: fonts.mono, flex: 1 },
+  uavCorpus: { color: t.muted, fontSize: 9.5, lineHeight: 14, marginTop: 2 },
+  srcRow: {
+    flexDirection: 'row', alignItems: 'flex-start', paddingVertical: 6,
+    borderBottomWidth: 1, borderBottomColor: t.border,
+  },
+  srcDot: { width: 6, height: 6, borderRadius: 3, marginTop: 5, marginRight: 8 },
+  srcName: { color: t.text, fontSize: 11, fontWeight: '700', fontFamily: fonts.mono },
+  srcGives: { color: t.muted, fontSize: 10, lineHeight: 14.5, marginTop: 1 },
+  srcFile: { color: t.muted, fontSize: 9, fontFamily: fonts.mono, opacity: 0.75, marginTop: 1 },
+  srcN: { color: t.muted, fontSize: 10, fontFamily: fonts.mono },
   em: { color: t.bridge, fontWeight: '700' },
 });
