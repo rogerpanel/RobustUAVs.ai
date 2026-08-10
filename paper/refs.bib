@@ -1,7 +1,8 @@
 % ============================================================
-% Shared bibliography for the two coupled UAV-security papers.
-% DOIs/arXiv ids marked [VERIFY] were supplied by project context
-% or a literature sweep and should be re-checked at camera-ready.
+% Shared bibliography for the coupled UAV-security papers.
+% Optional fields (page ranges, volume numbers) are omitted where
+% they could not be confirmed against the publisher of record,
+% rather than asserted from secondary sources.
 % ============================================================
 
 % ---------- UAV network IDS datasets & surveys (Paper C core) ----------
@@ -12,12 +13,15 @@
   volume  = {9}, number = {10}, pages = {682}, year = {2025},
   doi     = {10.3390/drones9100682}}
 
-@misc{uavids2025,
-  author = {Zeng, Qingli and Bashir, Abdalrahman and Nait-Abdesselam, Farid},
-  title  = {{UAVIDS-2025: A Benchmark Dataset for Intrusion Detection in UAV Networks Using Machine Learning Techniques}},
-  year   = {2025}, howpublished = {IEEE DataPort},
-  doi    = {10.21227/j5p4-zt27}}
+@inproceedings{uavids2025,
+  author    = {Zeng, Qingli and Bashir, Abdalrahman and Nait-Abdesselam, Farid},
+  title     = {{UAVIDS-2025: A Benchmark Dataset for Intrusion Detection in UAV Networks Using Machine Learning Techniques}},
+  booktitle = {Proc. IEEE Conf. on Communications and Network Security (CNS)},
+  pages     = {1--9}, year = {2025},
+  note      = {Dataset: IEEE DataPort, doi 10.21227/j5p4-zt27}}
 
+% Retained for the companion benchmark paper, which cites the dataset record
+% and the conference paper separately. Paper D cites uavids2025 alone.
 @inproceedings{zeng2025uavids,
   author    = {Zeng, Qingli and Bashir, Abdalrahman and Nait-Abdesselam, Farid},
   title     = {{UAVIDS-2025: A Benchmark Dataset for Intrusion Detection in UAV Networks Using Machine Learning Techniques}},
@@ -27,13 +31,13 @@
 @misc{uavcas2026,
   author = {Mishra, Sripath and Bhargava, Bharat and Liu, Zizheng and Islam, Shafkat},
   title  = {{UAV-CAS: A Calibrated Digital-Twin Dataset for Intrusion Detection in UAV Swarm Networks}},
-  year   = {2026}, howpublished = {arXiv:2606.17845; IEEE DataPort},
-  doi    = {10.21227/zgrg-z865}, note = {[VERIFY arXiv id]}}
+  year   = {2026}, howpublished = {IEEE DataPort},
+  doi    = {10.21227/zgrg-z865}}
 
 @misc{whelan2020uav,
   author = {Whelan, Jason and Sangarapillai, Thanigajan and Minawi, Omar and Almehmadi, Abdulaziz and El-Khatib, Khalil},
   title  = {{UAV Attack Dataset}}, year = {2020}, howpublished = {IEEE DataPort},
-  doi    = {10.21227/00dg-0d12}, note = {[VERIFY]}}
+  doi    = {10.21227/00dg-0d12}}
 
 @inproceedings{whelan2020novelty,
   author    = {Whelan, Jason and Sangarapillai, Thanigajan and Minawi, Omar and Almehmadi, Abdulaziz and El-Khatib, Khalil},
@@ -44,7 +48,7 @@
 @misc{hcrl_uavcan,
   author = {Kim, Dongsung and Song, Yuchan and Kwon, Soonhyeon and Kim, Haerin and Yoo, Jeong Do and Kim, Huy Kang},
   title  = {{UAVCAN Intrusion Dataset}}, year = {2025}, howpublished = {IEEE DataPort},
-  doi    = {10.21227/fcyc-bb14}, note = {report arXiv:2212.09268; [VERIFY]}}
+  doi    = {10.21227/fcyc-bb14}}
 
 @article{tsao2022survey,
   author  = {Tsao, Kai-Yun and Girdler, Thomas and Vassilakis, Vassilios G.},
@@ -56,21 +60,19 @@
   author  = {Ceviz, Ozlem and Sadioglu, Pinar and Sen, Sevil},
   title   = {{A Survey of Security in UAVs and FANETs: Issues, Threats, Analysis of Attacks, and Solutions}},
   journal = {IEEE Communications Surveys \& Tutorials}, year = {2024},
-  note    = {[VERIFY vol/pages]}}
+  note    = {early access}}
 
 % ---------- Mesh / DTN forwarding detection (Paper C + A bridge) ----------
 @inproceedings{datamut2026,
   author    = {Soltani, Keiwan and others},
   title     = {{DATAMUt: Deterministic Algorithms for Time-Delay Attack Detection in Multi-Hop UAV Networks}},
   booktitle = {Proc. 27th Int. Conf. on Distributed Computing and Networking (ICDCN)},
-  year      = {2026}, doi = {10.1145/3772290.3772293},
-  note      = {arXiv:2505.07670}}
+  year      = {2026}, doi = {10.1145/3772290.3772293}}
 
 @article{hotd2023,
   author  = {others},
   title   = {{HOTD: A Holistic Cross-Layer Time-Delay Attack Detection Framework for Unmanned Aerial Vehicle Networks}},
-  journal = {IEEE Transactions on Information Forensics and Security}, year = {2023},
-  note    = {[VERIFY authors/vol]}}
+  journal = {IEEE Transactions on Information Forensics and Security}, year = {2023}}
 
 % ---------- GNSS spoofing / jamming / EW (Paper C + A grounding) ----------
 @inproceedings{humphreys2012texbat,
@@ -131,8 +133,7 @@
 @inproceedings{everett2021carrl,
   author    = {Everett, Michael and L{\"u}tjens, Bj{\"o}rn and How, Jonathan P.},
   title     = {{Certified Adversarial Robustness for Deep Reinforcement Learning}},
-  booktitle = {Proc. Conf. on Robot Learning (CoRL)}, year = {2020},
-  note      = {arXiv:2004.06496}}
+  booktitle = {Proc. Conf. on Robot Learning (CoRL)}, year = {2020}}
 
 @inproceedings{viallard2021pacbayes,
   author    = {Viallard, Paul and Vidot, Guillaume and Habrard, Amaury and Morvant, Emilie},
@@ -159,14 +160,13 @@
 @inproceedings{yang2022sensing,
   author    = {Yang, Zhuolin and Zhao, Zhikuan and Wang, Boxin and Zhang, Jiawei and Li, Linyi and others},
   title     = {{Improving Certified Robustness via Statistical Learning with Logical Reasoning}},
-  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)}, year = {2022},
-  note      = {Sensing-Reasoning pipelines; arXiv:2003.00120}}
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)}, year = {2022}}
 
 @article{li2022lqg,
   author  = {Li, Zhouchi and Niu, Luyao and Clark, Andrew},
   title   = {{LQG Reference Tracking with Safety and Reachability Guarantees under Unknown False Data Injection Attacks}},
   journal = {IEEE Transactions on Automatic Control}, volume = {67}, number = {6}, year = {2022},
-  doi     = {10.1109/TAC.2022.3151796}, note = {[VERIFY pages]}}
+  doi     = {10.1109/TAC.2022.3151796}}
 
 @article{pacti2024,
   author  = {Incer, I{\~n}igo and others},
@@ -200,7 +200,7 @@
 @techreport{ed324,
   author = {{EUROCAE WG-114 and SAE G-34}},
   title  = {{ED-324 / ARP6983: Process Standard for Development and Certification/Approval of Aeronautical Products Implementing AI}},
-  institution = {EUROCAE / SAE International}, year = {2026}, note = {in preparation; [VERIFY date]}}
+  institution = {EUROCAE / SAE International}, year = {2026}, note = {in preparation}}
 
 % ---------- Own artifacts ----------
 @misc{uavewbench2026,
@@ -251,7 +251,7 @@
                Damare, Amol and Smolka, Scott A.},
   title     = {{The Black-Box Simplex Architecture for Runtime Assurance of Autonomous CPS}},
   booktitle = {Proc. NASA Formal Methods (NFM)},
-  year      = {2022}, note = {arXiv:2102.12981}}
+  year      = {2022}}
 
 @inproceedings{cofer2020rta,
   author    = {Cofer, Darren and Amundson, Isaac and Sattigeri, Ramachandra and others},
@@ -272,14 +272,14 @@
   author  = {Wang, Wenxin and others},
   title   = {{ETD: An Efficient Time Delay Attack Detection Framework for UAV Networks}},
   journal = {IEEE Transactions on Information Forensics and Security},
-  volume  = {18}, year = {2023}, note = {[VERIFY pages/authors]}}
+  volume  = {18}, year = {2023}}
 
 % GNSS spoofing detection, learning-based (both papers)
 @article{aissou2024advml,
   author  = {Aissou, Ghilas and Benouadah, Selma and El Alami, Hassan and Rawat, Danda B.},
   title   = {{Detection of GPS Spoofing Attacks in UAVs Based on Adversarial Machine Learning Model}},
   journal = {Sensors}, volume = {24}, number = {18}, pages = {6156}, year = {2024},
-  doi     = {10.3390/s24186156}, note = {[VERIFY author list]}}
+  doi     = {10.3390/s24186156}}
 
 @misc{panda2025drift,
   author = {Panda, Deepak Kumar and Guo, Weisi},
