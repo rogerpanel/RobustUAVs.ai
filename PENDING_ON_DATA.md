@@ -26,6 +26,25 @@ Last updated: 2026-08-13.
   Keiwan Soltani as an author). Paper D moved him to the Acknowledgements and
   added Mauro Conti; the site should match before it is cited anywhere.
 
+### Two manual steps this session could not complete
+
+1. **Delete the stale branch `claude/whelan-uavcas-ingest-u00isn`.** History has
+   been rewritten and that branch was force-moved onto the clean tip, so it no
+   longer reaches any pre-scrub commit, but the *name* remains in the branch
+   list. Deletion returned HTTP 403 through this session's proxy (force-push is
+   permitted, ref deletion is not). Delete it from the repository's Branches
+   page; the work lives on `main` and `dev/whelan-uavcas-ingest`.
+2. **Consider asking GitHub to garbage-collect unreachable objects.** After a
+   history rewrite, the old commits stay retrievable by direct SHA URL for a
+   period, and any fork or cached view may retain them. If the pre-scrub
+   attribution must be unreachable rather than merely unreferenced, GitHub
+   Support can force a GC on the repository. For most double-blind purposes,
+   unreferenced is sufficient: nothing links to those SHAs.
+
+The full pre-scrub history is preserved as a git bundle held by the author, not
+in this repository. Restore after acceptance with
+`git clone <bundle> restored`.
+
 ## 1. UAV-CAS stat CSV — the only missing real ingest ❌
 - **Needs:** `data/raw/uav_cas/UAV-CAS_stat.csv` (+ `UAV-CAS_stat_cfg.csv`),
   99,492 flows / 59 cols. Described as committed but **absent from every
