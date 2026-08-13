@@ -1,0 +1,260 @@
+% =====================================================================
+%  PROPOSAL P1 -- Certified PNT substitution
+%
+%  Standalone. Set this as Overleaf's main document and compile with
+%  pdfLaTeX; Overleaf runs BibTeX automatically. Locally:
+%    pdflatex P1 && bibtex P1 && pdflatex P1 && pdflatex P1
+% =====================================================================
+\documentclass[11pt,a4paper]{article}
+\input{proposal_preamble}
+
+\begin{document}
+
+\proposalheader
+  {P1 --- Certified PNT Substitution}
+  {Which Navigation Source Certifies? Alternative PNT Under a Composed
+   Network-to-Navigation Guarantee}
+  {Research proposal, RobustUAVs.ai project $\cdot$ Roger Nick Anaedevha $\cdot$
+   drafted 2026-08-13\\
+   Follow-on to \emph{From Wire to Flight} (NDSS submission)}
+
+\begin{abstract}
+\noindent
+The parent manuscript proves that a network detector's operating point
+$\theta$ bounds a certified Mission-Completion-Rate floor, and finds
+empirically that the decisive quantity is not the proof but the
+\emph{interface}: $\gamma$, the metres of position error accrued per second of
+degraded navigation input. This proposal observes that $\gamma$ is a property
+of the \emph{navigation source}, not of the attack. Changing the
+positioning--navigation--timing (PNT) modality therefore moves the certified
+window without altering a line of the proof. We propose to measure $\gamma$ per
+modality, to show that a cryptographically authenticated PNT source discharges
+the re-anchoring hypothesis the parent theorem currently assumes, and to derive
+from the certificate a sensor-selection rule: the minimal sensor suite whose
+fused $\gamma$ keeps a given detector setting inside the certified window.
+\end{abstract}
+
+% =====================================================================
+\section{The gap}
+% =====================================================================
+The parent manuscript certifies a GNSS-based navigation stack, and its
+Limitations section states the boundary plainly: Theorem~1 relies on the
+re-anchoring hypothesis, that at least one uncorrupted state update arrives in
+every certification horizon $T_c$. A time-delay adversary satisfies this by
+construction, because it postpones corrections without suppressing them. A
+\emph{persistent-denial} adversary does not, and there the certified radius
+degrades as $e^{L T_c}$ in the achieved denial duration.
+
+That admission is the opening. An entire literature on GNSS-denied navigation
+has spent a decade building precisely the capability that restores the
+hypothesis, and none of it is expressed as a re-anchoring
+guarantee.
+
+Two facts make the instance concrete. First, Iridium's Satellite Time and
+Location signal arrives at the receiver roughly three orders of magnitude
+stronger than GNSS and carries cryptographic authentication, so a receiver can
+\emph{reject} a spoofed or tampered navigation solution rather than fuse
+it~\cite{insidegnss_iridium,groundcontrol_apnt}; STL-aided inertial units are
+being productised for exactly this
+purpose~\cite{nal_vectornav_stl}. Second, opportunistic navigation from
+low-Earth-orbit signals is no longer speculative: multi-constellation work using
+four Starlink, one OneWeb, two Orbcomm and one Iridium satellite reports
+$9.5$\,m 3D RMSE and $4.4$\,m final 3D
+error~\cite{insidegnss_multiconstellation,kassas2021leodoppler}, and
+resilient navigation under jamming has been demonstrated on signals of
+opportunity~\cite{kassas2022jammer}.
+
+What nobody has asked is the composed question:
+
+\begin{quote}
+\itshape
+Does switching PNT source move the detector's operating point into the certified
+window, and by how much?
+\end{quote}
+
+% =====================================================================
+\section{The claim}
+% =====================================================================
+Let a platform carry a set $S$ of PNT modalities --- GNSS, LEO signals of
+opportunity, terrain-referenced navigation, visual--inertial odometry, and
+inertial-only dead reckoning --- each characterised by
+
+\begin{itemize}
+\item a \textbf{degradation rate} $\gamma_s$, in metres of position error per
+      second of stale or withheld input;
+\item an \textbf{authentication state}
+      $a_s\in\{\text{authenticated},\text{unauthenticated}\}$; and
+\item an \textbf{availability process} over the mission.
+\end{itemize}
+
+\begin{claim}[$\gamma$ becomes a vector]
+\label{cl:vector}
+The certified window edge
+\begin{equation}
+\label{eq:window}
+\theta^{*}(m) \;=\; \frac{m}{\gamma_{\mathrm{eff}}\; e^{L T_c}\; H}
+\end{equation}
+is evaluated against the $\gamma$ of the \emph{fused} estimate, so admitting a
+low-$\gamma$ source strictly widens the window. This is arithmetic rather than
+new theory, and that is the point: the contribution is the \emph{measurement} of
+$\gamma$ per modality, exactly as the parent paper's contribution was the
+measurement of $\gamma$ for GNSS.
+\end{claim}
+
+\begin{claim}[Authentication discharges the re-anchoring hypothesis]
+\label{cl:auth}
+A cryptographically authenticated PNT source supplies an uncorrupted update per
+$T_c$ \emph{even under RF denial of the unauthenticated sources}, because an
+adversary can jam it but cannot forge it, and a jammed authenticated source is
+detected rather than fused. This converts the parent manuscript's admitted
+limitation into a hypothesis that is satisfiable, with named hardware behind it.
+\end{claim}
+
+\begin{claim}[The certificate induces a sensor-selection rule]
+\label{cl:selection}
+Given a corridor margin $m$, a detector operating point $\theta$, and a
+per-modality cost, the certificate induces a partial order over sensor suites:
+the minimal suite whose fused $\gamma_{\mathrm{eff}}$ keeps $\theta$ inside the
+window. This is a procurement-grade output, and it is what an operator actually
+wants from a robustness certificate.
+\end{claim}
+
+\begin{honestly}
+Claim~\ref{cl:auth} is the load-bearing one and also the one most exposed.
+Authentication prevents \emph{forgery}; it does not prevent \emph{denial}. The
+claim is therefore about the adversary's ability to make the estimator fuse a
+lie, not about availability. If an adversary jams every modality at once, the
+hypothesis fails again and the certificate is silent. The paper must say this in
+the same breath as the claim.
+\end{honestly}
+
+% =====================================================================
+\section{What is reused, what is new}
+% =====================================================================
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}XX@{}}
+\toprule
+\textbf{Reused unchanged} & \textbf{New} \\
+\midrule
+Theorem~1, Lemma~1, and the re-anchoring definition &
+$\gamma$ measured per PNT modality \\
+\code{certificates/engine.py} &
+availability and authentication state in the schema \\
+\code{experiments/compose\_certified.py} &
+a fusion model for $\gamma_{\mathrm{eff}}$ \\
+the SORA-anchored corridor-margin family~\cite{jarus_sora25} &
+the selection rule and its optimality argument \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\medskip
+The schema change is small and additive: \code{Event.metrics} gains
+\code{pnt\_source} and \code{pnt\_authenticated}, and a \code{PNTModality} enum
+joins the definitions block. \code{CrossLayerPairing} is untouched, so every
+existing record stays valid.
+
+% =====================================================================
+\section{Experiment plan}
+% =====================================================================
+\subsection{Measuring $\gamma$ per modality}
+GNSS is done: the parent manuscript reports $\gamma = 1.195$\,m/s at the
+receiver and $1.365$\,m/s after the extended Kalman filter, calibrated on three
+real PX4 flights~\cite{whelan2020uav,kong2024px4ekf}. The remainder, in
+descending order of evidential strength:
+
+\begin{enumerate}
+\item \textbf{Inertial-only.} Measurable \emph{today} from the same flight logs,
+by holding the GNSS fix and integrating the inertial measurements. This yields
+the dead-reckoning $\gamma$ that the parent paper's cruise discussion currently
+\emph{asserts} from an error budget. Do this first: it retroactively strengthens
+the manuscript's most contested paragraph, and the data is already staged.
+\item \textbf{Visual--inertial.} Public VIO datasets with UAV motion profiles.
+\item \textbf{LEO signals of opportunity.} The honest gap. Either a partnership
+for STL receiver logs, or a \code{physics\_model} $\gamma$ derived from
+published RMSE and update rate, tagged as such.
+\end{enumerate}
+
+\begin{honestly}
+A modelled $\gamma$ must never be reported as a measured one. The parent
+project's provenance discipline exists for exactly this case, and the ledger
+will show the tag whether or not the prose does.
+\end{honestly}
+
+\subsection{Fusion model}
+Begin with the conservative
+$\gamma_{\mathrm{eff}} = \min_{s\,\in\,S_{\mathrm{avail}}} \gamma_s$ over
+available authenticated sources, then the filter-weighted version. Report both:
+the conservative one is what the certificate is entitled to, the weighted one is
+what a deployment will actually see.
+
+\subsection{Denial sweep}
+Extend \code{experiments/sweep\_full.py} with a denial-duration axis, giving the
+certified floor as a surface over $(\theta,\ \text{denial duration})$ for each
+modality set. The interesting reading is where the surface stops falling: that
+is the point at which authentication has taken over from GNSS.
+
+\subsection{Verifying the selection rule}
+Check the order induced by Claim~\ref{cl:selection} against brute force over all
+suites. The rule is only worth publishing if it agrees.
+
+% =====================================================================
+\section{Relation to the parent manuscript's limitations}
+% =====================================================================
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.42\linewidth}p{0.10\linewidth}X@{}}
+\toprule
+\textbf{Limitation} & \textbf{Closed?} & \textbf{How} \\
+\midrule
+The certificate assumes the filter re-anchors & \textbf{fully} &
+Claim~\ref{cl:auth} makes the hypothesis satisfiable rather than assumed \\
+$\gamma$ is a three-flight hover calibration & \textbf{partly} &
+replaces the error-budget argument with a measurement, and adds modalities; does
+\emph{not} deliver the cruise-inclusive flight campaign, which remains the
+actual gap \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =====================================================================
+\section{Platform integration}
+% =====================================================================
+A \textbf{PNT Source Selector} page: toggle modalities and their authentication
+state, and watch $\theta^{*}(m)$ and the certified floor move live with the
+fused $\gamma$ displayed. Reuses the existing export menu, the
+\emph{measured}/\emph{illustrative} badge, and \code{/api/certify/staleness};
+adds one endpoint, \code{/api/uav/pnt/window}.
+
+% =====================================================================
+\section{Risks}
+% =====================================================================
+\begin{itemize}
+\item \textbf{The LEO $\gamma$ may stay unmeasured.} Mitigation: the paper
+stands on GNSS, inertial-only and visual--inertial, with LEO as a clearly
+tagged modelled extension. Three measured modalities against the parent paper's
+one is already the contribution.
+\item \textbf{The fusion model could become the contribution by accident.} Keep
+it conservative and unglamorous. The contribution is the measurement and the
+rule, not the estimator.
+\item \textbf{Authentication claims rest partly on vendor
+sources}~\cite{groundcontrol_apnt}. Any security property attributed to STL must
+be cited to a specification or an independent evaluation before it enters a
+theorem statement.
+\end{itemize}
+
+% =====================================================================
+\section{Venue and timeline}
+% =====================================================================
+Target \emph{IEEE Transactions on Information Forensics and Security} or
+\emph{ACM Transactions on Cyber-Physical Systems} --- a measurement campaign
+wants journal space --- or NDSS/CCS if the selection rule proves sharp.
+Roughly five to six months, front-loaded on the inertial-only $\gamma$, which is
+about a week of work on data already on disk.
+
+\small
+\bibliographystyle{plain}
+\bibliography{proposals}
+
+\end{document}

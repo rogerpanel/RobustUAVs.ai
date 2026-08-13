@@ -1,0 +1,246 @@
+% =====================================================================
+%  PROPOSAL P2 -- The security tax
+%
+%  Standalone. Set this as Overleaf's main document and compile with
+%  pdfLaTeX; Overleaf runs BibTeX automatically. Locally:
+%    pdflatex P2 && bibtex P2 && pdflatex P2 && pdflatex P2
+% =====================================================================
+\documentclass[11pt,a4paper]{article}
+\input{proposal_preamble}
+
+\begin{document}
+
+\proposalheader
+  {P2 --- The Security Tax}
+  {Paying for Authenticity in Milliseconds: A Certified Budget for
+   Post-Quantum Signing on the UAV Bus and Link}
+  {Research proposal, RobustUAVs.ai project $\cdot$ Roger Nick Anaedevha $\cdot$
+   drafted 2026-08-13\\
+   Follow-on to \emph{From Wire to Flight} (NDSS submission)}
+
+\begin{abstract}
+\noindent
+The composition theorem of the parent manuscript bounds the mission-completion
+floor achievable when a residual budget $\Delta$ of undetected staleness reaches
+the navigation input. The theorem never asks \emph{why} the input is stale. This
+proposal takes that indifference seriously: post-quantum authentication on a
+constrained UAV bus or command link imposes a latency that is, formally, the
+same quantity an adversary spends. Security hardening and the attacker therefore
+draw on one budget, and the certificate is what arbitrates between them. We
+propose to measure the latency of classical and post-quantum schemes on
+flight-controller-class hardware, model the fragmentation cost on DroneCAN and
+MAVLink~2, and push the result through the existing chain to obtain a
+\emph{certified authentication budget}: the maximum per-message signing latency
+a platform can afford and remain airworthy.
+\end{abstract}
+
+% =====================================================================
+\section{The gap}
+% =====================================================================
+Three facts collide, and nobody has put them in the same paper.
+
+\paragraph{MAVLink~2 authenticates but does not encrypt.}
+The protocol carries a 13-byte HMAC-SHA256 signature providing authentication
+and integrity, and offers no payload confidentiality~\cite{trout_mavlink}. Its
+adoption in practice is uneven and the community discussion of adding
+encryption remains open.
+
+\paragraph{DroneCAN has no authentication at all.}
+The CAN protocol that the ArduPilot and PX4 projects use to reach peripherals
+provides no origin authentication for bus
+frames~\cite{dronecan_spec}. The parent project already ingests
+$200{,}000$ real frames of flooding, fuzzing and replay against exactly this
+surface~\cite{hcrl_uavcan}, so the attack side is characterised and the defence
+side is empty.
+
+\paragraph{Post-quantum migration is arriving on constrained platforms.}
+Kyber-based group key agreement has been proposed for
+swarms~\cite{pq_swarm_kyber}, NIST-standardised lattice
+schemes~\cite{nist_pqc} are being integrated into MAVLink-based
+systems, and post-quantum authentication for drone networks is under active
+development~\cite{pq_drone_networks}; the broader UTM security picture is
+surveyed in~\cite{utm_survey2026}.
+
+Every one of those results reports the same metrics --- signature size, key
+size, cycles, energy. \textbf{None reports what those milliseconds do to the
+aircraft.} And the arithmetic is unforgiving on a bus whose payload is 8 bytes
+in classical CAN and 64 in CAN-FD: a lattice signature of a few kilobytes
+becomes multi-frame fragmentation, which is latency, which is staleness of
+exactly the kind the parent manuscript's Lemma~1 already bounds.
+
+% =====================================================================
+\section{The claim}
+% =====================================================================
+\begin{quote}\itshape
+Security hardening and the adversary draw on one budget, and the composition
+theorem is what arbitrates between them.
+\end{quote}
+
+Formally, the residual budget $\Delta(\theta)\le H\min(\theta,s)$ of the parent
+manuscript bounds \emph{adversarial} staleness. Authentication contributes
+\emph{self-inflicted} staleness $\Delta_{\mathrm{auth}}$, a deterministic
+function of the scheme, the message rate, and the transport MTU. The certificate
+consumes their sum:
+
+\begin{equation}
+\label{eq:budget}
+\rho(\theta) \;=\;
+\big(\Delta(\theta) + \Delta_{\mathrm{auth}}\big)\,
+\gamma\, e^{L T_c} \;\le\; m ,
+\end{equation}
+
+which, for a given corridor margin $m$, yields a \textbf{certified
+authentication budget}: the largest $\Delta_{\mathrm{auth}}$ compatible with
+airworthiness. Three corollaries follow immediately, and all are testable.
+
+\begin{proposition}[Detector tightness buys cryptographic headroom]
+\label{pr:trade}
+Lowering $\theta$ shrinks $\Delta(\theta)$ and therefore enlarges the admissible
+$\Delta_{\mathrm{auth}}$ at fixed $m$. Network-layer detection and cryptographic
+hardening trade against one another through the corridor margin.
+\end{proposition}
+
+\begin{proposition}[A margin below which nothing certifies]
+\label{pr:floor}
+For each transport there exists a corridor margin below which no post-quantum
+scheme in the candidate set satisfies Eq.~\eqref{eq:budget} at any detector
+setting. The paper can name that margin per transport.
+\end{proposition}
+
+\begin{proposition}[Ranking by size is the wrong ranking]
+\label{pr:ranking}
+Because fragmentation is a step function of the transport MTU rather than linear
+in signature bytes, the ordering of schemes under Eq.~\eqref{eq:budget} need not
+agree with the ordering by signature size that the cryptographic literature
+reports.
+\end{proposition}
+
+\begin{honestly}
+Proposition~\ref{pr:trade} is the sentence the paper lives or dies on, and it is
+only interesting if the numbers are real. A modelled $\Delta_{\mathrm{auth}}$
+built from cited cycle counts would make the whole result a restatement of the
+inputs. The measurement is the contribution; the theorem is the frame.
+\end{honestly}
+
+% =====================================================================
+\section{What is reused, what is new}
+% =====================================================================
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}XX@{}}
+\toprule
+\textbf{Reused unchanged} & \textbf{New} \\
+\midrule
+Theorem~1 and its proof ($\Delta$ is $\Delta$, whatever its source) &
+$\Delta_{\mathrm{auth}}$: scheme $\times$ rate $\times$ MTU $\to$ seconds \\
+Lemma~1, the residual-budget bound &
+measured signing and verification latency on flight-controller-class hardware \\
+\code{certificates/engine.py} and the corridor family &
+the budget-allocation result and Propositions~\ref{pr:trade}--\ref{pr:ranking} \\
+the \dataset{HCRL UAVCAN} ingest, 200k real frames~\cite{hcrl_uavcan} &
+a defence side for the \code{c2\_link} and \code{intra\_bus} sublayers, which
+the schema has but the corpus does not \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =====================================================================
+\section{Experiment plan}
+% =====================================================================
+\subsection{Measure, do not cite}
+Bench Ed25519, HMAC-SHA256 (the MAVLink~2 baseline), the NIST lattice signature
+and KEM standards~\cite{nist_pqc}, and a compact-signature alternative, on two
+targets: a flight-controller-class microcontroller (STM32H7, as on Pixhawk~6)
+and a companion-computer-class board. Report sign latency, verify latency, and
+--- the one that matters and the one nobody reports --- \emph{end-to-end
+frame-to-frame} latency under a realistic message mix.
+
+\subsection{Fragmentation model}
+Map signature size to DroneCAN frame count to bus occupancy at realistic message
+rates, yielding $\Delta_{\mathrm{auth}}$. Validate against a real bus, using the
+timing of the benign portion of the \dataset{HCRL UAVCAN} capture as the
+baseline.
+
+\subsection{Compose}
+Push $\Delta_{\mathrm{auth}}$ through the existing chain. Produce the certified
+authentication budget as a function of corridor margin, and the scheme ranking
+that Proposition~\ref{pr:ranking} predicts will differ from the size ordering.
+
+\subsection{The adversarial interaction}
+The most interesting case, and a genuinely new attack: an adversary who
+\emph{induces} authentication work --- flooding the bus with frames carrying
+invalid signatures --- turns the defence into the delay attack. Verification
+cost is incurred before the signature is known to be bad, so the defender pays
+per frame. This is directly measurable on the \dataset{HCRL} surface, and the
+composition theorem bounds its effect on the mission.
+
+\begin{honestly}
+This attack is dual-use, and the write-up must handle it the way the parent
+manuscript handled its evasion analysis: the mechanism is not novel to anyone
+who has implemented signature verification, the result \emph{bounds} what the
+attacker achieves, and the practical output is a defensive configuration
+procedure. Rate-limiting and cheap pre-filters are the mitigation, and they
+belong in the same section as the attack.
+\end{honestly}
+
+% =====================================================================
+\section{Relation to the parent manuscript's limitations}
+% =====================================================================
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.42\linewidth}p{0.10\linewidth}X@{}}
+\toprule
+\textbf{Limitation} & \textbf{Closed?} & \textbf{How} \\
+\midrule
+Analytical anchor and detector scope (one detector, a scalar operating point) &
+\textbf{weakly} &
+exercises a second attack surface, the bus, but still with a scalar operating
+point \\
+Evidence-class imbalance & no & unchanged \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent
+P2's value is not limitation-closing; it is that it adds a defence side to two
+sublayers the schema already models and the corpus already covers, and it does
+so with data that needs no dataset gatekeeper.
+
+% =====================================================================
+\section{Platform integration}
+% =====================================================================
+A \textbf{Crypto Budget} page: choose a transport (MAVLink~2, DroneCAN, CAN-FD),
+a scheme, a message rate, and a corridor margin; receive the certified floor and
+a pass/fail against the $\MCR\ge0.90$ reference consistent with
+DO-326A~\cite{do326a}. This is the most operationally useful page the platform
+could carry, and it requires no dataset at all.
+
+% =====================================================================
+\section{Risks}
+% =====================================================================
+\begin{itemize}
+\item \textbf{Hardware access.} A microcontroller development board is
+inexpensive; a full flight controller is needed only for the bus validation, not
+for the timing measurement. If neither is reachable, benchmarks on a pinned ARM
+target are a defensible second best --- but the paper must say so, and the
+provenance tag must say so too.
+\item \textbf{Reviewers may read it as post-quantum benchmarking.} The framing
+must lead with the budget result, not the numbers. The numbers are the
+instrument, not the finding.
+\item \textbf{Scheme selection may date quickly.} Pin the candidate set to the
+standardised algorithms~\cite{nist_pqc} and report the model, so a new scheme
+can be placed in the ranking without re-running the campaign.
+\end{itemize}
+
+% =====================================================================
+\section{Venue and timeline}
+% =====================================================================
+Target ACM AsiaCCS, ESORICS, or IEEE EuroS\&P; NDSS if the induced-authentication
+attack lands cleanly. Four to five months, and the bench work parallelises with
+P1's measurement campaign.
+
+\small
+\bibliographystyle{plain}
+\bibliography{proposals}
+
+\end{document}
