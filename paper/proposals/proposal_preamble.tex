@@ -1,0 +1,66 @@
+% =====================================================================
+%  Shared preamble for the three research proposals.
+%
+%  Each proposal \input{}s this file and is otherwise standalone, so any
+%  one of them can be set as Overleaf's main document and compiled on its
+%  own. Nothing here is specific to a single proposal.
+% =====================================================================
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+% Times, matching the parent manuscript. mathptmx is in every TeX Live and on
+% Overleaf; lmodern is deliberately not used, since it is absent from minimal
+% distributions and this preamble should compile anywhere.
+\usepackage{mathptmx}
+\usepackage[a4paper,margin=25mm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage[hidelinks,breaklinks]{hyperref}
+
+% ---- shared style tokens, matching the parent manuscript ------------
+\definecolor{netcol}{RGB}{31,78,121}
+\definecolor{autocol}{RGB}{18,120,90}
+\definecolor{bridgecol}{RGB}{176,96,0}
+\definecolor{accent}{RGB}{140,20,20}
+
+\newcommand{\layernet}{\textcolor{netcol}{\textbf{network}}}
+\newcommand{\layerauto}{\textcolor{autocol}{\textbf{autonomy}}}
+\newcommand{\dataset}[1]{\textsc{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\Real}{\mathbb{R}}
+\newcommand{\Norm}[1]{\left\lVert #1\right\rVert}
+\newcommand{\MCR}{\mathrm{MCR}}
+
+\newtheorem{claim}{Claim}
+\newtheorem{proposition}{Proposition}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+% ---- section styling -------------------------------------------------
+\titleformat{\section}{\large\bfseries\color{netcol}}{\thesection}{0.7em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{1.4em}{0.6em}
+
+\setlist[itemize]{leftmargin=1.35em,topsep=0.3em,itemsep=0.25em}
+\setlist[enumerate]{leftmargin=1.6em,topsep=0.3em,itemsep=0.25em}
+
+% ---- a boxed "what this rests on" callout ---------------------------
+\newenvironment{honestly}
+  {\par\medskip\noindent\begin{tabular}{@{}p{2.5mm}@{\hspace{3mm}}p{0.9\linewidth}@{}}
+   \textcolor{accent}{\rule{2.5mm}{\baselineskip}} &
+   \small\itshape}
+  {\end{tabular}\par\medskip}
+
+% ---- the proposal header --------------------------------------------
+\newcommand{\proposalheader}[3]{%
+  \begin{center}
+  {\Large\bfseries #1\par}\medskip
+  {\large\itshape #2\par}\medskip
+  {\small #3\par}
+  \end{center}
+  \medskip\hrule\medskip}

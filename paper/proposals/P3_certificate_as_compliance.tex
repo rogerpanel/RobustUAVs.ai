@@ -1,0 +1,190 @@
+% =====================================================================
+%  PROPOSAL P3 -- The certificate as a compliance artifact
+%
+%  Standalone. Set this as Overleaf's main document and compile with
+%  pdfLaTeX; Overleaf runs BibTeX automatically. Locally:
+%    pdflatex P3 && bibtex P3 && pdflatex P3 && pdflatex P3
+% =====================================================================
+\documentclass[11pt,a4paper]{article}
+\input{proposal_preamble}
+
+\begin{document}
+
+\proposalheader
+  {P3 --- The Certificate as a Compliance Artifact}
+  {Certified Robustness Meets Airworthiness: Mapping ML Robustness Guarantees
+   onto SORA Operational Volumes and ED-324 Learning Assurance}
+  {Research proposal, RobustUAVs.ai project $\cdot$ Roger Nick Anaedevha $\cdot$
+   drafted 2026-08-13\\
+   Follow-on to \emph{From Wire to Flight} (NDSS submission)}
+
+\begin{abstract}
+\noindent
+The parent manuscript already computes quantities that aviation regulators
+independently require, and does not say so loudly enough. Its corridor-margin
+family was chosen to bracket the JARUS SORA contingency volume; its certified
+tube radius is directly comparable to that volume's lateral extent; and the
+``operating region'' qualifier on its Lipschitz hypothesis is, in the vocabulary
+of EASA's learning-assurance framework, an Operational Design Domain. This
+proposal formalises the correspondence, performs a gap analysis against the
+ED-324 learning-assurance objectives, and delivers an evidence generator that
+emits a SORA-shaped compliance pack from a certified run. It is a
+systematisation-and-tooling contribution, and is proposed as such.
+\end{abstract}
+
+% =====================================================================
+\section{The gap}
+% =====================================================================
+Three developments have converged while the certified-robustness literature has
+looked the other way.
+
+\paragraph{The operational-volume methodology is settled.}
+Under the JARUS Specific Operations Risk Assessment, the operational volume
+comprises the flight geography plus a contingency volume whose minimum lateral
+extent is the sum of GNSS position accuracy, position-holding error, map error,
+a reaction-distance term, and the stopping distance of the contingency
+manoeuvre~\cite{jarus_sora25}. The parent manuscript's margin family
+$\{2,5,10,20\}$\,m was chosen to bracket exactly this, and its default values
+for the first three terms already total about $7$\,m.
+
+\paragraph{The AI assurance framework is arriving.}
+ED-324 / ARP6983 is EUROCAE WG-114 and SAE G-34's process standard for
+developing and certifying aeronautical products that implement
+AI~\cite{ed324,eurocae_wg114}. EASA's learning-assurance framework turns on a
+Concept of Operations, an Operational Domain, and an Operational Design Domain
+for the machine-learning constituent~\cite{easa_mleap,easa_ai_concept2}, with
+the broader trajectory set out in the agency's AI
+roadmap~\cite{easa_ai_roadmap2}.
+
+\paragraph{The airspace framework is becoming mandatory.}
+Network Remote ID is becoming a condition of participation in
+U-space~\cite{easa_uspace2021,easa_remoteid_2026}, which makes the connectivity
+assumptions of a cross-layer security argument regulatory rather than
+architectural.
+
+Meanwhile the parent manuscript states its Lipschitz hypothesis as holding
+``over the operating region'', and then enumerates that region: attitudes away
+from gimbal-lock singularities, airspeeds below stall, actuators off their
+saturation limits, no contact dynamics. \textbf{That is an ODD.} It is described
+in exactly those terms and the connection is never claimed.
+
+% =====================================================================
+\section{The claim}
+% =====================================================================
+A three-part contribution: a mapping, a gap analysis, and a generator.
+
+\subsection{The mapping}
+A correspondence between certified-robustness vocabulary --- certified radius,
+trajectory tube, operating region, certified window, mission floor --- and
+SORA/ED-324 vocabulary --- contingency volume, ODD, operational domain, learning
+assurance objective. Where the correspondence is exact, prove it. Where it is
+not, name what is missing.
+
+\begin{honestly}
+The most likely honest finding is a negative one: \textbf{certified radii are
+per-input, while assurance objectives are per-operation}. A statement that a
+model is stable for every perturbation of norm at most $R$ does not by itself
+discharge an objective phrased over a flight. The parent manuscript's
+conjunction of a spatial and a temporal predicate is a step across that divide,
+which is precisely why it is worth writing this paper --- but the gap should be
+reported, not smoothed over. A systematisation whose finding is ``it all lines
+up'' would be worth very little.
+\end{honestly}
+
+\subsection{The gap analysis}
+For each ED-324 learning-assurance objective, classify what a
+Gr\"onwall~\cite{gronwall1919}, randomized-smoothing~\cite{cohen2019smoothing},
+PAC-Bayes~\cite{mcallester1999pac} or regret-based~\cite{arora2012mwu}
+certificate can do:
+
+\begin{itemize}
+\item \textbf{Discharge:} the certificate is sufficient evidence for the
+objective.
+\item \textbf{Evidence:} the certificate contributes but does not suffice.
+\item \textbf{Untouched:} the objective is about something certificates do not
+address --- data governance, requirements traceability, human oversight.
+\end{itemize}
+
+The runtime-assurance reading already present in the parent manuscript ---
+Simplex-style handover when the aircraft leaves the linearisable
+envelope~\cite{sha2001simplex} --- is the natural bridge for objectives the
+certificate cannot discharge alone, and should be developed here rather than
+left as a remark.
+
+\subsection{The evidence generator}
+Emit a SORA Annex~A-shaped evidence pack from a certified run: the ODD as the
+measured operating region, the contingency extent as the certified tube radius,
+the mission floor as the safety objective, and every figure carrying its
+provenance tag. This is what makes the paper more than a survey, and it is
+directly executable against the parent project's committed results.
+
+% =====================================================================
+\section{What is reused, what is new}
+% =====================================================================
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}XX@{}}
+\toprule
+\textbf{Reused unchanged} & \textbf{New} \\
+\midrule
+the entire compute side: engine, corridor family, provenance ledger &
+the vocabulary mapping and its proofs \\
+the four-certificate architecture &
+the objective-by-objective gap analysis \\
+the results already committed &
+the evidence generator over \code{results/} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent
+This is the cheapest of the three proposals to execute and the only one with no
+measurement risk.
+
+% =====================================================================
+\section{Relation to the parent manuscript's limitations}
+% =====================================================================
+P3 closes none of the manuscript's stated limitations, and should not be sold as
+if it did. Its value is that it changes who the result is \emph{for}: from a
+security audience that reads a certified floor as a bound, to a certification
+audience that reads it as evidence. That is a different contribution, not a
+smaller one, but the distinction should be explicit in the framing.
+
+% =====================================================================
+\section{Platform integration}
+% =====================================================================
+A \textbf{Compliance Pack} export: one action producing the evidence bundle for
+a chosen operating point, slotting into the existing export menu alongside the
+JSON, CSV, PNG and PDF exporters.
+
+% =====================================================================
+\section{Risks}
+% =====================================================================
+\begin{itemize}
+\item \textbf{It is a systematisation paper and must be honest about that.} Its
+contribution is the mapping and the generator, not new theory. Pitch it to a
+venue that wants that, rather than overselling it at a top-tier security
+conference and being rejected for the right reason.
+\item \textbf{The standards move.} ED-324 is in preparation and the
+bibliography already records it as such~\cite{ed324}; the Commission's drone
+security package is in progress. Any claim keyed to a draft clause number will
+rot. Key claims to concepts --- ODD, operational domain, contingency volume ---
+which are stable, and cite clause numbers only in an appendix.
+\item \textbf{Regulatory over-claim.} Nothing in this paper certifies an
+aircraft. It maps a mathematical guarantee onto an evidence framework. The
+distinction must survive the abstract.
+\end{itemize}
+
+% =====================================================================
+\section{Venue and timeline}
+% =====================================================================
+Target an IEEE S\&P SoK track, ACM Computing Surveys, or the Digital Avionics
+Systems Conference --- the last of which would put the work in front of the
+people who actually write these standards. About three months, and it can run in
+the gaps of P1 and P2.
+
+\small
+\bibliographystyle{plain}
+\bibliography{proposals}
+
+\end{document}
