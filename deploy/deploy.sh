@@ -76,7 +76,7 @@ for d in schema ingest certificates experiments results paper docs; do
 	[ -d "$d" ] || continue
 	rsync -a --delete "$d" "$ARTIFACT/"
 done
-cp -f README.md CLAUDE.md PENDING_ON_DATA.md requirements.txt "$ARTIFACT/" 2>/dev/null || true
+cp -f README.md docs/PROJECT_CONTEXT.md PENDING_ON_DATA.md requirements.txt "$ARTIFACT/" 2>/dev/null || true
 
 # Reverse proxy: reload rather than restart, so the site never drops.
 if [ -f deploy/Caddyfile ] && command -v caddy >/dev/null; then

@@ -102,6 +102,13 @@ RULES: list[tuple[str, str]] = [
     (r"Corò, Federico", "Anonymous, Author"),
     (r"\bCor\\`o\b", "Anonymous"),
     (r"\bCorò\b", "Anonymous"),
+    # Tooling attribution. The copilot's provider list legitimately names
+    # commercial LLMs; these rules target authorship traces, not product names,
+    # so they are anchored to the trailer and file-name forms.
+    (r"Co-Authored-By: Claude[^\n]*\n?", ""),
+    (r"Claude-Session: [^\n]*\n?", ""),
+    (r"\bClaude Code\b", "the coding assistant"),
+    (r"\bCLAUDE\.md\b", "docs/PROJECT_CONTEXT.md"),
     # Contact details.
     (r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.(?:com|org|net|edu|ru|it|ai)\b",
      "anonymous@example.org"),
@@ -255,6 +262,7 @@ def verify(dst: Path) -> list[tuple[Path, int, str]]:
         r"rogerpanel", r"rogernickanaedevha", r"Anaedevha", r"MEPhI",
         r"robustuavs\.ai", r"robustidps\.ai", r"10\.34740", r"Mauro Conti",
         r"Cor\\`o", r"Corò", r"SPRITZ", r"Padova", r"Padua", r"Missouri S",
+        r"CLAUDE\.md", r"Claude Code", r"Co-Authored-By", r"Claude-Session",
         r"[A-Za-z0-9._%+-]+@(?!example\.org)[A-Za-z0-9.-]+\.(?:com|org|net|edu|ru|it|ai)\b",
     ]
     rx = re.compile("|".join(tokens))

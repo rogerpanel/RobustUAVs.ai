@@ -23,7 +23,7 @@ Run the blocks in order and read each result before continuing.
 ```bash
 cd /srv/robustuavs/repo
 git fetch origin
-git checkout claude/whelan-uavcas-ingest-u00isn
+git checkout dev/whelan-uavcas-ingest
 git pull
 ls platform/           # expect: backend  mobile  docker-compose.yml  README.md
 ```
@@ -84,7 +84,7 @@ sudo tee /etc/robustuavs/api.env >/dev/null <<'EOF'
 # DATABASE_URL=postgresql+psycopg://robustuavs:PASSWORD@127.0.0.1/robustuavs
 # REDIS_URL=redis://127.0.0.1:6379/0
 
-# Claude is the default provider and the one the copilot uses when a visitor
+# the assistant is the default provider and the one the copilot uses when a visitor
 # supplies no key of their own. Setting it means every visitor gets narrated
 # answers on YOUR account, so it is metered: 30 answers per session per hour,
 # enforced in app/sessions.py. A visitor who supplies their own key in the

@@ -114,7 +114,7 @@ def main() -> int:
     ap.add_argument("--scenarios", default="1,2,3")
     a = ap.parse_args()
     if not BINARY.exists():
-        print("build the demo first (see CLAUDE.md Build & run)"); return 1
+        print("build the demo first (see docs/PROJECT_CONTEXT.md Build & run)"); return 1
 
     all_seed, all_hops, all_missed, agg = [], [], [], []
     for scen in a.scenarios.split(","):

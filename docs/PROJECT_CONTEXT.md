@@ -1,7 +1,6 @@
-# CLAUDE.md — RobustUAVs.ai (uav-e2e-bench)
+# PROJECT_CONTEXT — RobustUAVs.ai (uav-e2e-bench)
 
-Project memory for Claude Code. This is the authoritative context; read it fully
-before acting. When a fact here conflicts with your assumptions, this wins.
+Authoritative project context. Read it fully before acting. When a fact here conflicts with your assumptions, this wins.
 
 ## Mission
 
@@ -73,7 +72,7 @@ The six sources and their schema mapping:
   per scenario group). `validate.py` (schema gate for events/windows/pairings —
   run it on every adapter output before commit).
 - `models/uav_defense/` — the AUTHORITATIVE Phase-A reference package (ported
-  from github.com/rogerpanel/cv, branch claude/latex-report-datasets-DiJWE):
+  from the author's prior CV repository, report branch):
   real CT-TGNN on the GNSS graph, MambaShield, CAF-CNN + Seq2Seq baselines,
   attack suite, train/evaluate, `scripts/run_phase_a.sh` (synthetic smoke test,
   ~5 min CPU → metrics.json), and the Grönwall + randomised-smoothing

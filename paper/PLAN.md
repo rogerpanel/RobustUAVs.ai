@@ -1,6 +1,6 @@
 # Research plan & schedule (24 Jul → 28 Sept 2026)
 
-Markdown companion to the LaTeX source (`PLAN_source.tex`). See CLAUDE.md
+Markdown companion to the LaTeX source (`PLAN_source.tex`). See docs/PROJECT_CONTEXT.md
 "Roadmap" for the week-by-week milestones mapped to repo state. Hard constraints:
 visa submission 19–20 Aug; Finland/ESTC trip 6–12 Sept (W7 mostly travel).
 Heavy technical work is front-loaded W1–W6; W8–W9 are writing, final experiments,

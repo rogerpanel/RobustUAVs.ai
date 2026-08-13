@@ -375,3 +375,67 @@ The one item worth pulling forward before the NDSS deadline is **P1's INS-only
 past γ_req = 6.14 m/s. Measuring the dead-reckoning γ directly from the Whelan
 IMU replaces an argument with a measurement in the paper's most contested
 paragraph, and the data is already on disk.
+
+---
+
+# Coverage against Paper D's stated limitations
+
+Asked directly whether these three proposals close the manuscript's limitations,
+the honest answer is **no, not most of them**. They close one fully, one
+partially, and leave four untouched. Setting that out plainly is more useful
+than claiming coverage, because the four uncovered ones are what a reviewer will
+press on and two of them need no new paper at all.
+
+| Paper D §XII limitation | Covered by | How completely |
+|---|---|---|
+| **The certificate assumes the filter re-anchors** (Definition 2 fails under persistent denial) | **P1** | **Fully.** This is P1's central claim: an authenticated PNT source can be jammed but not forged, so it supplies the uncorrupted update Definition 2 requires. The limitation becomes a satisfiable hypothesis with hardware behind it. |
+| **γ is a three-flight hover calibration** | **P1** | **Partially.** P1 measures the dead-reckoning γ from the Whelan IMU, which replaces §X-D's error-budget *argument* with a *measurement*, and adds γ for further modalities. It does **not** deliver the cruise-inclusive flight campaign, which is the actual gap. |
+| **Conservatism of the deterministic core** (fusing the four floors into one tighter envelope is open) | — | **Not covered.** See P0-A below. |
+| **Evidence-class imbalance** (zero `measured_same_platform` pairings) | — | **Not covered, deliberately.** Closing it means a flight-test campaign producing a capture with machine-readable attack intervals. Valuable, but not schedulable against a conference deadline, and I said so above rather than pretending a paper closes it. |
+| **Calibration constants that remain data-gated** (TEXBAT unit bridge, PAC-Bayes KL) | — | **Not covered.** But see P0-B: only half of this is genuinely data-gated. |
+| **Analytical anchor and detector scope** (one detector, a single scalar operating point) | partly **P2** | **Weakly.** P2 exercises a second surface (the bus) but still with a scalar operating point. §VI-B generalises to learned detectors on paper and never instantiates it. See P0-C. |
+
+## P0 — limitation-closing work that needs no new paper
+
+Three of the gaps above are self-contained engineering or analysis that would
+strengthen Paper D itself, or its camera-ready, without a new venue. Ranked by
+value per unit of effort.
+
+**P0-A. Fuse the four certified floors into one envelope.** §IX already argues
+the four certificates bound *different objects* and compose by conjunction, so a
+deployment reads `min{f_G, f_RS, f_PB, f_MWU}`. That minimum is currently
+computed and reported but never *tightened*: where two certificates bound the
+same failure mode through different routes, the conjunction can be sharper than
+either. A short analysis plus a change to `certificates/engine.py` would turn
+"the architecture is a four-certificate cover" from an architectural claim into
+a numerical one. Directly addresses the conservatism limitation. Days, not weeks.
+
+**P0-B. Compute the PAC-Bayes KL.** `PENDING_ON_DATA.md` #5 lists this with the
+data-gated items, but it is not data-gated: the bound is already wired to the
+trained model's measured empirical risk, and the prior/posterior KL is a
+computation over the checkpoint in `models/uav_defense/`. Doing it removes the
+one *pending* cell from Table `tab:constants` and halves the "calibration
+constants" limitation. It should be moved out of `PENDING_ON_DATA.md` and into
+a work item, because listing a compute task as data-gated overstates how blocked
+the project is.
+
+**P0-C. Instantiate the learned-detector generalisation.** §VI-B derives
+θ_eff = g⁻¹(P_th) and argues any scored detector slots in, then instantiates
+nothing. Training one classifier on the UAVIDS-2025 flows, measuring its
+score-to-magnitude profile g, and running one sweep in θ_eff would convert a
+paragraph of "the framework does not depend on that choice" into a figure. It
+also produces the stochastic-score case that §IX says is randomized smoothing's
+proper regime, which currently has no worked example. This is the single change
+that would most blunt a reviewer's "you evaluate one hand-built detector".
+
+## What stays open after everything above
+
+Two things, and both should stay stated as limitations rather than papered over:
+
+1. **No public capture observes both layers on one airframe with published
+   attack intervals.** Everything else in the project is downstream of that.
+2. **Four of six sources are simulation or calibrated twin,** so absolute
+   detector numbers are corpus-specific. What transfers is the structure, which
+   §XII already says.
+
+The roadmap does not fix either, and no reasonable amount of desk work does.

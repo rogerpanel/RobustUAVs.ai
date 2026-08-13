@@ -2,7 +2,7 @@
 """Validate adapter outputs against schema/uavsec_schema.json.
 
 Every ingest adapter's events.jsonl / windows.jsonl / pairings.jsonl MUST pass
-this before commit (CLAUDE.md convention). File kind is chosen by filename:
+this before commit (docs/PROJECT_CONTEXT.md convention). File kind is chosen by filename:
     *events*.jsonl   -> #/$defs/Event
     *windows*.jsonl  -> #/$defs/AttackWindow
     *pairings*.jsonl -> #/$defs/CrossLayerPairing

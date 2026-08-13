@@ -8,7 +8,7 @@ the fleet simulator's state machine. What did NOT transfer is the numbers.
 That distinction is the whole point of this module. robustidps.ai's
 `certificates_payload` recomputes Lipschitz and smoothing radii on a 16-sample
 synthetic batch at every page visit, so its dashboard pills drift from visit to
-visit and do not equal the dissertation constants. CLAUDE.md says plainly not to
+visit and do not equal the dissertation constants. docs/PROJECT_CONTEXT.md says plainly not to
 use them. Here the certificates come from `certificates/engine.py`, which
 self-checks against the dissertation values, and the MCR curves come from
 `results/ewbench_mcr_anchor.csv`, which is committed campaign output.

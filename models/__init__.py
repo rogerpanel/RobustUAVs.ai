@@ -4,7 +4,7 @@ Two subpackages:
 
 - `uav_defense/` — the AUTHORITATIVE Phase-A reference implementation, ported
   verbatim from the dissertation code (github.com/rogerpanel/cv, branch
-  claude/latex-report-datasets-DiJWE, package `uav_defense`). This is the code
+  prior report branch, package `uav_defense`). This is the code
   behind the robustidps.ai /uav/certification dashboard and the Ch.6
   `run_phase_a.sh` pipeline. Contains the real CT-TGNN on the GNSS graph
   (models/ct_tgnn_gnss.py), MambaShield, the CAF-CNN + Seq2Seq-Transformer

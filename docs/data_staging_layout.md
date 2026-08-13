@@ -89,7 +89,7 @@ data/raw/datamut_sim/datamut_paper_exact_demo.cc
 data/raw/datamut_sim/datamut_analysis.h
 ```
 These are identical to `third_party/datamut/`. The sweep builds the patched
-binary into `build/` (see CLAUDE.md Build & run); the raw copy here is only for
+binary into `build/` (see docs/PROJECT_CONTEXT.md Build & run); the raw copy here is only for
 provenance. Campaign: `experiments/sweep_full.py`.
 
 ## 6. `data/raw/uav_cas/` — calibrated swarm digital twin ❌ STAT PRESENT? / TS PENDING
