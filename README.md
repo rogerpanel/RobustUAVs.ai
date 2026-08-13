@@ -31,11 +31,26 @@ is not yet kept by this URL.
 
 Before the paper goes out, the reviewer-facing link must be an anonymised mirror
 (e.g. `anonymous.4open.science`, or a scrubbed zip on Zenodo with an anonymous
-record), **not** `github.com/rogerpanel/RobustUAVs.ai`. Scrub at minimum: the
-author block in `paper/`, `LICENSE`'s copyright line, `CLAUDE.md`, the Kaggle
-DOI and URL, `robustuavs.ai`, and the git history (a fresh single-commit
-history, not a rewrite). This README is written so it can be scrubbed
-mechanically — every identifying string is in one of the places listed above.
+record), **not** `github.com/rogerpanel/RobustUAVs.ai`.
+
+`tools/anonymise.py` produces that mirror and, more importantly, **refuses to
+pass if any identifying token survives**:
+
+```bash
+python3 tools/anonymise.py --out ../RobustUAVs-anon --init-git --zip
+```
+
+It rewrites names, affiliations, the GitHub owner, the Kaggle URL and DOI, the
+deployment domain, and contact addresses; forces `\anontrue` in every paper and
+drops the named builds; rewrites the LICENSE copyright line; drops `CLAUDE.md`
+and the supervisor correspondence; starts a fresh single-commit history rather
+than rewriting the original (a rewrite leaks through reflogs, forks, and cached
+GitHub views); and then re-scans its own output and exits non-zero on any
+survivor. Two things it deliberately leaves alone: `third_party/`, because
+DATAMUt's authorship is a citation rather than self-identification, and binary
+files, which it lists for you to check by hand — **PDFs carry author metadata in
+their Info dictionary, so rebuild them inside the anonymised tree rather than
+copying them across.**
 
 ---
 
@@ -272,7 +287,18 @@ page `measured` or `illustrative` for the same reason.
 ## Branches
 
 - **`main`** — the reviewable state. What you are reading.
-- **`claude/*`** — working branches; merged into `main` when a milestone lands.
+- **`claude/*`** — working branches, fast-forwarded into `main` when a milestone
+  lands. No divergence: `main` is always an ancestor-or-equal of the active
+  working branch.
+
+## Where this is going
+
+`docs/research_roadmap_2027.md` sets out three follow-on directions with the
+machinery each would reuse, the measurements each needs, and where each lands in
+the platform: certified PNT substitution (alternative navigation sources as a
+sensor-selection rule), post-quantum authentication treated as self-inflicted
+staleness against the same budget an attacker spends, and the certificate
+recast as a SORA/ED-324 compliance artifact.
 
 ---
 
