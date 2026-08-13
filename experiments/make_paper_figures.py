@@ -150,14 +150,18 @@ def fig_headline():
         "%   measured Delta_total up to 424 s); network-only = 0 by definition.\n"
         "\\addplot[black,thick] coordinates {(0.05,0)(10,0)};\n"
         "\\addlegendentry{autonomy-/network-only ($=0$)}\n"
-        "% Certified operating window at the paper operating point theta=0.25 s:\n"
-        "%   kinematic:          theta* = 0.243 s (m=20) -> 0.25 s just OUTSIDE\n"
-        "%   empirical_ekf:      theta* = 0.267 s (m=2), 1.33 s (m=10) -> INSIDE\n"
-        "%   empirical_receiver: theta* = 0.305 s (m=2), 1.52 s (m=10) -> INSIDE\n"
-        "% Shade the empirical window, e.g. m=10 m ekf: [0.178, 1.334] s:\n"
-        "% \\fill[netcol!10] (axis cs:0.178,0) rectangle (axis cs:1.334,1.03);\n"
-        "% Sensitivity: gamma_req to admit theta=0.25 at m=10 m is 7.28 m/s;\n"
-        "% measured gamma ~1.2-1.4 m/s clears it ~5x (results/delta_mapping_sensitivity.csv).\n"
+        "% Certified operating window at the paper operating point theta=0.25 s\n"
+        "% (all values read back from results/certified_operating_window.csv,\n"
+        "%  Gronwall amplification at the MEASURED LOCAL L=1.181, T_c=1 s):\n"
+        "%   kinematic:          theta* = 0.205 s (m=20) -> 0.25 s just OUTSIDE\n"
+        "%   empirical_ekf:      theta* = 0.2249 s (m=2) OUTSIDE, 1.1244 s (m=10) INSIDE\n"
+        "%   empirical_receiver: theta* = 0.2569 s (m=2), 1.2844 s (m=10) -> INSIDE\n"
+        "% Shade the empirical window, e.g. m=10 m ekf: [0.178, 1.124] s:\n"
+        "% \\fill[netcol!10] (axis cs:0.178,0) rectangle (axis cs:1.124,1.03);\n"
+        "% Sensitivity: gamma_req to admit theta=0.25 at m=10 m is 6.14 m/s\n"
+        "% (results/delta_mapping_sensitivity.csv); measured gamma clears it by\n"
+        "% 4.5x (EKF, 1.365 m/s) to 5.1x (receiver, 1.195 m/s). An earlier 7.28\n"
+        "% figure here used the nominal global L=1.01, which the papers do not use.\n"
         "% This REPLACES the drafted figure, which traced the EW-Bench J/S curve\n"
         "% on a theta axis (not defensible). Axis: x=theta (s) log 0.05..10;\n"
         "% y=certified floor under the margin-family model (modeled, not measured MCR).\n")
@@ -230,7 +234,8 @@ DECISIVE real-data result (docs/certified_regime_analysis.md ADDENDUM):
 the empirical Whelan delta mapping (gamma~1.2-1.4 m/s) brings theta=0.25 s
 INSIDE the certified operating window at every corridor margin; the kinematic
 worst case (15 m/s) leaves it just outside. gamma_req to admit theta=0.25 at
-m=10 m is 7.28 m/s; measured clears it ~5x. Paper A -> "widened window"
+m=10 m is 6.14 m/s (measured local L=1.181); measured gamma clears it by
+4.5x (EKF) to 5.1x (receiver). Paper A -> "widened window"
 framing (abstract_A_widened), cruise-regime confirmation pending.
 
 The `block_*.tex` files are the fragments the papers \\input directly
