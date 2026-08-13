@@ -32,7 +32,8 @@ DECISIVE real-data result (docs/certified_regime_analysis.md ADDENDUM):
 the empirical Whelan delta mapping (gamma~1.2-1.4 m/s) brings theta=0.25 s
 INSIDE the certified operating window at every corridor margin; the kinematic
 worst case (15 m/s) leaves it just outside. gamma_req to admit theta=0.25 at
-m=10 m is 7.28 m/s; measured clears it ~5x. Paper A -> "widened window"
+m=10 m is 6.14 m/s (measured local L=1.181); measured gamma clears it by
+4.5x (EKF) to 5.1x (receiver). Paper A -> "widened window"
 framing (abstract_A_widened), cruise-regime confirmation pending.
 
 The `block_*.tex` files are the fragments the papers \input directly
