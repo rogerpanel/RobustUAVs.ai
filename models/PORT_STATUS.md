@@ -3,7 +3,7 @@
 Source of truth: dissertation **Chapter 6** (`chapter6_v11_Ru.tex`), the
 **robustidps.ai platform documentation** (`Documentation_v5.tex`), and the
 **`uav_defense` reference package** (github.com/rogerpanel/cv, branch
-`claude/latex-report-datasets-DiJWE`), all now in hand. The earlier open items
+the prior report branch), all now in hand. The earlier open items
 are closed.
 
 ## Method mapping (Ch.6 Table `tab:uav_mapping` — authoritative)

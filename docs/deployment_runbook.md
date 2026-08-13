@@ -580,7 +580,7 @@ cd /srv/robustuavs/repo
 
 From now on `git pull`, `git fetch`, and `git checkout <branch>` work normally
 in that directory — including the working branches, e.g.
-`git checkout claude/whelan-uavcas-ingest-u00isn`.
+`git checkout dev/whelan-uavcas-ingest`.
 
 ### 2.6 Python environment and the first full reproduction
 

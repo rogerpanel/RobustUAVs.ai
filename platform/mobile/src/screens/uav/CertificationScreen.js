@@ -10,7 +10,7 @@ import { ScreenHeader, Panel, Unavailable, KV, Tag } from './parts';
  * robustidps.ai's version recomputes Lipschitz and smoothing radii on a
  * 16-sample synthetic batch every time the page loads, so its pills drift and
  * do not equal the dissertation constants. Those numbers are demo artifacts and
- * CLAUDE.md says not to use them. This page reads the locked values.
+ * docs/PROJECT_CONTEXT.md says not to use them. This page reads the locked values.
  */
 export default function CertificationScreen() {
   const { t } = useTheme();

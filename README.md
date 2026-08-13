@@ -42,7 +42,7 @@ python3 tools/anonymise.py --out ../RobustUAVs-anon --init-git --zip
 
 It rewrites names, affiliations, the GitHub owner, the Kaggle URL and DOI, the
 deployment domain, and contact addresses; forces `\anontrue` in every paper and
-drops the named builds; rewrites the LICENSE copyright line; drops `CLAUDE.md`
+drops the named builds; rewrites the LICENSE copyright line; drops `docs/PROJECT_CONTEXT.md`
 and the supervisor correspondence; starts a fresh single-commit history rather
 than rewriting the original (a rewrite leaks through reflogs, forks, and cached
 GitHub views); and then re-scans its own output and exits non-zero on any
@@ -287,7 +287,7 @@ page `measured` or `illustrative` for the same reason.
 ## Branches
 
 - **`main`** — the reviewable state. What you are reading.
-- **`claude/*`** — working branches, fast-forwarded into `main` when a milestone
+- **`dev/*`** — working branches, fast-forwarded into `main` when a milestone
   lands. No divergence: `main` is always an ancestor-or-equal of the active
   working branch.
 

@@ -50,7 +50,7 @@ Evidence (scenario 1, low mode):
 The smoking gun is the committed `n_runs` column: 32, 64, 96, … (cumulative),
 and the committed medium-mode curve *rises* with ε — impossible for a
 threshold detector. **Consequences:** `results/theta_operating_curve.csv`
-(regenerated clean), Paper C Fig. 3 coordinates (replaced), and the CLAUDE.md
+(regenerated clean), Paper C Fig. 3 coordinates (replaced), and the docs/PROJECT_CONTEXT.md
 "measured operating curve" facts (recall ≈ 0.90 for ε ≤ 2 → holds only at
 ε ≤ 3; 0.675@4 → 0.609; 0.275@6.5 → 0.234; scenario-3 medium plateau
 ≈ 0.71 → 0.625) were all contaminated. `sweep_theta.py` is fixed; the full
