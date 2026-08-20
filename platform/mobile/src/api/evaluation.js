@@ -8,4 +8,6 @@ export const evalApi = {
   statistics: () => request('/api/eval/statistics'),
   calibration: () => request('/api/eval/calibration'),
   federated: () => request('/api/eval/federated'),
+  interface: () => request('/api/eval/interface'),
+  missionDistribution: () => request('/api/eval/mission-distribution'),
 };

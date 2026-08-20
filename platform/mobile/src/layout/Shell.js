@@ -33,6 +33,8 @@ import ROCScreen from '../screens/eval/ROCScreen';
 import StatisticsScreen from '../screens/eval/StatisticsScreen';
 import CalibrationScreen from '../screens/eval/CalibrationScreen';
 import FederatedScreen from '../screens/eval/FederatedScreen';
+import InterfaceScreen from '../screens/eval/InterfaceScreen';
+import MissionDistScreen from '../screens/eval/MissionDistScreen';
 import AgentStudioScreen from '../screens/eval/AgentStudioScreen';
 import UploadScreen from '../screens/eval/UploadScreen';
 
@@ -60,6 +62,8 @@ const SCREENS = {
   Statistics: StatisticsScreen,
   Calibration: CalibrationScreen,
   Federated: FederatedScreen,
+  Interface: InterfaceScreen,
+  MissionDist: MissionDistScreen,
   AgentStudio: AgentStudioScreen,
   Upload: UploadScreen,
 };

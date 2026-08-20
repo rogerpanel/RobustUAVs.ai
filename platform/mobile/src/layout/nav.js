@@ -186,6 +186,27 @@ export const LEFT_GROUPS = [
           "Read the result below, including the hyperparameters, which are how it was COMPUTED.",
         ],
         tip: "Keeping params and hyperparams apart is what lets you explain why two runs disagree."  },
+      { key: 'Interface', glyph: 'γ', title: 'Interface stability (γ)', grounded: true,
+        blurb: 'Is γ a constant? Measured: no',
+        steps: [
+          "Read the estimator panel FIRST. Two estimators of γ disagree, and the uncorrected one diverges at short staleness because onset fires at a detection threshold — it measures the detector, not the attack.",
+          "Then the top panel: the certificate uses γ = 1.625 m/s, the supremum over 674 post-onset samples. The per-flight secant of 1.365 understates it by 1.19×.",
+          "Read the Coverage panel before the tables. Green = varied, amber = poorly covered, red = not varied at all.",
+          "Per-factor tables: attack type moves γ 2.6×, satellite visibility and staleness move it more.",
+          "The fit is descriptive only — no p-values, because samples within a flight are autocorrelated and there are two flights.",
+        ],
+        tip: "A factor marked 'not varied' is untested, not shown to have no effect."  },
+
+      { key: 'MissionDist', glyph: '⊞', title: 'Mission-distribution sensitivity', grounded: false,
+        blurb: 'What MCR\'s population dependence costs',
+        steps: [
+          "MCR is a probability over a distribution of missions, so a bound on it describes a population, not a flight.",
+          "Read the contrast panel: marginalised over the whole jamming sweep the nine distributions differ by 0.011, which looks negligible.",
+          "Conditioned on attack strength they differ by up to 0.214 — the average hides it.",
+          "The last table is the operational number: the jamming power at which each distribution drops below MCR 0.90 spans 9 dB, about 8× in transmit power.",
+        ],
+        tip: "Use this when asked whether the benchmark's MCR transfers to another fleet."  },
+
       { key: 'Federated', glyph: '⇄', title: 'Federated Learning', grounded: false,
         blurb: 'M7 FedGTD, the MWU defender',
         steps: [
