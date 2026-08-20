@@ -248,6 +248,12 @@ class StalenessGronwallCertificate:
         "kinematic": 15.0,   # v_max worst case
         "receiver": 1.20,    # raw receiver fix the attack injects
         "ekf": 1.37,         # filtered position the controller acts on
+        # Supremum of the baseline-corrected per-sample rate over all 674
+        # post-onset samples (experiments/gamma_campaign.py). The per-flight
+        # secant rates above are long-horizon averages and understate the rate
+        # by ~1.19x; a certificate is entitled to the supremum over the
+        # conditions it covers, so this is the defensible mapping.
+        "campaign_sup": 1.625,
     }
 
     def certify_staleness(self, theta_s: float, n_malicious_hops: int,

@@ -1,0 +1,30 @@
+factor,bin,n,gamma_median,gamma_p95,gamma_max
+satellites in view,"[5,8)",13,0.9245,0.9327,0.9353
+satellites in view,"[8,11)",121,1.2889,1.6148,1.625
+satellites in view,"[11,20)",540,0.1099,0.8649,1.2309
+HDOP,"[0,1)",661,0.257,1.4778,1.625
+HDOP,"[1,1.5)",11,0.9245,0.9331,0.9353
+HDOP,"[1.5,2.5)",2,0.4623,0.8785,0.9247
+receiver noise,"[130,150)",421,0.2539,1.5561,1.625
+receiver noise,"[150,200)",253,0.3317,0.8665,1.2309
+staleness (s),"[0.4,1)",11,0.9105,0.9289,0.9331
+staleness (s),"[1,2)",22,0.808,1.0285,1.0592
+staleness (s),"[2,5)",66,0.9071,1.4774,1.4786
+staleness (s),"[5,10)",110,0.7364,1.6167,1.625
+staleness (s),"[10,20)",184,0.4002,1.1396,1.1554
+staleness (s),"[20,40)",219,0.0531,0.1181,0.2162
+staleness (s),"[40,200)",62,0.0,0.0185,0.0232
+airspeed (m/s),"[0,0.2)",58,0.2442,0.8623,0.8676
+airspeed (m/s),"[0.2,0.5)",188,0.1472,0.9024,1.2309
+airspeed (m/s),"[0.5,1)",242,0.2476,1.1324,1.3178
+airspeed (m/s),"[1,10)",186,0.7873,1.6098,1.625
+attack type,gps_jamming,496,0.0925,0.8251,1.2309
+attack type,gps_spoofing,178,1.1379,1.6101,1.625
+error signal,receiver,64,0.1415,0.7253,1.2309
+error signal,ekf,610,0.2863,1.4798,1.625
+COVERAGE:attack_type,varied,,,,jamming and spoofing
+COVERAGE:gnss_condition,varied,,,,"satellites 14->4, HDOP 0.71->4.16, fix 3->0"
+COVERAGE:staleness,varied,,,,0 to ~70 s post-onset
+COVERAGE:airspeed,poor,,,,hover; p90 |v_xy| < 0.65 m/s
+COVERAGE:platform,not varied,,,,one PX4 / Pixhawk 4 / Holybro S500
+COVERAGE:flight_mode,not varied,,,,hover / loiter only
