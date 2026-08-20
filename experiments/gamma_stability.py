@@ -1,0 +1,159 @@
+#!/usr/bin/env python3
+"""
+Is the delay-to-position rate gamma a constant, or a function?
+
+The composition theorem consumes a single number, gamma, converting seconds of
+stale navigation input into metres of position error. The paper reports
+gamma ~ 1.2-1.4 m/s and, until now, presented it as *the* rate. A co-author
+asked the obvious question: is gamma actually stable across attack types, flight
+regimes, platforms, speeds and attack intensities? If it is, that is a strong
+result. If it is not, the honest model is gamma = gamma(attack type, regime, ...).
+
+This script answers that question over exactly the factors the released corpus
+lets us vary, and refuses to speculate about the rest. On the UAV Attack Dataset
+we can vary TWO factors:
+
+  * attack type   : GPS jamming vs GPS spoofing
+  * error signal  : raw receiver fix vs EKF-filtered position
+
+and we cannot vary platform, airspeed, flight mode, attack intensity, or attack
+duration, because the release holds all of them fixed. The output therefore
+reports a LOWER BOUND on gamma's true variability, and says so.
+
+Writes:
+  results/gamma_stability.csv
+  results/paper_figures/block_paperD_tab_gamma.tex
+"""
+from __future__ import annotations
+
+import csv
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+SRC = ROOT / "results" / "whelan_delta_calibration.csv"
+OUT = ROOT / "results" / "gamma_stability.csv"
+BLOCK = ROOT / "results" / "paper_figures" / "block_paperD_tab_gamma.tex"
+
+# What the released corpus holds fixed. Named explicitly so the paper cannot
+# quietly imply coverage it does not have.
+NOT_VARIED = [
+    ("platform", "one PX4 airframe family"),
+    ("flight regime", "hover / low-speed loiter only"),
+    ("airspeed", "not swept; no cruise segment in the release"),
+    ("attack intensity", "single intensity per attack type"),
+    ("attack duration", "single duration per flight"),
+]
+
+
+def load() -> list[dict]:
+    if not SRC.exists():
+        raise SystemExit(
+            f"missing {SRC.relative_to(ROOT)}; run "
+            "experiments/whelan_delta_calibration.py first")
+    return list(csv.DictReader(SRC.open()))
+
+
+def main() -> int:
+    rows = load()
+    # gamma_peak is the rate the certificate consumes: peak position error
+    # divided by the time from attack onset to that peak.
+    g = {}
+    for r in rows:
+        if r["gamma_peak_m_s"]:
+            g[(r["flight"], r["source"])] = float(r["gamma_peak_m_s"])
+    if not g:
+        raise SystemExit("no gamma_peak values in the calibration file")
+
+    attacks = sorted({k[0] for k in g})
+    signals = sorted({k[1] for k in g})
+
+    out: list[dict] = []
+    for a in attacks:
+        for s in signals:
+            if (a, s) in g:
+                out.append({"factor": "attack_type x error_signal",
+                            "attack_type": a, "error_signal": s,
+                            "gamma_m_s": round(g[(a, s)], 4)})
+
+    gmax, gmin = max(g.values()), min(g.values())
+    spread = gmax / gmin
+
+    # Per-factor spread, holding the other factor fixed. This separates "gamma
+    # depends on the attack" from "gamma depends on where you measure it".
+    by_attack, by_signal = [], []
+    for s in signals:
+        vals = [g[(a, s)] for a in attacks if (a, s) in g]
+        if len(vals) > 1:
+            by_attack.append(max(vals) / min(vals))
+    for a in attacks:
+        vals = [g[(a, s)] for s in signals if (a, s) in g]
+        if len(vals) > 1:
+            by_signal.append(max(vals) / min(vals))
+
+    att_spread = max(by_attack) if by_attack else 1.0
+    sig_spread = max(by_signal) if by_signal else 1.0
+
+    out.append({"factor": "summary", "attack_type": "spread_across_attack_type",
+                "error_signal": "", "gamma_m_s": round(att_spread, 3)})
+    out.append({"factor": "summary", "attack_type": "spread_across_error_signal",
+                "error_signal": "", "gamma_m_s": round(sig_spread, 3)})
+    out.append({"factor": "summary", "attack_type": "gamma_max_conservative",
+                "error_signal": "", "gamma_m_s": round(gmax, 4)})
+    out.append({"factor": "summary", "attack_type": "gamma_min",
+                "error_signal": "", "gamma_m_s": round(gmin, 4)})
+    out.append({"factor": "summary", "attack_type": "total_spread",
+                "error_signal": "", "gamma_m_s": round(spread, 3)})
+    for name, why in NOT_VARIED:
+        out.append({"factor": "not_varied", "attack_type": name,
+                    "error_signal": why, "gamma_m_s": ""})
+
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    with OUT.open("w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=["factor", "attack_type",
+                                           "error_signal", "gamma_m_s"])
+        w.writeheader()
+        w.writerows(out)
+    print(f"-> {OUT.relative_to(ROOT)}")
+
+    pretty = {"gps_jamming": "GPS jamming", "gps_spoofing": "GPS spoofing"}
+    sig = {"receiver": "raw receiver fix", "ekf": "EKF-filtered"}
+
+    lines = [
+        "% AUTO-GENERATED by experiments/gamma_stability.py. Do not hand-edit.\n",
+        "% PROVENANCE: real-corpus (UAV Attack Dataset, 3 flights, one PX4\n"
+        "% airframe family, hover/loiter only). Platform, airspeed, flight mode,\n"
+        "% attack intensity and attack duration are NOT varied by the release.\n",
+        "\\begin{tabular}{@{}llr@{}}\n\\toprule\n",
+        "Attack type & Error signal & $\\gamma$ (m/s)\\\\\n\\midrule\n",
+    ]
+    for a in attacks:
+        for s in signals:
+            if (a, s) in g:
+                lines.append(f"{pretty.get(a, a)} & {sig.get(s, s)} & "
+                             f"{g[(a, s)]:.2f}\\\\\n")
+    lines += [
+        "\\midrule\n",
+        f"\\multicolumn{{2}}{{@{{}}l}}{{Spread across attack type}} & "
+        f"${att_spread:.1f}\\times$\\\\\n",
+        f"\\multicolumn{{2}}{{@{{}}l}}{{Spread across error signal}} & "
+        f"${sig_spread:.2f}\\times$\\\\\n",
+        f"\\multicolumn{{2}}{{@{{}}l}}{{\\textbf{{Conservative value used}}}} & "
+        f"$\\mathbf{{{gmax:.2f}}}$\\\\\n",
+        "\\bottomrule\n\\end{tabular}\n",
+    ]
+    BLOCK.write_text("".join(lines))
+    print(f"-> {BLOCK.relative_to(ROOT)}")
+
+    print(f"\ngamma is NOT a constant on the data we have:")
+    print(f"  across attack type   : {att_spread:.2f}x")
+    print(f"  across error signal  : {sig_spread:.2f}x")
+    print(f"  overall              : {spread:.2f}x  ({gmin:.3f} to {gmax:.3f} m/s)")
+    print(f"  certificate uses max : {gmax:.3f} m/s (conservative)")
+    print("\nFactors the release does NOT let us vary:")
+    for n, w in NOT_VARIED:
+        print(f"  - {n}: {w}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,15 @@
+factor,attack_type,error_signal,gamma_m_s
+attack_type x error_signal,gps_jamming,ekf,0.5185
+attack_type x error_signal,gps_jamming,receiver,0.4805
+attack_type x error_signal,gps_spoofing,ekf,1.365
+attack_type x error_signal,gps_spoofing,receiver,1.195
+summary,spread_across_attack_type,,2.633
+summary,spread_across_error_signal,,1.142
+summary,gamma_max_conservative,,1.365
+summary,gamma_min,,0.4805
+summary,total_spread,,2.841
+not_varied,platform,one PX4 airframe family,
+not_varied,flight regime,hover / low-speed loiter only,
+not_varied,airspeed,not swept; no cruise segment in the release,
+not_varied,attack intensity,single intensity per attack type,
+not_varied,attack duration,single duration per flight,
