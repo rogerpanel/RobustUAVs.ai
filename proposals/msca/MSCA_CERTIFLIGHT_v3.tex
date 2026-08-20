@@ -1,0 +1,413 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[top=15mm,bottom=15mm,left=16mm,right=16mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{times}
+\usepackage{xcolor}
+\definecolor{DeepBlue}{HTML}{003366}
+\definecolor{AccentBlue}{HTML}{0B5C8C}
+\definecolor{Gold}{HTML}{B8860B}
+\definecolor{LightBlue}{HTML}{EAF2F8}
+\definecolor{LightGold}{HTML}{FBF3E0}
+\usepackage[colorlinks=true,urlcolor=AccentBlue,linkcolor=DeepBlue,citecolor=DeepBlue]{hyperref}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{multirow}
+\usepackage[activate={true,nocompatibility},protrusion=true,expansion=false]{microtype}
+
+\titleformat{\section}{\normalsize\bfseries\color{DeepBlue}}{\thesection.}{0.4em}{}
+[\vspace{-0.35em}{\color{Gold}\rule{\linewidth}{0.6pt}}\vspace{0.1em}]
+\titleformat{\subsection}{\small\bfseries\color{AccentBlue}}{\thesubsection}{0.4em}{}
+\titleformat{\subsubsection}[runin]{\small\bfseries}{}{0em}{}[.]
+\titlespacing*{\section}{0pt}{0.7em}{0.25em}
+\titlespacing*{\subsection}{0pt}{0.45em}{0.12em}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.35em}
+\pagestyle{plain}
+\setlist{leftmargin=1.1em,itemsep=0.1em,topsep=0.12em,parsep=0em}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\renewcommand{\arraystretch}{1.15}
+
+\begin{document}
+
+\begin{center}
+{\large\bfseries\color{DeepBlue} CERTIFLIGHT}\\[0.15em]
+{\bfseries\color{AccentBlue} Certified End-to-End Autonomy Assurance for Civil UAV Missions:\\
+From Network Detection through Navigation Certificates to Constrained Swarm Control}\\[0.35em]
+{\footnotesize MSCA Postdoctoral Fellowship (European Fellowship) --- Part B1 working draft\\
+\textbf{Fellow:} Roger Nick Anaedevha \quad$\cdot$\quad \textbf{Host:} SPRITZ Group, University of Padua \quad$\cdot$\quad
+\textbf{Supervisor:} Prof.\ Mauro Conti \quad$\cdot$\quad \textbf{Co-supervisor:} Dr.\ Federico Cor\`o\\
+\textbf{Duration:} 24 months \quad$\cdot$\quad \textbf{Panel:} ENG / PE6 \quad$\cdot$\quad \textbf{Call deadline:} 9 September 2026}
+\end{center}
+
+\vspace{-0.2em}
+{\footnotesize\itshape Draft for review by the host. Structured to the MSCA-PF Part~B1 template (Excellence 50\,\%, Impact 30\,\%, Implementation 20\,\%; 10-page limit). Host-supplied text is marked [Host]. This revision incorporates the co-supervisor's guidance: the swarm work package is formulated as \emph{constrained reinforcement learning} rather than a combinatorial covering game; the threat model is broadened to non-malicious disturbances; and the impact case rests on civil, non-military use cases.}
+
+% ==========================================================
+\section{Excellence}
+
+\subsection{Quality and pertinence of the research objectives; ambition and advance beyond the state of the art}
+
+\subsubsection{The problem}
+Civil autonomous unmanned aerial vehicles (UAVs) are quietly becoming infrastructure. In Swedish emergency medical services, drones already deliver automated external defibrillators ahead of the ambulance. Blood products and diagnostic samples move by drone between hospitals in the United Kingdom. Elsewhere in Europe, drones monitor air quality, detect wildfire ignition, survey flooding, and inspect energy and rail networks. Europe's commercial drone market was valued in the multi-billion-euro range in 2024 and is projected to roughly double by 2030. What every one of these services has in common is a learned autonomy stack that has to keep flying when its inputs degrade.
+
+Those inputs degrade routinely, and they do so for three distinct reasons that are today the concern of three largely disconnected research communities.
+
+\begin{enumerate}
+\item \textbf{Attacks at the network layer.} The multi-hop swarm mesh, the command-and-control link and the on-board bus all admit time-delay forwarding, false-data injection and denial attacks. Network intrusion detection catches a great deal of this. It cannot catch all of it, however, because a detector must tolerate natural jitter if it is to be usable, and an adversary who stays just below that tolerance is invisible \emph{by construction}.
+\item \textbf{Attacks at the sensing layer.} Denial and spoofing of Global Navigation Satellite System (GNSS) signals degrade the position solution directly. This is now a documented \emph{civil} hazard rather than a purely military one. Tens of thousands of satellite-navigation disruption reports have been logged by civil aircraft over the Baltic region since 2023, prompting European aviation-safety information bulletins, with position errors of tens of metres and outages lasting hours.
+\item \textbf{Disturbances that involve no adversary at all.} Sensor degradation and inertial drift, partial actuator or rotor failure, and severe environmental forcing from gusts, turbulence and obstacle wake perturb precisely the same control loop. The fault-tolerant control literature treats these as bounded disturbances of unknown bound; the security literature largely ignores them.
+\end{enumerate}
+
+Each community bounds its own layer rigorously and leaves the interface between layers to assumption. Certified robustness bounds what a model does with a perturbation, but says nothing about where that perturbation originates or how often an adversary can produce one. Intrusion detection bounds what reaches the aircraft, but says nothing about the flight that follows an intrusion it fails to catch. Fault-tolerant control rejects disturbances competently, but has not been composed with either of the others. The result is that \textbf{the property an operator, an insurer and a regulator actually need, namely \emph{will this mission complete, and can we prove it?}, falls into the gaps between the three.}
+
+\subsubsection{The idea}
+CERTIFLIGHT unifies the three sources of degradation into a \textbf{single perturbation budget} and then \emph{composes} guarantees across the layer boundary. The central object is a chained statement,
+\[
+\theta \;\longmapsto\; \Delta(\theta) \;\longmapsto\; \delta(\theta) \;\longmapsto\; \mathrm{MCR} \;\ge\; f\!\left(\delta_{\text{tot}}\right),
+\qquad
+\delta_{\text{tot}} \;=\; \delta_{\text{net}}(\theta) \;\oplus\; \delta_{\text{gnss}} \;\oplus\; \delta_{\text{fault}} \;\oplus\; \delta_{\text{env}},
+\]
+which reads from left to right as follows. A network detector operating at point $\theta$ bounds the residual undetected attack $\Delta(\theta)$. That residual maps to a bounded perturbation $\delta(\theta)$ on the navigation input. The malicious, fault-induced and environmental components combine into a total budget $\delta_{\text{tot}}$. Finally, a certificate turns that total budget into a guaranteed floor on the \emph{Mission-Completion Rate} (MCR). Because the budget is agnostic about the source of the perturbation, one certificate covers an evading attacker, a drifting inertial unit and a gust alike, which is exactly what an airworthiness argument requires and exactly what no current method delivers.
+
+The programme then poses the question a single-aircraft certificate cannot answer: \textbf{what should a fleet do when an individual aircraft's certificate degrades?} Under jamming, a UAV's certified navigation guarantee shrinks; below some threshold, that aircraft can no longer be trusted with the task it was assigned. CERTIFLIGHT formulates swarm task allocation as a \textbf{Constrained Markov Decision Process} in which each agent's certified bound enters as a \emph{hard constraint}, and learns a policy that re-allocates the fleet dynamically, rerouting healthy aircraft to preserve coverage, while provably respecting those constraints during both learning and deployment.
+
+\subsubsection{Objectives}
+Each objective states the advance and the criterion by which its success will be judged.
+
+\begin{itemize}
+\item[\textbf{O1}] \textbf{Unified perturbation budget and composed certificate (WP2).} Prove a composition theorem chaining a network detector's operating point to a certified MCR floor over a budget that aggregates malicious, fault-induced and environmental perturbations, and calibrate the interface empirically on real flight data. \emph{Success criterion:} a theorem with a machine-checked instantiation whose certified floor lower-bounds the measured completion rate at every operating point tested.
+\item[\textbf{O2}] \textbf{Open cross-layer benchmark and evaluation platform (WP3).} Release the first reproducible benchmark whose unit of analysis is the \emph{pairing} of a network or environmental event with the navigation degradation it induces, each record carrying auditable provenance. \emph{Success criterion:} public release, adopted by at least two external groups, with every published figure regenerable from committed data.
+\item[\textbf{O3}] \textbf{Certified-constrained multi-agent reinforcement learning for swarm re-allocation (WP4).} Develop a constrained multi-agent formulation in which per-agent certified navigation radii are hard constraints, so that when jamming degrades an agent's guarantee the policy re-allocates the fleet to maintain coverage with feasibility guarantees. \emph{Success criterion:} pointwise constraint satisfaction at deployment, and a quantified coverage-loss bound as a function of the fraction of degraded agents.
+\item[\textbf{O4}] \textbf{Assurance evidence for civil certification (WP5).} Map the resulting certificates onto EASA Specific Operations Risk Assessment (SORA) and U-space assurance levels, EU AI Act Article~15, and DO-326A / ED-202A airworthiness security. \emph{Success criterion:} a worked assurance case for one civil mission profile, reviewed by at least one regulator or standards-body contact.
+\end{itemize}
+
+\subsubsection{Advance beyond the state of the art}
+\emph{(i) Certified robustness} supplies deterministic Lipschitz-type bounds and probabilistic randomized-smoothing radii for models, and has been lifted to sequential decisions: CROP certifies a lower bound on cumulative reward for reinforcement learning under bounded observation perturbation, and CAROL extends certification through model-based abstract interpretation. All of this work is nevertheless \textbf{single-agent and observation-level}. It certifies a policy against a perturbation ball, never against a network operating point, a hardware fault, or a fleet-level coverage requirement.
+
+\emph{(ii) Safe reinforcement learning} offers Constrained Policy Optimization and its Lagrangian variants, together with zero-duality-gap results, and separately a family of pointwise-safe mechanisms built on control barrier functions, shielding and verification-guided shielding. The distinction matters here: Lagrangian methods enforce constraint satisfaction \emph{in expectation} over a horizon, which is not the guarantee a safety-critical flight requires. Barrier and shielding methods do give pointwise guarantees, but their constraint sets are hand-specified rather than derived from any formal robustness certificate.
+
+\emph{(iii) Safe multi-agent reinforcement learning} for UAV swarms exists in several forms, including decentralised multi-barrier safe MADDPG, hierarchical formulations with barrier functions, and the QMIX family of coordination methods. Reinforcement learning under GNSS denial is likewise emerging, with formation control in GPS-denied flight and filter-plus-policy trajectory optimisation under jamming. None of this work consumes a \emph{certified} per-agent bound; degradation is handled heuristically where it is handled at all.
+
+Table~1 places CERTIFLIGHT against the three lines directly. The columns are
+the four properties a civil assurance argument needs simultaneously, and the
+point of the table is that no existing row carries all four.
+
+\begin{center}
+\footnotesize
+\begin{tabular}{@{}p{4.6cm}cccc@{}}
+\multicolumn{5}{@{}l}{\textbf{Table 1.} Positioning against the state of the art.}\\
+\toprule
+\rowcolor{LightBlue}
+\textbf{Approach} & \textbf{Derives}   & \textbf{Covers}   & \textbf{Pointwise} & \textbf{Fleet} \\
+\rowcolor{LightBlue}
+                  & \textbf{bound from} & \textbf{faults +} & \textbf{guarantee} & \textbf{level} \\
+\rowcolor{LightBlue}
+                  & \textbf{detector}   & \textbf{environ.} &                    & \\
+\midrule
+Certified robustness (Lipschitz, smoothing) & no & no & yes & no \\
+Certified RL (CROP, CAROL)                  & no & no & yes & no \\
+Lagrangian safe RL (CPO, PPO-Lag.)          & no & no & \emph{expected only} & partly \\
+Barrier / shielding methods                 & no & partly & yes & partly \\
+Safe multi-agent RL for swarms              & no & no & varies & yes \\
+Fault-tolerant control                      & no & yes & yes & no \\
+Network intrusion detection                 & \emph{is} the detector & no & n/a & no \\
+\midrule
+\rowcolor{LightGold}
+\textbf{CERTIFLIGHT}                        & \textbf{yes} & \textbf{yes} & \textbf{yes} & \textbf{yes} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{The gap, stated precisely.} No published work composes formally certified per-agent navigation guarantees into the hard-constraint set of a constrained multi-agent policy that re-allocates a swarm as agents degrade, and none derives those per-agent guarantees from a budget unifying adversarial, fault-induced and environmental perturbation. CERTIFLIGHT closes both gaps. Its three technical firsts are the first formal chain from a network-security operating point to a navigation-safety floor (O1), the first benchmark whose records are cross-layer pairings carrying auditable provenance (O2), and the first constrained multi-agent swarm controller whose constraints are certified robustness bounds rather than hand-tuned safety margins (O3).
+
+\subsubsection{Why this project, and why now}
+Three clocks are converging, and the fellowship period sits exactly across them.
+The regulatory clock is the first: the EU AI Act's obligations for high-risk
+systems enter application during the fellowship, U-space deployment is proceeding
+across Member States, and the EUROCAE standard for certifying aeronautical
+products that implement artificial intelligence is in preparation rather than
+settled. Methods that produce evidence in the form these frameworks accept are
+therefore useful now in a way they will not be once the frameworks harden around
+whatever evidence happens to exist. The second is the threat clock: GNSS
+interference over European airspace moved from a theoretical concern to a
+logged, routine, civil one within the last three years. The third is the
+scientific clock: certified robustness has matured from image classifiers to
+sequential decisions in roughly five years, which puts the composition step
+proposed here within reach for the first time. A project of this shape would
+have been premature three years ago and will be crowded three years hence.
+
+\subsubsection{Preliminary results establishing feasibility}
+The riskiest part of any proposal of this kind is the claim that the central chain can be made to work at all. That risk has already been retired. Working with the host group, the fellow has proved and instantiated a first version of the composition theorem for the time-delay attack class, and the resulting manuscript is in submission as joint work.
+
+Three results from that work bear directly on the feasibility of O1--O3. First, the residual attack budget does not grow without limit: it saturates at $4.84$\,s of undetected delay across $15{,}392$ observed relay hops, which is what makes the chain non-vacuous. Second, the interface between network staleness and position error has been calibrated on real flights rather than assumed, and the measured rate is an order of magnitude tighter than the kinematic worst case, which is the difference between a certified window that excludes every usable detector setting and one that contains the setting operators actually deploy. Third, and most instructive for the present proposal, a systematic characterisation campaign established that this interface rate is \emph{not} a constant. Estimated at each of $674$ post-onset samples rather than once per flight, it varies by a factor of six with attack type, satellite visibility and staleness. Handling that variation correctly, by evaluating the certificate at the supremum over the conditions it claims to cover, is precisely the methodological discipline WP2 will extend to fault and environmental perturbations.
+
+An open benchmark unifying six public corpora, together with a certificate engine implementing four complementary methods, is already released and reproducible. CERTIFLIGHT is therefore not a proposal to find out whether the approach works. It is a proposal to extend a demonstrated approach along the two axes that matter for civil deployment, namely non-malicious disturbance and fleet-level behaviour, and to carry the result into the assurance frameworks that govern European airspace.
+
+\subsection{Soundness of the methodology}
+
+\subsubsection{WP2 --- Unified budget and composed certificates}
+\emph{Formal core.} Let the navigation state evolve as $\dot x = F(x,u)$, with $F$ Lipschitz with constant $L$ over the operating region and a mission horizon $T$. A bounded input perturbation $\lVert\delta u\rVert \le \delta_{\text{tot}}$ yields, through the integral form of Gr\"onwall's inequality, a trajectory-tube radius $\rho = \delta_{\text{tot}}e^{LT}$. The mission completes whenever that tube fits inside the mission's safe-corridor margin $m$, which gives the certified floor $f(\delta_{\text{tot}}) = \Pr[\delta_{\text{tot}}e^{LT}\le m]$.
+
+\emph{Interface.} On the network side, a detector tolerating a per-hop residual $\theta$ admits cumulative undetected staleness capped by the store-and-forward contact-window slack. A measured delay-to-position rate then converts staleness into position error. Our prior work shows that this rate must be measured rather than assumed, and that it must be treated as a function of operating conditions rather than as a scalar.
+
+\emph{Unification.} Fault-induced and environmental components enter through the same channel. Following standard practice in fault-tolerant control, actuator and sensor faults and gust forcing are modelled as bounded additive disturbances on the same input, and are aggregated with the malicious component by a union bound over independently certified sources. The union bound is deliberately conservative; WP2 will quantify how much tightness it costs and whether a joint treatment recovers it.
+
+\emph{Coverage.} Because the deterministic bound degrades as $e^{LT}$, three complementary certificates cover the regimes in which it becomes loose: randomized smoothing where the budget is known only statistically, PAC-Bayes for the gap between training and deployment distributions, and multiplicative-weights regret against an adaptive jammer. A deployment reads its floor as the pointwise minimum of the four, and the binding term identifies which assumption is closest to failing.
+
+\emph{Validation.} Soundness is checked empirically as well as proved: the certified floor must lower-bound the measured completion rate at every operating point, across multiple seeds, with Holm-corrected significance tests. Any violation is a bug in the instantiation and is treated as such.
+
+\subsubsection{WP3 --- Cross-layer benchmark and open platform}
+A two-layer schema represents any observation from any source as a typed event, groups events into labelled attack or disturbance windows, and, as the novel object, joins a network or environment window to the autonomy window it induces as a \emph{cross-layer pairing} carrying the detector operating point, the residual budget, the induced perturbation and the mission outcome. Every pairing carries a mandatory provenance flag recording whether the coupling was measured on a single platform, derived through a stated physical model, or aligned in simulation. A reviewer can therefore filter the benchmark by evidence strength rather than trusting an unaudited join, and no analysis can silently rest on a coupling that was never observed. The platform ships lossless ingestion adapters for established public corpora alongside a physics-informed navigation benchmark, a detector-operating-curve harness that sweeps $\theta$ and reports recall and false-positive rate, and a reference pairing pipeline. Third-party data is fetched from origin under its own licence; the release contains our own data, adapters and unified labels.
+
+\subsubsection{WP4 --- Certified-constrained multi-agent RL for swarm re-allocation}
+\emph{Formulation.} The fleet is modelled as a Constrained Markov Decision Process $(\mathcal S,\mathcal A,P,r,\{c_i\},\{d_i\})$. Agent $i$'s state includes its \emph{current certified navigation radius} $R_i(t)$, computed online by the WP2 certificate from locally estimated jamming and fault conditions. The allocation policy maximises mission coverage subject to per-agent constraints of the form $c_i:\;R_i(t)\ \ge\ R^{\min}(\tau_i)$, so that an aircraft may hold task $\tau_i$ only while its certified radius exceeds the radius that task provably requires.
+
+\emph{Solution strategy, in increasing strength of guarantee.} A Lagrangian baseline (PPO-Lagrangian, CPO) satisfies the constraints in expectation and sets a performance reference. A \emph{certified safety layer} then projects the policy's proposed allocation onto the feasible set defined by the current certified radii, which delivers pointwise constraint satisfaction at deployment and lets the certificate replace a hand-tuned barrier margin. Finally, shielding with a verified fallback allocation guarantees that when no feasible assignment exists, coverage degrades gracefully to a provably attainable subset rather than failing silently. Reporting all three is deliberate: it separates what the learned policy achieves from what the guarantee mechanism enforces.
+
+\emph{Analysis targets.} Feasibility preservation under the safety layer; a bound on coverage loss as a function of the fraction of agents whose certified radius has collapsed; and the operational trade-off frontier between per-agent robustness investment and the fleet size required for a target coverage guarantee. That last quantity is what a procurement decision actually turns on.
+
+\emph{Evaluation.} Multi-agent simulation on the WP3 platform, sweeping jamming intensity and injected fault and gust profiles across civil mission geometries, namely urban corridor monitoring, environmental transects and point-to-point medical delivery, measured against jamming-blind and worst-case-margin baselines.
+
+\emph{Rationale for this formulation.} Constrained optimisation is the natural home for the project's central identity, that provable bounds should act as hard constraints, and it scales to the dynamic, partially observable conditions of real swarm flight in a way that static combinatorial covering models do not.
+
+\subsubsection{WP5 --- Assurance mapping (cross-cutting)}
+Each certificate is expressed as evidence against three frameworks: EASA's Specific Operations Risk Assessment and the assurance levels derived from it, which is the regime governing beyond-visual-line-of-sight civil operations; EU AI Act Article~15, which requires high-risk AI systems to achieve appropriate accuracy, robustness and cybersecurity and to be resilient to errors, faults and attempts to alter their outputs, language that maps almost directly onto a certified MCR floor over a unified perturbation budget; and DO-326A / ED-202A airworthiness security. The honest part of this work package is the gap analysis: certified radii are per-input, whereas assurance objectives are stated per-operation, and WP5 will say clearly which objectives a certificate can discharge, which it can only evidence, and which it does not touch. Outputs are a white paper and a worked assurance case for one civil mission profile.
+
+\subsubsection{Interdisciplinarity, open science, and the gender dimension}
+The project deliberately spans machine-learning robustness, network security, control and constrained optimisation, and regulatory assurance. The fellow and the host cover complementary halves of that span, and the co-supervisor brings the algorithms and UAV-networks expertise that WP4 requires. \emph{Open science} is built in rather than bolted on: pre-registration of experimental protocols where applicable, open-access publication by the green route, release of the benchmark, adapters, harness and trained policies under permissive licences with provenance ledgers, and per-seed result files so that every published figure can be regenerated by a third party. \emph{Gender and diversity:} the research object is a technical system, so no sex or gender dimension arises in the subject matter itself. The dimension is addressed in practice, through inclusive recruitment of any students supervised and through attention to equitable access in the civil use cases studied, notably emergency medical delivery to rural and under-served areas, where drone logistics offers the largest marginal benefit.
+
+\subsection{Quality of the supervision, training, and two-way knowledge transfer}
+\textbf{Supervision.} Prof.\ Mauro Conti is among Europe's most cited security researchers and leads SPRITZ, a large group with an established record of hosting funded fellows. Dr.\ Federico Cor\`o leads the group's line on UAV algorithms and networks and will co-supervise WP4 directly. The arrangement is weekly one-to-one meetings with the co-supervisor, monthly progress reviews with the supervisor, and quarterly reviews against the Career Development Plan. [Host: formal supervision arrangements, mentoring structure, group seminar programme.]
+
+\textbf{Training received by the fellow.} On the scientific side: constrained and multi-agent reinforcement learning, combinatorial and network algorithms, and UAV network protocols and testbed practice. These are competences the fellow does not currently hold at depth and in which the host leads, and acquiring them is the substantive reason for choosing this host. On the transferable side: proposal writing and grant acquisition, with an ERC Starting Grant concept as a project deliverable; student co-supervision; project and data management; science communication; and research ethics and security. [Host: doctoral-school courses, institutional training catalogue, language provision.]
+
+\textbf{Transfer to the host.} The exchange runs in both directions. The fellow brings certified-robustness machinery, a physics-informed navigation benchmark of over one hundred thousand simulated flights, four implemented certification methods, and production-grade open-source platform engineering. These extend SPRITZ's UAV security line from empirical defence towards formal guarantees, a capability the group does not currently hold, and they are transferred concretely through a group seminar series, co-supervised student projects, and shared code ownership of the released platform.
+
+\subsection{Quality and appropriateness of the researcher's experience, competences and skills}
+The fellow's doctoral work at NRNU MEPhI, defended in June 2026 with the degree conferred in December 2026, concerns adversarially robust machine learning for intrusion detection and autonomous systems. Relevant published outputs include poisoning-resilient state-space models (\emph{Expert Systems with Applications}), a PAC-Bayesian adversarial-robustness framework (\emph{Knowledge and Information Systems}), Byzantine-resilient federated aggregation via stochastic games (\emph{Complex and Intelligent Systems}), and stochastic temporal graph networks for industrial intrusion detection, which received a best-paper award at IEEE EDM 2026 and is accepted in \emph{IEEE Transactions on Industry Applications}, with further manuscripts under review. A joint cross-layer UAV-security manuscript with the host group is already in submission, which evidences a collaboration that is active and productive rather than aspirational. Engineering capacity for WP3 is evidenced by deployed open-source security platforms and by four years of prior production cybersecurity engineering, experience that also grounds the standards-facing orientation of WP5.
+
+The fellowship is the step from a strong doctoral record to independent investigator. It supplies the three things the fellow currently lacks: the swarm-control and networks competences that WP4 demands, a European host and network, and the grant-writing experience required to lead a group of his own.
+
+% ==========================================================
+\section{Impact}
+
+\subsection{Credibility of the measures to enhance the fellow's career perspectives and employability}
+The fellowship is designed around a single career objective: to establish the fellow as an independent European investigator at the autonomy-assurance interface, capable of leading a research group. Four concrete measures serve that objective.
+
+\emph{Competence acquisition.} The fellow arrives with depth in certified
+robustness, adversarial machine learning and security engineering, and with a
+demonstrable gap: nothing in his record involves multi-agent decision-making,
+constrained optimisation, or the protocol and testbed practice of real UAV
+networks. That gap is not incidental to his career plan; it is precisely what
+separates a researcher who certifies a model from one who can lead a programme
+on autonomous fleets. WP4 closes it under the co-supervisor's direct
+supervision, and the acquisition is verifiable rather than nominal: the fellow
+will be first author on the constrained multi-agent results, will implement the
+formulation himself rather than inheriting it, and will present it at a
+networking venue outside his current community.
+
+\emph{Independence.} The fellow leads all work packages, owns the released platform, and co-supervises at least one Master's and one doctoral student, taking first or last authorship as appropriate to the contribution.
+
+\emph{Funding capability.} Structured grant-writing training culminates in a submitted ERC Starting Grant concept and at least one national or European co-application during the fellowship.
+
+\emph{Network.} Integration into the host's European and industrial collaborations, presentation at the target venues listed below, and direct engagement with civil-aviation regulators through WP5.
+
+\emph{Placement.} A short non-academic placement of four to six weeks is
+planned for the second year with a European drone operator, certification body
+or aviation-assurance consultancy, timed to coincide with WP5. Its purpose is
+practical rather than ceremonial: the worked assurance case must be shaped by
+someone who has actually submitted an operational authorisation, and the
+placement gives the fellow direct exposure to the non-academic career track that
+is one of the two target destinations below. [Host: candidate partner
+organisations from the group's industrial network.]
+
+A Career Development Plan is agreed within the first six months and formally reviewed at month~18, covering research objectives, training, publication targets, supervisory experience and the transition plan. Target destinations after the fellowship are a tenure-track position in a
+European security or autonomy group, or a research leadership role in the
+European drone or aviation-assurance industry. The evidence the fellowship
+produces is chosen with those two destinations in mind. For the academic route:
+first or last authorship on the constrained multi-agent results, a submitted
+ERC Starting Grant concept, supervision experience with named students, and an
+open platform with external users, which is the most legible form of research
+leadership in this field. For the industrial route: the placement, the worked
+assurance case, and demonstrated fluency in the regulatory vocabulary that
+separates a researcher who publishes on robustness from one who can sign off an
+operational authorisation. Both routes are served by the same work, which is the
+mark of a well-posed fellowship rather than a hedge.
+
+\subsection{Measures to maximise outcomes and impacts: dissemination, exploitation, communication}
+
+\textbf{Dissemination and exploitation for specialist audiences.} Peer-reviewed publication is targeted at top security and machine-learning venues, specifically NDSS, IEEE Symposium on Security and Privacy, USENIX Security and IEEE SaTML, and at networking and mobile-computing venues for the swarm work, specifically IEEE MASS, ICDCN and \emph{IEEE Transactions on Mobile Computing}. All publications take the green open-access route, with author-accepted manuscripts deposited on publication. Beyond academia, findings are carried to the audiences able to act on them: European civil-aviation regulators and standards bodies, including EASA fora on U-space, SORA and AI in aviation, and the EUROCAE working groups responsible for airworthiness security and AI assurance; the drone-operator and service-provider community, through industry conferences; and the emergency-medical and environmental-agency users of the mission profiles studied. Exploitation runs primarily through open infrastructure, with the benchmark, harness and reference policies released under permissive licences with the explicit aim of becoming the community's default evaluation substrate. A secondary route, handled through the host's technology-transfer office, is advisory or contract engagement with operators seeking assurance evidence.
+
+\textbf{Intellectual property and exploitation strategy.} The default is open
+release, and it is a strategic choice rather than a concession. The value of a
+benchmark lies in its adoption, and an encumbered benchmark is not adopted; the
+value of an assurance method lies in regulators trusting it, and a method that
+cannot be inspected will not be trusted. Software, schema, adapters and trained
+policies are therefore released under permissive licences, and datasets under
+open terms with third-party sources fetched from origin under their own
+licences. Where a result proves commercially sensitive, in particular a
+configuration procedure specific to a partner operator, the host's
+technology-transfer office assesses it under the standard institutional process
+before publication, with any embargo limited to the minimum required and
+recorded in the Data Management Plan. Background intellectual property brought
+by the fellow, principally the existing certificate engine and benchmark, is
+already open and remains so.
+
+\textbf{Communication for non-specialist audiences.} A plain-language project page and short explainer videos address a simple question: why must a drone carrying a defibrillator be able to prove that it will arrive? A live public demonstration of certified UAV flight under simulated interference is planned for the \emph{Science4All} European Researchers' Night in Padova, staged with the host group and aimed at school pupils and the general public, with associated school-visit material on how autonomous systems are made trustworthy. Regular short-form updates run through the host's channels, and open-access datasets and figures are made usable by science journalists. Research data are managed under a Data Management Plan following FAIR principles, with provenance tags on every released number.
+
+\begin{center}
+\footnotesize
+\begin{tabularx}{\linewidth}{@{}p{2.6cm}Yp{2.9cm}p{1.5cm}@{}}
+\multicolumn{4}{@{}l}{\textbf{Table 2.} Dissemination, exploitation and communication plan.}\\
+\toprule
+\rowcolor{LightBlue}
+\textbf{Audience} & \textbf{Message and purpose} & \textbf{Channel} & \textbf{Timing} \\
+\midrule
+Security and ML research community & The composition theorem, the benchmark, and the certified-constrained swarm controller & NDSS, IEEE S\&P, USENIX Security, SaTML; green open access & M12--M24 \\
+Networking and mobile-computing community & Fleet re-allocation under degraded per-agent guarantees & IEEE MASS, ICDCN, IEEE TMC & M18--M24 \\
+Regulators and standards bodies & A certified floor is usable assurance evidence for SORA, AI Act Art.~15 and DO-326A & EASA fora on U-space and AI; EUROCAE working groups; white paper & M18--M24 \\
+Drone operators and service providers & How to choose a detector setting that keeps a corridor certifiable & Industry conferences; worked assurance case & M20--M24 \\
+Emergency-medical and environmental agencies & What a completion guarantee means for routine unattended service & Direct engagement via the mission-profile studies & M14--M24 \\
+Research community (reuse) & The benchmark as the default evaluation substrate & Permissive-licence release with provenance ledgers & M6, M18, M24 \\
+General public and schools & Why a drone carrying a defibrillator must be able to prove it will arrive & \emph{Science4All} demonstration; explainer videos; school visits & M12, M24 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\textbf{Measurable targets.} Four to six peer-reviewed publications, all green open access; two public platform releases; at least two external groups adopting the benchmark; one white paper and one worked assurance case delivered to a regulator or standards contact; one public demonstration event; and one ERC Starting Grant concept submitted.
+
+\subsubsection*{Pathway to impact}
+The route from result to consequence is short and worth stating explicitly,
+because it is what distinguishes this from a proposal whose impact section is
+aspirational. A certified floor is not an academic artefact: it is the shape of
+evidence that the SORA process, the AI Act and DO-326A already ask for and that
+learned autonomy currently cannot supply. The pathway therefore runs as follows.
+The certificate and its calibration (WP2) make a claim about mission completion
+that is quantitative and auditable. The open platform (WP3) makes that claim
+reproducible by a third party, which is the precondition for a regulator taking
+it seriously. The swarm layer (WP4) extends the claim from one aircraft to the
+fleet configurations operators actually fly. WP5 then expresses the result in
+the vocabulary of the three assurance frameworks, and the placement and
+regulator engagement carry it to the people who write and apply them. Each step
+has a named deliverable and a named audience, and the failure of any one of them
+degrades the impact without destroying it.
+
+\subsection{Magnitude and importance of the contribution to expected impacts}
+
+\textbf{Scientific impact.} CERTIFLIGHT establishes cross-layer certified autonomy assurance as a research direction and supplies a reusable methodology: unify perturbation sources into a single budget, compose the resulting certificate with the layer above, and use it as a hard constraint on a learned controller. That methodology transfers directly to autonomous ground vehicles, robotic inspection and other cyber-physical systems in which a learned component sits inside a safety-critical loop.
+
+\textbf{Societal impact.} The societal case rests on three civil applications, chosen because in each the mission failure mode is a safety failure rather than an inconvenience. In \emph{emergency medical delivery}, drone-delivered defibrillators have arrived ahead of the ambulance in a majority of dispatches in Swedish trials, with a median lead of several minutes, and survival in out-of-hospital cardiac arrest falls by roughly ten percent for each minute of delay. A guaranteed completion floor under interference is what would allow such a service to be certified for routine, unattended operation. In \emph{environmental protection}, wildfire ignition detection and flood and air-quality monitoring depend on persistent coverage, and the WP4 contribution is precisely the ability to hold coverage when individual aircraft degrade. In \emph{urban monitoring and infrastructure inspection}, traffic and utility inspection over populated areas is where ground-risk-driven assurance requirements bite hardest. Across all three, the widespread GNSS interference now documented over European airspace makes certified degradation behaviour a public-safety requirement rather than an academic nicety.
+
+\textbf{European added value.} The project could not sensibly be done outside
+Europe, and that is a statement about the subject matter rather than about
+funding. The regulatory frameworks it targets are European instruments: SORA as
+operated by EASA, U-space, the AI Act, and the EUROCAE standards line. The
+interference environment that motivates the work is a European operational
+reality, documented over the Baltic and now affecting civil aviation across the
+region. The host group sits inside the European security research community and
+the standards conversations that follow from it. A certified-assurance method
+developed elsewhere would have to be retro-fitted to these frameworks; one
+developed here can be shaped by them from the start, and can feed back into them
+while they are still being written. The fellowship also serves the mobility
+purpose directly, bringing to a European laboratory a researcher trained outside
+the Union whose specialism, certified robustness for security applications, the
+host does not currently hold.
+
+Two qualifications keep this case honest. The benefit in each application is
+contingent on the service being certified for routine unattended operation,
+which is a regulatory outcome the project supports but does not control. And the
+guarantee CERTIFLIGHT produces is conditional by construction: it holds under
+stated assumptions about the dynamics, the estimator and the calibration of the
+interface, and part of the scientific contribution is to state those conditions
+precisely rather than to imply an unconditional one. An assurance argument that
+overstates itself is worse than none, because it is the kind that survives
+review and fails in service.
+
+\textbf{Economic and regulatory impact.} Assurance is the binding constraint on scaling beyond-visual-line-of-sight civil drone operations, and therefore on a European commercial drone market already worth billions of euro annually and projected to roughly double by 2030. By producing evidence artefacts aligned to SORA assurance levels, EU AI Act Article~15 and DO-326A, CERTIFLIGHT gives European operators and manufacturers a concrete instrument for demonstrating the robustness and cybersecurity of learned autonomy. This supports the EU Drone Strategy 2.0, U-space deployment and AI Act implementation, and it strengthens European technological sovereignty in a market where assurance capability is itself a competitive differentiator.
+
+% ==========================================================
+\section{Quality and Efficiency of the Implementation}
+
+\subsection{Work plan, work packages, deliverables, milestones and risk assessment}
+
+\textbf{Work-package structure.} The project comprises five work packages. WP1 runs for the full 24 months and carries management, training, dissemination and communication. WP2 to WP4 form the scientific line and are sequenced deliberately so that each supplies the next: the certificate produced in WP2 is the constraint consumed by the swarm controller in WP4, and the platform built in WP3 is the substrate on which both are evaluated. WP5 converts the scientific results into assurance evidence.
+
+\begin{center}
+\footnotesize
+\begin{tabularx}{\linewidth}{@{}p{0.7cm}p{3.3cm}p{1.6cm}Y@{}}
+\toprule
+\rowcolor{LightBlue}
+\textbf{WP} & \textbf{Title} & \textbf{Q1--Q8} & \textbf{Main tasks} \\
+\midrule
+WP1 & Management, training, dissemination and communication & {\setlength{\tabcolsep}{0.35pt}\begin{tabular}{@{}*{8}{p{1.5mm}}@{}}\cellcolor{LightGold}$\blacklozenge$ & \cellcolor{LightGold}~ & \cellcolor{LightGold}~ & \cellcolor{LightGold}$\blacklozenge$ & \cellcolor{LightGold}~ & \cellcolor{LightGold}~ & \cellcolor{LightGold}~ & \cellcolor{LightGold}$\blacklozenge$\end{tabular}} & Career Development Plan (M6, reviewed M18); DMP; risk monitoring; open-access publication; \emph{Science4All} demonstration; ERC-StG concept. \\
+WP2 & Unified perturbation budget and composed certificates & {\setlength{\tabcolsep}{0.35pt}\begin{tabular}{@{}*{8}{p{1.5mm}}@{}}\cellcolor{LightBlue}~ & \cellcolor{LightBlue}$\blacklozenge$ & \cellcolor{LightBlue}~ & \cellcolor{LightBlue}$\blacklozenge$ & ~ & ~ & ~ & ~\end{tabular}} & T2.1 threat and disturbance model; T2.2 residual-budget lemma and interface calibration; T2.3 composition theorem and soundness; T2.4 complementary certificates. \\
+WP3 & Cross-layer benchmark and open platform & {\setlength{\tabcolsep}{0.35pt}\begin{tabular}{@{}*{8}{p{1.5mm}}@{}}\cellcolor{LightBlue}~ & \cellcolor{LightBlue}~ & \cellcolor{LightBlue}$\blacklozenge$ & \cellcolor{LightBlue}~ & \cellcolor{LightBlue}~ & \cellcolor{LightBlue}$\blacklozenge$ & ~ & ~\end{tabular}} & T3.1 two-layer schema and provenance flags; T3.2 ingestion adapters; T3.3 detector-operating-curve harness; T3.4 pairing pipeline; T3.5 public releases. \\
+WP4 & Certified-constrained multi-agent RL for swarm re-allocation & {\setlength{\tabcolsep}{0.35pt}\begin{tabular}{@{}*{8}{p{1.5mm}}@{}}~ & ~ & \cellcolor{LightBlue}~ & \cellcolor{LightBlue}~ & \cellcolor{LightBlue}$\blacklozenge$ & \cellcolor{LightBlue}~ & \cellcolor{LightBlue}~ & \cellcolor{LightBlue}$\blacklozenge$\end{tabular}} & T4.1 CMDP with certified radii as constraints; T4.2 Lagrangian baselines; T4.3 safety layer and shielded fallback; T4.4 feasibility and coverage-loss analysis; T4.5 simulation. \\
+WP5 & Assurance mapping and worked certification case & {\setlength{\tabcolsep}{0.35pt}\begin{tabular}{@{}*{8}{p{1.5mm}}@{}}~ & ~ & ~ & ~ & \cellcolor{LightBlue}~ & \cellcolor{LightBlue}~ & \cellcolor{LightBlue}~ & \cellcolor{LightBlue}$\blacklozenge$\end{tabular}} & T5.1 mapping to SORA assurance levels, EU AI Act Art.~15, DO-326A/ED-202A; T5.2 worked assurance case for one civil mission; T5.3 regulator and industry engagement. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Shading marks the active quarters and $\blacklozenge$ a milestone.
+
+\textbf{Deliverables and milestones.}
+\begin{center}
+\footnotesize
+\begin{tabularx}{\linewidth}{@{}p{1.1cm}p{0.9cm}Y|p{1.1cm}p{0.9cm}Y@{}}
+\toprule
+\rowcolor{LightBlue}
+\textbf{Del.} & \textbf{Month} & \textbf{Description} & \textbf{Milest.} & \textbf{Month} & \textbf{Description} \\
+\midrule
+D1.1 & M6 & Career Development Plan & MS1 & M6 & CDP agreed; DMP in place \\
+D1.2 & M12 & Data Management Plan (updated) & MS2 & M12 & Composition theorem proven and validated \\
+D1.3 & M24 & Dissemination report; ERC-StG concept & MS3 & M18 & Benchmark v1 publicly released; CDP review \\
+D2.1 & M8 & Interface calibration report & MS4 & M21 & Constrained-MARL policy meets coverage target under jamming \\
+D2.2 & M14 & Composition theorem and certificate suite & MS5 & M24 & Assurance case published; platform v2 released \\
+D3.1 & M6 & Schema and ingestion adapters & & & \\
+D3.2 & M18 & Open benchmark and harness (v1) & & & \\
+D4.1 & M16 & CMDP formulation and baselines & & & \\
+D4.2 & M22 & Certified-constrained swarm policy and analysis & & & \\
+D5.1 & M24 & Assurance white paper and worked case & & & \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\textbf{Risk assessment and contingency.} Each risk below is paired with a mitigation that preserves the scientific line rather than merely acknowledging the problem.
+\begin{center}
+\footnotesize
+\begin{tabularx}{\linewidth}{@{}p{4.4cm}p{1.2cm}Y@{}}
+\toprule
+\rowcolor{LightBlue}
+\textbf{Risk} & \textbf{Lik./imp.} & \textbf{Mitigation and contingency} \\
+\midrule
+Unified budget proves intractable as a single certificate & Med / Med & Fall back to per-source certificates combined by a union bound, which is already the planned baseline; the composition and the swarm layer are unaffected. \\
+Interface calibration too loose to certify a useful operating window & Med / Med & The conservative kinematic bound is already sound, so the tighter empirical mapping is an enhancement rather than a dependency; prior work has already demonstrated the tightening on real flights. \\
+Certified-constrained MARL does not scale to the target swarm size & Med / High & Staged guarantee strength: report the scalability ceiling explicitly, and fall back to shielded MADDPG with empirical constraint satisfaction plus post-hoc certification of the learned policy. \\
+Scarcity of same-platform measured pairings & Med / Low & Provenance flags make evidence strength explicit rather than hidden; physics-model and simulation pairings sustain coverage, and the limitation is reported as a limitation. \\
+Third-party dataset licensing restricts redistribution & Low / Low & Release adapters and unified labels only, fetching source data from origin under its own licence, which is the practice already followed. \\
+Host dependency; fellow relocation and onboarding & Low / Med & The collaboration is already active with a joint manuscript in submission; host relocation support applies, and a remote start is possible if required. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\textbf{Management and data.} The fellow manages the project day to day under the supervisor's oversight, with monthly progress reviews, a quarterly review of the risk register, and version-controlled research artefacts. A Data Management Plan (D1.2) governs FAIR data handling, licensing, provenance and long-term deposition. Research integrity, ethics including a dual-use assessment of UAV autonomy research and a data-protection review of any imagery, and research-security requirements are handled under the host's institutional procedures and reported in Part~B2.
+
+\subsection{Quality and capacity of the host institution and hosting arrangements}
+The University of Padua is one of Europe's oldest and most research-intensive universities. The SPRITZ group is an internationally leading security and privacy laboratory with a substantial record of European project participation and of hosting funded researchers, and with the specific combination of UAV network security, adversarial machine learning and algorithms expertise that this project requires. The co-supervisor's work on UAV networks, surveillance and GNSS-compromised swarm protocols is the direct counterpart to the fellow's certification expertise, and the two lines are already producing joint output.
+
+The host is to supply: laboratory and computing infrastructure including GPU resources and UAV testbed access; administrative, grant-office and relocation support; integration into the doctoral school and its training catalogue; the formal supervision and career-development arrangements; and the group's record of previously hosted fellows together with their career outcomes.
+
+\subsection{Eligibility}
+The fellow satisfies the MSCA-PF conditions. The doctoral thesis was successfully defended in June 2026, with the formal award in December 2026; the call admits candidates who have successfully defended but have not yet been formally awarded a doctoral degree at the deadline. The fellow is well within the eight-year limit on post-doctoral experience. The mobility rule is satisfied, since the fellow has not resided or carried out his main activity in Italy for more than 12 months in the 36 months immediately preceding the deadline.
+
+\vspace{0.4em}
+{\footnotesize\itshape Prepared by Roger Nick Anaedevha for review with Prof.\ Mauro Conti and Dr.\ Federico Cor\`o. Not for submission until the host confirms its sections and budget figures, and until the eligibility conditions are verified against the official 2026 call documents on the EU Funding and Tenders Portal. Links are attached to the covering email.}
+
+\end{document}
