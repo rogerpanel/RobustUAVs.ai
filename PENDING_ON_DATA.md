@@ -74,27 +74,28 @@ in this repository. Restore after acceptance with
   nuisance) is structural and holds regardless; only the numeric crossing
   moves. Bridge numbers stay tagged fixture-derived until then.
 
-## 4. Interface characterisation campaign — now the paper's binding limitation ⚠️
+## 4. Interface characterisation campaign — PARTLY DONE ✅/⚠️
 
-**Upgraded from "more flights" after `experiments/gamma_stability.py` measured
-that γ is not constant: it varies 2.6× between GPS jamming (~0.5 m/s) and GPS
-spoofing (~1.4 m/s) on the flights we have.**
+**Ran 2026-08-20.** `experiments/gamma_campaign.py` estimates γ at all 674
+post-onset samples and regresses it on the conditions at each instant;
+`experiments/mission_distribution.py` measures the MCR spread across nine
+mission distributions. Results: `docs/interface_campaign_results.md`.
 
-- **Needs:** flights varying the five factors the released corpus holds fixed —
-  platform, airspeed, flight mode, attack intensity, attack duration — plus the
-  cruise regime. Two attack types on one airframe in hover is a calibration,
-  not a characterisation, and the 2.6× we report is a *lower bound* on real
-  variability.
-- **Unblocks:** condition (C3) of the paper's scope statement, which is named
-  there as the weakest of the three. Either γ proves stable across regimes,
-  which materially strengthens the result, or the model becomes
-  γ = γ(state, input, flight mode, attack type) and the certificate must be
-  evaluated at the supremum over the operational design domain. Both outcomes
-  are publishable; the current state, one calibration presented as a rate, is
-  the one that is not.
-- The certificate already uses max(γ) over observed conditions, so nothing
-  reported is optimistic — but the window would widen 2.6× if the jamming rate
-  were used, which is why the choice is stated explicitly in §VII-C.
+**Done — no longer blocked:**
+- attack type (jamming vs spoofing), GNSS condition (satellites 14→4, HDOP
+  0.71→4.16, fix 3→0), staleness/attack duration (0.4–70 s). γ varies 6.1×
+  and systematically; the certificate now uses the supremum, γ = 1.625 m/s.
+- mission-distribution dependence: 0.011 marginal, up to 0.214 conditional on
+  attack strength, and 9 dB of spread in the J/S at which MCR crosses 0.90.
+
+**Still blocked, and now the only interface items left:**
+- **Platform diversity.** One PX4 / Pixhawk 4 / Holybro S500. Needs a second
+  and third airframe. No re-analysis of this release can substitute.
+- **Flight regime.** Hover only; p90 of |v_xy| is under 0.65 m/s. Needs cruise
+  and transition segments.
+
+These two need airtime, not analysis, and they are what would turn the
+calibration into a characterisation.
 
 ## 4b. Whelan δ mapping: cruise regime + more flights ⚠️
 - **Needs:** more than 3 flights, and non-hover (cruise) flights, to turn the

@@ -106,6 +106,22 @@ def load_mappings():
                     "provenance": ("real-corpus 3-flight Whelan live sample, "
                                    "hover regime, self-referenced pre-attack "
                                    "median; conservative max rate")}
+    # The per-sample campaign supersedes the per-flight secant where it is
+    # available. gamma_stability/gamma_campaign showed the per-flight rate is a
+    # long-horizon average: measured at every post-onset sample, the
+    # baseline-corrected rate reaches 1.625 m/s, ~1.19x the 1.365 the per-flight
+    # secant reports. The certificate is entitled to the supremum over the
+    # conditions it claims to cover, so this is the mapping the paper quotes.
+    camp = RESULTS / "gamma_campaign_samples.csv"
+    if camp.exists():
+        vals = [float(r["gamma_delta_m_s"]) for r in csv.DictReader(open(camp))
+                if r.get("gamma_delta_m_s") not in (None, "", "None")]
+        if vals:
+            mappings["empirical_campaign_sup"] = {
+                "gamma_m_s": max(vals),
+                "provenance": ("real-corpus, supremum of the baseline-corrected "
+                               "per-sample rate over 674 post-onset samples from "
+                               "2 attack flights; hover regime, one airframe")}
     return mappings
 
 

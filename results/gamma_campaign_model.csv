@@ -1,0 +1,10 @@
+term,std_coef_m_s
+sats,-0.2184
+hdop,-0.129
+noise_per_ms,-0.0891
+staleness_s,-0.259
+speed_m_s,0.1156
+intercept,0.4597
+R2,0.791
+n_samples,674
+NOTE,"descriptive only; samples autocorrelated within 2 flights, no p-values reported"

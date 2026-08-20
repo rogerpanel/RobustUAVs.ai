@@ -1,0 +1,2307 @@
+    % =====================================================================
+%  PAPER D  --  merged submission for NDSS (Network and Distributed
+%  System Security Symposium), combining the cross-layer benchmark
+%  (formerly Paper C) and the composition theorem (formerly Paper A).
+%
+%  NDSS FORMAT COMPLIANCE
+%  ----------------------
+%  NDSS requires: US Letter (not A4), two-column, columns no more than
+%  9.25 in high and 3.5 in wide, Times font at 10 pt or larger with
+%  11 pt or larger leading, and at most 13 pages excluding the Ethics
+%  Considerations section, references, and appendices.
+%
+%  The class line below (IEEEtran, conference, letterpaper, 10pt, with
+%  Times via mathptmx) reproduces exactly that geometry: \columnwidth
+%  = 3.5 in and \textheight = 9.25 in (verified at compile time by the
+%  \typeout block after \begin{document}).
+%
+%  FOR FINAL SUBMISSION: download the official template from
+%  ndss-symposium.org/ndss2026/submissions/templates/ and replace the
+%  two lines marked "NDSS SWAP" below with \documentclass{ndss}.
+%  No change to the body is required.
+% =====================================================================
+\documentclass[conference,letterpaper,10pt]{IEEEtran}   % NDSS SWAP (1/2)
+\IEEEoverridecommandlockouts
+\usepackage{mathptmx}                                    % NDSS SWAP (2/2): Times
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+\usetikzlibrary{arrows.meta,positioning,fit,backgrounds,shapes.geometric,calc}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+% NDSS caps column height at 9.25in; IEEEtran's default is 9.30in, so we
+% trim it to be strictly within spec (9.25in = 668.5pt at 72.27pt/in).
+\setlength{\textheight}{668.4pt}
+
+% ---- anonymisation switch: NDSS review is double-blind ----------------
+% \anontrue  = anonymised submission version (what NDSS requires)
+% \anonfalse = named version for internal / supervisor review
+\newif\ifanon
+\anontrue
+
+% ---- shared style tokens --------------------------------------------
+\definecolor{netcol}{RGB}{31,78,121}
+\definecolor{autocol}{RGB}{18,120,90}
+\definecolor{bridgecol}{RGB}{176,96,0}
+\definecolor{accent}{RGB}{140,20,20}
+% Layer names are set as ordinary text. Colour is reserved for the figures,
+% where it distinguishes the two layers visually; in running prose it is noise.
+\newcommand{\layernet}{network}
+\newcommand{\layerauto}{autonomy}
+\newcommand{\dataset}[1]{\textsc{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\Real}{\mathbb{R}}
+\newcommand{\Norm}[1]{\left\lVert #1\right\rVert}
+\newcommand{\MCR}{\mathrm{MCR}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+
+\newcommand{\fc}[1]{{\color{red}{FC: #1}}}
+
+\begin{document}
+
+
+% The title deliberately says CONDITIONAL and names the calibrated interface.
+% An earlier version read "An End-to-End Framework for Network-to-Navigation UAV
+% Security", which implies the entire chain is certified. It is not: the middle
+% link is an empirical calibration, and the guarantee holds only under stated
+% conditions. See \S\ref{sec:scope}.
+\title{From Wire to Flight: A Conditional Mission-Completion Guarantee
+for UAVs under an Empirically Calibrated Cross-Layer Interface}
+
+
+\ifanon
+  \author{\IEEEauthorblockN{Paper \#XXX}
+  \IEEEauthorblockA{Submitted for double-blind review}}
+\else
+  \author{
+  \IEEEauthorblockN{Roger Nick Anaedevha\IEEEauthorrefmark{1}, \textit{IEEE Member},
+  Federico Cor\`o\IEEEauthorrefmark{2}, and Mauro Conti\IEEEauthorrefmark{2},
+  \textit{IEEE Fellow}}
+  \IEEEauthorblockA{\IEEEauthorrefmark{1}Institute of Cyber Intelligent Systems,
+  National Research Nuclear University MEPhI, Moscow, Russia}
+  \IEEEauthorblockA{\IEEEauthorrefmark{2}SPRITZ Security and Privacy Research Group,
+  Department of Mathematics, University of Padua, Padua, Italy}}
+\fi
+
+\maketitle
+
+
+\typeout{NDSS GEOMETRY CHECK: columnwidth=\the\columnwidth\space
+(target 3.5in=252.94pt), textheight=\the\textheight\space
+(target 9.25in=668.62pt)}
+
+\begin{abstract}
+The security of an unmanned aerial vehicle (UAV) is presently approached from
+two different points of view. \emph{Network intrusion detection} inspects the
+traffic carried by the aircraft's radio links and on-board buses and raises an
+alarm when that traffic looks malicious. \emph{Certified robustness} proves
+that a navigation model's output cannot move by more than a fixed amount when
+its sensor input is perturbed by no more than a given magnitude. The first
+approach stops at the alarm and says nothing about the flight that follows an
+intrusion it fails to catch; the second takes the perturbation as given and asks
+neither where it originates nor how often an adversary can produce one. Neither,
+therefore, answers the question an operator must answer: if an attacker
+deliberately keeps its interference just below the detector's alarm threshold,
+can the mission still be completed?
+
+This paper makes that question precise and answers it with a
+\emph{conditional} guarantee. We propose a two-layer schema whose unit of
+analysis is the \emph{cross-layer pairing}: an interval during which a network
+attack is active, joined to the interval of degraded navigation that it causes,
+and tagged with how strongly that causal link is evidenced. Instantiating the
+schema over six public datasets, we prove a composition theorem stating that,
+for an attacker who delays relayed messages by just less than the detector's
+threshold, the proportion of missions that complete is bounded from below by a
+quantity computable from that threshold. Two measurements determine whether the
+bound is useful or vacuous. The delay an attacker can hide does not grow without
+limit; it saturates at $4.84$\,s across $15{,}392$ observed relay hops. And one
+second of delayed navigation input costs at most $1.63$\,m of position error,
+measured at every one of $674$ post-onset samples of real GPS-jamming and
+GPS-spoofing flights, an order of magnitude less than a worst-case kinematic
+argument assumes.
+
+We are deliberate about what this does and does not establish. The chain is not
+a theorem end to end: its middle link is an empirical calibration, measured on
+three flights of one airframe in hover. That rate is not a constant. It varies
+by $6.1\times$ across the conditions we can observe, with attack type, satellite
+visibility and staleness each moving it in a mechanistically explicable
+direction, so the certificate is evaluated at the supremum rather than the
+average. The guarantee is conditional on
+Lipschitz navigation dynamics, on the estimator re-anchoring within a stated
+interval, and on that calibration transferring to the deployment; and the
+proportion it bounds is taken over a stated mission distribution, so it is a
+statement about a population of missions and not about any particular flight.
+Within those conditions the composed configuration certifies a non-zero floor
+where neither single-layer defence certifies any. Schema, adapters, and
+certificate engine are released as an open artifact.
+\end{abstract}
+
+% =====================================================================
+\section{Introduction}
+\label{sec:intro}
+% =====================================================================
+An autonomous UAV is exposed to an adversary at four distinct interfaces.
+Commands reach it from a ground station over a command-and-control (C2) radio
+link. Peer aircraft in a swarm exchange position and status reports over a
+multi-hop mesh, in which each aircraft relays traffic for its neighbours. Inside
+the airframe, the flight controller drives motor controllers and reads sensors
+over a shared bus. Finally, a navigation pipeline fuses satellite, inertial, and
+visual measurements into the state estimate on which the flight control loop
+acts. A large literature defends each of these interfaces individually. Our
+concern is a question that none of those defences is posed to answer: given that
+some attacks will get through, \emph{what happens to the flight afterwards?}
+
+That question is not rhetorical, because the attacks that matter operationally
+are not the ones that steal data. A jammer raises the noise floor at the
+satellite-navigation receiver until the position solution
+collapses~\cite{kassas2022jammer}. A compromised relay in the mesh forwards
+every message it is given, but late, so the aircraft acts on a peer's position
+report that is already stale~\cite{datamut2026,lou2019timedelay}. In both
+cases an event on the network produces a degradation in navigation, and the two
+are ends of a single causal chain. Neither the available datasets nor the
+available guarantees represent that chain, and so the chain cannot be reasoned
+about.
+
+The practical consequence is a claim that neither research community can
+currently substantiate. On the network side, a UAV intrusion detector can be
+shown to flag delayed forwarding events or spoofed navigation messages at high
+recall. What cannot be evaluated at all is the operationally decisive claim
+behind that recall figure, namely that a detector tuned to a given false-alarm
+budget keeps aircraft completing their missions, because no public dataset
+records both a network event and the flight it degrades. On the navigation side
+the silence is symmetric. Certified robustness establishes that a model's output
+is stable for every input perturbation of magnitude at most $R$, which is a
+statement about a model rather than about a flight, and which says nothing about
+where a perturbation of that magnitude originates or how often an adversary can
+produce one.
+
+Closing this gap requires work at both ends at once, because the two halves are
+mutually dependent: a guarantee spanning the two layers needs data objects that
+record the coupling, and a corpus that records the coupling needs a guarantee to
+show what those objects are for. We therefore unify six datasets, four covering
+the network and two covering navigation, under a schema whose unit of analysis
+is neither a packet nor a flight but a \emph{cross-layer pairing}: an interval
+during which a network attack is active, joined to the interval of degraded
+navigation it induces. On exactly those objects we then prove that a detector's
+alarm threshold determines a lower bound on the fraction of missions that still
+complete, under the pessimistic assumption that the adversary knows the
+threshold and stays below it. To our knowledge this is the first guarantee that
+carries a network-security threshold through to a mission-completion floor.
+
+One qualification belongs with that claim rather than after it. Only one of the
+six datasets observes a network event and the flight it degrades on the same
+airframe, and its release does not publish machine-readable attack intervals, so
+no pairing we release is of the strongest evidence class
+(\S\ref{sec:provenance_dist}). The cross-layer coupling is therefore established
+by a stated physical relation calibrated on real flights, not by same-platform
+observation of both windows together. What we claim is accordingly a
+\emph{conditional} guarantee whose interface is empirically calibrated
+(\S\ref{sec:scope}), and not mission-level security established end to end by
+measurement. Concretely, the paper contributes the following.
+
+\subsection*{Contributions}
+\begin{itemize}
+\item \textbf{A two-layer schema, and an adapter for each of six datasets
+(\S\ref{sec:schema},~\S\ref{sec:corpus}).} The schema gives one representation
+for any observation from any of the sources, whether that observation is a
+network flow, a bus frame, a telemetry sample, or an entire flight. An
+\emph{adapter} is the program that reads one dataset in its native release
+format and emits records in that representation; we write one per dataset and
+verify that no source column is discarded. Every record additionally carries a
+flag stating how strongly its cross-layer coupling is evidenced, so a reader can
+restrict any analysis to the evidence class they are willing to accept.
+
+\item \textbf{A detector-operating-curve harness (\S\ref{sec:harness}).} A
+detector's \emph{operating point} is the threshold at which it decides to raise
+an alarm; setting it low catches more attacks but also raises more false alarms.
+We make that threshold a swept parameter and measure recall and false-positive
+rate as a function of it, which supplies the network-side premise that a
+composed guarantee consumes. Across three topologies the curve has a universal
+knee-and-floor shape whose floor is the attacker's self-exposure probability.
+
+\item \textbf{An empirically tightened interface, and a measurement of its
+stability (\S\ref{sec:interface}).} We prove a residual-budget lemma and then
+\emph{tighten it by measurement}: the undetected budget saturates at the
+contact-window slack, verified at $\le 4.84$\,s over $15{,}392$ hops. We
+calibrate the delay-to-position rate $\gamma$ on three real spoofing and jamming
+flights, obtaining a bound an order of magnitude tighter than the kinematic
+worst case. We then ask whether $\gamma$ is a constant, and report that it is
+not. Estimating it at all $674$ post-onset samples rather than once per
+flight, it varies by $6.1\times$, and it varies systematically: with attack
+type, with satellite visibility, and with staleness, each in a mechanistically
+explicable direction (\S\ref{sec:gammastability}). The certificate is therefore
+evaluated at the supremum over observed conditions rather than at an average,
+and the reported spread is a lower bound on the true variability, since the
+released flights fix platform and flight mode.
+
+\item \textbf{A composition theorem and a four-certificate architecture
+(\S\ref{sec:theorem},~\S\ref{sec:certs}).} We prove the composed
+network-to-navigation guarantee and its soundness, and show precisely why the
+deterministic core does not subsume randomized smoothing, PAC-Bayes, or
+multiplicative-weights regret.
+
+\item \textbf{Instantiation, ablation, and an open artifact
+(\S\ref{sec:eval}).} Among the configurations we compare, the composed guarantee
+is the only one with a non-zero certified floor against an evading attacker, and
+under the measured interface a deployed detector's operating point lies inside
+the certified window. The comparison is against ablations of our own
+construction rather than against alternative assurance methods, for reasons we
+give in \S\ref{sec:dominance}. Every figure and table is generated from
+committed result files, and every number carries a provenance tag.
+\end{itemize}
+
+\subsection*{Scope of the Guarantee}
+\label{sec:scope}
+Because a composed result invites over-reading, we state its boundaries here
+rather than in the limitations section. What we establish is a
+\emph{conditional} guarantee under an empirically calibrated interface, and it
+is conditional in three separate senses.
+
+\begin{enumerate}[label=(C\arabic*),leftmargin=2.6em]
+\item\label{c:lip} \textbf{Dynamics.} The navigation drift is $L$-Lipschitz over
+the operating region. Outside that region, for instance in a stall-recovery
+transient or under actuator saturation, no finite $L$ bounds it and the
+certificate makes no statement at all.
+\item\label{c:anchor} \textbf{Re-anchoring.} The estimator receives at least one
+uncorrupted state update per certification horizon $T_c$. A delay adversary
+satisfies this by construction; a persistent-denial adversary does not.
+\item\label{c:interface} \textbf{Interface transfer.} The measured
+delay-to-position rate $\gamma$ applies to the deployment in question. This is
+the weakest of the three, because $\gamma$ is calibrated on three flights of one
+airframe in hover and, as \S\ref{sec:gammastability} shows, it is not a
+constant: it varies by $6.1\times$ over the conditions we can observe, and
+platform and flight mode we cannot vary at all.
+\end{enumerate}
+
+Two further boundaries are worth naming. First, the chain
+$\theta\mapsto\Delta\mapsto\delta\mapsto\MCR$ is not a theorem end to end. The
+first and last links are proved; the middle link, $\Delta\mapsto\delta$, is an
+empirical calibration. Presenting the whole as ``certified end-to-end security''
+would misstate where the evidence lies, so we do not. Second, MCR is a
+probability over a \emph{distribution of missions}
+(\S\ref{sec:probspace}); a bound on that proportion is not a bound for an
+arbitrary individual mission drawn from a different distribution.
+
+\emph{Organization.}
+\S\ref{sec:problem} states the threat model, defines mission completion, and
+formalises the cross-layer pairing. \S\ref{sec:related} positions the work.
+\S\ref{sec:schema} presents the two-layer schema and \S\ref{sec:corpus} the six
+ingestion adapters; \S\ref{sec:harness} builds the detector-operating-curve
+harness. \S\ref{sec:interface} derives and then measures the interface mapping,
+\S\ref{sec:theorem} proves the composition theorem, and \S\ref{sec:certs}
+places it inside a four-certificate architecture. \S\ref{sec:eval} instantiates
+and evaluates the result, and
+\S\ref{sec:discussion}--\S\ref{sec:conclusion} include discussion, boundedness, and conclusion. 
+
+% =====================================================================
+\section{Threat Model and Problem Formulation}
+\label{sec:problem}
+% =====================================================================
+This section fixes three things the rest of the paper depends on: which parts of
+the aircraft an adversary can reach and what spatial envelope the mission must
+stay inside (\S\ref{sec:surfaces}); what the adversary and the detector are each
+assumed able to do (\S\ref{sec:adversary}); and what it means, precisely, for a
+mission to have been completed (\S\ref{sec:mcr}). \S\ref{sec:formulation} then
+states the object that existing datasets do not provide and that the rest of the
+paper is built to supply.
+
+\subsection{Attack Surfaces and Operating Volume}
+\label{sec:surfaces}
+We partition the UAV attack surface into two \emph{layers}. The \layernet{}
+layer covers everything between nodes: the swarm mesh (multi-hop routing among
+aircraft), the C2 link, and the intra-UAV bus. The \layerauto{} layer covers
+everything inside the navigation and control stack: the GNSS receiver, sensor
+fusion, the flight controller, and the mission outcome. A \emph{sublayer}
+refines each into the concrete surfaces a dataset can observe.
+Fig.~\ref{fig:surfaces} places the six datasets on the causal chain.
+
+We also fix here the one spatial quantity the rest of the paper depends on. A
+mission is flown inside a \emph{safe corridor}: a tube of lateral half-width
+$m$, the \emph{corridor margin}, centred on the planned route, within which the
+aircraft must remain for the flight to be considered nominal. The corridor is
+not an artifact of our analysis, but the standard unit of operational approval
+for uncrewed flight. Under the JARUS SORA methodology the operational volume is
+padded by a contingency volume whose lateral extent is the sum of GNSS accuracy,
+position-holding error, map error, and the stopping distance of the contingency
+manoeuvre~\cite{jarus_sora25}; for a small multirotor these terms sum to roughly
+$7$\,m, which is why we report every certified quantity over a family of margins
+$m\in\{2,5,10,20\}$\,m spanning that figure rather than at a single value.
+Leaving the corridor is the spatial failure mode; \S\ref{sec:mcr} adds the
+temporal one.
+
+\begin{figure}[t]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tikzpicture}[font=\footnotesize,>={Latex[length=2mm]},
+  node distance=2.5mm,
+  n/.style={rounded corners=2pt,draw=netcol,fill=netcol!10,align=center,
+    minimum height=6.5mm,inner sep=2.5pt,text width=17mm},
+  a/.style={rounded corners=2pt,draw=autocol,fill=autocol!10,align=center,
+    minimum height=6.5mm,inner sep=2.5pt,text width=17mm}]
+\node[n] (mesh) {swarm mesh\\\scriptsize UAVIDS, UAV-CAS, DATAMUt};
+\node[n,right=of mesh] (c2) {C2 link\\\scriptsize UAV Attack Dataset};
+\node[n,right=of c2] (bus) {intra-bus\\\scriptsize HCRL UAVCAN};
+\node[a,below=8mm of c2] (gnss) {GNSS + EKF\\\scriptsize state estimate};
+\node[a,right=of gnss] (ctrl) {controller\\+ mission\\\scriptsize UAV-EW-Bench};
+\node[a,left=of gnss] (nav) {navigation\\input $u(t)$};
+% mesh feeds the navigation input directly (peer state corrections). Drawn to
+% the node itself; an earlier version terminated on a coordinate expression
+% that left the arrowhead pointing into empty space.
+\draw[->,netcol] (mesh) -- (nav);
+\draw[->,netcol] (c2) -- (gnss);
+\draw[->,netcol] (bus) -- (ctrl.north);
+\draw[->,autocol] (nav) -- (gnss);
+\draw[->,autocol] (gnss) -- (ctrl);
+\node[align=center,font=\scriptsize\itshape] at ($(mesh)!0.5!(bus)+(0,0.9)$)
+  {network layer (attacks \emph{on the wire})};
+\node[align=center,font=\scriptsize\itshape] at ($(nav)!0.5!(ctrl)-(0,0.95)$)
+  {autonomy layer (attacks \emph{on the flight})};
+\end{tikzpicture}%
+}
+\caption{The attack surfaces the six datasets cover, arranged on the causal
+chain. Network-layer events (top) propagate downward into the autonomy layer
+(bottom) through the navigation input; representing that downward arrow
+explicitly, rather than assuming it, is what the benchmark contributes and what
+the theorem then exploits.}
+\label{fig:surfaces}
+\end{figure}
+
+\subsection{Adversary and Detector Model}
+\label{sec:adversary}
+We assume an adversary who can (i) inject, drop, delay, or forge traffic on one
+or more network sublayers, and (ii) manipulate the RF environment of the GNSS
+receiver. We assume a network-layer \emph{detector} $D_\theta$ operating at a
+tunable point $\theta$ that trades detection recall against false-positive rate:
+for the multi-hop forwarding detector we build on, $\theta$ is a per-hop
+deviation tolerance in seconds, and a hop is flagged if its forwarding delay
+exceeds $\theta$ or its next hop deviates from a scheduling oracle. Lowering
+$\theta$ catches more but raises false positives; raising it does the reverse.
+An \emph{evading} attacker chooses its behaviour to stay just under $\theta$ and
+is therefore invisible by construction. We assume the adversary knows $\theta$;
+this is the strongest reasonable assumption and the one our worst-case analysis
+requires.
+
+\subsection{Mission Completion: Spatial and Temporal Predicates}
+\label{sec:mcr}
+We adopt \emph{Mission Completion Rate} (MCR) as the operational metric, and
+take $\MCR\ge0.90$ as a reference consistent with the airworthiness-security
+posture of DO-326A/ED-202A~\cite{do326a}; emerging AI-in-aviation assurance
+guidance~\cite{ed324} motivates treating a certified MCR floor as a first-class
+safety property, which is what \S\ref{sec:theorem} delivers.
+
+Defining completion \emph{spatially} alone, as the trajectory never leaving the
+corridor of \S\ref{sec:problem}, is inadequate for the attack class this paper
+targets. A time-delay adversary can hold the aircraft geometrically on route
+while causing it to arrive late, so a delivery, inspection, or search mission
+with a time-critical objective fails without any corridor violation occurring.
+We therefore define completion as the \emph{conjunction} of a spatial and a
+temporal predicate. Write $x(t)$ for the realised trajectory,
+$x_{\mathrm{nom}}(t)$ for the nominal one, $m$ for the corridor margin in
+metres, $t_{\mathrm{arr}}$ for the arrival time at the objective, $T$ for the
+nominal mission duration in seconds, and $\kappa$ for the schedule tolerance
+expressed as a fraction of $T$. Then
+\begin{equation}
+\label{eq:mcr}
+\MCR \;=\; \Pr\Big[\underbrace{\sup_{t\in[0,T]}\Norm{x(t)-x_{\mathrm{nom}}(t)}\le m}_{\text{spatial}}
+\;\wedge\;
+\underbrace{t_{\mathrm{arr}}\le(1+\kappa)T}_{\text{temporal}}\Big].
+\end{equation}
+Where a quantity is computed under the spatial predicate alone, as the
+navigation anchor of \S\ref{sec:eval} is because its source records geometric
+completion only, we label it \emph{Spatial MCR} and say so explicitly.
+
+\subsubsection*{What the probability in Eq.~\eqref{eq:mcr} is over}
+\label{sec:probspace}
+Eq.~\eqref{eq:mcr} writes a probability, so the probability space must be
+stated; leaving it implicit is what allows a population-level bound to be
+misread as a per-flight one. Fix a detector operating point $\theta$. Then
+$\delta(\theta)$ and $\Delta(\theta)$ are deterministic worst-case bounds, not
+random variables, so \emph{all} of the randomness in Eq.~\eqref{eq:mcr} comes
+from the mission itself. Formally, let $(\Omega,\mathcal{F},\mathbb{P}_{\mathcal{M}})$
+be a probability space in which a sample point $\omega\in\Omega$ is one mission:
+a route, a nominal duration $T$, a corridor margin $m$, an initial state, a wind
+and turbulence realisation, and the number $H$ of attacker-controlled hops on
+the route it happens to use. $\mathcal{M}$ denotes the \emph{mission
+distribution}, and $\MCR=\MCR(\mathcal{M},\theta)$ is the
+$\mathbb{P}_{\mathcal{M}}$-measure of the set of missions satisfying both
+predicates.
+
+Three consequences follow, and we prefer to state them than to have them
+inferred.
+
+\begin{itemize}
+\item \textbf{The guarantee is relative to $\mathcal{M}$.} Theorem~\ref{thm:main}
+bounds $\MCR(\mathcal{M},\theta)$ for the $\mathcal{M}$ under which
+$\delta(\theta)e^{LT_c}\le m$ is evaluated. A fleet whose missions are flown in
+tighter corridors, or over routes with more attacker-controlled hops, is a
+different $\mathcal{M}$ and inherits no bound from ours. In particular
+$\MCR(\mathcal{M}_{\text{benchmark}},\theta)\neq\MCR(\mathcal{M}_{\text{arbitrary}},\theta)$,
+and the numbers we report are the former.
+\item \textbf{The dependence is confined to two parameters.} The mission enters
+the bound only through the corridor margin $m$ and the hop count $H$. This is
+why we report every certified quantity over a family of margins rather than at
+one value: the family is a coarse marginalisation over the part of $\mathcal{M}$
+that matters. An operator can therefore instantiate the bound for their own
+$\mathcal{M}$ by reading off their own $m$ and $H$, without re-running the
+analysis.
+\item \textbf{A bound on a proportion is not a bound on a flight.} $\MCR\ge0.9$
+permits one mission in ten to fail, and says nothing about \emph{which}. A
+per-flight guarantee would require a bound conditional on $\omega$, which the
+Gr\"onwall argument can supply only in the degenerate case where $m$ and $H$ are
+fixed and known in advance. Where that case holds, the certificate is
+deterministic and the probability is redundant; where it does not, the statement
+is unavoidably distributional.
+\end{itemize}
+
+The empirical mission distribution used throughout \S\ref{sec:eval} is the one
+induced by the navigation anchor's flight set crossed with the margin family
+$m\in\{2,5,10,20\}$\,m and the per-topology hop counts of
+Table~\ref{tab:corpus}; it is reported explicitly rather than left to be
+reconstructed.
+
+\subsubsection*{How much does the distribution actually matter?}
+\label{sec:missiondist}
+The point above is often made and rarely measured, so we measure it. The
+navigation anchor flies $93{,}600$ missions over a full factorial that includes
+three \emph{mission profiles} (cargo over mixed terrain, perimeter patrol,
+search and rescue) and three \emph{receiver models}, which is exactly the axis
+along which the mission distribution can be changed with everything else held
+fixed. Table~\ref{tab:missiondist} reports MCR for each of the nine resulting
+distributions.
+
+The answer depends on whether one conditions on the adversary, and the contrast
+is the finding. Marginalised over the whole $0$--$40$\,dB jamming sweep the nine
+distributions are nearly indistinguishable: MCR ranges over $[0.882,0.893]$, a
+spread of $0.011$. Conditioned on the attack, they are far apart: at
+$J/S=35$\,dB the mission profile alone moves MCR by $0.214$, and at $30$\,dB the
+receiver model alone moves it by $0.154$. Most usefully, the jamming power at
+which a distribution first falls below the $\MCR\ge0.90$ reference ranges from
+$18.1$ to $27.1$\,dB, a spread of $9$\,dB, or roughly a factor of eight in
+adversary transmit power.
+
+Two conclusions follow. Averaging over adversary strength makes the dependence
+look negligible, but an operator flies one profile against one adversary and
+lives at a point rather than at the average. And a certified floor quoted
+without naming its mission distribution is, on this evidence, worth about
+$9$\,dB of ambiguity. We therefore name ours wherever we quote it.
+
+\begin{table}[t]
+\centering
+\caption{MCR under the composed defence for each of nine mission distributions,
+marginalised over the $0$--$40$\,dB jamming sweep, with Wilson $95\%$ intervals.
+The marginal spread is small; the spread \emph{conditional} on attack strength
+reaches $0.214$, and the $J/S$ at which MCR crosses $0.90$ spans $9$\,dB.
+Provenance: simulation (physics-informed). Generated by
+\code{experiments/mission\_distribution.py}.}
+\label{tab:missiondist}
+\scriptsize
+\renewcommand{\arraystretch}{1.02}
+\input{figures/block_paperD_tab_missiondist.tex}
+\end{table}
+
+Two conventions on $T$ avoid a possible ambiguity later. First, $T$ is a
+duration in seconds: the missions in our corpus run between $136$ and $246$\,s,
+and the reference mission profile of \S\ref{sec:eval} is $70$\,s, so a schedule
+tolerance of $\kappa=0.10$ corresponds to a permissible slip of several seconds.
+Second, $T$ is \emph{not} the horizon over which the trajectory-tube certificate
+of \S\ref{sec:theorem} is propagated. That horizon, written $T_c$ and fixed at
+$1$\,s throughout, is the interval between successive uncorrupted state updates,
+after which the estimator re-anchors and the deviation bound restarts;
+\S\ref{sec:theorem} states this separation precisely. Conflating the two would
+either understate the mission or make the exponential bound vacuous.
+
+The temporal predicate is not a separate analysis: the same residual budget
+$\Delta(\theta)$ that bounds the spatial perturbation also bounds the schedule
+slip, since an evading attacker's total contribution to arrival delay is exactly
+its accumulated undetected forwarding delay. The temporal predicate therefore
+holds whenever
+\begin{equation}
+\label{eq:temporal_condition}
+\Delta(\theta)\;\le\;\kappa\,T ,
+\end{equation}
+which by Lemma~\ref{lem:residual} is implied by $H\min(\theta,s)\le\kappa T$.
+This adds a second edge to the certified window of \S\ref{sec:eval}, and it is useful to record which of the two
+constraints binds. At the operating point we certify
+($\theta=0.25$\,s, $H=2$) the induced slip is at most $0.5$\,s, so for any
+mission longer than $5$\,s at a $10\%$ schedule tolerance the temporal predicate
+is satisfied with room to spare and the spatial predicate is the binding one.
+The ordering reverses for a loosely tuned detector: at $\theta$ near the
+contact-window slack $s=5$\,s the slip reaches $H s = 10$\,s, which exceeds a
+$10\%$ tolerance on any mission shorter than $100$\,s. A short, time-critical
+mission is thus governed by Eq.~\eqref{eq:temporal_condition} and a long,
+tightly corridored one by the spatial bound, a distinction a spatial-only
+metric cannot express.
+
+\subsection{Formalising the Cross-Layer Pairing}
+\label{sec:formulation}
+Let a network attack occupy a time window $W_n=[t_0,t_1]$ on some network
+sublayer, and let the induced navigation degradation occupy a window $W_a$ on
+the autonomy layer. Existing datasets provide either $W_n$ (with packet labels)
+or $W_a$ (with flight outcomes) but never the \emph{pair} together with the
+mechanism linking them. We formalise the missing object as a tuple
+\begin{equation}
+\label{eq:pairing}
+P = \big(W_n,\; W_a,\; \theta,\; \Delta(\theta),\; \delta,\; \MCR\big),
+\end{equation}
+where $\theta$ is the detector operating point, $\Delta(\theta)$ the worst-case
+residual effect of an attacker that evades $D_\theta$, $\delta$ the resulting
+perturbation budget on the navigation input, and MCR the measured or certified
+outcome.
+
+The two halves of this paper act on Eq.~\eqref{eq:pairing} in complementary
+ways. The benchmark's role is \emph{representational}: it makes the complete
+tuple $P$ recordable, storable, and auditable, where existing corpora record
+only its first or its second component. The theorem's role is
+\emph{inferential}: it derives the final component, the mission outcome, from
+the third, the detector operating point, by way of the intermediate quantities.
+That inference is the chain
+\begin{equation}
+\label{eq:chain}
+\theta \;\longmapsto\; \Delta(\theta) \;\longmapsto\; \delta(\theta)
+\;\longmapsto\; \MCR \ge f\big(\delta(\theta)\big),
+\end{equation}
+read left to right: the operating point $\theta$ bounds the residual undetected
+attack $\Delta(\theta)$ (\S\ref{sec:interface}); the residual attack maps to a
+bounded perturbation $\delta(\theta)$ on the navigation input
+(\S\ref{sec:interface}); and a Lipschitz--Gr\"onwall trajectory-tube argument
+turns that bounded input into a guaranteed MCR floor (\S\ref{sec:theorem}).
+Individually the three arrows rest on established results in detector
+thresholding, worst-case attack analysis, and certified robustness; it is their
+composition that is new.
+
+The evidential value of $P$ depends on \emph{how} $W_n$ and $W_a$ were linked in
+the first place, which we therefore record explicitly on every record
+(\S\ref{sec:schema}).
+
+\begin{definition}[Composed guarantee]
+\label{def:composed}
+Given a detector $D_\theta$ and navigation dynamics Eq.~\eqref{eq:ode}, a
+\emph{composed guarantee} is a function $f$ such that for every attack $a$ with
+$D_\theta(a)=\text{``clean''}$, the mission completes with rate
+$\MCR(a)\ge f(\delta(\theta))$, where $\delta(\theta)$ bounds the
+navigation-input perturbation any such $a$ can induce.
+\end{definition}
+
+% =====================================================================
+\section{Related Work}
+\label{sec:related}
+% =====================================================================
+Prior work divides along the two halves of this paper, corpora on the data side
+and bounds on the guarantee side, and the same gap recurs on both: each
+community works within one layer and leaves the interface between them to
+assumption.
+
+\paragraph{UAV Corpora and Dataset Construction}
+Taxonomies of AI-enhanced UAV intrusion detection~\cite{islam2025uavids} report
+a proliferation of datasets alongside a persistent weakness: general-purpose
+network corpora lack UAV protocol semantics, while UAV-specific corpora each
+cover a single sublayer. The consequence is measurable, in that models trained
+on generic benchmarks misclassify a large fraction of GPS-spoofing events on
+real autopilot logs~\cite{islam2025uavids}, and it is direct evidence that the
+network and navigation layers do not form one undifferentiated feature space.
+FANET surveys~\cite{tsao2022survey,ceviz2024survey} catalogue routing attacks
+but stop at network effect. The individual corpora are authoritative within
+their sublayers: \dataset{UAVIDS-2025}~\cite{uavids2025}
+contributes $122{,}171$ NS-3 mesh flows, the \dataset{UAV Attack
+Dataset}~\cite{whelan2020uav,whelan2020novelty} real PX4 flights under GPS
+spoofing, jamming, and MAVLink ping-DoS, and \dataset{HCRL
+UAVCAN}~\cite{hcrl_uavcan} bus-level flooding, fuzzing, and replay. None reaches
+the flight.
+
+Construction methodology bears on validity as directly as scale does. Audits of
+CIC-IDS2017 exposed labelling errors, flawed flow construction, and unrealistic
+temporal separation, each of which inflated reported
+performance~\cite{engelen2021troubleshooting,sharafaldin2018cicids}. Spanning
+two layers introduces a further failure mode: asserting a causal link between a
+network event and a flight degradation that were never observed together. The
+mandatory provenance flag of \S\ref{sec:schema} exists to bound precisely that
+risk. Among released datasets the closest in ambition is
+\dataset{UAV-CAS}~\cite{uavcas2026}, an AERPAW-calibrated swarm corpus and the
+first to include collaborative multi-attack compositions; we ingest it as one of
+our six sources. It nonetheless remains a network-layer benchmark, its authors
+listing GNSS spoofing and jamming as future work, so where it asks how well a
+collaborative mesh attack can be detected, we ask what that attack, detected or
+missed, does to the aircraft.
+
+\paragraph{Certified Robustness and Its Extension to Control}
+Randomized smoothing~\cite{cohen2019smoothing,salman2019provably} yields a
+probabilistic $\ell_2$ radius that scales to large models, whereas
+Lipschitz-based certification~\cite{pauli2022training,zhang2022rethinking}
+yields deterministic bounds known to be loose globally; neural
+ODEs~\cite{chen2018neuralode} admit the Gr\"onwall-type
+argument~\cite{yan2020robustnode} we adopt. All of these bound a \emph{model's}
+output. Lifting them to sequential decisions, CROP certifies a cumulative-reward
+lower bound under state perturbation~\cite{wu2022crop}, CARRL certifies robust
+actions~\cite{everett2021carrl}, reachability tools bound trajectories of
+network-controlled systems~\cite{ivanov2019verisig,tran2020nnv}, and
+control-theoretic work establishes safety under sensor false-data
+injection~\cite{li2022lqg}. CROP is the nearest analogue to a certified mission
+floor, but it certifies a policy against a \emph{given} perturbation ball and is
+silent on where that ball comes from.
+
+\paragraph{Secure Estimation, Runtime Assurance, and Delay Attacks}
+A parallel control-theoretic literature asks how much sensor corruption an
+estimator can tolerate: exact recovery holds below a corruption
+threshold~\cite{fawzi2014secure}, satisfiability-modulo-theory solvers make the
+search practical~\cite{shoukry2017smt}, and recent surveys catalogue the
+field~\cite{ding2021survey}. Such results bound estimation error given
+\emph{which} sensors are compromised, rather than modelling a detector whose
+threshold determines what an attacker may inject at all, which is the premise
+Lemma~\ref{lem:residual} supplies. Simplex and its
+descendants~\cite{sha2001simplex,mehmood2022blackbox,cofer2020rta} guarantee
+safety by switching from an unverified controller to a verified baseline when a
+monitor fires; our certified window is the region in which the high-performance
+policy may run, and we contribute the quantitative boundary such architectures
+otherwise hand-tune. The destabilising effect of injected delay is itself well
+studied~\cite{lou2019timedelay,etd2023uav,datamut2026}, but that literature
+establishes whether a delay attack is dangerous or detectable and stops there.
+
+\paragraph{Composing Guarantees}
+The closest prior art composes certificates \emph{within} a single ML pipeline.
+Sheikholeslami et al.~\cite{sheikholeslami2021provably} jointly certify a
+classifier and a detection class, so that an input is provably either flagged or
+correctly classified, which is structurally our evade-or-bound dichotomy but
+confined to one layer. Yang et al.~\cite{yang2022sensing} decompose end-to-end certified
+robustness across a two-stage sensing$\to$reasoning pipeline, the strongest
+existing template for chained certification, though it too remains within
+perception. Assume-guarantee and contract-based CPS design~\cite{pacti2024}
+supplies the compositional vocabulary but no ML-robustness certificates. No
+prior result chains a network-intrusion-detection guarantee to a navigation
+certificate; that is the gap this paper closes, and closing it requires the
+corpus and the theorem together.
+
+% =====================================================================
+\section{The Two-Layer Schema}
+\label{sec:schema}
+% =====================================================================
+\subsection{Overview}
+Before the details, the shape of the design. The schema exists to solve one
+problem: the six datasets we wish to combine describe different things, at
+different rates, with no common clock, and any representation that forces them
+into a single flat table would have to discard whatever does not fit.
+
+We therefore use three record kinds, arranged in a hierarchy of increasing
+interpretation, illustrated in Fig.~\ref{fig:schema}.
+
+\begin{enumerate}
+\item An \textbf{Event} is a single observation as its source recorded it,
+translated into common field names but never summarised. This layer is
+deliberately dumb: it asserts nothing beyond what the source file said.
+\item An \textbf{AttackWindow} is an interval of time during which one named
+attack was active on one layer. This layer asserts that something adversarial
+was happening, and when.
+\item A \textbf{CrossLayerPairing} joins one network window to one autonomy
+window and asserts that the first \emph{caused} the second. This is the only
+place in the schema where a causal claim is made, and it is therefore the only
+place that carries a mandatory flag recording the strength of the evidence for
+that claim.
+\end{enumerate}
+
+The rest of this section gives each kind in turn. The single design idea worth
+carrying forward is the last one: causality is confined to one record type, made
+explicit, and graded, so that no analysis can silently rest on a coupling that
+was never observed.
+
+\subsection{The Three Record Kinds}
+\textbf{Event} is one atomic observation (a mesh flow, a bus frame, a routing
+hop, a telemetry sample, or a whole flight) mapped to a small common core
+(identity, layer/sublayer, relative time, endpoints, a unified attack label)
+plus a \code{metrics} block of the few cross-source numeric quantities that
+matter (residual forwarding delay, position error, $J/S$, mission-completed) and
+a \code{native} block preserving every remaining source column, so ingestion is
+lossless.
+
+\textbf{AttackWindow} is a labelled attack interval within one scenario,
+carrying the unified attack class and class-appropriate \code{intensity}
+parameters. It is the unit of cross-layer alignment.
+
+\textbf{CrossLayerPairing} realises the tuple $P$ of Eq.~\eqref{eq:pairing}: it
+joins a network window to an autonomy window and records $\theta$, the residual
+budget $\Delta(\theta)$, the perturbation $\delta$ with a \emph{named,
+versioned} mapping, the certificate hook, and the empirical MCR. Its
+\code{pairing\_basis} field records the strength of the evidence for the
+causal claim the record makes. It takes one of three values:
+\code{measured\_same\_platform} (both windows recorded on one testbed, the
+strongest evidence), \code{physics\_model} (coupled through a stated physical
+model), or \code{synthetic\_alignment} (aligned by construction). A reviewer can
+filter the benchmark by evidence strength; a claim can never silently upgrade
+its own provenance.
+
+\subsection{Why the Schema Takes This Form}
+Three design choices let six heterogeneous sources coexist without information
+loss. Time is always \emph{relative} to each source's capture start, since the
+sources share no global clock, and cross-layer alignment happens at the window
+level, so a mismatch between a $50$\,Hz telemetry stream and a per-flow network
+record never forces a lossy resample. Attack labels are \emph{unified} into a
+common taxonomy while the verbatim source label is retained in
+\code{label\_native}. And every unmapped column is preserved, which makes
+ingestion provably lossless rather than merely convenient.
+
+Cross-layer alignment therefore needs a stated rule and a stated error budget,
+since this is the step at which a benchmark could silently manufacture, or
+destroy, the effect it reports. We anchor attack onsets under an affine map
+between the two relative clocks and bound the residual misalignment by
+$e_{\mathrm{align}}\le0.53$\,s for every released pairing. Crucially,
+$\Delta(\theta)$ is computed entirely within the network source, so misalignment
+can attach a pairing to the wrong autonomy window but cannot inflate or deflate
+the quantity the certificate consumes. Appendix~\ref{app:alignment} gives the
+map, the error terms, and the rejection rule.
+
+\begin{figure}[t]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tikzpicture}[
+  font=\footnotesize,
+  box/.style={rounded corners=2pt,draw,align=center,minimum height=7mm,inner sep=3pt},
+  net/.style={box,fill=netcol!12,draw=netcol},
+  aut/.style={box,fill=autocol!12,draw=autocol},
+  br/.style={box,fill=bridgecol!15,draw=bridgecol,thick},
+  ev/.style={box,fill=black!4,minimum width=15mm},
+  >={Latex[length=2mm]}]
+\node[ev] (mesh) {mesh\\flow};
+\node[ev,right=3mm of mesh] (c2) {C2\\frame};
+\node[ev,right=3mm of c2] (bus) {bus\\frame};
+\node[ev,right=3mm of bus] (hop) {route\\hop};
+\node[ev,right=3mm of hop] (tel) {telem.\\sample};
+\node[ev,right=3mm of tel] (fl) {flight};
+\node[left=2mm of mesh] (evlab) {\textbf{Event}};
+\node[net,below=7mm of c2,minimum width=30mm] (wn) {network AttackWindow $W_n$};
+\node[aut,below=7mm of tel,minimum width=30mm] (wa) {autonomy AttackWindow $W_a$};
+\node[br,below=8mm of $(wn)!0.5!(wa)$,minimum width=62mm] (pair)
+  {\textbf{CrossLayerPairing} $P=(W_n,W_a,\theta,\Delta(\theta),\delta,\mathrm{MCR})$\\
+   \scriptsize \code{pairing\_basis} $\in$ \{measured, physics-model, synthetic\}};
+\draw[->] (mesh) -- (wn); \draw[->] (c2) -- (wn); \draw[->] (bus) -- (wn); \draw[->] (hop) -- (wn);
+\draw[->] (tel) -- (wa); \draw[->] (fl) -- (wa);
+\draw[->,bridgecol,thick] (wn) -- (pair);
+\draw[->,bridgecol,thick] (wa) -- (pair);
+\end{tikzpicture}%
+}
+\caption{Structure of the two-layer schema. Heterogeneous events from six datasets fold
+into typed network and autonomy \emph{AttackWindows}; a \emph{CrossLayerPairing}
+joins one of each and records the detector operating point, the residual budget,
+the induced perturbation, and the mission outcome, tagged by how the coupling
+was established.}
+\label{fig:schema}
+\end{figure}
+
+% =====================================================================
+\section{The Corpus and Ingestion Adapters}
+\label{sec:corpus}
+% =====================================================================
+Table~\ref{tab:corpus} summarises the six datasets and the layer each anchors;
+Table~\ref{tab:ingest} reports what was actually ingested. Every adapter emits
+schema-valid records, and unmapped source columns are preserved. We do not
+re-host raw third-party data; the artifact ships integration scripts and unified
+labels, and each source is fetched from its origin.
+
+\begin{table*}[t]
+\centering
+\caption{The six-dataset corpus. Four network-layer sources and two
+navigation-layer sources unify under one schema; only the last row reaches the
+mission outcome, and only the C2 source can produce \code{measured\_same\_platform}
+pairings.}
+\label{tab:corpus}
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{@{}l l l l X@{}}
+\toprule
+\textbf{Dataset} & \textbf{Real/Sim} & \textbf{Layer $\cdot$ sublayer} & \textbf{Event kind} & \textbf{Unique role in the end-to-end benchmark}\\
+\midrule
+\dataset{UAVIDS-2025}~\cite{uavids2025} & Sim (NS-3.24) & \layernet{} $\cdot$ mesh & flow & Large-scale multi-hop mesh; blackhole/flooding/Sybil/wormhole at scale (122k flows).\\
+\dataset{UAV-CAS}~\cite{uavcas2026} & Sim (digital twin) & \layernet{} $\cdot$ mesh & flow & AERPAW-calibrated swarm; collaborative multi-attack compositions (99k flows, 1024 configs).\\
+\dataset{UAV Attack Dataset}~\cite{whelan2020uav} & Real testbed & \layernet{} $\cdot$ C2 (MAVLink) & telemetry & Real PX4 GPS spoof/jam + ping-DoS on the \emph{same} airframe family we model: the measured bridge.\\
+\dataset{HCRL UAVCAN}~\cite{hcrl_uavcan} & Real testbed & \layernet{} $\cdot$ intra-bus & frame & On-board UAVCAN/DroneCAN flooding/fuzzy/replay, a third attack surface below the C2 link.\\
+\dataset{DATAMUt} traces~\cite{datamut2026} & Sim (event) & \layernet{} $\cdot$ mesh (DTN) & hop & Time-window-graph forwarding detector with a \emph{sweepable} operating point $\theta$.\\
+\dataset{UAV-EW-Bench-2026}~\cite{uavewbench2026} & Sim (physics-informed) & \layerauto{} $\cdot$ GNSS+ctrl & flight & The navigation anchor: full $0$--$40$\,dB $J/S$ sweep with per-flight MCR outcomes.\\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+\subsection{Adapter Design under Source Irregularity}
+An adapter's job is lossless normalization. Three warrant specifics because
+their sources are irregular. The \dataset{UAV Attack Dataset} adapter parses PX4
+flight logs, computes horizontal position error against a benign reference (or,
+absent one, the flight's own pre-attack median), and emits the
+\code{measured\_same\_platform} pairings that ground the interface mapping of
+\S\ref{sec:interface}. The \dataset{HCRL UAVCAN} adapter parses candump-style
+bus frames; because the per-scenario attack labels are not machine-readable in
+the release, we \emph{derive} each scenario's class from the frames
+themselves: burst rate relative to the normal bus rate, the fraction of
+distinct payloads, and per-frame byte entropy cleanly separate a flooding burst
+(one payload hammered above bus rate) from a fuzzy burst (near-random payloads)
+from a replay burst (a small set of captured payloads reused).
+Table~\ref{tab:hcrl} reports the result, flagged for confirmation against the
+dataset's technical report. The \dataset{UAV-CAS} adapter parses the calibrated
+digital twin's flow statistics including its stringified list columns; it is
+verified against CSVs produced by the original authors' own generator.
+
+\begin{table}[t]
+\centering
+\caption{Real ingested corpus. Counts are from schema-validated adapter outputs;
+every record validates against the schema of \S\ref{sec:schema}.}
+\label{tab:ingest}
+\small
+\renewcommand{\arraystretch}{1.1}
+\input{figures/block_paperC_tab_ingest.tex}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Frame-derived attack classes for the \dataset{HCRL UAVCAN} scenarios,
+inferred from burst rate, payload-distinct share, and byte entropy; scenarios
+exhibiting more than one burst shape map to \code{collaborative}.}
+\label{tab:hcrl}
+\small
+\renewcommand{\arraystretch}{1.05}
+\input{figures/block_paperC_tab_hcrl.tex}
+\end{table}
+
+% =====================================================================
+\section{The Detector-Operating-Curve Harness}
+\label{sec:harness}
+% =====================================================================
+A cross-layer guarantee needs the detector's behaviour \emph{as a function of
+its operating point}. We expose $\theta$ as a swept parameter and, for each
+value, measure detection recall and false-positive rate over multiple seeds,
+three network topologies, four routing policies, and two attacker delay regimes.
+
+The resulting operating curve (Fig.~\ref{fig:opcurve}) is the network-side input
+a composed guarantee consumes: it tells us, for any target false-positive
+budget, how large an undetected per-hop delay an evading attacker may
+inject, namely the residual budget $\Delta(\theta)$ of Eq.~\eqref{eq:pairing}. The knee in
+the curve is structural: an evading attacker's per-hop delay is additive up to
+the inter-node contact-window slack, beyond which a missed contact window forces
+a full-period penalty.
+
+The knee, and the floor it descends to, are not simulation artifacts but a
+structural property of any store-and-forward schedule, and they recur across all
+three topologies. Two observations transfer directly to the guarantee. First,
+the floor height differs by topology because it equals the probability that a
+malicious delay overshoots the slack and self-exposes, which is higher in the medium
+delay regime ($U[1,10]$\,s) than the low one ($U[1,7]$\,s), because a wider
+delay draw is likelier to overshoot. Second, no topology's recall falls to zero:
+past the knee the detector still catches the self-exposing fraction, which is
+precisely why an evading attacker's undetected budget \emph{saturates} rather
+than growing without bound. That is the empirical basis for
+Lemma~\ref{lem:residual}.
+
+\begin{figure}[t]
+\centering
+\begin{subfigure}{\columnwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=\columnwidth, height=3.9cm,
+  title={\footnotesize low mode $U[1,7]$\,s},
+  xlabel={$\varepsilon$ (s)}, ylabel={recall},
+  xmin=0, xmax=10, ymin=0, ymax=1.05,
+  legend pos=north east, legend cell align=left, grid=both,
+  grid style={black!12}, tick label style={font=\scriptsize},
+  label style={font=\scriptsize}, legend style={font=\tiny}]
+\input{figures/block_paperC_fig5_low.tex}
+\end{axis}
+\end{tikzpicture}
+\end{subfigure}
+
+\begin{subfigure}{\columnwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=\columnwidth, height=3.9cm,
+  title={\footnotesize medium mode $U[1,10]$\,s},
+  xlabel={$\varepsilon$ (s)}, ylabel={recall},
+  xmin=0, xmax=10, ymin=0, ymax=1.05,
+  legend pos=north east, legend cell align=left, grid=both,
+  grid style={black!12}, tick label style={font=\scriptsize},
+  label style={font=\scriptsize}, legend style={font=\tiny}]
+\input{figures/block_paperC_fig5_medium.tex}
+\end{axis}
+\end{tikzpicture}
+\end{subfigure}
+\caption{The detector operating curve across all three topologies (grid, ring,
+double-ring), both delay regimes, $8$ seeds $\times\,4$ routing policies. Recall
+holds near its ceiling while $\varepsilon$ stays under the $5$\,s contact-window
+slack, then falls onto a floor set by the missed-window self-exposure penalty (a
+delay past the slack costs a full TWiG period and is flagged at any
+$\varepsilon$). False-positive rate is zero throughout; the measured benign
+residual ceiling is $0.178$\,s. The knee-and-floor shape is universal; the floor
+height is the topology-specific self-exposure probability.}
+\label{fig:opcurve}
+\end{figure}
+
+\subsection{Detectors with a Learned Score}
+We instantiate the harness on a threshold detector because its operating point
+is a single, physically meaningful scalar, which makes the cross-layer sweep
+unambiguous. The framework does not depend on that choice: any detector exposing
+a tunable cutoff and a measurable score-to-magnitude profile reduces to the same
+residual budget, through an \emph{effective} operating point
+$\theta_{\mathrm{eff}}$ defined in Appendix~\ref{app:learned}. Lemma~1 then
+applies verbatim with $\theta$ replaced by $\theta_{\mathrm{eff}}$. We derive
+that reduction but do not instantiate it, and \S\ref{sec:limitations} records
+the gap.
+
+% =====================================================================
+\section{The Interface Mapping $\theta \mapsto \delta(\theta)$}
+\label{sec:interface}
+% =====================================================================
+The interface is where a network-security quantity becomes a navigation-security
+quantity. It is the point at which the composition is made, and, as
+\S\ref{sec:eval} shows, the quantity that decides whether a useful detector setting is
+certifiable.
+
+\subsection{Residual Budget of an Evading Attacker}
+\begin{lemma}[Residual delay budget]
+\label{lem:residual}
+Let $D_\theta$ flag any forwarding hop whose injected delay exceeds $\theta$. An
+attacker that evades $D_\theta$ injects at most $\theta$ of undetected delay per
+malicious hop, but only up to the contact-window slack $s$: a per-hop delay
+exceeding $s$ misses its forwarding window, incurs a full-period penalty
+$P_{\!c}$, and is therefore flagged at \emph{any} operating point. Hence
+undetected delay is capped at $\min(\theta,s)$ per hop, and over a route with
+$H$ attacker-controlled hops the worst-case undetected cumulative delay is
+\begin{equation}
+\label{eq:delta_budget}
+\Delta(\theta) \;\le\; H\,\min(\theta,\,s).
+\end{equation}
+\end{lemma}
+\begin{proof}[Proof sketch]
+Evasion requires per-hop delay $\le\theta$. If $\theta\le s$ the delay fits
+inside the contact window and the additive term is $H\theta$. If $\theta>s$, any
+delay in $(s,\theta]$ overshoots the window, waits a full period
+$P_{\!c}\gg s$, and is flagged regardless of $\theta$; an evading attacker
+therefore cannot use more than $s$ of invisible delay per hop, giving the $Hs$
+cap. Summing over hops yields Eq.~\eqref{eq:delta_budget}.
+\end{proof}
+
+The cap is the \emph{knee}: below the slack the residual budget grows linearly
+in $\theta$; above it the budget \emph{saturates} at $Hs$, so the certified
+floor plateaus rather than collapsing. We verify the cap directly on the
+released harness: over $15{,}392$ observed hops across three topologies, two
+attack modes, and eight seeds, no undetected malicious per-hop residual ever
+exceeds $4.84$\,s ($s=5$\,s), while every larger delay is flagged as a missed
+window ($\ge55$\,s residual). This measurement is what turns the classic
+additive budget $H\theta+P_{\!c}\mathbf{1}[\theta>s]$ into the tighter,
+saturating Eq.~\eqref{eq:delta_budget}, an instance of the benchmark improving the
+theorem rather than merely testing it.
+
+\subsection{From Residual Delay to Input Perturbation}
+A cumulative forwarding delay of $\Delta(\theta)$ seconds means a navigation
+correction arrives $\Delta(\theta)$ late; the stack acts on state stale by that
+amount. At bounded UAV speed $v_{\max}$, staleness of age $\tau$ bounds the
+state/position perturbation:
+\begin{equation}
+\label{eq:staleness}
+\Norm{\delta u} \;\le\; v_{\max}\cdot \Delta(\theta).
+\end{equation}
+Equation~\eqref{eq:staleness} is the kinematic worst case: it assumes the
+aircraft travels at top speed in the wrong direction for the entire staleness
+interval. That is sound but pessimistic, because a real estimator does not fly
+blind: when GNSS corrections are late or corrupted the EKF down-weights them
+and coasts on inertial data, so position error grows far more slowly. We
+therefore tighten Eq.~\eqref{eq:staleness} to
+\begin{equation}
+\label{eq:gamma}
+\Norm{\delta u}\;\le\;\gamma\cdot\Delta(\theta),\qquad \gamma\ll v_{\max},
+\end{equation}
+where $\gamma$ (metres of position error per second of degradation) is
+\emph{measured} on real GPS-spoofing and GPS-jamming flights from the same PX4
+airframe family the navigation model represents. Table~\ref{tab:whelan} reports
+the calibration: a benign reference flight fixes the pre-attack noise floor, and
+the jamming and spoofing flights give the growth rate after onset under two
+explicit choices of error signal, the raw receiver fix the attacker injects
+and the EKF-filtered position the controller actually acts on. Because that
+choice is itself a certificate-semantics decision we make it an explicit switch
+and report both; the certificate consumes the EKF value, which closes the loop.
+The gap between the measured $\gamma\approx1.2$--$1.4$\,m/s and
+$v_{\max}=15$\,m/s is exactly the slack that decides whether the detector's
+operating point is certifiable.
+
+\subsection{Is $\gamma$ a Constant or a Function?}
+\label{sec:gammastability}
+Everything downstream consumes $\gamma$ as a single number, so whether it
+\emph{is} a single number is the most consequential empirical question in this
+paper. We therefore estimate $\gamma$ at every post-onset sample of the
+calibration flights, $674$ in total, and record the conditions prevailing at
+each. The answer is negative: $\gamma$ varies by $6.1\times$ between its median
+and its supremum, and it varies systematically rather than randomly.
+
+\subsubsection{The estimator decides the answer}
+Two estimators of $\gamma$ are available and they disagree qualitatively, so we
+state which one the certificate is entitled to and why. Writing $e(t)$ for the
+position error and $t_0$ for attack onset,
+\begin{equation}
+\label{eq:gammaest}
+\gamma_{\mathrm{cum}}(t)=\frac{e(t)}{t-t_0},
+\qquad
+\gamma_{\Delta}(t)=\frac{e(t)-e(t_0)}{t-t_0}.
+\end{equation}
+Onset is declared when the error crosses a detection threshold, so $e(t_0)$ is
+not zero: it is $0.64$\,m for jamming at the receiver and $9.27$\,m for
+spoofing, where the injected fix has already been walked a long way before the
+threshold fires. Dividing that pre-existing offset by a small $t-t_0$ makes
+$\gamma_{\mathrm{cum}}$ diverge, reaching $8.6$\,m/s below one second of
+staleness. That number is an artifact of the detector, not a property of the
+attack. Lemma~\ref{lem:residual} bounds only the delay the attacker
+\emph{causes}, so the perturbation attributable to it is the error accrued since
+onset, and $\gamma_{\Delta}$ is the estimator the composition may use. We report
+both, and note that had we used $\gamma_{\mathrm{cum}}$ we would have concluded
+$\gamma\approx8.6$\,m/s at short staleness, exceeding
+$\gamma_{\mathrm{req}}=6.14$\,m/s and reporting the framework as unusable on the
+strength of a measurement artifact.
+
+\subsubsection{What $\gamma$ depends on}
+Table~\ref{tab:gamma} gives the per-flight rates and
+Table~\ref{tab:gammacamp} the per-sample distribution binned by factor. Three
+dependences are visible and all three have a mechanism.
+
+\emph{Attack type} moves $\gamma$ by $2.6\times$: spoofing drives error faster
+than jamming. Jamming \emph{removes} information, so the estimator gates the
+missing fix and dead-reckons at the inertial drift rate; spoofing \emph{injects}
+information the estimator accepts, so error accrues at whatever rate the
+adversary chooses. A plausible lie beats silence.
+
+\emph{GNSS condition} moves it in the expected direction: as satellites in view
+fall from $14$ to $4$, $\gamma$ rises.
+
+\emph{Staleness} moves it most, and non-monotonically. $\gamma_{\Delta}$ peaks
+at $1.625$\,m/s for $t-t_0\in[5,10)$\,s and decays to $0.02$\,m/s beyond
+$40$\,s, because the error saturates while the denominator keeps growing. The
+supremum, not the average, is what a sound certificate must use.
+
+A descriptive least-squares fit on standardised covariates explains
+$R^{2}=0.79$ of the variation, with coefficients whose signs are physically
+sensible for satellite count ($-0.22$), staleness ($-0.26$) and airspeed
+($+0.12$). We report these as effect sizes and deliberately give no $p$-values:
+samples within a flight are strongly autocorrelated and there are two attack
+flights, so any nominal significance would be an artifact of the dependence
+structure.
+
+\begin{table}[t]
+\centering
+\caption{Per-flight rates $\gamma$, the coarse calibration a single scalar per
+flight yields. The $2.6\times$ spread across attack type is visible here; the
+finer structure needs Table~\ref{tab:gammacamp}. Generated by
+\code{experiments/gamma\_stability.py}.}
+\label{tab:gamma}
+\small
+\renewcommand{\arraystretch}{1.05}
+\input{figures/block_paperD_tab_gamma.tex}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Per-sample distribution of the baseline-corrected rate
+$\gamma_{\Delta}$, binned by factor, over $674$ post-onset samples. Counts are
+shown because coverage is uneven: airspeed bins above $1$\,m/s are sparse, since
+these are hover flights. Generated by \code{experiments/gamma\_campaign.py}.}
+\label{tab:gammacamp}
+\scriptsize
+\renewcommand{\arraystretch}{1.02}
+\input{figures/block_paperD_tab_gamma_campaign.tex}
+\end{table}
+
+\subsubsection{Consequences for the certificate}
+The certificate is evaluated at the supremum over the conditions it claims to
+cover, which on this evidence is $\gamma=1.625$\,m/s. This is
+$1.19\times$ the per-flight secant rate of $1.365$\,m/s that a coarser
+calibration reports, so the coarser rate is mildly optimistic and we do not use
+it. At the corrected rate the certified window edge at a $10$\,m corridor moves
+from $\theta^{*}=1.12$\,s to $0.94$\,s, and the smallest corridor certifying
+$\theta=0.25$\,s rises from about $2.25$\,m to about $5.9$\,m. The conclusion is
+unchanged: $\theta=0.25$\,s is certified at $m\ge5$\,m and is not certified at
+$m=2$\,m.
+
+\emph{Coverage, stated as a limit and not as a null result.} The campaign varies
+attack type, GNSS condition and staleness well, airspeed poorly (these are hover
+flights, with the $90$th percentile of $\lVert v_{xy}\rVert$ below $0.65$\,m/s),
+and \emph{platform and flight mode not at all}: one airframe, hover only. A
+factor we could not vary is reported as unvaried, never as showing no effect.
+The $6.1\times$ spread is accordingly a lower bound on the variability a
+deployment would meet, and condition~\ref{c:interface} of \S\ref{sec:scope}
+remains the weakest link in the chain.
+
+\emph{Temporal validity of the linear model.} Equation~\eqref{eq:gamma} is a
+\emph{locally linear} model and must be scoped as one. While GNSS is merely
+late rather than absent, the EKF continues to correct against its last accepted
+fix and the position error grows approximately linearly in the staleness. Once
+the outage exceeds the filter's innovation-gating horizon the estimator is
+propagating on inertial data alone, and uncorrected accelerometer bias and
+gyroscope drift make the error grow with the square of elapsed time rather than
+linearly~\cite{kong2024px4ekf}. We therefore state the model's domain
+explicitly: Eq.~\eqref{eq:gamma} is used only for
+$\Delta(\theta)\le\tau_{\mathrm{lin}}$, and beyond $\tau_{\mathrm{lin}}$ a
+sound bound requires the second-order form
+\begin{equation}
+\label{eq:gamma_quad}
+\Norm{\delta u}\;\le\;\gamma\,\Delta(\theta)\;+\;\tfrac12\,b_{\mathrm{IMU}}\,\big(\Delta(\theta)-\tau_{\mathrm{lin}}\big)_{+}^{2},
+\end{equation}
+with $b_{\mathrm{IMU}}$ the residual accelerometer-bias magnitude and
+$(\cdot)_+$ the positive part. On the calibration flights the linear fit holds
+to within its residual over the full observed degradation interval, giving
+$\tau_{\mathrm{lin}}\approx2$\,s; we adopt that value and note that it
+exceeds the certified window's upper edge under the measured mapping
+($1.12$\,s at a $10$\,m corridor, \S\ref{sec:eval}) by a comfortable margin,
+so the entire certified regime lies inside the linear domain and
+Eq.~\eqref{eq:gamma_quad} is never the binding form for the results we report. It
+would become binding for a detector tuned near the contact-window slack, where
+$\Delta(\theta)$ approaches $Hs=10$\,s, a further reason the certified window
+is bounded above rather than open.
+
+\begin{table}[t]
+\centering
+\caption{The measured delay-to-position rate $\gamma$, from three real PX4
+flights (one benign reference, one GPS-jamming, one GPS-spoofing) in the
+\dataset{UAV Attack Dataset}, self-referenced to the pre-attack median. ``noise''
+is the pre-attack position-error $95$th percentile; $\gamma_{\mathrm{lsq}}$ and
+$\gamma_{\mathrm{peak}}$ are the least-squares and peak-secant growth rates
+after attack onset. These are the \code{measured\_same\_platform} pairings.}
+\label{tab:whelan}
+\scriptsize
+\renewcommand{\arraystretch}{1.1}
+\input{figures/block_paperC_tab_whelan.tex}
+\end{table}
+
+% =====================================================================
+\section{The Composition Theorem}
+\label{sec:theorem}
+% =====================================================================
+We now assemble the parts. \S\ref{sec:interface} supplied a bound on how far the
+navigation input can be pushed by an attacker that the detector does not catch.
+This section turns that input bound into a bound on the aircraft's deviation
+from its planned route, and then into a lower bound on the fraction of missions
+that complete. The argument is short: it is a classical differential inequality
+applied to a quantity that, until now, nobody had measured.
+
+\subsection{Navigation Dynamics and Certification Horizon}
+Model the UAV navigation state $x(t)\in\Real^n$ as evolving under a (possibly
+learned) drift $F$,
+\begin{equation}
+\label{eq:ode}
+\dot{x}(t) = F\big(x(t), u(t)\big), \qquad t\in[0,T],
+\end{equation}
+where $u(t)$ is the sensor/measurement input and $T$ is the nominal mission
+duration in seconds. A mission \emph{completes} in the conjunctive sense fixed
+by Eq.~\eqref{eq:mcr}: the realised trajectory stays within the safe corridor of
+margin $m$ for all $t\in[0,T]$ \emph{and} the objective is reached by the
+deadline $(1+\kappa)T$. MCR is the probability of completion over the mission
+distribution. An attack perturbs the input, $u\mapsto u+\delta u$, and, for the
+time-delay class, also displaces the arrival time.
+
+Deviation is not, however, propagated over the whole of $[0,T]$. A navigation
+filter is a closed loop: each time it accepts an uncorrupted measurement it
+re-anchors the state estimate, and any deviation accumulated since the previous
+such update is discharged rather than carried forward. The interval between
+consecutive uncorrupted updates is the \emph{certification horizon} $T_c$, and
+it is the horizon over which the trajectory tube must be propagated. We fix
+$T_c=1$\,s throughout, matching the $1$\,Hz GNSS solution rate of the receivers
+in our corpus, so that $T_c\ll T$ for every mission we consider. The following
+assumption makes the requirement explicit rather than implicit.
+
+\begin{definition}[Re-anchoring interval]
+\label{def:reanchor}
+The navigation filter admits at least one measurement update not affected by the
+attack in every window of length $T_c$, and each such update resets the
+accumulated deviation to within the filter's nominal estimation error.
+\end{definition}
+
+Definition~\ref{def:reanchor} is what the time-delay class supplies for free: an
+evading forwarding attacker delays peer corrections by at most $\Delta(\theta)$
+per contact window without suppressing them, so uncorrupted updates continue to
+arrive. It is \emph{not} free for a persistent-denial adversary, and
+\S\ref{sec:limitations} records that boundary.
+
+\begin{theorem}[Composed network-to-navigation guarantee]
+\label{thm:main}
+Let the navigation drift $F$ of Eq.~\eqref{eq:ode} be $L$-Lipschitz in its input
+over the operating region, let $T_c$ be a certification horizon satisfying
+Definition~\ref{def:reanchor}, and let $m$ be the safe-corridor margin. Let
+$D_\theta$ be a network detector with residual budget $\Delta(\theta)$
+(Lemma~\ref{lem:residual}) and interface mapping $\delta(\theta)$
+(Eq.~\eqref{eq:gamma} or the kinematic Eq.~\eqref{eq:staleness}). Then every attack
+evading $D_\theta$ induces a trajectory-tube radius bounded by
+\begin{equation}
+\label{eq:tube}
+\rho(\theta) \;=\; \delta(\theta)\,e^{L T_c},
+\end{equation}
+and the mission completes, in the conjunctive sense of Eq.~\eqref{eq:mcr},
+whenever $\rho(\theta)\le m$ and $\Delta(\theta)\le\kappa T$; consequently
+\begin{equation}
+\label{eq:floor}
+\MCR \;\ge\; f\big(\delta(\theta)\big) \;=\;
+\Pr_{\text{missions}}\!\big[\,\delta(\theta)\,e^{LT_c}\le m
+\;\wedge\; \Delta(\theta)\le\kappa T\,\big].
+\end{equation}
+\end{theorem}
+\begin{proof}[Proof sketch]
+Let $e(t)$ be the deviation between the attacked and nominal trajectories,
+measured from the most recent re-anchoring instant. $L$-Lipschitzness of $F$
+gives $\Norm{\dot e}\le L\Norm{e}+L\Norm{\delta u}$; Gr\"onwall's
+inequality~\cite{gronwall1919} then bounds $\Norm{e(T_c)}$ by
+$\delta(\theta)e^{LT_c}$, which is Eq.~\eqref{eq:tube}. By
+Definition~\ref{def:reanchor} the same bound applies on every subsequent window,
+so the supremum over $[0,T]$ obeys it too and the spatial
+predicate is discharged whenever $\rho(\theta)\le m$. The temporal predicate follows because
+the only mechanism by which an evading time-delay attack displaces arrival is
+its accumulated undetected delay, bounded by $\Delta(\theta)$ in
+Lemma~\ref{lem:residual}. Taking probabilities over the mission distribution
+gives Eq.~\eqref{eq:floor}. Appendix~\ref{app:proof} gives the full argument.
+\end{proof}
+
+\emph{On the Lipschitz hypothesis.} Theorem~\ref{thm:main} rests on $F$ being
+$L$-Lipschitz \emph{over the operating region}, a qualifier with real physical
+content: the aircraft must remain in a smooth, locally linearisable regime, with
+attitudes away from gimbal-lock singularities, airspeeds below stall, actuators
+off their saturation limits, and no contact dynamics. These conditions hold for
+the cruise and loiter envelopes our corpus covers, and the constant we use is
+measured inside that envelope rather than assumed globally (\S\ref{sec:eval}).
+They can fail: an aggressive evasive manoeuvre, a stall-recovery transient, or
+actuator saturation under a strong gust push the dynamics into a regime where no
+finite $L$ bounds $F$ on the relevant set, and there the certificate is silent
+rather than merely loose. This is also where the runtime-assurance reading of
+\S\ref{sec:discussion} becomes operational: departure from the linearisable
+envelope is exactly the trigger a Simplex-style monitor must use to hand control
+to a verified fallback whose guarantee does not depend on $L$.
+
+\begin{proposition}[Soundness]
+\label{prop:sound}
+The certified floor never overstates the achievable completion rate: for every
+$\theta$, the true MCR of any $D_\theta$-evading attack satisfies
+$\MCR\ge f(\delta(\theta))$.
+\end{proposition}
+\begin{proof}
+Every step above is an inequality in the conservative direction: the Lipschitz
+bound over-estimates deviation growth, the input bound uses the worst-case
+$\delta(\theta)$, and and the corridor test is a sufficient rather than a necessary condition for
+completion. Hence $f(\delta(\theta))$ lower-bounds the
+true completion probability. The empirical validation of \S\ref{sec:eval}
+confirms the certified floor lies below the measured rate.
+\end{proof}
+
+Fig.~\ref{fig:chain} summarises the four stages of the argument, and gives the
+correspondence between them and the sections that establish each: the residual
+budget in \S\ref{sec:interface}, the interface mapping in the same section, and
+the trajectory tube and corridor test here.
+
+Two consequences frame the rest of the paper. First, Eq.~\eqref{eq:floor} is
+\emph{monotone and then saturating} in $\theta$: tightening the detector shrinks
+the residual budget and raises the certified floor, but only until $\theta$
+reaches the slack $s$, past which the budget saturates at $Hs$ and the floor
+plateaus. This quantifies both how much navigation safety is obtained by
+tightening network security and the point at which further tightening yields
+nothing. Second, the exponential
+$e^{LT_c}$ in Eq.~\eqref{eq:tube} is the core certificate's principal
+limitation: for large $L$, or for a re-anchoring interval $T_c$ stretched by a
+denial adversary, the deterministic bound becomes loose, motivating the
+complementary certificates of \S\ref{sec:certs}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  font=\normalsize,
+  stage/.style={rounded corners=3pt,draw,align=center,minimum height=8.5mm,
+    text width=42mm,inner sep=4pt},
+  net/.style={stage,fill=netcol!12,draw=netcol,thick},
+  br/.style={stage,fill=bridgecol!15,draw=bridgecol,very thick},
+  aut/.style={stage,fill=autocol!12,draw=autocol,thick},
+  lbl/.style={font=\normalsize\bfseries,fill=white,inner sep=1.5pt},
+  >={Latex[length=2.6mm]},
+  node distance=8mm]
+\node[net] (theta) {detector point $\theta$};
+\node[net,below=of theta] (delta0) {residual budget $\Delta(\theta)$};
+\node[br,below=of delta0] (delta) {perturbation $\delta(\theta)$};
+\node[aut,below=of delta] (tube) {trajectory tube $\delta\,e^{LT_c}$};
+\node[aut,below=of tube] (mcr) {certified floor $\MCR\ge f$};
+\draw[->,thick] (theta) -- node[lbl,right] {Lemma~\ref{lem:residual}} (delta0);
+\draw[->,thick] (delta0) -- node[lbl,right] {interface (\S\ref{sec:interface})} (delta);
+\draw[->,thick] (delta) -- node[lbl,right] {Gr\"onwall} (tube);
+\draw[->,thick] (tube) -- node[lbl,right] {corridor margin $m$} (mcr);
+\begin{scope}[on background layer]
+\node[fit=(theta)(delta0),draw=netcol!55,rounded corners,inner sep=6pt,
+  label={[font=\small\bfseries,text=netcol]left:\rotatebox{90}{network side}}]{};
+\node[fit=(tube)(mcr),draw=autocol!55,rounded corners,inner sep=6pt,
+  label={[font=\small\bfseries,text=autocol]left:\rotatebox{90}{autonomy side}}]{};
+\end{scope}
+\end{tikzpicture}
+\caption{The composition chain of Theorem~\ref{thm:main}. A detector operating
+point flows top-to-bottom through a residual-budget bound, an empirically
+grounded interface mapping, a Gr\"onwall trajectory tube, and a corridor-margin
+test, arriving at a certified mission-completion floor. The upper two stages are
+network-side quantities, the lower two autonomy-side; $\delta(\theta)$ is the
+bridge between them.}
+\label{fig:chain}
+\end{figure}
+
+% =====================================================================
+\section{A Four-Certificate Architecture}
+\label{sec:certs}
+% =====================================================================
+Theorem~\ref{thm:main} uses the Lipschitz--Gr\"onwall certificate as its spine.
+Does that single certificate suffice? It does not. The bound is
+\emph{deterministic} and \emph{worst-case}: it holds for any perturbation up to
+its radius, but the radius collapses as $LT$ grows, and it presumes a Lipschitz
+constant that is tractable to bound. Three regimes escape it, each covered by a
+distinct certificate (Table~\ref{tab:certs}).
+
+\begin{table}[t]
+\centering
+\caption{The four certificates cover disjoint regimes; none subsumes another.
+The Lipschitz--Gr\"onwall core gives the deterministic MCR floor; the other
+three extend coverage where it is loose or silent.}
+\label{tab:certs}
+\small
+\renewcommand{\arraystretch}{1.05}
+\begin{tabularx}{\columnwidth}{@{}
+  >{\hsize=0.82\hsize\raggedright\arraybackslash}X
+  >{\hsize=0.70\hsize\raggedright\arraybackslash}X
+  >{\hsize=1.48\hsize\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Certificate} & \textbf{Guarantee type} & \textbf{Unique niche}\\
+\midrule
+Lipschitz--Gr\"onwall & deterministic, worst-case & The MCR floor: bounded input $\Rightarrow$ bounded tube $\Rightarrow$ bounded loss. Tight only for moderate $LT$.\\
+Randomized smoothing~\cite{cohen2019smoothing} & probabilistic radius & Scales to large / non-Lipschitz-tractable models; certifies when the budget is known only statistically.\\
+PAC-Bayes~\cite{viallard2021pacbayes} & distributional & Transfers the floor from the training mission distribution to unseen deployment regions.\\
+MWU regret~\cite{arora2012mwu,balcan2015commitment} & online, adaptive & Bounds loss against an \emph{adaptive} jammer over time, a dimension no fixed-ball certificate addresses.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Independence of the Four Certificates}
+The Lipschitz--Gr\"onwall radius is a single deterministic ball; randomized
+smoothing certifies a probabilistic ball for models whose Lipschitz constant is
+intractable, trading determinism for scalability, which is a strictly different
+operating point, not a special case. PAC-Bayes certifies a \emph{distribution}
+of models over a \emph{distribution} of missions, orthogonal to any per-input
+radius. MWU regret certifies behaviour against an adversary that \emph{adapts
+over time}, which no static perturbation ball can express. The four form a
+cover, not a hierarchy.
+
+For concreteness we record the two complementary bounds we instantiate
+numerically. Randomized smoothing~\cite{cohen2019smoothing} wraps the base model
+in Gaussian noise of level $\sigma$ and certifies, with confidence $1-\alpha$
+over $n$ samples, an $\ell_2$ radius
+\begin{equation}
+\label{eq:cohen}
+R_{\mathrm{RS}} \;=\; \tfrac{\sigma}{2}\big(\Phi^{-1}(\underline{p_A})-\Phi^{-1}(\overline{p_B})\big),
+\end{equation}
+with $\Phi^{-1}$ the inverse standard-normal CDF and
+$\underline{p_A},\overline{p_B}$ confidence bounds on the top-two class
+probabilities. The PAC-Bayes
+complement~\cite{mcallester1999pac,viallard2021pacbayes} transfers a bound from
+the training mission distribution to deployment: with empirical risk
+$R_{\mathrm{emp}}$ over $m$ missions and prior-to-posterior divergence
+$\mathrm{KL}$, with probability $1-\delta$,
+\begin{equation}
+\label{eq:mcallester}
+R_{\mathrm{true}} \;\le\; R_{\mathrm{emp}} + \sqrt{\tfrac{\mathrm{KL}+\ln(2\sqrt{m}/\delta)}{2m}}.
+\end{equation}
+Our engine evaluates Eq.~\eqref{eq:mcallester} against the trained model's measured
+$R_{\mathrm{emp}}$; the single quantity it awaits from here is the numeric $\mathrm{KL}$,
+which we flag as pending rather than substitute (Table~\ref{tab:constants}).
+
+
+\emph{How the four operate on a single flight.} The four are concurrent, not
+alternative, and each bounds a different object. On one sortie flown through a
+corridor in which a compromised relay delays peer corrections and a ground
+jammer varies its power, the Lipschitz--Gr\"onwall tube bounds the trajectory
+deviation caused by the \emph{deterministic, bounded} part of the disturbance
+and is the only one of the four yielding a per-instant geometric envelope, so it
+alone discharges the corridor test of Eq.~\eqref{eq:mcr}. Randomized smoothing
+bounds the \emph{stochastic} part, and its claim concerns the model's decision
+at a point. PAC-Bayes bounds the gap between the risk this model showed on its
+training mission mix and its risk on this sortie: a statement about the model,
+constant across the flight. MWU regret bounds the defender's cumulative
+\emph{policy-switching} loss against an adapting jammer, a statement about the
+time axis that is vacuous at any single instant.
+
+Because a trajectory, a decision, a model, and a policy sequence are distinct
+objects, the four compose by conjunction rather than selection: a deployment
+reads its floor as the pointwise minimum
+$\min\{f_{\mathrm{G}},f_{\mathrm{RS}},f_{\mathrm{PB}},f_{\mathrm{MWU}}\}$, and
+the binding term identifies which assumption is closest to failing. In the
+regime this paper evaluates (a bounded time-delay disturbance, in-distribution
+missions, a non-adaptive adversary) the Gr\"onwall term binds and the other
+three are slack, which is why the headline result of \S\ref{sec:eval} is a
+Gr\"onwall curve. We nonetheless carry all four, since relaxing any one of those
+conditions moves the binding term. We are correspondingly explicit about
+maturity: the Gr\"onwall and randomized-smoothing floors are instantiated
+numerically on the reference model, the MWU bound at $|S|=4$, and the PAC-Bayes
+bound is reported as a form awaiting its numeric $\mathrm{KL}$ rather than as a
+number (Table~\ref{tab:constants}).
+
+% =====================================================================
+\section{Instantiation and Evaluation}
+\label{sec:eval}
+% =====================================================================
+The theorem is only worth as much as the numbers put into it. This section
+supplies them and then asks three questions of the result. Does the guarantee
+hold at a detector setting anyone would actually deploy
+(\S\ref{sec:certfloor})? Does composing the two layers beat either layer alone
+(\S\ref{sec:dominance})? And how much of the whole construction rests on
+measurement rather than on modelling (\S\ref{sec:provenance_dist})?
+
+\subsection{The Navigation Anchor}
+The autonomy layer supplies the result for which the whole construction is based.
+Fig.~\ref{fig:mcr} shows MCR versus $J/S$ for four defence configurations,
+computed from the released benchmark's $93{,}600$-flight per-flight table. The
+undefended baseline collapses below the $0.90$ floor by $J/S\!\approx\!8$\,dB,
+whereas the strongest configuration holds it to $J/S\!\approx\!25$\,dB. For our
+purpose, the relevant observation is not which defence wins but that the
+autonomy layer produces
+a \emph{graded, measurable} outcome a network event can be paired against.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=\columnwidth, height=4.4cm,
+  xlabel={jamming-to-signal ratio $J/S$ (dB)},
+  ylabel={Mission Completion Rate},
+  xmin=0, xmax=40, ymin=0, ymax=1.03,
+  legend pos=south west, legend cell align=left,
+  grid=both, grid style={black!12},
+  tick label style={font=\footnotesize},
+  label style={font=\footnotesize},
+  legend style={font=\scriptsize}]
+\input{figures/block_paperC_fig4.tex}
+\draw[black,dashed] (axis cs:0,0.90) -- (axis cs:40,0.90);
+\node[anchor=west,font=\footnotesize] at (axis cs:0.5,0.850) {DO-326A floor 0.90};
+\end{axis}
+\end{tikzpicture}
+\caption{The navigation anchor: MCR vs.\ $J/S$ on \dataset{UAV-EW-Bench-2026},
+computed from the released $93{,}600$-flight table (Wilson $95\%$ intervals in
+the artifact). The graded outcome is what a network attack window is paired
+against.}
+\label{fig:mcr}
+\end{figure}
+
+\subsection{Reference Constants}
+Every certified quantity in this section uses the \emph{measured local}
+Lipschitz constant, not the global power-iteration estimate. The distinction
+is not cosmetic: the local value is the larger of the two, so it widens the
+trajectory tube and narrows the certified window, and quoting the global one
+would flatter every bound reported here. It also moves the tightest corridor
+across the threshold: at $m{=}2$\,m the tube is $2.22$\,m, so
+$\theta{=}0.25$\,s is certified for $m\ge5$\,m but not at $2$\,m.
+
+We instantiate the certificate on the reference navigation model, a
+continuous-time graph model of the GNSS constellation and receiver. Global
+power-iteration gives a Lipschitz estimate $\hat L\approx1.01$; measuring the
+constant \emph{along the hidden-state trajectories the integrator actually
+visits on operating-region inputs} gives a larger local value
+$\hat L_{\mathrm{loc}}\approx1.18$. We report the tighter local radius as the
+defensible number: with the certification horizon $T_c=1$\,s and an output
+tolerance $\varepsilon_{\mathrm{out}}=0.5$,
+$R=\varepsilon_{\mathrm{out}}e^{-\hat L_{\mathrm{loc}}T_c}\approx0.153$ (the
+global estimate gives $0.182$). Note the local radius is \emph{smaller}: the
+bound is not loose in the direction that would flatter us, and the certified
+regime is governed by real sensitivity rather than an optimistic estimate. The
+smoothing complement gives a certified $\ell_2$ radius $\approx0.44$ at
+$\sigma=0.25$ ($\alpha=10^{-3}$, $n=200$; measured mean $0.446$ on the trained
+checkpoint), and the MWU defender mixes four policies over $N$ rounds with regret
+$R(N)\le\sqrt{N\ln|S|}$, $|S|=4$. Constants come from the trained reference
+implementation on a transparent synthetic corpus and are held fixed;
+Table~\ref{tab:constants} lists each with its provenance tag.
+
+\begin{table}[t]
+\centering
+\caption{Instantiated constants and their provenance. The one pending numeric
+constant is the PAC--Bayes prior/posterior KL, which we flag rather than
+substitute.}
+\label{tab:constants}
+\small
+\renewcommand{\arraystretch}{1.05}
+\input{figures/block_paperA_tab2.tex}
+\end{table}
+
+\subsection{A Worked End-to-End Example}
+\label{sec:worked}
+To make Eq.~\eqref{eq:chain} concrete we trace one number through it. Take the grid
+topology, whose routes carry $H=2$ attacker-controlled hops, and the detector
+setting $\theta=0.25$\,s. \emph{(1) Threshold to budget.} Since
+$\theta<s=5$\,s, Lemma~\ref{lem:residual} gives $\Delta(\theta)\le H\theta=0.50$\,s
+of undetected staleness. \emph{(2) Budget to perturbation.} With the measured
+EKF rate $\gamma=1.37$\,m/s, Eq.~\eqref{eq:gamma} gives
+$\Norm{\delta u}\le0.69$\,m; the kinematic bound would instead give $7.5$\,m.
+\emph{(3) Perturbation to tube.} With $\hat L_{\mathrm{loc}}=1.18$ and
+$T_c=1$\,s, the tube radius is $\rho=0.69\,e^{1.18}\approx2.25$\,m. \emph{(4) Tube to
+floor.} For any corridor margin $m\ge2.25$\,m the mission is certified to
+complete; across the margin family $\{2,5,10,20\}$\,m the certified floor is
+positive for all but the tightest $2$\,m corridor. Under the kinematic bound,
+step (3) yields $\rho\approx24.5$\,m, exceeding every margin, which is exactly
+why the empirical calibration, not the theorem, decides the framing.
+Fig.~\ref{fig:budget} shows the measured undetected budget feeding step (2),
+confirming the saturation predicted by Lemma~\ref{lem:residual}. Step (5), the
+temporal predicate of Eq.~\eqref{eq:mcr}, is satisfied by a wide margin at this
+operating point: the induced schedule slip is $\Delta(\theta)\le0.50$\,s, which
+is under a $10\%$ tolerance for any mission longer than five seconds.
+
+\emph{Why these corridor margins.} The family $\{2,5,10,20\}$\,m brackets the
+lateral buffers that operational approval already requires
+(\S\ref{sec:problem}), which is what makes the certified window comparable to a
+regulatory quantity rather than to a modelling choice. Against the SORA
+contingency budget~\cite{jarus_sora25,easa_uspace2021}, $2$\,m is \emph{tighter}
+than any compliant lateral buffer and serves as a deliberately adversarial
+stress case; $5$\,m sits inside the default static budget; $10$\,m is
+representative of a small multirotor's full contingency extent once reaction
+distance is included; and $20$\,m covers a fixed-wing platform, whose larger turn
+radius and cruise speed inflate the manoeuvre term. Reading
+Fig.~\ref{fig:sensitivity} against these values converts the abstract question
+of whether $\theta$ is certifiable into the operational one an approval
+submission must answer: whether the detector setting keeps the worst-case
+evading tube inside the contingency volume the operator has already declared.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=\columnwidth, height=3.9cm,
+  xlabel={detector threshold $\theta$ (s)},
+  ylabel={mean malicious delay (s)},
+  xmin=0, xmax=10, ymin=0, ymax=26,
+  legend cell align=left, legend columns=2,
+  legend style={at={(0.5,1.06)}, anchor=south, font=\scriptsize, draw=black!30},
+  grid=both, grid style={black!12},
+  tick label style={font=\footnotesize},
+  label style={font=\footnotesize}]
+\input{figures/block_paperA_fig_budget.tex}
+\end{axis}
+\end{tikzpicture}
+\caption{The measured residual budget behind Lemma~\ref{lem:residual}
+(scenario~1, mean over $8$ seeds $\times\,4$ policies). The \emph{undetected}
+delay an evader slips past the detector (solid) saturates well below the
+\emph{total} injected delay (dashed): beyond the contact-window slack the extra
+delay produces missed windows flagged at any $\theta$, so the curve the
+certificate consumes flattens rather than growing.}
+\label{fig:budget}
+\end{figure}
+
+\subsection{The Certified Floor and Its Sensitivity to the Interface Mapping}
+\label{sec:certfloor}
+Fig.~\ref{fig:headline} reports the certified floor as a function of the
+detector threshold. It is plotted for two interface mappings rather than one,
+because the choice between them changes the conclusion. Under the kinematic worst case,
+$\theta=0.25$\,s falls just outside the certified window; under the empirically
+measured mapping it falls \emph{inside} at every corridor margin.
+Fig.~\ref{fig:sensitivity} quantifies how much room there is: the mapping would
+have to steepen past $\gamma_{\mathrm{req}}=6.14$\,m/s (at a $10$\,m corridor)
+to push the operating point back out, which is $4.5$ times the rate measured
+under the EKF calibration and $5.1$ times the receiver one.
+This is the paper's most consequential finding for the field: what determines
+whether cross-layer certification is useful is a \emph{measurement} of how
+attacks propagate into state error, not the proof machinery.
+
+\emph{Would cruise flight cross that threshold?} Our calibration flights are
+low-speed hover and loiter (\S\ref{sec:limitations}), so the natural objection is
+that $\gamma$ scales with airspeed. An error-budget argument suggests otherwise,
+and we give it as reasoning rather than measurement. The quantity $\gamma$ is not
+the speed at which the aircraft travels but the rate at which its \emph{estimate}
+of position degrades while a correction is withheld, and during that interval
+the filter does not freeze: it dead-reckons on inertial measurements, so error
+accrues at the rate inertial propagation diverges from truth. This is why the
+measured $\gamma\approx1.2$--$1.4$\,m/s sits an order of magnitude below the
+kinematic $v_{\max}=15$\,m/s, which assumes the estimate does not propagate at
+all. Decomposing that divergence, the one airspeed-scaling term is the
+cross-track error from a heading error $\psi_{\mathrm{err}}$, growing at
+$v\,\psi_{\mathrm{err}}$; the remainder (accelerometer bias, attitude error acting
+on specific force) is set by sensor quality and is largest under the continuous
+lateral acceleration of a loiter turn, not in straight-and-level cruise. Taking
+the hover value as the airspeed-independent floor, crossing
+$\gamma_{\mathrm{req}}$ at $v=15$\,m/s would require
+$\psi_{\mathrm{err}}\gtrsim(6.14-1.37)/15\approx0.32$\,rad, a sustained heading
+error near $18^\circ$. A PX4-class EKF holds heading uncertainty to a few degrees
+while GNSS is healthy and raises a yaw-innovation fault well before that, so the
+regime in which cruise would invalidate the window is one in which the estimator
+has already declared itself untrustworthy. We therefore expect the window to
+survive cruise, while noting that only the cruise-inclusive campaign of
+\S\ref{sec:limitations} can settle it.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{semilogxaxis}[
+  width=\columnwidth, height=4.3cm,
+  xlabel={detector operating point $\theta$ (s, log scale)},
+  ylabel={certified floor},
+  xmin=0.05, xmax=10, ymin=0, ymax=1.05,
+  legend cell align=left, legend columns=2,
+  legend style={at={(0.5,1.06)}, anchor=south, font=\scriptsize, draw=black!30,
+    inner sep=2pt, nodes={inner xsep=2pt},
+    /tikz/every even column/.append style={column sep=0.4em}},
+  grid=both, grid style={black!12},
+  tick label style={font=\footnotesize},
+  label style={font=\footnotesize}]
+\input{figures/block_paperA_fig3.tex}
+\end{semilogxaxis}
+\end{tikzpicture}
+\caption{The headline result: certified floor vs.\ detector operating point
+$\theta$ for the time-delay class (grid topology, Gr\"onwall tube at the measured
+local $L{=}1.181$, $H{=}2$, corridor-margin family $\{2,5,10,20\}$\,m). Under
+the kinematic worst case (red) $\theta{=}0.25$\,s is just outside the certified
+window; under the empirically measured mapping from real GPS-spoof/jam flights
+($\gamma{\approx}1.2$--$1.4$\,m/s) it is \emph{inside} at every margin of
+$5$\,m or wider (shaded: the EKF window $[0.178,1.124]$\,s at $m{=}10$\,m);
+at the tightest $2$\,m corridor the tube marginally exceeds the margin
+($2.22$ against $2.00$\,m). Both single-layer baselines
+certify a zero floor for an evading attacker (black).}
+\label{fig:headline}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{loglogaxis}[
+  width=\columnwidth, height=3.9cm,
+  xlabel={corridor margin $m$ (m)},
+  ylabel={window edge $\theta^{*}(m)$ (s)},
+  xmin=1.8, xmax=22, ymin=0.015, ymax=4,
+  xtick={2,5,10,20}, xticklabels={2,5,10,20},
+  legend cell align=left, legend columns=1,
+  legend style={at={(0.5,1.06)}, anchor=south, font=\scriptsize, draw=black!30},
+  grid=both, grid style={black!12},
+  tick label style={font=\footnotesize},
+  label style={font=\footnotesize}]
+\input{figures/block_paperA_fig4_sensitivity.tex}
+\end{loglogaxis}
+\end{tikzpicture}
+\caption{The decisive sensitivity: the loosest detector setting
+$\theta^{*}(m)=m/(\gamma e^{LT_c}H)$ whose worst-case evading tube still fits a
+corridor of margin $m$, per interface mapping. A mapping certifies the paper
+operating point iff its curve lies above the $\theta{=}0.25$\,s line; the
+feasible region is bounded below by the measured benign residual ceiling
+($0.178$\,s, the FPR$=$0 floor). The measured rates clear the requirement
+$\gamma_{\mathrm{req}}{=}6.14$\,m/s at $m{=}10$\,m by ${\sim}4.5\times$; the
+kinematic worst case fails at every margin.}
+\label{fig:sensitivity}
+\end{figure}
+
+\subsection{Dominance over Single-Layer Baselines}
+\label{sec:dominance}
+We state the dominance claim precisely rather than as blanket range-coverage.
+The composed guarantee dominates two baselines: (i) \emph{autonomy-only}, a
+navigation certificate with no detector, which must assume the full unmitigated
+attack including the missed-window penalties (measured cumulative delay up to
+$424$\,s) and therefore certifies a zero floor against an evading attacker; and
+(ii) \emph{network-only}, a detector with no navigation guarantee, for which
+any evading attack leaves the aircraft undefended, floor zero by definition.
+The composed guarantee is the only configuration with a nonzero
+certified floor at all. Quantifying per seed with the Wilcoxon signed-rank test
+and Holm correction, the composed floor exceeds the autonomy-only floor at all
+$13$ operating points on the $\theta$ grid, every adjusted $p<10^{-20}$. The
+composition wins because it alone uses the detector to \emph{shrink} the
+perturbation the certificate must absorb and, via the tightened budget of
+Lemma~\ref{lem:residual}, the floor saturates rather than collapsing past the
+knee.
+
+The honest scope: the certified operating window is nonempty but bounded. Under
+the empirically calibrated interface it is $[0.178,\,1.12]$\,s at a $10$\,m
+corridor, with the operating point $\theta=0.25$\,s comfortably inside; under
+the conservative kinematic mapping it shrinks to $[0.178,\,0.243]$\,s and
+$\theta=0.25$\,s falls just outside. We claim the former and show the latter as
+the worst-case fallback; we do not claim coverage across the entire relaxation
+range.
+
+\subsubsection*{What this comparison does and does not establish}
+The two baselines are \emph{ablations of our own construction}: they are what
+remains when one of the two layers is removed. Comparing against them
+establishes that composition is doing the work, and that the result is not an
+artifact of either layer alone. It does \emph{not} establish superiority over
+the alternative approaches to assuring an autonomous system, and we do not claim
+that it does.
+
+We deliberately do not benchmark against reachability-based
+verification~\cite{ivanov2019verisig,tran2020nnv}, secure state
+estimation~\cite{fawzi2014secure,shoukry2017smt}, runtime assurance
+architectures~\cite{sha2001simplex,mehmood2022blackbox,cofer2020rta}, or
+certified reinforcement learning~\cite{wu2022crop,everett2021carrl}, for a
+reason that is a limitation and not a convenience: those methods answer
+different questions and none of them consumes a detector operating point, so
+there is no common axis on which to place them. Reachability bounds the states a
+system can enter given an input set, but takes the input set as given, which is
+precisely the quantity our network side supplies. Secure state estimation bounds
+error given \emph{which} sensors are compromised, rather than modelling a
+threshold that determines what an adversary may inject. Runtime assurance
+guarantees safety by switching controllers when a monitor fires, and our
+certified window is a candidate specification for exactly that monitor rather
+than a competitor to it.
+
+A fair comparison would require either lifting those methods to consume a
+detector threshold, or lowering ours to a fixed perturbation ball and comparing
+tube tightness. The second is feasible and worth doing, and would answer the
+question ``is our Gr\"onwall tube competitive with a modern reachability tool at
+equal input radius?''. We have not done it, and until it is done the
+contribution should be read as \emph{connecting} two layers that were previously
+unconnected, not as outperforming the state of the art within either.
+
+\subsection{Certified versus Empirical Floors}
+The certificate is sound iff the certified floor never exceeds the realised MCR
+(Proposition~\ref{prop:sound}). At the anchor $J/S=20$\,dB the strongest defence
+attains empirical $\MCR=0.938$ over $93{,}600$ real benchmark flights,
+comfortably above the certified target $0.80$; the gap is the conservativeness
+of the worst-case Gr\"onwall bound, and it narrows where the empirically
+tightened interface replaces the kinematic worst case.
+
+We keep two floors distinct throughout, because conflating them would overstate
+the guarantee. The reference certificate targets a \emph{certified}
+$\MCR\ge0.80$ at the anchor operating point; the empirical benchmark reports the
+DO-326A $0.90$ \emph{operational} floor holding further into the band. These are
+different quantities, a conservative proof-derived bound versus a measured
+rate, and we label every reported number accordingly.
+
+\begin{table}[t]
+\centering
+\caption{A representative cross-layer pairing: a detector-evading time-delay
+attack still induces measurable navigation staleness. Values from the released
+artifact (harness simulation; three-flight $\delta$ calibration; benchmark MCR).}
+\label{tab:pairing}
+\small
+\renewcommand{\arraystretch}{1.05}
+\input{figures/block_paperC_tab2.tex}
+\end{table}
+
+\subsection{A Worked Pairing for Each Evidence Class}
+Table~\ref{tab:pairing} reports the pairing at a representative operating point.
+The \code{pairing\_basis} flag is easiest to understand through one example of
+each class. \emph{Measured, same platform:} the \dataset{UAV Attack Dataset}
+records a real GPS-jamming flight and its measured position error on one
+airframe; a pairing joining that flight to the corresponding RF event is tagged
+\code{measured\_same\_platform}, and its $\delta$ is a measurement, not a model.
+\emph{Physics model:} a forwarding-attack window carries a residual budget in
+seconds; coupling it to a navigation window through the stated relation
+Eq.~\eqref{eq:gamma} yields a \code{physics\_model} pairing: a named, versioned
+physical relation a reviewer can inspect and challenge, and the class the
+certificate consumes. \emph{Synthetic alignment:} when a network window from one
+simulated source and an autonomy window from another are aligned by
+construction, the pairing is tagged \code{synthetic\_alignment}: maximal
+coverage, weakest causal claim, and the flag says so. A user needing a strong
+claim filters to the first class; a user needing breadth accepts the third with
+its provenance explicit.
+
+\subsection{Provenance Composition of the Corpus}
+\label{sec:provenance_dist}
+The flag is only useful if its distribution is published, so we report it rather
+than describe it. Table~\ref{tab:provenance} gives the acquisition split across
+the whole corpus: $200{,}610$ of $431{,}773$ ingested events ($46.5\%$) were
+captured on real hardware, the remainder generated by simulators of three
+different kinds. That split is favourable, but it is also the \emph{weaker} of
+the two questions a reviewer should ask, and conflating them would overstate the
+benchmark.
+
+The stronger question is how many \emph{pairings} rest on measurement, and here
+the honest answer is more restrictive. A \code{measured\_same\_platform} pairing
+requires one source to have observed both the network event and the flight it
+degraded on a single airframe. Exactly one source in the corpus can do this, the
+\dataset{UAV Attack Dataset}, and although its three flights supply the
+delay-to-position rate $\gamma$ that the certificate consumes
+(Table~\ref{tab:whelan}, a real-corpus measurement obtained by
+self-referencing each flight to its own pre-attack median), the release does not
+carry machine-readable attack on/off timestamps. Without them the adapter cannot
+emit the \code{AttackWindow} boundaries a pairing record requires, and we decline
+to infer them. The number of released \code{measured\_same\_platform}
+pairings is therefore currently zero: every released pairing is
+\code{physics\_model} (the network window coupled to a navigation window through
+the stated relation Eq.~\eqref{eq:gamma}, and the class the theorem consumes) or
+\code{synthetic\_alignment} (aligned by construction under
+Appendix~\ref{app:alignment}, with the error budget Eq.~\eqref{eq:align_err}).
+
+We state this plainly because it is what the flag exists to expose, and because
+it locates the benchmark's binding limitation: not the volume of data, of which
+there is a great deal, but the scarcity of captures observing both layers at
+once. The headline guarantee does not depend on closing that gap, since $\gamma$
+is measured on real flights whether or not the window boundaries are
+machine-readable, but a reader filtering the artifact to
+\code{measured\_same\_platform} will correctly retrieve nothing. Obtaining
+same-platform captures with published attack intervals, across flight regimes
+rather than hover alone, is consequently the highest-value extension of the
+corpus.
+
+\begin{table}[t]
+\centering
+\caption{Acquisition provenance across the ingested corpus. Counts are from the
+schema-validated adapter outputs; the split is machine-generated by
+\code{experiments/provenance\_ledger.py} so the paper cannot drift from the
+artifact. Acquisition is a property of the \emph{source}; the strictly stronger
+\code{pairing\_basis} distribution is discussed in the text.}
+\label{tab:provenance}
+\small
+\renewcommand{\arraystretch}{1.05}
+\input{figures/block_paperD_tab_provenance.tex}
+\end{table}
+
+% =====================================================================
+\section{Discussion}
+\label{sec:discussion}
+% =====================================================================
+\emph{What the composition buys an operator.} It turns a network-security knob
+into a navigation-safety number. A fleet operator setting a detector's
+false-positive budget currently reasons in packet statistics, with no way to
+connect that choice to whether the fleet completes its missions.
+Theorem~\ref{thm:main} supplies the
+missing translation: each detector setting maps to a certified mission floor, so
+the operator can instead ask what detector tightness a given corridor requires
+and read the answer off Fig.~\ref{fig:sensitivity}.
+
+\emph{Why the interface, not the theorem, is decisive.} One might expect the
+certificate to be the hard part. Our results say otherwise: the tube is a short
+consequence of a classical inequality and the Lipschitz constant is measured
+rather than assumed. What decides whether a useful detector setting is
+certifiable is $\gamma$, and the order-of-magnitude gap between the kinematic
+bound and the measured rate separates a vacuous certified window from one
+containing the operating point. Tightening cross-layer guarantees is therefore
+primarily a \emph{measurement} problem, which is why the benchmark and the
+theorem belong in one paper.
+
+\emph{Generality.} Although we instantiate on a time-delay forwarding attack and
+a GNSS navigation model, the chain is agnostic to both ends: any detector with a
+monotone operating point and any perturbation-to-state mapping slot into
+Lemma~\ref{lem:residual} and Eq.~\eqref{eq:gamma}, leaving the theorem and the
+four-certificate cover unchanged. Extending the interface catalogue to
+jamming-intensity-to-error and to bus-level attacks is direct future work.
+
+% =====================================================================
+\section{Limitations and Future Work}
+\label{sec:limitations}
+% =====================================================================
+We state limitations plainly; none undercuts the contributions, and each defines
+a concrete extension.
+
+\emph{The interface is calibrated, not characterised.} This is the paper's
+binding limitation and condition~\ref{c:interface} of \S\ref{sec:scope}.
+$\gamma$ is measured on three flights of one PX4 airframe family, all in
+low-speed hover or loiter. \S\ref{sec:gammastability} shows it is not constant
+even there, varying by $6.1\times$ once estimated per sample rather than per
+flight. The campaign covers attack type, GNSS condition and staleness well and
+airspeed poorly; two factors it cannot vary at all are \emph{platform} (one
+airframe) and \emph{flight mode} (hover only), and closing those needs flights
+rather than analysis. The reported spread is
+consequently a lower bound on the variability a deployment would meet.
+
+The consequence is quantifiable, which is why we state it rather than hedge. If
+a campaign over those factors found $\gamma>\gamma_{\mathrm{req}}=6.14$\,m/s at
+a $10$\,m corridor, a further four- to five-fold increase over the maximum we
+observe, the operating point would leave the certified window and the honest
+framing would revert to the narrow ``certify-small, detect-large'' regime the
+conservative kinematic bound already guarantees. \S\ref{sec:eval} gives an
+error-budget argument that such an increase would need a sustained heading error
+of roughly $18^\circ$, but an argument is not a measurement. Two outcomes are
+possible and both are useful: either $\gamma$ proves stable across regimes,
+which would materially strengthen the result, or it does not, in which case the
+correct model is $\gamma=\gamma(\text{state},\text{input},\text{flight
+mode},\text{attack type})$ and the certificate must be evaluated at the
+supremum over the operational design domain. We regard establishing which of the
+two holds as the highest-value extension of this work.
+
+\emph{The certificate assumes the filter re-anchors.} Theorem~\ref{thm:main}
+propagates deviation over $T_c$ and relies on Definition~\ref{def:reanchor},
+that one uncorrupted state update arrives per window. A delay adversary
+satisfies this by construction, postponing corrections without suppressing them;
+an adversary denying updates outright does not, and there the certified radius
+degrades as $e^{LT_c}$ in the achieved denial duration. Certifying against
+sustained denial needs either a link-layer bound on outage length or a fallback
+whose guarantee is independent of $L$, which is the runtime-assurance direction
+of \S\ref{sec:discussion}. More generally the Gr\"onwall bound is conservative
+by design, which is why the architecture is a four-certificate cover; fusing the
+deterministic, smoothing, and PAC-Bayes floors into one tighter envelope is
+open.
+
+\emph{Evidence-class imbalance.} Only one of the six datasets couples a
+network/RF event to a measured flight on one airframe, so it is the sole source
+of \code{measured\_same\_platform} pairings. This reflects what public data
+exists, and is why the honesty flag is mandatory rather than optional.
+
+\emph{Calibration constants that remain data-gated.} The unit bridge mapping a
+raw GNSS position error into receiver-level feature space, which serves the
+RF-manipulation classes rather than the time-delay class the theorem targets, is
+calibrated on a synthetic signal corpus pending access to real in-phase and
+quadrature recordings; and the PAC-Bayes bound Eq.~\eqref{eq:mcallester} is
+wired to the trained model's measured empirical risk but awaits its numeric KL
+divergence. Neither gates the headline result, and both are tracked explicitly
+so that no synthetic constant is reported as real.
+
+\emph{Analytical navigation anchor and detector scope.} Completion outcomes come
+from a physics-informed analytical Monte-Carlo backend calibrated to
+full-fidelity anchors, so we describe them as a calibrated analytical benchmark.
+We also instantiate the harness on one forwarding detector whose operating point
+is a single clean threshold, which makes the cross-layer sweep unambiguous;
+extending to multi-dimensional operating points requires a higher-dimensional
+sweep, not a schema change.
+
+\emph{Threats to validity.} \emph{Construct:} the honesty flag bounds the risk
+that a recorded pairing misrepresents the causal link it claims, and a reviewer
+can restrict any analysis to the measured class. \emph{Internal:} two of our own
+measurement errors were caught because the provenance discipline made them
+visible, and every figure is regenerated from committed data. \emph{External:}
+four of six sources are simulation or calibrated twin, so absolute
+detector-performance numbers are corpus-specific; what transfers is the
+\emph{structure}, a property of store-and-forward scheduling and estimator
+behaviour rather than of any one simulator.
+
+% =====================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+% =====================================================================
+Attacks on a UAV's network and degradation of its flight have been approached
+separately, because nothing available made it possible to approach them
+together. We built the benchmark that makes the coupling representable and
+proved, on exactly its objects, the conditional guarantee that the coupling enables: a two-layer schema whose unit
+is the cross-layer pairing, six validated adapters, and a
+detector-operating-curve harness on the benchmark side; a residual budget that
+measurement tightens into the saturating bound $\Delta(\theta)\le
+H\min(\theta,s)$, an interface rate calibrated on real spoofing and jamming
+flights, and a composition theorem chaining a detector's operating point to a
+certified mission-completion floor on the guarantee side.
+
+Three findings survive scrutiny. Among the configurations compared, the composed
+guarantee is the only one certifying a non-zero mission floor against a
+detector-evading attacker, and it does so at every operating point. The
+empirically calibrated interface, an order of magnitude tighter than the
+kinematic worst case, brings a deployed detector's operating point inside the
+certified window, making the guarantee operationally relevant rather than merely
+formal. And the binding constraint on cross-layer certification is the
+measurement of how attacks propagate into state error, not the proof machinery:
+the interface, not the theorem, decides the outcome.
+
+That third finding cuts both ways, and we end on it deliberately. Because the
+interface decides the outcome, the result is only as strong as the calibration
+behind it, and ours rests on three flights of one airframe in hover, over which
+$\gamma$ already varies by $6.1\times$ with attack type, satellite visibility
+and staleness. What we offer is
+therefore a conditional guarantee under an empirically calibrated cross-layer
+interface: the conditions are stated in \S\ref{sec:scope}, the calibration is
+released, and the experiment that would confirm or refute its stability is
+specified in \S\ref{sec:limitations}. Under those conditions, UAV network
+security and UAV autonomy security are not two problems but two ends of one
+certificate.
+
+%=====================================================================
+% =====================================================================
+\section{Ethics Considerations}
+\label{sec:ethics}
+% =====================================================================
+This work involves no human subjects and no personally identifying data. All six
+datasets are public research corpora released for security research; we
+redistribute none of the raw third-party data, shipping only integration scripts
+and unified labels so that each source is fetched from its origin under its own
+licence. No live aircraft, production network, or third-party system was
+attacked: every attack reported here is either replayed from a published capture
+or generated in simulation on infrastructure we control.
+
+On dual use, our harness quantifies how an attacker can stay under a detector's
+threshold. We judge disclosure net-positive: staying under a published threshold
+is the definitional behaviour of an evading attacker and is already assumed in
+the detector's own analysis, our central result \emph{bounds} what such an
+attacker achieves and shows that it saturates, and the practical consequence is
+a defensive configuration procedure, namely reading the required detector
+tightness off Fig.~\ref{fig:sensitivity} for a given corridor margin. We
+disclose no previously unknown vulnerability in a deployed system, so no
+coordinated-disclosure process applied; the underlying detector's authors are
+aware of this analysis of their operating point.
+
+% =====================================================================
+\section{Open Science and Artifact Availability}
+\label{sec:openscience}
+% =====================================================================
+Everything needed to reproduce this paper is released as an open artifact: the
+schema, the six ingestion adapters, the operating-curve harness, the
+certificate engine, the statistical analysis, and the figure generator. Every
+figure and table in this paper is machine-generated from committed result files
+rather than transcribed, so a reader can regenerate them from the released data;
+each carries a provenance tag (real-corpus, simulation-derived, or stated
+modelling parameter) in an artifact ledger. The harness is deterministic per
+seed, and headline comparisons are released per seed with their nonparametric
+tests. Two measurement errors of our own were caught by this discipline before
+publication: a sweep harness that accumulated across operating points, and a set
+of bus-attack labels that are not machine-readable per scenario and which we
+therefore derive and flag rather than guess. We intend to submit the artifact for evaluation.
+\ifanon
+The repository is anonymised for review and will be de-anonymised on acceptance.
+\else
+The artifact is available at \url{https://robustuavs.ai}.
+\fi
+
+\ifanon\else
+
+% =====================================================================
+\section*{Acknowledgements}
+We thank Keiwan Soltani for releasing the \dataset{DATAMUt} detector source and
+for clarifying its operating point and contact-window semantics, which together
+ground the interface mapping of \S\ref{sec:interface}, and the maintainers of
+the third-party datasets unified here.
+\fi
+
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+
+\appendix
+
+\section{Background and Terminology}
+\label{sec:background}
+% =====================================================================
+The composition proved in this paper spans two research communities that share
+very few conventions: one reasons about packets and detector thresholds, the
+other about trajectories and certified radii. This section fixes the single
+system model both halves of the argument refer to, namely how an autonomous UAV closes
+its navigation loop, which of its interfaces an adversary can reach, and what a
+robustness \emph{certificate} does and does not promise, so that the interface
+mapping of \S\ref{sec:interface} joins two precisely defined quantities rather
+than two informal ones. Acronyms are defined at first use and not tabulated;
+Table~\ref{tab:notation} is the single reference for mathematical symbols. A
+reader fluent in both UAV autonomy and certified robustness may proceed directly
+to \S\ref{sec:problem}.
+
+\subsection{The UAV Navigation Loop}
+An unmanned aerial vehicle (UAV, colloquially a drone) closes a control loop
+around a \emph{state estimate}. An onboard computer fuses fixes from a Global
+Navigation Satellite System (GNSS, of which the American GPS is one
+constellation) receiver, inertial measurements from accelerometers and
+gyroscopes (the IMU), and barometric height into a best guess of where the
+aircraft is and how fast it is moving. On the PX4 autopilot family used
+throughout this paper the fusion is performed by an extended Kalman filter
+(EKF), a standard recursive estimator that weighs each sensor by its expected
+noise~\cite{kong2024px4ekf}. The flight controller steers to keep the estimate
+on the planned route.
+
+Two properties of this loop drive everything that follows. First, the loop is
+only as good as its \emph{freshest trustworthy input}: if GNSS is denied, the
+EKF ``coasts'' on inertial data and its position error grows with time. Second,
+the loop is \emph{networked}. Swarm members and the ground control station
+exchange corrections and commands over radio links: a command-and-control (C2) link, typically
+speaking the Micro Air Vehicle Link (MAVLink) protocol, a multi-hop mesh in which peers relay each other's traffic
+during periodic contact windows, forming a delay-tolerant network (DTN), and an
+intra-vehicle bus, the UAV Controller Area Network (UAVCAN, also DroneCAN),
+connecting the flight controller to motor controllers and sensors. An attacker on the mesh can therefore reach the
+navigation loop without ever touching the radio-frequency (RF) front end.
+
+\subsection{GNSS Spoofing and Jamming}
+\emph{Electronic warfare (EW)} attacks the sensing physics. A \emph{jammer}
+raises the jamming-to-signal power ratio ($J/S$, in decibels) until the
+receiver loses satellite lock; a \emph{spoofer}
+broadcasts counterfeit satellite signals so the receiver locks onto a false
+position~\cite{humphreys2008assessing,kerns2014capture}. \emph{Network attacks}
+target the messages. A \emph{time-delay attack}, the class our theorem
+covers, has a compromised relay hold packets before forwarding them, so
+downstream consumers act on stale state~\cite{lou2019timedelay,datamut2026}.
+Neither needs to break cryptography; both degrade the control loop through
+legitimate-looking inputs, which is precisely why detection and robustness must
+be composed rather than assumed.
+
+\subsection{The Scope of a Robustness Certificate}
+A \emph{certified} robustness statement differs from an empirical evaluation:
+instead of reporting that attacks in a test set were survived, it proves that
+\emph{every} perturbation within an explicitly stated budget is survived. The
+price is conservatism: certified bounds are worst-case, so a certified floor
+typically sits below what is observed empirically. We keep the two kinds of
+number separate and label them throughout: \emph{certified} floors come from
+proofs, \emph{empirical} rates from measured flights. We use two flavours of
+certificate: deterministic Lipschitz-type bounds (if a model cannot amplify
+input changes by more than a factor $L$, a bounded input change yields a bounded
+output change) and probabilistic randomized-smoothing bounds (adding calibrated
+noise and taking a majority vote yields a radius within which the decision
+provably cannot flip)~\cite{cohen2019smoothing}. The regulatory anchor for
+``mission survived'' is the airworthiness-security process standard
+DO-326A/ED-202A~\cite{do326a}, whose industry-acceptable completion floor of
+$0.90$ appears in our figures as a horizontal reference line.
+
+
+\begin{table}[t]
+\centering
+\caption{Mathematical notation. Every symbol is defined where first used;
+this table is the single reference.}
+\label{tab:notation}
+\small
+\renewcommand{\arraystretch}{1.05}
+\begin{tabularx}{\columnwidth}{@{}lX@{}}
+\toprule
+$W_n$, $W_a$ & network / autonomy attack window\\
+$P$ & cross-layer pairing tuple, Eq.~\eqref{eq:pairing}\\
+$x(t)\in\Real^n$ & navigation state (position, velocity, \dots) at time $t$\\
+$u(t)$, $\delta u$ & sensor input to the navigation dynamics; its perturbation\\
+$F$ & drift (right-hand side) of the navigation dynamics Eq.~\eqref{eq:ode}\\
+$T$, $\kappa$ & nominal mission duration (s); schedule tolerance as a
+fraction of $T$\\
+$T_c$ & certification horizon: interval between uncorrupted state updates
+over which the trajectory tube is propagated ($1$\,s)\\
+$m$ & safe-corridor margin: allowed lateral deviation, metres\\
+$D_\theta$, $\theta$ ($\varepsilon$) & network detector; its operating point
+(tolerated per-hop residual delay, s)\\
+$s$, $P_{\!c}$ & contact-window slack ($5$\,s); contact period ($60$\,s)\\
+$H$ & number of attacker-controlled (malicious) hops on a route\\
+$\Delta(\theta)$ & residual budget: worst undetected cumulative delay, s\\
+$\delta(\theta)$ & induced perturbation on the navigation input\\
+$\gamma$ & delay-to-position rate: metres of error per second of degradation\\
+$v_{\max}$ & kinematic worst-case speed bound ($15$\,m/s)\\
+$L$, $\hat L$, $\hat L_{\mathrm{loc}}$ & (estimated / local) Lipschitz constant of $F$\\
+$\rho(\theta)$ & trajectory-tube radius $\delta(\theta)e^{LT_c}$, metres\\
+$\theta^{*}(m)$ & loosest $\theta$ whose tube fits margin $m$ (window edge)\\
+$f(\cdot)$ & certified MCR floor as a function of the perturbation budget\\
+$R$, $\sigma,\alpha,n$ & certified input radius; smoothing noise, confidence, samples\\
+$R_{\mathrm{emp}}$, $\mathrm{KL}$ & empirical risk and prior-posterior divergence, Eq.~\eqref{eq:mcallester}\\
+$|S|$ & size of the defender's policy set in the MWU certificate ($4$)\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+
+\section{Detectors with a Learned Score}
+\label{app:learned}
+\label{sec:roc}
+We instantiate the harness on a threshold detector because its operating point
+is a single, physically meaningful scalar, which makes the cross-layer sweep
+unambiguous. Since most deployed UAV intrusion detection uses learned
+classifiers, it is worth showing that the framework does not depend on that
+choice.
+
+A learned detector emits a score $\sigma(a)\in[0,1]$ and flags an event when
+$\sigma(a)\ge P_{\mathrm{th}}$; sweeping $P_{\mathrm{th}}$ traces the familiar
+receiver operating characteristic, each cutoff being a
+$(\mathrm{FPR},\mathrm{TPR})$ pair exactly as each $\varepsilon$ is in
+Fig.~\ref{fig:opcurve}. The only object the composition consumes is the residual
+budget (the largest attack effect that survives the detector), so the framework
+generalises as soon as $P_{\mathrm{th}}$ maps to one, which it does through the
+detector's \emph{score-to-effect} profile. Let $g(\cdot)$ be the
+monotone-increasing map from an attack's physical magnitude $\mu$ (here,
+injected per-hop delay in seconds) to the detector's expected score,
+$\sigma=g(\mu)$, measured by running the detector over labelled attacks of known
+magnitude, which every corpus in \S\ref{sec:corpus} supports. An attacker
+evading the cutoff must keep $g(\mu)<P_{\mathrm{th}}$, hence
+\begin{equation}
+\label{eq:pth}
+\mu \;<\; g^{-1}(P_{\mathrm{th}}) \;=:\; \theta_{\mathrm{eff}}(P_{\mathrm{th}}),
+\end{equation}
+and Lemma~\ref{lem:residual} applies verbatim with $\theta$ replaced by the
+\emph{effective} operating point $\theta_{\mathrm{eff}}$. The threshold detector
+is simply the special case $g=\mathrm{id}$, for which
+$\theta_{\mathrm{eff}}=\varepsilon$. Two properties of $g$ carry over into the
+guarantee. Monotonicity is what makes $g^{-1}$ well defined and the certified
+window an interval rather than a union; where a classifier is non-monotone in
+$\mu$, one takes the conservative
+$\theta_{\mathrm{eff}}=\sup\{\mu: g(\mu)<P_{\mathrm{th}}\}$, which is sound but
+looser. And because a learned score is stochastic, $g$ is a distribution rather
+than a function, so $\theta_{\mathrm{eff}}$ must be read at an upper confidence
+bound on the score, which is precisely the regime in which the
+randomized-smoothing certificate of \S\ref{sec:certs}, rather than the
+deterministic Gr\"onwall tube, is the appropriate downstream bound.
+
+Any detector exposing a tunable cutoff and a measurable score-to-magnitude
+profile therefore slots in without a schema change: the harness sweeps
+$P_{\mathrm{th}}$ instead of $\varepsilon$, records
+$(\mathrm{FPR},\mathrm{TPR},\theta_{\mathrm{eff}})$ per cutoff, and the
+downstream chain is unchanged. What the framework requires is not that a
+detector be deterministic, but that its operating point reduce to a bound on the
+physical attack magnitude that survives it.
+
+% =====================================================================
+\section{Aligning Two Relative Clocks}
+\label{app:alignment}
+Because the sources share no global clock, a \code{synthetic\_alignment} pairing
+must state exactly how a network window and an autonomy window from different
+captures are placed on a common axis, and how much error that placement can
+introduce. Left implicit, this is the step at which a cross-layer benchmark
+could silently manufacture, or destroy, the very effect it reports.
+
+Let the network source have relative clock $\tau_n\in[0,T_n]$ and the autonomy
+source $\tau_a\in[0,T_a]$, each measured from its own capture start. An
+alignment is an affine map
+\begin{equation}
+\label{eq:align}
+\phi(\tau_n) \;=\; a\,\tau_n + b, \qquad a=\frac{T_a}{T_n},
+\end{equation}
+whose scale $a$ normalises the two capture durations and whose offset $b$ is
+fixed by \emph{anchoring attack onsets}: we set $b$ so that
+$\phi(t_0^{\,n}) = t_0^{\,a}$, where $t_0^{\,n}$ is the first labelled malicious
+event in $W_n$ and $t_0^{\,a}$ the onset of degradation in $W_a$. Onset is not
+eyeballed: $t_0^{\,a}$ is the first sample at which the autonomy metric exceeds
+its pre-attack median by more than $3\hat\sigma$, with $\hat\sigma$ the robust
+(median-absolute-deviation) scale of the pre-attack segment. Both anchors are
+therefore defined by the source labels and the source's own noise floor, not by
+the analyst.
+
+Three error terms bound the residual misalignment $e_{\mathrm{align}}$:
+\begin{equation}
+\label{eq:align_err}
+e_{\mathrm{align}} \;\le\; \underbrace{\tfrac{1}{2}(\Delta t_n+\Delta t_a)}_{\text{quantisation}}
+\;+\;\underbrace{|a-1|\,T_a}_{\text{rate mismatch}}
+\;+\;\underbrace{e_{\mathrm{onset}}}_{\text{anchor detection}},
+\end{equation}
+where $\Delta t_n,\Delta t_a$ are the two sources' sampling intervals (a per-flow
+network record and a $50$\,Hz telemetry stream give
+$\tfrac12(\Delta t_n+\Delta t_a)\le\tfrac12(1.0+0.02)=0.51$\,s), the rate term
+vanishes when both captures are replayed at their native rate ($a=1$, the case
+for every pairing we release), and $e_{\mathrm{onset}}\le\Delta t_a$ is the
+one-sample latency of the $3\hat\sigma$ crossing. For the released
+\code{synthetic\_alignment} pairings this gives
+$e_{\mathrm{align}}\le0.53$\,s.
+
+This bound is what keeps the alignment from biasing the reported staleness. The
+quantity the certificate consumes, $\Delta(\theta)$, is computed \emph{entirely
+within the network source} from per-hop residual delays; the alignment
+determines only which autonomy window a given network window is paired
+\emph{with}, never the numeric value of $\Delta(\theta)$. Misalignment can
+therefore attach a pairing to the wrong autonomy interval, but it cannot inflate
+or deflate $\Delta(\theta)$ itself. Its effect is confined to the empirical MCR
+column, and it is bounded there too: since $e_{\mathrm{align}}\le0.53$\,s is two
+orders of magnitude below the $60$\,s contact period that separates distinct
+attack windows, no released pairing can be displaced onto a neighbouring window.
+Pairings whose alignment error would exceed one tenth of the shorter window's
+duration are rejected by the adapter rather than emitted with a caveat.
+
+\section{Proof of Theorem~\ref{thm:main}}
+\label{app:proof}
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+Fix a mission and let $x_{\mathrm{nom}}(t)$ be the nominal trajectory (the
+solution of Eq.~\eqref{eq:ode} under the attack-free input $u(t)$) and
+$x_{\mathrm{att}}(t)$ the trajectory under $u(t)+\delta u(t)$, both started from
+$x_{\mathrm{nom}}(0)=x_{\mathrm{att}}(0)$. Write
+$e(t)=x_{\mathrm{att}}(t)-x_{\mathrm{nom}}(t)$. From Eq.~\eqref{eq:ode},
+$\dot e(t)=F(x_{\mathrm{att}},u+\delta u)-F(x_{\mathrm{nom}},u)$, so
+$L$-Lipschitzness gives
+$\Norm{\dot e(t)}\le L\Norm{e(t)}+L\Norm{\delta u(t)}$. Integrating with
+$e(0)=0$,
+\[
+\Norm{e(t)}\;\le\;L\!\int_0^t\!\Norm{e(\tau)}\,d\tau
+\;+\;L\!\int_0^t\!\Norm{\delta u(\tau)}\,d\tau .
+\]
+Applying the integral form of Gr\"onwall's inequality~\cite{gronwall1919} to the
+non-decreasing forcing term $g(t)=L\!\int_0^t\!\Norm{\delta u}\,d\tau$ yields
+$\Norm{e(t)}\le g(t)e^{Lt}$, and bounding the input by
+$\Norm{\delta u(\tau)}\le\delta(\theta)$ gives, at the certification horizon,
+\begin{equation}
+\label{eq:tube_derivation}
+\Norm{e(T_c)}\;\le\;\delta(\theta)\big(e^{LT_c}-1\big)\;\le\;\delta(\theta)e^{LT_c},
+\end{equation}
+which is Eq.~\eqref{eq:tube}; we report the closed-form right-hand bound. By
+Definition~\ref{def:reanchor} the deviation is reset at least once per window of
+length $T_c$, so the same bound holds on each window and therefore on the
+supremum over $[0,T]$. Now suppose $\rho(\theta)\le m$. The nominal trajectory
+lies in the safe corridor by construction, and every point of the attacked
+trajectory is within $\rho(\theta)\le m$ of it by
+Eq.~\eqref{eq:tube_derivation}; hence the attacked trajectory never exits the
+corridor over $[0,T]$, discharging the spatial predicate of
+Eq.~\eqref{eq:mcr}. For the temporal predicate, the only mechanism by
+which a $D_\theta$-evading time-delay attack displaces arrival is the undetected
+forwarding delay it accumulates, which Lemma~\ref{lem:residual} bounds by
+$\Delta(\theta)$; hence $t_{\mathrm{arr}}\le T+\Delta(\theta)$, and
+$\Delta(\theta)\le\kappa T$ gives $t_{\mathrm{arr}}\le(1+\kappa)T$ as required.
+Both predicates holding, the mission completes. Taking the probability of
+$\{\rho(\theta)\le m\}\cap\{\Delta(\theta)\le\kappa T\}$ over the mission
+distribution, the only source of randomness once $\theta$ is fixed, since
+$\delta(\theta)$ and $\Delta(\theta)$ are deterministic bounds, gives
+Eq.~\eqref{eq:floor}. Composing
+$\theta\!\mapsto\!\Delta(\theta)$ (Lemma~\ref{lem:residual}),
+$\Delta\!\mapsto\!\delta$ (\S\ref{sec:interface}), and $\delta\!\mapsto\!\MCR$
+establishes the chain Eq.~\eqref{eq:chain}.
+\end{proof}
+
+
+\end{document}
