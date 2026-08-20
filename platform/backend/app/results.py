@@ -106,6 +106,22 @@ def whelan_calibration() -> list[dict]:
     return read_csv("whelan_delta_calibration.csv")
 
 
+def gamma_campaign_bins() -> list[dict]:
+    return read_csv("gamma_campaign_bins.csv")
+
+
+def gamma_campaign_model() -> list[dict]:
+    return read_csv("gamma_campaign_model.csv")
+
+
+def gamma_stability() -> list[dict]:
+    return read_csv("gamma_stability.csv")
+
+
+def mission_distribution() -> list[dict]:
+    return read_csv("mission_distribution.csv")
+
+
 def mcr_anchor() -> list[dict]:
     return read_csv("ewbench_mcr_anchor.csv")
 

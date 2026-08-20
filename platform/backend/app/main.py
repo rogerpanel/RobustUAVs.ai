@@ -396,6 +396,18 @@ def api_eval_federated() -> dict:
     return evaluation.federated()
 
 
+@app.get("/api/eval/interface", tags=["evaluation"])
+def api_eval_interface() -> dict:
+    """Is gamma a constant? The interface characterisation campaign's answer."""
+    return evaluation.interface_stability()
+
+
+@app.get("/api/eval/mission-distribution", tags=["evaluation"])
+def api_eval_mission_distribution() -> dict:
+    """What MCR's dependence on the mission distribution actually costs."""
+    return evaluation.mission_distribution()
+
+
 # ---------------------------------------------------------------- upload --
 #
 # Bring-your-own-data. The file is streamed and sampled rather than loaded:

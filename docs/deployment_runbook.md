@@ -683,3 +683,84 @@ you want a manual approval step.
 - **Adding the GPU box later:** a separate Hetzner *dedicated* GEX machine
   linked by vSwitch — Hetzner Cloud has no GPU instances at all
   (`infrastructure.md` §3).
+
+---
+
+## Deploying the interface-campaign release (2026-08-20)
+
+This release adds two evaluation pages and changes a certified constant, so the
+API and the web bundle must go out together. A backend-only restart would leave
+the client asking for `/api/eval/interface` and getting a 404, which the UI
+correctly renders as "client and API are out of step" rather than as a failure.
+
+### One command, from your laptop
+
+```bash
+ssh robustuavs 'cd /srv/robustuavs/repo && git checkout main && ./deploy/redeploy.sh --watch'
+```
+
+`redeploy.sh` fetches, then runs `deploy.sh` detached under `setsid nohup`, so a
+dropped SSH session does not kill the build. `--watch` follows the log;
+Ctrl-C stops watching, not the deploy.
+
+If the server is still on the old working branch, the `git checkout main` above
+is the only extra step: `deploy.sh` derives `$BRANCH` from whatever is checked
+out, and all three refs point at the same commit.
+
+### Before you start: the build needs memory
+
+`expo export` is the memory-hungry step and `deploy.sh` refuses to run it below
+`MIN_BUILD_MB` (1500 MB) without at least 1 GB of swap, because on a small
+instance it has previously taken the box down hard enough to lose sshd. Check:
+
+```bash
+ssh robustuavs 'free -m | head -2'
+```
+
+If swap is 0, add it once and it persists:
+
+```bash
+ssh robustuavs 'sudo fallocate -l 2G /swapfile && sudo chmod 600 /swapfile \
+  && sudo mkswap /swapfile && sudo swapon /swapfile \
+  && echo "/swapfile none swap sw 0 0" | sudo tee -a /etc/fstab'
+```
+
+### Verify the release actually landed
+
+The deploy script already probes the site through `--resolve` (the origin
+cannot hairpin through Cloudflare, so an unresolved probe reports `000` and
+looks like an outage when the site is fine). These check the *new* surface:
+
+```bash
+# 1. the two new endpoints answer
+curl -s https://robustuavs.ai/api/eval/interface \
+  | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d["gamma_used_by_certificate"], d["spread_median_to_max"])'
+# expect: 1.625 6.1
+
+curl -s https://robustuavs.ai/api/eval/mission-distribution \
+  | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d["js_spread_db"], "dB")'
+# expect: 9.0 dB
+
+# 2. the corrected mapping reaches the existing Robustness page
+curl -s https://robustuavs.ai/api/eval/robustness \
+  | python3 -c 'import json,sys; [print(s["label"]) for s in json.load(sys.stdin)["series"]]'
+# expect four series, including "Campaign supremum (γ = 1.625 m/s)"
+
+# 3. the client bundle carries the new screens
+curl -s https://robustuavs.ai/app/ | grep -o '_expo/static/js/web/[^"]*\.js' | head -1
+```
+
+If (1) returns 404 the API restarted but the bundle did not rebuild, or vice
+versa; re-run the deploy and read `/tmp/deploy.log` for which half failed.
+
+### Rolling back
+
+The previous bundle stays published if the build fails, so a failed deploy is
+not an outage. To roll the code back deliberately:
+
+```bash
+ssh robustuavs 'cd /srv/robustuavs/repo && git reset --hard <previous-sha> && ./deploy/redeploy.sh --watch'
+```
+
+`deploy.sh` does `git reset --hard origin/$BRANCH` at the start, so pin the
+branch or it will fast-forward back to the tip on the next run.

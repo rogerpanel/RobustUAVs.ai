@@ -18,11 +18,16 @@ from collections import defaultdict
 
 from . import results
 
-MAPPINGS = ("kinematic_v15", "empirical_receiver", "empirical_ekf")
+MAPPINGS = ("kinematic_v15", "empirical_receiver", "empirical_ekf",
+            "empirical_campaign_sup")
 MAPPING_LABEL = {
     "kinematic_v15": "Kinematic (v_max = 15 m/s)",
     "empirical_receiver": "Receiver (γ = 1.195 m/s)",
     "empirical_ekf": "EKF (γ = 1.365 m/s)",
+    # The per-sample supremum. The per-flight secants above are long-horizon
+    # averages and understate the rate by ~1.19x; this is the mapping the
+    # current manuscript quotes.
+    "empirical_campaign_sup": "Campaign supremum (γ = 1.625 m/s)",
 }
 
 
@@ -275,4 +280,125 @@ def federated() -> dict:
                 "on M7 is reported from the dissertation constants "
                 "(|S| = 4) rather than re-derived.",
         "source": "models/PORT_STATUS.md, certificates/engine.py",
+    }
+
+
+# =================================================== interface stability ===
+def interface_stability() -> dict:
+    """Is gamma a constant, or gamma(conditions)?
+
+    The campaign's answer, served from the committed CSVs. Two things this
+    endpoint refuses to do: report the uncorrected rate as a finding, and
+    report an unvaried factor as showing no effect. Both would be misleading
+    in the direction that flatters the result.
+    """
+    bins = results.gamma_campaign_bins()
+    model = results.gamma_campaign_model()
+
+    factors, coverage = [], []
+    for r in bins:
+        fac = str(r.get("factor", ""))
+        if fac.startswith("COVERAGE:"):
+            coverage.append({
+                "factor": fac.split(":", 1)[1],
+                "status": r.get("bin"),
+                "note": r.get("gamma_max"),
+            })
+        else:
+            factors.append({
+                "factor": fac, "bin": r.get("bin"), "n": r.get("n"),
+                "gamma_median": r.get("gamma_median"),
+                "gamma_p95": r.get("gamma_p95"),
+                "gamma_max": r.get("gamma_max"),
+            })
+
+    coeffs = {r["term"]: r["std_coef_m_s"] for r in model}
+    overall = next((f for f in factors if f["factor"] == "OVERALL"), None)
+    factors = [f for f in factors if f["factor"] != "OVERALL"]
+
+    return {
+        "question": "Is the delay-to-position rate gamma a constant?",
+        "answer": "No. It varies systematically with attack type, satellite "
+                  "visibility, and staleness.",
+        "gamma_used_by_certificate": 1.625,
+        "gamma_previous_per_flight_secant": 1.365,
+        "understatement_factor": 1.19,
+        "n_samples": overall["n"] if overall else None,
+        "gamma_median": overall["gamma_median"] if overall else None,
+        "gamma_max": overall["gamma_max"] if overall else None,
+        "spread_median_to_max": (
+            round(overall["gamma_max"] / overall["gamma_median"], 1)
+            if overall and overall["gamma_median"] else None),
+        "estimator_note":
+            "Two estimators exist and they disagree qualitatively. e(t)/tau "
+            "diverges as tau falls, reaching 8.6 m/s below one second -- but "
+            "onset is declared at a detection threshold, so e(onset) is "
+            "already 0.64 m (jamming) to 9.27 m (spoofing). Dividing that "
+            "pre-existing offset by a small tau measures the threshold, not "
+            "the attack. The certificate uses the baseline-corrected rate "
+            "(e(t) - e(onset))/tau, because Lemma 1 is responsible only for "
+            "error the attacker causes.",
+        "factors": factors,
+        "coverage": coverage,
+        "ols": {
+            "note": "Descriptive only. Samples within a flight are "
+                    "autocorrelated and there are two attack flights, so no "
+                    "p-values are reported.",
+            "r_squared": coeffs.get("R2"),
+            "n_samples": coeffs.get("n_samples"),
+            "standardised_coefficients": {
+                k: v for k, v in coeffs.items()
+                if k not in ("R2", "n_samples", "NOTE", "intercept")
+            },
+        },
+        "effect_on_certificate":
+            "At gamma = 1.625 the certified window edge at a 10 m corridor "
+            "moves from 1.12 s to 0.94 s, and the smallest corridor "
+            "certifying theta = 0.25 s rises from about 2.25 m to about "
+            "5.9 m. The conclusion is unchanged: certified at m >= 5 m, not "
+            "at m = 2 m.",
+        "source": "results/gamma_campaign_bins.csv, gamma_campaign_model.csv",
+    }
+
+
+# ================================================= mission distribution ===
+def mission_distribution() -> dict:
+    """What the mission-distribution dependence of MCR actually costs.
+
+    MCR is a probability over a distribution of missions, so a bound on it is
+    a statement about a population. This measures how far apart two
+    populations are, rather than only noting that they can differ.
+    """
+    rows = results.mission_distribution()
+
+    per_dist = [r for r in rows if r.get("scope") == "per_distribution"]
+    summary = {r.get("mission"): r for r in rows if r.get("scope") == "summary"}
+    crossings = [r for r in rows if r.get("scope") == "js_at_mcr_0.90"]
+
+    js_vals = [r["js_db"] for r in crossings
+               if isinstance(r.get("js_db"), (int, float))]
+
+    return {
+        "question": "How much does MCR depend on which missions you fly?",
+        "answer": "Marginally, very little. Conditional on the adversary, a "
+                  "great deal.",
+        "distributions": per_dist,
+        "marginal_spread": summary.get("spread_over_distributions", {}).get("mcr"),
+        "conditional_spread_mission":
+            summary.get("max_spread_across_mission", {}).get("mcr"),
+        "conditional_spread_receiver":
+            summary.get("max_spread_across_receiver", {}).get("mcr"),
+        "js_at_mcr_0_90": crossings,
+        "js_spread_db": (round(max(js_vals) - min(js_vals), 1)
+                         if len(js_vals) > 1 else None),
+        "interpretation":
+            "Averaged over the whole 0-40 dB sweep the nine distributions are "
+            "nearly indistinguishable. Conditioned on attack strength they are "
+            "far apart, and the jamming power at which a distribution first "
+            "falls below the 0.90 reference spans about 9 dB -- roughly a "
+            "factor of eight in adversary transmit power. An operator flies "
+            "one profile against one adversary and lives at a point, not at "
+            "the average.",
+        "provenance": "simulation (physics-informed), UAV-EW-Bench-2026",
+        "source": "results/mission_distribution.csv",
     }
