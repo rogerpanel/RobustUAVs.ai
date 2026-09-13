@@ -1,0 +1,23 @@
+# Copy to deploy/mail/cloudflare.ini, then: chmod 600 deploy/mail/cloudflare.ini
+#
+# Easier and safer than editing this file by hand:
+#     sudo bash deploy/mail/setup-mail.sh --set-token
+# which reads the token from a hidden prompt, validates its character set,
+# and writes the file with the right mode. The Hetzner web console rewrites
+# some characters on paste, which corrupts a token silently — the file then
+# looks plausible and Cloudflare rejects it with error 1000.
+#
+# Create the token at Cloudflare → My Profile → API Tokens → Create Token
+#   Template:       "Edit zone DNS"
+#   Permissions:    Zone / DNS / Edit   AND   Zone / Zone / Read
+#   Zone Resources: Include / Specific zone / robustuavs.ai
+#
+# Both permissions are required. certbot looks the zone up by name before it
+# writes the challenge record, so a DNS:Edit-only token fails at the first
+# API call with an error that does not mention permissions.
+#
+# Used only by certbot for the DNS-01 challenge: it writes a temporary
+# _acme-challenge TXT record and removes it again. It is not used to publish
+# any of the permanent mail records — those you add by hand from the table
+# setup-mail.sh prints, so nothing automated can rewrite your zone.
+dns_cloudflare_api_token = PASTE_TOKEN_HERE

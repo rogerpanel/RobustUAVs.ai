@@ -1,0 +1,67 @@
+# Webmail vhost for /etc/caddy/Caddyfile — append this block.
+#
+#   sudo bash deploy/mail/install-caddy-vhost.sh
+#
+# appends it with a timestamped backup, validates, and rolls back if the
+# result does not parse. Doing it by hand is fine too; just run
+# `caddy validate --config /etc/caddy/Caddyfile` before reloading.
+#
+# Why this is a separate host and not a path on robustuavs.ai:
+# Roundcube sets cookies and CSRF tokens against the origin it is served
+# from. Mounting it under a sub-path of the platform's origin would let a
+# webmail session and the platform share a cookie jar, and would put the
+# platform's Content-Security-Policy in charge of a PHP application that
+# needs a different one. A separate hostname keeps the two apart at the
+# only boundary browsers actually enforce.
+#
+# webmail.robustuavs.ai is Proxied (orange) in Cloudflare, so it is served
+# under the same Cloudflare Origin CA certificate as the platform — the
+# `origin_tls` snippet already defined at the top of the Caddyfile. That
+# certificate is a wildcard (*.robustuavs.ai) as issued by default. If
+# yours was issued for only the apex and www, reissue it including the
+# wildcard, or webmail will fail TLS at the origin and Cloudflare will
+# return 526.
+#
+# mail.robustuavs.ai is NOT served here. It is grey-clouded and terminates
+# TLS itself, inside the mail container, with a Let's Encrypt certificate —
+# Cloudflare Origin CA is trusted only by Cloudflare, and an IMAP client is
+# not Cloudflare.
+
+webmail.robustuavs.ai {
+	import origin_tls
+	import common
+
+	# Attachments. Roundcube itself caps uploads at 25M
+	# (ROUNDCUBEMAIL_UPLOAD_MAX_FILESIZE); leave headroom for MIME encoding
+	# overhead so the app returns its own clear error rather than Caddy
+	# cutting the request off with a bare 413.
+	request_body {
+		max_size 35MB
+	}
+
+	# Roundcube is published on loopback by docker-compose.mail.yml. It is
+	# not on any Docker network Caddy can see, and it must not be reachable
+	# from outside this host.
+	reverse_proxy 127.0.0.1:8081 {
+		# Roundcube builds absolute URLs from these. Without the forwarded
+		# proto it generates http:// links behind an HTTPS terminator and
+		# the browser blocks them as mixed content.
+		header_up X-Forwarded-Proto https
+		header_up X-Real-IP {remote_host}
+
+		# Long-lived requests: an IMAP folder with tens of thousands of
+		# messages can take well over the 30s some defaults assume.
+		transport http {
+			read_timeout 120s
+		}
+	}
+
+	# The platform's CSP (in the main site block) is written for a static
+	# Expo bundle and would break Roundcube outright. Roundcube ships its
+	# own headers; do not add a CSP here without testing compose, the
+	# managesieve filter editor, and attachment preview.
+	header {
+		X-Frame-Options "SAMEORIGIN"
+		Referrer-Policy "strict-origin-when-cross-origin"
+	}
+}

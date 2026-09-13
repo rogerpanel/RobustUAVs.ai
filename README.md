@@ -274,7 +274,9 @@ emergent mesh partitioning), a GNSS spoof process monitor, the evaluation suite
 (robustness, ablations, ROC, statistics, calibration, federated), an
 upload-and-analyse path for a reviewer's own CSVs, and an SOC copilot. Design
 authority is `docs/platform_architecture.md`; deployment is
-`docs/deployment_runbook.md` and `deploy/`.
+`docs/deployment_runbook.md` and `deploy/`. Project mail —
+`roger@`, `admin@`, `support@`, `noreply@`, self-hosted on the same box
+with DKIM and Roundcube webmail — is `deploy/mail/`.
 
 One honest note about the simulation: `docs/simulation_architecture.md` records
 which fleet quantities are *measured* (link residuals, sampled from the six

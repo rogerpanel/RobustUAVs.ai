@@ -1,0 +1,176 @@
+# Self-hosted mail for robustuavs.ai — Postfix + Dovecot + Rspamd + Roundcube.
+#
+#   sudo docker compose -f deploy/mail/docker-compose.mail.yml \
+#        --env-file deploy/mail/.env.mail up -d
+#
+# Normally you do not type that: deploy/mail/setup-mail.sh drives the whole
+# install. Full guide and DNS records: deploy/mail/README.md
+#
+# This stack is deliberately independent of the platform. robustuavs.ai serves
+# the API from a systemd unit (robustuavs-api.service) behind host Caddy, with
+# no application containers at all — so unlike the RobustIDPS deployment this
+# was adapted from, there is no app network to join. Roundcube is reached by
+# publishing it on the loopback interface and letting host Caddy proxy it.
+
+# Explicit project name. Without it compose derives one from the directory
+# ("mail"), which is both meaningless in `docker ps` and liable to collide
+# with any other stack that happens to live in a directory of that name.
+name: robustuavs-mail
+
+services:
+  certbot:
+    # Deliberately unpinned. This is an ACME client whose job is to stay
+    # current with a protocol and a CA that both move; pinning it buys
+    # reproducibility of the thing least worth reproducing.
+    image: certbot/dns-cloudflare:latest
+    container_name: robustuavs-certbot
+    restart: unless-stopped
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+      - ./cloudflare.ini:/run/secrets/cloudflare.ini:ro
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        CERT="/etc/letsencrypt/live/${MAIL_HOSTNAME}/fullchain.pem"
+        if [ ! -s "$$CERT" ]; then
+          echo "── issuing certificate for ${MAIL_HOSTNAME} ──"
+          certbot certonly --non-interactive --agree-tos --keep-until-expiring \
+            --email "${POSTMASTER_ADDRESS}" \
+            --dns-cloudflare \
+            --dns-cloudflare-credentials /run/secrets/cloudflare.ini \
+            --dns-cloudflare-propagation-seconds "${ACME_PROPAGATION_SECONDS:-60}" \
+            -d "${MAIL_HOSTNAME}" \
+          || echo "!! ISSUANCE FAILED — read the certbot error above. Common causes:
+        !!   - API token missing 'Zone / Zone / Read' (it needs Zone:Read AND DNS:Edit)
+        !!   - token pasted with stray spaces or a newline in deploy/mail/cloudflare.ini
+        !!   - wrong zone selected when the token was created"
+        else
+          echo "── certificate already present for ${MAIL_HOSTNAME} ──"
+        fi
+        # Stay alive whether or not issuance succeeded: a crash-loop would hide
+        # the error above and break `docker compose exec` during diagnosis.
+        trap exit TERM
+        while :; do
+          sleep 12h & wait $$!
+          certbot renew --non-interactive || true
+        done
+
+  mailserver:
+    # Pinned to an exact patch in the 15 series. 16.0.1 exists as of this
+    # writing; the provisioning flow in setup-mail.sh — `setup email add`,
+    # the postfix-accounts.cf layout, the rspamd DKIM paths — is verified
+    # against 15 only, so the upgrade is a deliberate, tested step rather
+    # than something to inherit by leaving the tag floating.
+    image: ghcr.io/docker-mailserver/docker-mailserver:15.1.0
+    container_name: robustuavs-mail
+    hostname: ${MAIL_HOSTNAME}
+    restart: always
+    stop_grace_period: 1m
+    ports:
+      - "25:25"     # SMTP inbound from other mail servers
+      - "465:465"   # SMTPS submission (implicit TLS)
+      - "587:587"   # Submission (STARTTLS) — Roundcube and mail clients
+      - "993:993"   # IMAPS — Roundcube and mail clients
+    volumes:
+      - dms-data:/var/mail
+      - dms-state:/var/mail-state
+      - dms-logs:/var/log/mail
+      - ./config:/tmp/docker-mailserver
+      - letsencrypt:/etc/letsencrypt:ro
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - OVERRIDE_HOSTNAME=${MAIL_HOSTNAME}
+      - POSTMASTER_ADDRESS=${POSTMASTER_ADDRESS}
+      - SSL_TYPE=letsencrypt
+      # Rspamd does spam scoring, DKIM signing, and DMARC/SPF checks in one
+      # daemon; the legacy per-feature daemons must be off or mail is
+      # processed twice and signed inconsistently.
+      - ENABLE_RSPAMD=1
+      - ENABLE_OPENDKIM=0
+      - ENABLE_OPENDMARC=0
+      - ENABLE_POLICYD_SPF=0
+      - ENABLE_AMAVIS=0
+      - ENABLE_SPAMASSASSIN=0
+      - ENABLE_CLAMAV=0            # ~1.5 GB RAM; see README "optional hardening"
+      - ENABLE_FAIL2BAN=1
+      - ENABLE_MANAGESIEVE=1
+      - SPOOF_PROTECTION=1
+      - PERMIT_DOCKER=none
+      - ENABLE_UPDATE_CHECK=1
+      - LOG_LEVEL=info
+      # IPv4 only for mail, even though the host has IPv6 and the web stack
+      # uses it. Gmail rejects IPv6 deliveries from an address with no PTR
+      # record, and Hetzner sets rDNS per address — the /64 does not inherit
+      # it. Flip to "all" only after an AAAA for mail. and its PTR both exist.
+      - POSTFIX_INET_PROTOCOLS=ipv4
+      - DOVECOT_INET_PROTOCOLS=ipv4
+      # Optional outbound relay, used only while Hetzner has outbound port 25
+      # blocked on this project. Empty RELAY_HOST = deliver direct.
+      - RELAY_HOST=${RELAY_HOST:-}
+      - RELAY_PORT=${RELAY_PORT:-587}
+      - RELAY_USER=${RELAY_USER:-}
+      - RELAY_PASSWORD=${RELAY_PASSWORD:-}
+    cap_add:
+      - NET_ADMIN   # fail2ban manipulates nftables rules
+    healthcheck:
+      test: "ss --listening --tcp | grep -P 'LISTEN.+:smtp' || exit 1"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 90s
+    depends_on:
+      - certbot
+    networks:
+      - mail
+
+  roundcube:
+    # 1.7.4 is the current stable patch, confirmed present on Docker Hub
+    # before pinning. Note that "1.7-apache" is NOT a published tag: the
+    # series tag is "1.7.x-apache". Pin the patch, not the series, so an
+    # upstream release never lands unannounced on a running mail system.
+    image: roundcube/roundcubemail:1.7.4-apache
+    container_name: robustuavs-webmail
+    restart: always
+    # Loopback only. Host Caddy terminates TLS for webmail.robustuavs.ai and
+    # proxies here; binding 0.0.0.0 would expose plaintext Roundcube on the
+    # public IPv4 on port 8081, outside both Caddy and the Cloudflare proxy.
+    ports:
+      - "127.0.0.1:8081:80"
+    volumes:
+      - roundcube-db:/var/roundcube/db
+      - roundcube-config:/var/roundcube/config
+    environment:
+      - ROUNDCUBEMAIL_DB_TYPE=sqlite
+      # Connect over the public hostname, not the container name: the
+      # Let's Encrypt certificate is issued for mail.robustuavs.ai, and
+      # connecting as "mailserver" would fail hostname verification.
+      - ROUNDCUBEMAIL_DEFAULT_HOST=ssl://${MAIL_HOSTNAME}
+      - ROUNDCUBEMAIL_DEFAULT_PORT=993
+      - ROUNDCUBEMAIL_SMTP_SERVER=tls://${MAIL_HOSTNAME}
+      - ROUNDCUBEMAIL_SMTP_PORT=587
+      - ROUNDCUBEMAIL_SKIN=elastic
+      # No `password` plugin. Every driver it ships writes to an account
+      # store it can reach, and docker-mailserver keeps accounts in another
+      # container with no password-change API. Enabling it yields a Settings
+      # tab that fails on submit, which users read as "mail is broken"
+      # rather than "unsupported here". Resets go through mailuser.sh.
+      - ROUNDCUBEMAIL_PLUGINS=archive,zipdownload,managesieve
+      - ROUNDCUBEMAIL_UPLOAD_MAX_FILESIZE=25M
+      - ROUNDCUBEMAIL_REQUEST_PATH=/
+    depends_on:
+      - mailserver
+    networks:
+      - mail
+
+networks:
+  mail:
+    driver: bridge
+
+volumes:
+  letsencrypt:
+  dms-data:
+  dms-state:
+  dms-logs:
+  roundcube-db:
+  roundcube-config:
