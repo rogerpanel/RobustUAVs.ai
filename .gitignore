@@ -30,3 +30,9 @@ platform/.env
 paper/*.bbl
 paper/*.blg
 paper/*.out
+
+# mail — secrets and live state, never commit
+deploy/mail/.env.mail
+deploy/mail/cloudflare.ini
+deploy/mail/config/
+deploy/mail/*.bak

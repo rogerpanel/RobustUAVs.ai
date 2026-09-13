@@ -193,6 +193,15 @@ and stays publicly associated with the domain **forever**, even after you turn
 the proxy on — which quietly defeats the point of the Cloudflare-IPs-only
 firewall rule. Publishing grey "just while building" is a one-way door.
 
+> **Self-hosted mail breaks this rule, unavoidably.** `mail.robustuavs.ai`
+> is the MX target and must be grey: Cloudflare's proxy carries HTTP(S)
+> only, so an orange cloud there has nothing to forward SMTP to and mail
+> silently stops arriving. Installing `deploy/mail/` therefore publishes
+> this server's origin IPv4 permanently, with everything the paragraph
+> above says that implies. The trade, and the second-VPS alternative that
+> avoids it, are set out in `deploy/mail/README.md` → *What the grey
+> record costs*. Decide before the record is saved.
+
 The only thing you give up is direct `curl` diagnostics, and the SSH tunnel
 covers that without exposing anything:
 
@@ -764,3 +773,48 @@ ssh robustuavs 'cd /srv/robustuavs/repo && git reset --hard <previous-sha> && ./
 
 `deploy.sh` does `git reset --hard origin/$BRANCH` at the start, so pin the
 branch or it will fast-forward back to the tip on the next run.
+
+---
+
+## Mail: roger@, admin@, support@, noreply@
+
+Self-hosted on the same box, adapted from the RobustIDPS package:
+docker-mailserver (Postfix + Dovecot + Rspamd) with Roundcube webmail
+proxied by the host Caddy that already serves the platform.
+
+Full guide, DNS table, and the operator scripts: **`deploy/mail/README.md`**.
+
+```bash
+ssh deploy@<server-ipv4>
+cd /srv/robustuavs/repo
+
+cp deploy/mail/.env.mail.example deploy/mail/.env.mail
+sudo nano deploy/mail/.env.mail                     # relay creds only if outbound 25 is blocked
+
+sudo bash deploy/mail/setup-mail.sh --set-token     # paste the Cloudflare token, hidden input
+sudo bash deploy/mail/setup-mail.sh --check         # verify credentials and images, change nothing
+sudo bash deploy/mail/setup-mail.sh                 # install; prints the DNS records and passwords
+sudo bash deploy/mail/install-caddy-vhost.sh        # add webmail.robustuavs.ai to /etc/caddy/Caddyfile
+
+# add the printed DNS records in Cloudflare, wait ~5 min, then
+bash deploy/mail/check-mail.sh
+```
+
+Three things this runbook's web deployment does **not** already cover, and
+which mail needs:
+
+1. **Reverse DNS.** Hetzner → server → Networking → Reverse DNS, set to
+   `mail.robustuavs.ai`. Nothing in the repo can set this and no amount of
+   correct SPF/DKIM/DMARC compensates for its absence.
+2. **Outbound port 25.** Blocked by default on new Hetzner projects; ask
+   support to lift it. `setup-mail.sh` tests it and reports, rather than
+   assuming — a grant on another project does not carry over.
+3. **Firewall ports.** `setup-mail.sh` opens `25, 465, 587, 993/tcp` in
+   `ufw`. If a **Hetzner Cloud Firewall** is attached (§1 recommends one),
+   add the same four there by hand — it is a separate layer that no script
+   on the server can reach. They must be open to `0.0.0.0/0`; unlike
+   80/443 they cannot be restricted to Cloudflare ranges, because SMTP
+   arrives directly from every sending mail server on the internet.
+
+The mail stack is deliberately independent of `deploy.sh`. A platform
+redeploy never restarts it, and a mail restart never touches the API.
