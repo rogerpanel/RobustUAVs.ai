@@ -1,0 +1,357 @@
+% =====================================================================
+%  PAPER V -- predictive safety filtering for LLM-driven UAV agents
+%  under adaptive attack. Target: IEEE SaTML (alt: USENIX Security).
+%
+%  Standalone. Set as Overleaf's main document; pdfLaTeX + BibTeX.
+%    pdflatex PaperV_safety_filter_llm_agent && bibtex PaperV_safety_filter_llm_agent \
+%      && pdflatex PaperV_safety_filter_llm_agent && pdflatex PaperV_safety_filter_llm_agent
+% =====================================================================
+\documentclass[11pt,a4paper]{article}
+\input{proposal_preamble}
+\usepackage{array}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\safe}{\mathcal S}
+\newcommand{\adm}{\mathcal A_{\mathrm{adm}}}
+\newcommand{\prov}[1]{\textsc{\small[#1]}}
+
+\begin{document}
+
+\proposalheader
+  {Paper V --- The Untrusted Planner}
+  {Keep Flying Whatever the Model Says: Predictive Safety Filtering for
+   Language-Model UAV Agents under Adaptive Attack}
+  {Research proposal from the RobustUAVs.ai programme $\cdot$
+   Roger Nick Anaedevha $\cdot$ 2026-10-01\\
+   Target: IEEE SaTML (fallback: USENIX Security) $\cdot$ builds on the parent
+   manuscript~\cite{parentpaper} and Paper~III}
+
+\begin{abstract}
+\noindent
+Language-model agents are beginning to sit in the high-level loop of autonomous
+aircraft: translating an operator's instruction into waypoints, summarising
+telemetry, choosing a task, proposing a mode change. That places an attackable,
+hard-to-secure component upstream of a safety-critical controller, and the
+natural question --- can we stop the language model from being fooled? --- has no
+general answer. We propose to stop asking it. A \emph{predictive safety filter}
+sits between the agent's proposed action and the actuators: it admits the action
+only if the certified navigation model (the parent manuscript's) has a
+recursively feasible trajectory keeping the aircraft inside its safe envelope
+over the planning horizon, and otherwise overrides to a verified fallback. The
+security claim is then independent of the language model's internals: for
+\emph{any} sequence of agent outputs, adversarial or not, the physical state
+stays in the certified safe set. An adaptive attacker who fully controls the
+agent's inputs is thereby downgraded from causing a crash to causing a
+\emph{stall} --- the filter converts a safety attack into a liveness attack, and
+we quantify the residual it cannot prevent. We make three contributions: the
+safety-invariance theorem for an untrusted planner; an adaptive-attack
+evaluation protocol, following the discipline that a defence must be tested
+against an adversary who knows the filter; and the measured trade between the
+filter's conservatism and the mission-denial rate an attacker can force, run on
+the RobustUAVs.ai simulator with real language-model agents in the loop.
+\end{abstract}
+
+% =====================================================================
+\section{The problem, and the move}
+% =====================================================================
+Autonomy stacks increasingly place a language-model agent in the planning
+loop~\cite{openai2024agents}: it reads a textual description of the situation ---
+operator messages, telemetry summaries, a map, peer reports --- and emits a
+high-level action. That channel is attackable. Indirect prompt
+injection~\cite{greshake2023injection} lets an adversary who controls any text
+the agent ingests --- a spoofed operator note, a tampered telemetry string, a
+poisoned map annotation --- steer the agent's output. Securing the language
+model against this \emph{in general} is, on current evidence, not something
+anyone can promise.
+
+The move this paper makes is to stop trying. Borrowing the logic of the Simplex
+architecture~\cite{seto1998simplex,sha2001simplex} and the predictive safety
+filter~\cite{wabersich2021psf,hewing2020mpclearning}, we treat the agent as an
+\emph{untrusted high-level planner} and interpose a filter that trusts only the
+certified navigation model:
+
+\begin{quote}\itshape
+The language model may propose anything. The filter executes the proposal only
+when a certified safe trajectory exists that begins with it; otherwise it
+executes a verified fallback. Physical safety then holds for every possible
+agent output, so whether the attacker fooled the model becomes irrelevant to
+whether the aircraft stays in its envelope.
+\end{quote}
+
+\noindent
+This is the same object as Paper~III's projection layer, with two changes that
+make it a security paper rather than a control one: the source of the proposed
+action is an \emph{adversarially controllable} language model rather than a
+trained policy, and the evaluation is against an \emph{adaptive} attacker who
+knows the filter.
+
+% =====================================================================
+\section{Where MPC and the language model meet}
+% =====================================================================
+The filter is a model-predictive control
+problem~\cite{rawlings2017mpc}. Let the navigation state evolve as
+$\dot x=F(x,u)$ ($F$ Lipschitz with constant $L$ over the operating region, as
+in the parent manuscript), let $\safe$ be the mission's safe set (corridor
+margin $m$, certified radius $R_i(t)\ge R_{\min}$), and let the language model
+propose a high-level action $a_t^{\mathrm{LLM}}$ (a waypoint, a task, a mode).
+
+\begin{definition}[Predictive safety filter]
+Given $a_t^{\mathrm{LLM}}$, solve
+\[
+a_t^{\star}=\arg\min_{a}\ \|a-a_t^{\mathrm{LLM}}\|
+\]
+subject to: a certified trajectory from $x_t$ under $a$ stays in $\safe$ over the
+horizon $H$ and ends in a control-invariant terminal set. Execute $a_t^{\star}$
+if the problem is feasible; else execute the verified fallback (loiter, or
+return-to-launch).
+\end{definition}
+
+\noindent
+The admissible set $\adm(x_t)$ is exactly the certified set the parent paper's
+budget produces --- the filter is where the certificate is \emph{used}, not just
+reported. When $a_t^{\mathrm{LLM}}\in\adm$, the agent's action passes untouched;
+the filter is transparent in the benign case and binds only when the proposal
+would leave the envelope.
+
+% =====================================================================
+\section{Three results}
+% =====================================================================
+\subsection{Safety is invariant to the planner (the headline)}
+\begin{proposition}[Safety under an arbitrary planner]
+\label{pr:safety}
+If the terminal set is control-invariant and the fallback is recursively
+feasible from it, then under the filter the physical state satisfies
+$x_t\in\safe$ for all $t$, for \emph{every} sequence
+$\{a_t^{\mathrm{LLM}}\}$ --- including one chosen by an adversary with full
+control of the agent's inputs and full knowledge of the filter.
+\end{proposition}
+\noindent
+This is recursive feasibility of the predictive safety
+filter~\cite{wabersich2021psf} carried to an adversarial planner. The content is
+not the MPC machinery, which is standard, but the security reading: the
+attacker's control of the language model does not appear in the conclusion. The
+safety guarantee has been made \emph{independent of the component that cannot be
+secured}.
+
+\subsection{The attack surface collapses to liveness}
+\begin{proposition}[Safety attack $\to$ liveness attack]
+\label{pr:liveness}
+Under the filter, an adaptive adversary controlling the agent's inputs cannot
+cause a safety violation (Prop.~\ref{pr:safety}); its maximal effect is to force
+the filter to override, i.e.\ to induce the fallback. Its power is therefore
+bounded by the \emph{induced fallback rate} --- mission denial --- and never
+extends to envelope violation.
+\end{proposition}
+\noindent
+This reframing is the paper's point. ``Can the attacker crash the drone?'' (no,
+under the filter) is replaced by ``how often can the attacker stall the
+mission?'' (a measurable rate), which is both the right security question and one
+the platform can answer.
+
+\subsection{The language attack and the physical attack share one budget}
+\begin{proposition}[Composition with the perturbation budget]
+\label{pr:compose}
+A concurrent navigation-degradation attack (jamming, spoofing) shrinks
+$\adm(x_t)$ through the same budget $\delta_{\mathrm{tot}}$ of
+Paper~IV. The induced fallback rate is therefore monotone in
+$\delta_{\mathrm{tot}}$: the language-channel attack and the physical-channel
+attack compose, and the filter's conservatism is the common currency.
+\end{proposition}
+\noindent
+This is the bridge to the rest of the programme: Paper~V's attacker and
+Paper~IV's attacker draw on one certified budget, exactly as Paper~I's
+credit/debit did.
+
+\begin{honestly}
+Proposition~\ref{pr:safety} guarantees \emph{safety}, not \emph{liveness}. The
+filter keeps the aircraft in its envelope; it does not make the mission succeed,
+and a sufficiently aggressive attacker can hold the system in fallback
+indefinitely (persistent denial). That is a real limitation and the honest
+headline is the pair: \emph{safety is unconditional under the stated model,
+liveness is not}. The paper must report the denial rate as prominently as the
+zero-violation result, or it oversells.
+\end{honestly}
+
+% =====================================================================
+\section{Threat model}
+% =====================================================================
+\begin{itemize}
+\item \textbf{Adversary capability.} Full control of any text the agent ingests
+  (indirect prompt injection~\cite{greshake2023injection}); full knowledge of
+  the filter, the certified model, and the fallback. Optionally, a concurrent
+  bounded navigation-degradation attack (Paper~IV's budget).
+\item \textbf{Adversary goal, in order of severity.} (i) A physical safety
+  violation --- leave the corridor, breach separation. (ii) Failing that,
+  mission denial --- maximise the fallback rate. (iii) A \emph{stealthy} denial
+  that the operator does not attribute to an attack.
+\item \textbf{Trust boundary.} The language model is untrusted. The certified
+  navigation model, the filter solver, and the fallback are trusted (and are
+  small enough to be verified, which the language model is not). The paper is
+  explicit that it secures the \emph{system}, not the model.
+\item \textbf{Out of scope.} Attacks on the trusted base (the filter solver, the
+  certified model itself) --- these are the assumptions, stated as assumptions.
+\end{itemize}
+
+% =====================================================================
+\section{Adaptive evaluation (the methodological core)}
+% =====================================================================
+A safety filter evaluated against a \emph{fixed} attack proves nothing: the
+lesson of a decade of adversarial-ML
+evaluation~\cite{carlini2017towards,tramer2020adaptive} is that a defence must
+be tested against an adversary adaptive to it. We carry that discipline to the
+physical setting.
+
+\begin{description}[leftmargin=2.6em,style=nextline]
+\item[RQ1] \textbf{Does the filter hold the zero-violation guarantee empirically,
+  under an adaptive adversary?} Expected: zero physical violations, matching
+  Prop.~\ref{pr:safety}; any violation is a bug in the instantiation (an
+  infeasible solve executed, a model-mismatch term exceeded) and is treated as
+  one.
+\item[RQ2] \textbf{What denial rate can an adaptive adversary force}, as a
+  function of its control over the input channel and its knowledge of the
+  filter?
+\item[RQ3] \textbf{How does denial scale when the language attack composes with
+  a navigation-degradation attack} (Prop.~\ref{pr:compose})?
+\item[RQ4] \textbf{What does the filter cost when there is no attack?} The
+  benign-case intervention rate and mission-time overhead --- the conservatism
+  price of the guarantee.
+\end{description}
+
+\paragraph{Adaptivity, concretely and defensively.} The adaptive adversary is
+constructed to probe the filter's \emph{boundary} --- the inputs most likely to
+drive the agent toward the edge of $\adm$ --- because that is what a sound
+evaluation of the \emph{defence} requires. The deliverable is the protocol and
+the measured denial curve, not an attack toolkit: following the parent
+manuscript's handling of its evasion analysis, the mechanism is described at the
+level needed to reproduce the evaluation, the result \emph{bounds} what the
+attacker achieves, and the practical output is a filter-configuration procedure.
+
+% =====================================================================
+\section{What is in hand, what is new}
+% =====================================================================
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}P{0.42\linewidth}Y@{}}
+\toprule
+\textbf{In hand} & \textbf{To build} \\
+\midrule
+Certificate engine producing $\adm$ (parent; $\gamma=1.625$\,m/s supremum) &
+the MPC safety-filter solver over $\adm$ with a verified fallback \\
+Fleet simulator (\code{MAX\_FLEET}=12, $T=70$\,s, $\kappa=0.25$) and ten attack
+classes & a language-model agent in the planning loop (the platform already
+integrates anthropic / openai / gemini / deepseek) \\
+Paper~IV's perturbation budget $\delta_{\mathrm{tot}}$ &
+the adaptive-attack protocol and the denial-rate measurement \\
+Paper~III's projection/feasibility machinery & its lift from discrete allocation
+to continuous MPC under an untrusted planner \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =====================================================================
+\section{Experimental plan on RobustUAVs.ai}
+% =====================================================================
+\begin{enumerate}
+\item \textbf{Agent in the loop.} Put a language-model planner (the platform's
+  existing providers) on the mission-planning task of the fleet simulator:
+  it proposes waypoints, task assignments and mode changes from a textual
+  situation description.
+\item \textbf{Filter.} Implement the predictive safety filter using the
+  certificate engine for $\adm$ and a loiter/RTL fallback; log every
+  intervention.
+\item \textbf{Adaptive attack.} An adversary controls the textual channel feeding
+  the agent and adapts to the filter. Measure physical violations (expect zero),
+  the induced fallback rate, and stealthy-denial success.
+\item \textbf{Composition.} Repeat under a concurrent navigation-degradation
+  attack from Paper~IV's budget, to trace the denial surface over
+  $\delta_{\mathrm{tot}}$ (Prop.~\ref{pr:compose}).
+\item \textbf{Benign cost.} Intervention rate and mission-time overhead with no
+  attacker (RQ4).
+\item \textbf{Platform page.} A \emph{Safety Filter} page showing the agent's
+  proposal, the filtered action, the admissible set, and the live fallback rate
+  under attack --- reusing the existing export and provenance machinery.
+\end{enumerate}
+
+\begin{honestly}
+Model-plant mismatch is the quiet assumption. Prop.~\ref{pr:safety} holds for
+the \emph{certified model}; a gap between it and the simulated dynamics must be
+carried as an explicit robustness margin in the filter, and on real hardware it
+would have to be identified, not assumed. The simulation study can state the
+margin it uses; it cannot claim hardware safety, and must not.
+\end{honestly}
+
+% =====================================================================
+\section{Why this venue, and why it is distinct}
+% =====================================================================
+\textbf{IEEE SaTML} is the fit: secure and trustworthy machine learning, with
+language-model agent security and adaptive-attack evaluation squarely in scope,
+and a control-theoretic safety mechanism as the defence. USENIX Security is the
+fallback if the systems/benchmark side dominates.
+
+\noindent Distinct from the others in object:
+\begin{itemize}
+\item \textbf{Paper~III} filters the output of a \emph{trusted} RL policy for
+  feasibility; Paper~V filters the output of an \emph{untrusted} language model
+  for safety, and is evaluated adversarially.
+\item \textbf{Paper~IV} attacks the \emph{sensing} channel; Paper~V attacks the
+  \emph{planning} channel, and Prop.~\ref{pr:compose} shows they share a budget.
+\item \textbf{Paper~II} would classify Paper~V as a runtime-assurance lift ---
+  a per-operation guarantee discharged by a monitor rather than an offline
+  certificate --- which is exactly the bridge Paper~II names for objectives no
+  static certificate can reach.
+\end{itemize}
+
+% =====================================================================
+\section{Risks}
+% =====================================================================
+\begin{itemize}
+\item \textbf{``The guarantee is just MPC recursive feasibility.''} True, and
+  stated: the novelty is the security reading (safety independent of an
+  unsecurable component), the adaptive-attack evaluation, and the composition
+  with the sensing budget --- not the MPC theorem.
+\item \textbf{Denial might be trivially easy.} If any adaptive attack forces
+  near-100\% fallback, the filter guarantees safety but no useful liveness, and
+  the honest finding becomes ``safety filtering is necessary but not sufficient;
+  the language channel needs its own defence''. That is still a result, and it
+  motivates the next paper.
+\item \textbf{Adaptive-attack completeness.} We cannot prove we found the
+  strongest attack; we report the protocol and the achieved denial, per the
+  discipline~\cite{tramer2020adaptive}, and never claim a worst-case denial
+  bound we did not prove.
+\item \textbf{Dual-use.} The adaptive-attack construction is dual-use. Following
+  the parent manuscript, it is presented with its mitigation (the filter) in the
+  same work, bounds what the attacker achieves, targets a defensive artifact, and
+  is evaluated in simulation against the project's own defensive platform. An
+  ethics section is mandatory.
+\end{itemize}
+
+% =====================================================================
+\section{Page plan and timeline}
+% =====================================================================
+\begin{center}\small
+\begin{tabular}{@{}lr@{\qquad}lr@{}}
+\toprule
+\textbf{Section} & \textbf{pp} & \textbf{Section} & \textbf{pp} \\
+\midrule
+Introduction                 & 1.0  & Adaptive evaluation + results & 2.5 \\
+Threat model                 & 1.0  & Composition with sensing      & 1.0 \\
+Filter and MPC formulation   & 1.5  & Discussion, ethics, limits    & 1.0 \\
+Safety-invariance theory     & 1.75 & Related work, conclusion      & 1.0 \\
+\midrule
+\multicolumn{3}{@{}l}{\textbf{Body (SaTML / USENIX range)}} & \textbf{10.75} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent
+About five months. The certificate engine, the fleet simulator and the
+language-model integration already exist; the new engineering is the MPC filter,
+the agent-in-the-loop harness and the adaptive-attack protocol. The safety
+theory is standard MPC recursive feasibility, so it can be written early; the
+risk and the interest are both empirical --- how much liveness the filter costs,
+and how much an adaptive attacker can take away.
+
+\small
+\bibliographystyle{plain}
+\bibliography{proposals}
+
+\end{document}
