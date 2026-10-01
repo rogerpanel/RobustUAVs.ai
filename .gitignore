@@ -36,3 +36,8 @@ deploy/mail/.env.mail
 deploy/mail/cloudflare.ini
 deploy/mail/config/
 deploy/mail/*.bak
+paper/proposals/*.aux
+paper/proposals/*.bbl
+paper/proposals/*.blg
+paper/proposals/*.log
+paper/proposals/*.out

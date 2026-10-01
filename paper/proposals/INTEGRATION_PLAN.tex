@@ -1,0 +1,328 @@
+% =====================================================================
+%  INTEGRATION PLAN -- three proposals into two IEEE S&P papers
+%
+%  Standalone. Set as Overleaf's main document; pdfLaTeX + BibTeX.
+%    pdflatex INTEGRATION_PLAN && bibtex INTEGRATION_PLAN \
+%      && pdflatex INTEGRATION_PLAN && pdflatex INTEGRATION_PLAN
+% =====================================================================
+\documentclass[11pt,a4paper]{article}
+\input{proposal_preamble}
+\usepackage{array}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\core}{\textcolor{autocol}{\textbf{I-core}}}
+\newcommand{\appx}{\textcolor{netcol}{\textbf{I-appx}}}
+\newcommand{\sok}{\textcolor{bridgecol}{\textbf{II}}}
+\newcommand{\drop}{\textbf{drop}}
+
+\begin{document}
+
+\proposalheader
+  {Integration Plan}
+  {Three Follow-on Proposals, Two IEEE S\&P Papers}
+  {RobustUAVs.ai research programme $\cdot$ Roger Nick Anaedevha $\cdot$
+   2026-10-01\\
+   Supersedes the standalone framing of P1, P2 and P3; those files are kept
+   unchanged as the record of the original proposals.}
+
+% =====================================================================
+\section{The decision}
+% =====================================================================
+\textbf{Two papers, not one and not three.}
+
+\begin{itemize}
+\item \textbf{Paper I} (S\&P main track) \textbf{merges P1 and P2}.
+  \emph{What Authenticity Costs in Metres: A Certified Budget for Cryptography
+  and Sensing in UAV Navigation.}
+\item \textbf{Paper II} (S\&P \emph{Systematization of Knowledge} track)
+  \textbf{is P3, broadened}.
+  \emph{SoK: The Quantifier Gap Between Certified Robustness and Airworthiness
+  Assurance.}
+\end{itemize}
+
+\noindent
+The reason is a single observation that only becomes visible when P1 and P2 are
+read side by side. The parent manuscript's certificate is a budget,
+\begin{equation}
+\label{eq:budget}
+\rho \;=\; \Delta \cdot \gamma \cdot e^{L T_c} \;\le\; m ,
+\end{equation}
+and P1 and P2 each attack one of its factors. P1 says $\gamma$ depends on which
+navigation source is trusted, and that \emph{authenticating} a source is what
+makes it trustworthy. P2 says $\Delta$ does not care why an input is stale, and
+that \emph{authenticating} a message makes it stale. The same operation
+therefore appears on both sides of Eq.~\eqref{eq:budget} with opposite signs:
+authentication is simultaneously a credit (lower $\gamma$) and a debit (higher
+$\Delta$). Neither proposal can say which wins. Together they can, and the
+answer is the paper.
+
+% =====================================================================
+\section{Why not three papers}
+% =====================================================================
+Each of P1 and P2 is weaker alone than its share of the merge, and each says so
+in its own risk section.
+
+\begin{itemize}
+\item \textbf{P1 alone is a measurement paper.} Its central claim is described
+  in its own text as ``arithmetic rather than new theory''; its contribution is
+  the per-modality $\gamma$. That is a solid journal contribution
+  (\emph{TIFS}, \emph{TCPS}, which is where P1 targeted it) and a weak S\&P one.
+\item \textbf{P2 alone risks being read as post-quantum benchmarking.} Its risk
+  section names exactly this: ``reviewers may read it as post-quantum
+  benchmarking''. Its mitigation, ``lead with the budget result'', is only
+  available if there is something for the budget to trade \emph{against}. P1
+  supplies it.
+\item \textbf{Merged, there is a falsifiable result neither has}: a crossover
+  inequality deciding when authentication increases the certified mission floor
+  and when it decreases it (Paper~I, Proposition~1). That is a finding about
+  security engineering, not a measurement of a component.
+\end{itemize}
+
+% =====================================================================
+\section{Why not one paper}
+% =====================================================================
+P3 does not merge, and forcing it in would damage both halves.
+
+\begin{itemize}
+\item \textbf{Different contribution type.} P1 and P2 produce measurements, a
+  theorem corollary and an attack. P3 produces a mapping, a gap analysis and a
+  generator. S\&P main-track reviewers judge the first kind; the second kind is
+  what the SoK track exists for.
+\item \textbf{Different audience.} P3's own framing: it ``changes who the
+  result is \emph{for}'', from a security audience to a certification audience.
+  A paper cannot change its audience halfway through.
+\item \textbf{No shared measurement.} P3 reuses the parent's committed results
+  and needs nothing from P1 or P2. Bundling it would make Paper~II's schedule
+  hostage to Paper~I's hardware campaign for no gain.
+\item \textbf{Page budget.} Paper~I already carries two measurement campaigns in
+  13 pages. P3's mapping tables alone would take three.
+\end{itemize}
+
+\begin{honestly}
+P3 as written is not yet an S\&P SoK. It maps \emph{one} certificate (ours) onto
+standards. An SoK must systematise a \emph{literature}. Paper~II therefore
+broadens P3 from ``our certificate as evidence'' to ``every class of certified
+guarantee for learned autonomy, organised by what it quantifies over'' --- see
+Paper~II, \S2. Without that broadening it should go to DASC, which P3 already
+named as a venue, rather than to S\&P.
+\end{honestly}
+
+% =====================================================================
+\section{Element-by-element categorisation}
+% =====================================================================
+Every element of the three proposals, and where it goes. Legend:
+\core{} = Paper~I main body;
+\appx{} = Paper~I appendix;
+\sok{} = Paper~II;
+\drop{} = not carried forward.
+
+\subsection{From P1 (certified PNT substitution)}
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}P{0.36\linewidth}P{0.09\linewidth}Y@{}}
+\toprule
+\textbf{Element} & \textbf{Goes to} & \textbf{Why} \\
+\midrule
+Claim: $\gamma$ is a property of the navigation source, not the attack &
+\core & The ``credit'' side of the budget. Without it P2 has nothing to trade
+against. \\
+Claim: authentication discharges the re-anchoring hypothesis & \core &
+Splits Paper~I's analysis into two regimes (delay vs.\ persistent denial); in
+the denial regime it is what makes \emph{any} certificate non-vacuous. \\
+Claim: the certificate induces a sensor-selection rule & \core{} (rule)
+\appx{} (optimality proof) & The rule is short and is the operator-facing
+output; its brute-force verification is evidence, its proof is length. \\
+$\gamma$ for GNSS & \core & Done. \textbf{Use $1.625$\,m/s} (campaign supremum),
+not P1's $1.195$/$1.365$, which predate the interface campaign. \\
+$\gamma$ inertial-only & \core & Data already on disk; about a week. Do first. \\
+$\gamma$ visual--inertial & \core & Public VIO datasets; second measured
+modality beyond GNSS. \\
+$\gamma$ LEO signals of opportunity & \appx & No receiver logs. A
+\code{physics\_model} value from published RMSE is honest only if tagged and
+kept out of the headline. \\
+Fusion model $\gamma_{\mathrm{eff}}=\min_s\gamma_s$ & \core & Conservative and
+unglamorous, as P1 asked. Filter-weighted variant to the appendix. \\
+Denial-duration sweep & \core & Provides the regime-(ii) evidence. \\
+Schema change (\code{pnt\_source}, \code{pnt\_authenticated}) & \core{} (one
+paragraph) & Additive, keeps every existing record valid. \\
+PNT Source Selector page & platform & Merged into one Paper~I page; see \S7. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{From P2 (the security tax)}
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}P{0.36\linewidth}P{0.09\linewidth}Y@{}}
+\toprule
+\textbf{Element} & \textbf{Goes to} & \textbf{Why} \\
+\midrule
+Budget $\rho=(\Delta+\Delta_{\mathrm{auth}})\gamma e^{LT_c}\le m$ & \core &
+Becomes the merged budget, with $\gamma\to\gamma_{\mathrm{eff}}(S,a)$. \\
+Prop.: detector tightness buys cryptographic headroom & \core &
+Kept, and sharpened: Paper~I shows it holds for \emph{affordability} while the
+opposite holds for \emph{benefit} (Paper~I, Proposition~2). \\
+Prop.: a margin below which nothing certifies & \core{} (already partly shown) &
+At the parent's constants, $m=2$\,m certifies nothing \emph{even with zero
+authentication cost} (the budget is $-0.12$\,s). The proposition is partly a
+consequence of existing results; the new part is naming the margin per
+transport. \\
+Prop.: ranking by size is the wrong ranking & \core & The ``cliff'' result:
+fragmentation and bus occupancy, not per-message latency, bind. \\
+Measure sign/verify latency on MCU and companion board & \core & The
+measurement that keeps the result from restating its inputs. \\
+DroneCAN fragmentation model & \core & Validated against benign HCRL timing. \\
+Induced-verification attack & \core & The S\&P hook. Must be positioned
+against TESLA-era prior art on signature-flooding DoS~\cite{perrig2000tesla}:
+the mechanism is known, the mission-level bound is new. \\
+TESLA-style delayed authentication as a scheme & \core{} (new) & Not in P2.
+It is a scheme whose $\Delta_{\mathrm{auth}}$ is an explicit, tunable
+parameter --- the cleanest possible test of the budget. \\
+Candidate scheme set pinned to FIPS 203/204/205 & \core & As P2 said: lets a
+future scheme be placed without re-running. \\
+Crypto Budget page & platform & Merged into one Paper~I page; see \S7. \\
+\code{pq\_swarm\_kyber} (MDPI) & \drop & Key agreement, not per-message
+authentication; not load-bearing for Paper~I, and the supervisor's guidance is
+to avoid MDPI unless core. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{From P3 (certificate as compliance artifact)}
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}P{0.36\linewidth}P{0.09\linewidth}Y@{}}
+\toprule
+\textbf{Element} & \textbf{Goes to} & \textbf{Why} \\
+\midrule
+``Certified radii are per-input; assurance objectives are per-operation'' &
+\sok{} (central axis) & This sentence, buried in P3's honesty box, is the
+organising idea of the SoK. Promoted to the title. \\
+Vocabulary mapping (radius, tube, operating region $\leftrightarrow$ ODD,
+contingency volume) & \sok & One row per certificate class, not just ours. \\
+Discharge / evidence / untouched gap analysis & \sok & Applied to every
+surveyed guarantee class, not only the four in the parent paper. \\
+Simplex runtime assurance as the bridge & \sok & Developed as P3 asked. \\
+SORA Annex A evidence generator & \sok{} (artifact) & What makes the SoK more
+than a survey. \\
+Compliance Pack export & platform & One export action. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =====================================================================
+\section{Categorisation by contribution type}
+% =====================================================================
+The same elements, grouped by the kind of claim a reviewer will judge them as.
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}P{0.17\linewidth}YY@{}}
+\toprule
+\textbf{Type} & \textbf{Paper I} & \textbf{Paper II} \\
+\midrule
+Theory & Merged budget; crossover inequality; two-regime split
+(delay vs.\ denial); selection rule &
+Quantifier taxonomy (per-input, per-trajectory, per-mission, per-population) \\
+Measurement & $\gamma$ for GNSS, inertial, VIO; $\Delta_{\mathrm{auth}}$ for
+HMAC, Ed25519, ML-DSA, SLH-DSA, TESLA; bus occupancy & none (reuses
+committed results) \\
+Attack & Induced verification, with bound and mitigation & none \\
+Systematisation & --- & Literature of certified guarantees for learned
+autonomy, mapped onto SORA / ED-324 / EASA learning assurance \\
+Artifact & Budget calculator, crossover map, selection rule & SORA Annex A
+evidence generator \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =====================================================================
+\section{Which of the parent's limitations each paper closes}
+% =====================================================================
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}P{0.36\linewidth}P{0.13\linewidth}P{0.13\linewidth}Y@{}}
+\toprule
+\textbf{Parent limitation} & \textbf{Paper I} & \textbf{Paper II} & \textbf{Note} \\
+\midrule
+Re-anchoring is assumed & \textbf{closes} & --- & Authentication makes the
+hypothesis satisfiable; denial regime analysed explicitly. \\
+$\gamma$ calibrated on one platform, one regime & \textbf{partly} & --- &
+Adds modalities; still \emph{not} a cruise campaign. That gap remains
+data-gated (\code{PENDING\_ON\_DATA.md}). \\
+One attack surface (mesh delay) & \textbf{partly} & --- & Adds the bus
+(\code{intra\_bus}) and C2 link (\code{c2\_link}) on the defence side. \\
+Guarantee bounds a population, not a flight & --- & \textbf{reframes} & The
+SoK's central finding is that this is a general property of the field, not a
+weakness of one paper. \\
+Evidence-class imbalance & no & no & Unchanged by either. Say so. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =====================================================================
+\section{Platform integration}
+% =====================================================================
+Three proposed pages collapse to two.
+\begin{itemize}
+\item \textbf{Certified Budget} (Paper~I): replaces both the \emph{PNT Source
+  Selector} and the \emph{Crypto Budget} pages. Choose a sensor suite with
+  authentication states, a transport, a scheme, a message rate and a margin;
+  see the budget, the crossover sign, and the bus occupancy, live. One
+  endpoint, \code{/api/certify/budget}.
+\item \textbf{Compliance Pack} (Paper~II): an export action, unchanged from P3.
+\end{itemize}
+
+% =====================================================================
+\section{Readiness against the S\&P bar}
+% =====================================================================
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}P{0.28\linewidth}YY@{}}
+\toprule
+\textbf{Reviewer will ask} & \textbf{Paper I} & \textbf{Paper II} \\
+\midrule
+Is there a new result, not just a measurement? & Yes: the crossover and the
+cliff. & Yes, if broadened: the quantifier gap as a field-wide finding. \\
+Is the threat model explicit? & Inherited from parent; adds the
+induced-verification adversary. & Not applicable; must state its inclusion
+criteria instead. \\
+Are numbers measured or modelled? & Mixed; every number carries a provenance
+tag. LEO is modelled. & Reuses measured results. \\
+Is there an attack? & Yes, with a bound and a mitigation. & No, and an SoK
+does not need one. \\
+Biggest risk & Hardware access for the MCU benchmarks. & A thin literature
+corpus. Needs a systematic search with stated criteria (\S2 of Paper~II). \\
+Ready to start & Now: inertial $\gamma$ and the budget arithmetic need nothing
+new. & Now: needs no measurement. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =====================================================================
+\section{Sequencing}
+% =====================================================================
+\begin{enumerate}
+\item \textbf{Week 1--2, Paper I:} inertial-only $\gamma$ from the Whelan logs
+  already on disk. This is also the measurement that most strengthens the
+  \emph{parent} manuscript, whose cruise discussion currently asserts this
+  value from an error budget.
+\item \textbf{Week 1--6, Paper II:} systematic literature search; this runs
+  in parallel and depends on nothing.
+\item \textbf{Week 3--10, Paper I:} MCU and companion-board benchmarks; VIO
+  $\gamma$; fragmentation validation against HCRL.
+\item \textbf{Week 8--12, Paper I:} induced-verification attack and mitigation.
+\item \textbf{Submit Paper II first.} It is cheaper and lower-risk, and an SoK
+  that cites the parent establishes the vocabulary Paper~I then uses.
+\end{enumerate}
+
+\begin{honestly}
+Paper I carries the larger risk, because it has two measurement campaigns and
+either can fail. If the MCU benchmarks cannot be run on real flight-controller
+hardware, the fallback is the pinned-ARM measurement P2 already named, tagged as
+such --- and the crossover result survives, because it depends on the
+\emph{ratio} $\Delta_{\mathrm{auth}}/\Delta(\theta)$, which a pinned ARM target
+still bounds. If the $\gamma$ campaign yields only GNSS and inertial, two
+modalities still establish that $\gamma$ is source-dependent. The paper degrades
+gracefully; it does not collapse to P1 or P2 alone.
+\end{honestly}
+
+\small
+\bibliographystyle{plain}
+\bibliography{proposals}
+
+\end{document}

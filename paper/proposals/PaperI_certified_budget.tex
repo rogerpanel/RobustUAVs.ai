@@ -1,0 +1,522 @@
+% =====================================================================
+%  PAPER I -- merged from proposals P1 (certified PNT substitution) and
+%  P2 (the security tax). Target: IEEE S&P, main track.
+%
+%  Standalone. Set as Overleaf's main document; pdfLaTeX + BibTeX.
+%    pdflatex PaperI_certified_budget && bibtex PaperI_certified_budget \
+%      && pdflatex PaperI_certified_budget && pdflatex PaperI_certified_budget
+% =====================================================================
+\documentclass[11pt,a4paper]{article}
+\input{proposal_preamble}
+\usepackage{array}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\Dauth}{\Delta_{\mathrm{auth}}}
+\newcommand{\geff}{\gamma_{\mathrm{eff}}}
+\newcommand{\gu}{\gamma_{\mathrm{u}}}
+\newcommand{\ga}{\gamma_{\mathrm{a}}}
+\newcommand{\tfresh}{\tau_{\mathrm{fresh}}}
+\newcommand{\eclk}{\varepsilon_{\mathrm{clk}}}
+\newcommand{\prov}[1]{\textsc{\small[#1]}}
+
+\begin{document}
+
+\proposalheader
+  {Paper I --- The Certified Budget}
+  {What Authenticity Costs in Metres: A Certified Budget for Cryptography and
+   Sensing in UAV Navigation}
+  {Integrated proposal, merging P1 and P2 $\cdot$ RobustUAVs.ai $\cdot$
+   Roger Nick Anaedevha $\cdot$ 2026-10-01\\
+   Target: IEEE Symposium on Security and Privacy, main track $\cdot$
+   follow-on to the parent manuscript~\cite{parentpaper}}
+
+\begin{abstract}
+\noindent
+A robustness certificate for UAV navigation bounds the position error an
+adversary can induce as the product of a delay it can hide, a rate at which that
+delay becomes position error, and a dynamics factor. We observe that both of the
+first two factors are security-engineering choices, and that a single operation
+--- authentication --- moves them in opposite directions. Authenticating a
+navigation source lets the estimator trust it, which lowers the error rate
+$\gamma$; authenticating a message costs signing, verification and transmission
+time, which raises the delay $\Delta$. The certificate is therefore a budget in
+which cryptography and sensing trade, and it decides the net sign. We derive the
+crossover condition under which authentication increases the certified mission
+floor, show that tightening an intrusion detector makes authentication
+\emph{more affordable but less beneficial}, and predict that the binding cost of
+post-quantum signatures on a flight-controller bus is occupancy, a cliff, rather
+than per-message latency, a slope. We propose to measure $\gamma$ for three
+navigation sources and the authentication cost of five schemes on
+flight-controller-class hardware, to map the crossover across transports, and to
+show that an adversary who floods a bus with invalid signatures turns the defence
+into the delay attack the certificate already bounds.
+\end{abstract}
+
+% =====================================================================
+\section{The thesis}
+% =====================================================================
+The parent manuscript~\cite{parentpaper} certifies a mission-completion floor by
+bounding the worst-case position error
+\begin{equation}
+\label{eq:rho}
+\rho(\theta) \;=\; \Delta(\theta)\cdot\gamma\cdot e^{LT_c}\;\le\; m ,
+\end{equation}
+where $\Delta(\theta)\le H\min(\theta,s)$ is the delay an adversary can hide
+below a detector set at $\theta$ across $H$ hops, $\gamma$ is metres of error per
+second of degraded input, $L$ is the local Lipschitz constant of the navigation
+dynamics, $T_c$ the certification horizon, and $m$ the corridor margin. Two of
+the four inputs are fixed by physics ($L$) and regulation ($m$). The other two
+are not.
+
+\begin{itemize}
+\item $\gamma$ depends on \emph{which navigation source the estimator trusts}.
+  P1 observed that it is a property of the source, not of the attack, and that
+  an authenticated source can be trusted under conditions where an
+  unauthenticated one cannot.
+\item $\Delta$ is indifferent to \emph{why} an input is stale. P2 observed that
+  authentication itself makes inputs stale, by exactly the quantity the theorem
+  already bounds.
+\end{itemize}
+
+\noindent
+Read together: \textbf{authentication is both a credit and a debit against one
+certified budget.} It buys a lower $\gamma$ and pays for it in $\Delta$. Neither
+proposal alone could ask which effect wins. This paper asks it, answers it with
+a closed-form condition, and measures where real transports and schemes fall.
+
+% =====================================================================
+\section{Threat model: what authentication actually buys}
+% =====================================================================
+We inherit the parent's adversary --- a compromised mesh relay that forwards
+every message late, and a GNSS jammer or spoofer --- and must be precise about
+what authentication does against each, because the obvious answer is wrong.
+
+\paragraph{Against forgery, authentication works.} A spoofed navigation fix
+that fails verification is rejected rather than fused. This is P1's mechanism,
+and it is what lowers $\gamma$: the estimator stops absorbing the spoofer's
+position offset.
+
+\paragraph{Against delay, authentication alone does nothing.} A validly signed
+message forwarded four seconds late is still validly signed. The parent's
+time-delay adversary is untouched by signatures. Authentication bounds delay
+only when the signature covers a timestamp and the receiver rejects messages
+older than a freshness window $\tfresh$. MAVLink~2 signing already carries such a
+timestamp~\cite{trout_mavlink}. Freshness then caps hidden delay at
+$\tfresh+\eclk$, where $\eclk$ is the receiver's clock error.
+
+\paragraph{The clock couples back to the attack.} On a UAV the reference clock
+is very often disciplined by GNSS. Under jamming it free-runs, and $\eclk$ grows
+with holdover duration. So the freshness bound weakens precisely when the
+navigation attack is active. This coupling is, to our knowledge, unmodelled in
+both the drone-authentication and the certified-robustness literature, and a
+security reviewer will raise it first. The paper treats it as a first-class
+term:
+\begin{equation}
+\label{eq:delta-eff}
+\Delta_{\mathrm{eff}}(\theta,t) \;=\;
+\min\!\big(\,H\min(\theta,s),\;\; \tfresh+\eclk(t)\,\big) \;+\; \Dauth .
+\end{equation}
+
+\paragraph{Symmetric MACs do not stop a compromised relay.} MAVLink~2's
+HMAC-SHA256 uses a shared key. A compromised relay holds that key and can sign
+anything. Against the parent's adversary, therefore, only asymmetric signatures
+or delayed-disclosure schemes such as TESLA~\cite{perrig2000tesla} provide
+source authentication --- and those are exactly the expensive ones. This is why
+the cost side of the budget matters and is not a footnote.
+
+\paragraph{New adversary: induced verification.} An adversary on the bus sends
+frames carrying invalid signatures. The receiver must spend verification time
+before it learns they are invalid, so the attacker converts the defence's own
+cost into delay (\S\ref{sec:attack}).
+
+% =====================================================================
+\section{The certified budget}
+\label{sec:theory}
+% =====================================================================
+Let $S$ be the set of available navigation sources with authentication states
+$a$, and $\kappa$ an authentication scheme operating at message rate $r$ on a
+transport with per-frame payload $b$ and frame duration $t_f$. The merged
+budget is
+\begin{equation}
+\label{eq:budget}
+\rho(\theta,S,a,\kappa) \;=\;
+\Delta_{\mathrm{eff}}(\theta)\;\cdot\;\geff(S,a)\;\cdot\;e^{LT_c}\;\le\;m .
+\end{equation}
+Write $E=e^{LT_c}$, and in the delay regime, where re-anchoring holds by
+construction and the freshness cap is not binding, $\Delta_{\mathrm{eff}} =
+\Delta(\theta)+\Dauth$.
+
+\begin{proposition}[Crossover]
+\label{pr:crossover}
+Let authenticating the navigation path change the effective rate from $\gu$ to
+$\ga<\gu$ at cost $\Dauth$. Authentication strictly reduces the certified
+error $\rho$ if and only if
+\begin{equation}
+\label{eq:crossover}
+\Dauth \;<\; \Delta(\theta)\left(\frac{\gu}{\ga}-1\right).
+\end{equation}
+\end{proposition}
+\noindent\emph{Proof.} $(\Delta+\Dauth)\,\ga E < \Delta\,\gu E$, divide by
+$\ga E>0$ and rearrange. \hfill$\square$
+
+\smallskip
+\noindent
+The condition is elementary; what is not elementary is that its two sides are
+measured on entirely different instruments --- a logic analyser on a CAN bus and
+a flight log of a jammed receiver --- and that nobody has put them in one
+inequality.
+
+\begin{proposition}[More affordable, less beneficial]
+\label{pr:afford}
+Let $B(\theta)=m/(\ga E)-\Delta(\theta)$ be the absolute authentication budget
+and $C(\theta)=\Delta(\theta)(\gu/\ga-1)$ the crossover threshold of
+Eq.~\eqref{eq:crossover}. For $\theta<s$, $B$ is decreasing in $\theta$ and $C$
+is increasing in $\theta$. Tightening the detector therefore leaves
+\emph{more} room to afford authentication and \emph{less} reason to want it.
+\end{proposition}
+\noindent\emph{Proof.} $\Delta(\theta)=H\theta$ on $\theta<s$; $B$ has slope
+$-H$ and $C$ has slope $H(\gu/\ga-1)>0$. \hfill$\square$
+
+\smallskip
+\noindent
+This refines P2's first proposition, which stated only the affordability half.
+The two halves answer different questions --- \emph{can I pay for it?} and
+\emph{is it worth paying for?} --- and an engineer who conflates them will
+over-invest in cryptography on a platform whose detector is already tight.
+
+\begin{proposition}[The cost is a cliff, not a slope]
+\label{pr:cliff}
+$\Dauth$ decomposes into compute, transmission and protocol terms,
+\[
+\Dauth \;=\; \underbrace{t_{\mathrm{sign}}+t_{\mathrm{verify}}}_{\text{compute}}
+\;+\; \underbrace{\lceil\sigma/b\rceil\,t_f\cdot q(U)}_{\text{transmission}}
+\;+\; \underbrace{t_{\mathrm{proto}}}_{\text{protocol}} ,
+\]
+where $\sigma$ is the tag size and $q(U)$ a queueing factor in bus occupancy
+$U=U_0+r\lceil\sigma/b\rceil t_f$. Since $q(U)\to\infty$ as $U\to1$, every scheme
+has a maximum admissible message rate
+$r^{*}=(1-U_0)/(\lceil\sigma/b\rceil t_f)$, above which $\Dauth$ is unbounded and
+the certificate is vacuous regardless of $m$. Ordering schemes by $\sigma$
+captures only the transmission term: schemes that minimise it, such as TESLA,
+can maximise $t_{\mathrm{proto}}$ through their key-disclosure delay.
+\end{proposition}
+
+\smallskip
+\noindent
+This is P2's third proposition made precise, and it is the one we expect to
+carry the empirical weight (\S\ref{sec:already}).
+
+\begin{proposition}[Two regimes]
+\label{pr:regimes}
+Under the time-delay adversary, re-anchoring holds by construction and the
+crossover of Proposition~\ref{pr:crossover} decides. Under a
+\emph{persistent-denial} adversary that withholds every unauthenticated source
+for longer than $T_c$, the unauthenticated certificate is vacuous, and
+authentication of at least one source is \emph{necessary} for any certified
+floor.
+\end{proposition}
+
+\smallskip
+\noindent
+This is P1's second claim, stated as a regime boundary rather than a universal.
+
+\paragraph{The selection rule.} Given $m$, $\theta$, a transport, and a cost per
+source and scheme, Eq.~\eqref{eq:budget} induces a feasibility set over
+(suite, scheme) pairs; the rule returns its cost-minimal element. This is P1's
+third claim, extended to choose the scheme as well as the suite. It is verified
+against brute-force enumeration; the optimality argument goes to the appendix.
+
+% =====================================================================
+\section{What the parent's constants already say}
+\label{sec:already}
+% =====================================================================
+Two things can be computed today, before any new measurement, from constants
+the parent manuscript already reports: $H=2$, $\theta=0.25$\,s, $L=1.181$,
+$T_c=1$\,s, and the campaign supremum $\gamma=1.625$\,m/s. They reproduce the
+parent's $\gamma_{\mathrm{req}}=6.14$\,m/s at $m=10$\,m, which is the check that
+the arithmetic below is wired to the same numbers.
+
+\begin{center}\small
+\begin{tabular}{@{}rccc@{}}
+\toprule
+$m$ (m) & window edge $\theta^{*}$ (s) & certified at $\theta=0.25$\,s? &
+authentication budget $B$ (s) \\
+\midrule
+2  & 0.189 & no  & $-0.122$ \\
+5  & 0.472 & yes & $\phantom{-}0.445$ \\
+10 & 0.945 & yes & $\phantom{-}1.389$ \\
+20 & 1.889 & yes & $\phantom{-}3.278$ \\
+\bottomrule
+\end{tabular}
+
+\smallskip
+\prov{derived} from measured parent constants; $B$ uses $\ga=\gu=1.625$\,m/s,
+i.e.\ assumes authentication buys no $\gamma$ improvement.
+\end{center}
+
+\noindent
+Two readings follow. First, at $m=2$\,m nothing certifies \emph{even at zero
+authentication cost}: P2's second proposition is already partly a consequence
+of the parent's results, and the new content is naming that margin per transport.
+Second, at $m=5$\,m the budget is $0.445$\,s. Per-message signing latency on a
+microcontroller is measured in milliseconds, so \textbf{per-message latency is
+very unlikely to be the binding constraint.} Something else must be.
+
+\paragraph{Order-of-magnitude motivation for the cliff.}
+The table below is a back-of-envelope calculation, not a result, and is labelled
+as such. Tag sizes are from the standards~\cite{nist_pqc}; the frame model
+assumes classic CAN at 1\,Mbit/s, seven payload bytes per DroneCAN multi-frame
+transfer frame, and roughly 130 bits per frame including stuffing.
+
+\begin{center}\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Scheme & tag (B) & frames & ms / message & bus saturates at (msg/s) \\
+\midrule
+HMAC-SHA256 (MAVLink~2 signature field) & 13   & 2    & 0.26  & $\sim$3800 \\
+Ed25519                                 & 64   & 10   & 1.3   & $\sim$770 \\
+ML-DSA-44 (FIPS 204)                    & 2420 & 346  & 45    & $\sim$22 \\
+SLH-DSA-SHA2-128s (FIPS 205)            & 7856 & 1123 & 146   & $\sim$7 \\
+\bottomrule
+\end{tabular}
+
+\smallskip
+\prov{estimate} --- to be replaced by measurement (\S\ref{sec:measure}).
+\end{center}
+
+\noindent
+If these estimates are even roughly right, an ML-DSA-44 signature costs about
+$45$\,ms per message --- comfortably inside a $445$\,ms budget --- yet saturates a
+classic CAN bus at about 22 signed messages per second, below the update rate of
+many attitude and inertial streams. That is Proposition~\ref{pr:cliff} in
+numbers: the scheme is affordable per message and inadmissible per second.
+
+\begin{honestly}
+These are the most quotable numbers in the proposal and the least established.
+They rest on an assumed frame duration and an assumed per-frame payload, and
+real buses carry a base load $U_0$ that only lowers the saturation rates
+further. They motivate the measurement; they must never appear in the paper
+except as the prediction the measurement tested.
+\end{honestly}
+
+% =====================================================================
+\section{Research questions}
+% =====================================================================
+\begin{description}[leftmargin=2.6em,style=nextline]
+\item[RQ1] \textbf{How much does $\gamma$ depend on the navigation source?}
+  Measured for GNSS (done: $1.625$\,m/s), inertial-only, and visual--inertial.
+\item[RQ2] \textbf{What does authentication cost on real flight hardware?}
+  Compute, transmission and protocol terms of $\Dauth$, for five schemes, two
+  targets, three transports.
+\item[RQ3] \textbf{Where is the crossover?} For each (transport, scheme,
+  source) triple, the sign of Eq.~\eqref{eq:crossover} and the margin at which it
+  flips.
+\item[RQ4] \textbf{Does the freshness bound survive GNSS denial?} The growth of
+  $\eclk$ under holdover, and the denial duration after which
+  Eq.~\eqref{eq:delta-eff} reverts to the detector bound.
+\item[RQ5] \textbf{How much delay can an attacker induce through
+  verification?} And how much of it does a pre-filter recover?
+\end{description}
+
+% =====================================================================
+\section{Measurement plan}
+\label{sec:measure}
+% =====================================================================
+\subsection{$\gamma$ per navigation source (RQ1)}
+\begin{enumerate}
+\item \textbf{Inertial-only --- first, and this week.} From the Whelan flight
+  logs already on disk~\cite{whelan2020uav}: freeze the GNSS fix at onset and
+  integrate the inertial measurements. This replaces an error-budget
+  \emph{assertion} in the parent's cruise discussion with a \emph{measurement},
+  so it strengthens the parent paper as well as this one.
+\item \textbf{Visual--inertial.} Public VIO datasets with UAV motion profiles,
+  using the parent's baseline-corrected estimator $\gamma_\delta$ rather than the
+  cumulative one, which the parent showed is contaminated by detector
+  threshold.
+\item \textbf{LEO signals of opportunity --- appendix only.} No receiver logs
+  are available. A \code{physics\_model} value derived from published
+  RMSE~\cite{kassas2021leodoppler,kassas2022jammer} is reported, tagged, and kept
+  out of every headline number.
+\end{enumerate}
+
+\subsection{$\Dauth$ per scheme, target and transport (RQ2)}
+\begin{itemize}
+\item \textbf{Schemes:} HMAC-SHA256 (MAVLink~2 baseline, shared key), Ed25519,
+  ML-DSA-44, SLH-DSA-SHA2-128s~\cite{nist_pqc}, and TESLA-style delayed-key
+  disclosure~\cite{perrig2000tesla}, whose $t_{\mathrm{proto}}$ is an explicit
+  tunable parameter and so gives the cleanest test of
+  Proposition~\ref{pr:cliff}.
+\item \textbf{Targets:} an STM32H7-class microcontroller (as on Pixhawk~6) and a
+  companion-computer-class ARM board. Cycle-accurate timing on the first,
+  wall-clock under load on the second.
+\item \textbf{Transports:} classic CAN (DroneCAN), CAN-FD, and MAVLink~2 over a
+  serial telemetry link.
+\item \textbf{Validation:} the fragmentation model is checked against inter-frame
+  timing of the benign portion of the \dataset{HCRL UAVCAN}
+  capture~\cite{hcrl_uavcan}, which also supplies a realistic base load $U_0$.
+\item \textbf{Amortisation as a design axis:} per-message signing, batch signing
+  over $k$ messages, and MAC-plus-periodic-signature hybrids each trade
+  bandwidth for latency, which is precisely the budget's trade.
+\end{itemize}
+
+\subsection{Clock holdover (RQ4)}
+Determine first whether the released flight logs carry both a GNSS-disciplined
+time and a free-running system time. If they do, $\eclk(t)$ under the recorded
+jamming intervals is directly measurable. If they do not, use oscillator
+holdover specifications for the flight-controller crystal, tagged
+\code{physics\_model}.
+
+\begin{honestly}
+We do not yet know whether the Whelan logs carry both clocks. This must be
+checked before RQ4 is promised, and if they do not, RQ4 becomes a modelled
+analysis and the paper says so.
+\end{honestly}
+
+% =====================================================================
+\section{The induced-verification attack (RQ5)}
+\label{sec:attack}
+% =====================================================================
+An adversary with bus access injects frames carrying syntactically valid but
+cryptographically invalid signatures at rate $r_{\mathrm{adv}}$. Each costs the
+receiver $t_{\mathrm{verify}}$ before rejection, and on a multi-frame scheme it
+also costs reassembly and bus occupancy. The induced delay on legitimate
+navigation traffic enters Eq.~\eqref{eq:delta-eff} exactly as adversarial
+staleness does, so the composition theorem bounds the mission-level effect.
+
+\paragraph{Positioning against prior art.} Signature-flooding denial of service
+is not new: avoiding per-packet signature verification was a design motivation
+for TESLA~\cite{perrig2000tesla}. The contribution is not the mechanism. It is
+(i) the \emph{mission-level bound} on what the attack achieves, through the
+certificate, and (ii) the observation that post-quantum migration makes it
+markedly worse on constrained buses, because lattice verification is costlier
+than the classical verification it replaces and multi-frame reassembly must
+complete before verification can begin.
+
+\paragraph{Mitigation in the same section.} Cheap pre-filters (a truncated MAC
+checked before the full signature), per-source rate limits, and verification
+budgets, each evaluated by how much of the induced $\Delta$ it recovers. As in
+the parent's evasion analysis, the output is a defensive configuration
+procedure, and the attack is presented alongside it rather than ahead of it.
+
+% =====================================================================
+\section{Contributions, as they would appear in the paper}
+% =====================================================================
+\begin{itemize}
+\item \textbf{A certified budget} in which sensing and cryptography trade
+  through a single robustness certificate, with a closed-form crossover for when
+  authentication helps (Prop.~\ref{pr:crossover}), the affordability--benefit
+  inversion (Prop.~\ref{pr:afford}), and a two-regime boundary
+  (Prop.~\ref{pr:regimes}).
+\item \textbf{The freshness--clock coupling}: an explicit model of how GNSS
+  denial weakens the freshness check that is authentication's only defence
+  against delay.
+\item \textbf{Measurements} of $\gamma$ for three navigation sources and of
+  $\Dauth$ for five schemes on flight-controller-class hardware across three
+  transports, every number provenance-tagged.
+\item \textbf{The cliff}: evidence that bus occupancy, not per-message latency,
+  determines which post-quantum schemes a UAV can adopt
+  (Prop.~\ref{pr:cliff}).
+\item \textbf{An attack with its bound and its mitigation}: induced verification,
+  bounded at the mission level.
+\item \textbf{A selection rule} returning the cheapest (sensor suite, scheme)
+  pair that keeps a given detector setting certified.
+\end{itemize}
+
+% =====================================================================
+\section{Relation to prior work}
+% =====================================================================
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}P{0.28\linewidth}YY@{}}
+\toprule
+\textbf{Line of work} & \textbf{What it reports} & \textbf{What this paper adds} \\
+\midrule
+Post-quantum authentication for drones~\cite{pq_drone_networks,utm_survey2026}
+& signature size, cycles, energy & what those milliseconds do to the aircraft \\
+Broadcast authentication (TESLA)~\cite{perrig2000tesla} & cheap source
+authentication at the price of disclosure delay & that delay priced in metres,
+against a certified margin \\
+Alternative PNT~\cite{kassas2021leodoppler,kassas2022jammer} & positioning
+accuracy under denial & accuracy translated into a certified window \\
+Certified robustness~\cite{cohen2019smoothing,gronwall1919} & stability under
+given perturbations & where the perturbation comes from, and what defending
+against it costs \\
+The parent manuscript~\cite{parentpaper} & a certificate with $\gamma$ and
+$\Delta$ as fixed inputs & both as design variables, jointly optimised \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =====================================================================
+\section{Relation to the parent manuscript's limitations}
+% =====================================================================
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}P{0.40\linewidth}P{0.10\linewidth}Y@{}}
+\toprule
+\textbf{Limitation} & \textbf{Closed?} & \textbf{How} \\
+\midrule
+The certificate assumes re-anchoring & \textbf{fully} & Prop.~\ref{pr:regimes}
+makes it a regime boundary with a named satisfying mechanism. \\
+$\gamma$ from one platform in one regime & \textbf{partly} & Adds
+sources; does \emph{not} deliver a cruise campaign, which stays data-gated. \\
+One attack surface & \textbf{partly} & Adds the bus and the C2 link on the
+defence side. \\
+Evidence-class imbalance & no & Unchanged. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =====================================================================
+\section{Risks and fallbacks}
+% =====================================================================
+\begin{itemize}
+\item \textbf{The crossover could be one-sided.} If every measured $\Dauth$ is
+  far below $C(\theta)$, authentication always wins and Proposition~\ref{pr:crossover}
+  has no interesting boundary. The cliff makes this unlikely on classic CAN, but
+  if it happens the paper reports it plainly: ``authentication always pays,
+  except where occupancy forbids it'' is still a result, and the occupancy
+  boundary becomes the headline.
+\item \textbf{Hardware access.} A development board is inexpensive; a full flight
+  controller is needed only for bus validation. Fallback: a pinned ARM target,
+  tagged as such. The crossover survives because it depends on the ratio
+  $\Dauth/\Delta(\theta)$, which a pinned target still bounds.
+\item \textbf{Only two $\gamma$ sources measured.} GNSS and inertial-only already
+  establish that $\gamma$ is source-dependent. VIO strengthens; it is not
+  load-bearing.
+\item \textbf{The freshness coupling might dominate.} If $\eclk$ grows fast
+  enough under holdover, freshness provides no protection within the
+  certification horizon and the paper's message becomes ``authenticate the
+  source, not the timing''. That is a valid and useful outcome.
+\item \textbf{Scheme selection dates.} Pin to FIPS 203/204/205 and publish the
+  model, so a new scheme can be placed without re-running the campaign.
+\end{itemize}
+
+% =====================================================================
+\section{Page plan and timeline}
+% =====================================================================
+\begin{center}\small
+\begin{tabular}{@{}lr@{\qquad}lr@{}}
+\toprule
+\textbf{Section} & \textbf{pp} & \textbf{Section} & \textbf{pp} \\
+\midrule
+Introduction                    & 1.25 & $\Dauth$ results and the cliff & 1.5 \\
+Background and threat model     & 1.25 & Crossover map and selection    & 1.25 \\
+The certified budget            & 2.0  & Induced verification           & 1.25 \\
+Measurement methodology         & 1.5  & Discussion and limitations     & 0.75 \\
+$\gamma$ results                & 1.25 & Related work, conclusion       & 1.0 \\
+\midrule
+\multicolumn{3}{@{}l}{\textbf{Body total}} & \textbf{13.0} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent
+About five months. Weeks 1--2: inertial $\gamma$ and the budget calculator
+(both need nothing new). Weeks 3--10: hardware benchmarks, VIO, fragmentation
+validation. Weeks 8--12: the attack and its mitigation. Weeks 13--20: writing,
+with Paper~II submitted first so that its vocabulary is citable.
+
+\small
+\bibliographystyle{plain}
+\bibliography{proposals}
+
+\end{document}
