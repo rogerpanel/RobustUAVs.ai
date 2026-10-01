@@ -1,0 +1,309 @@
+% =====================================================================
+%  PAPER II -- broadened from proposal P3 (certificate as compliance
+%  artifact). Target: IEEE S&P, Systematization of Knowledge (SoK) track.
+%
+%  Standalone. Set as Overleaf's main document; pdfLaTeX + BibTeX.
+%    pdflatex PaperII_sok_quantifier_gap && bibtex PaperII_sok_quantifier_gap \
+%      && pdflatex PaperII_sok_quantifier_gap && pdflatex PaperII_sok_quantifier_gap
+% =====================================================================
+\documentclass[11pt,a4paper]{article}
+\input{proposal_preamble}
+\usepackage{array}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+% Quantifier-level labels. Serif rather than \textsf: the sans face is a
+% bitmap font in minimal TeX installs, and microtype cannot expand it.
+\newcommand{\Qlvl}[1]{\textbf{Q}\textsubscript{\textit{#1}}}
+\newcommand{\Qin}{\Qlvl{in}}
+\newcommand{\Qtr}{\Qlvl{tr}}
+\newcommand{\Qop}{\Qlvl{op}}
+\newcommand{\Qpop}{\Qlvl{pop}}
+
+\begin{document}
+
+\proposalheader
+  {Paper II --- SoK}
+  {SoK: The Quantifier Gap Between Certified Robustness and Airworthiness
+   Assurance}
+  {Integrated proposal, broadened from P3 $\cdot$ RobustUAVs.ai $\cdot$
+   Roger Nick Anaedevha $\cdot$ 2026-10-01\\
+   Target: IEEE Symposium on Security and Privacy, SoK track $\cdot$
+   fallback: DASC or ACM Computing Surveys}
+
+\begin{abstract}
+\noindent
+Certified-robustness research and aviation assurance both promise guarantees
+about learned systems, and both are now being asked to meet: EASA's
+learning-assurance framework and the forthcoming ED-324 expect evidence about
+machine-learning constituents, and the robustness literature produces
+certificates in quantity. We argue that the two rarely meet because they
+quantify over different things. A certified radius is a statement about
+\emph{every perturbation of one input}; a contingency volume is a statement
+about \emph{one operation}; a safety objective per flight hour is a statement
+about \emph{a population of operations}. Evidence transfers from a guarantee to
+an objective only when the guarantee's quantifier dominates the objective's, or
+when a \emph{lifting argument} --- a dynamics bound, a concentration inequality,
+a runtime monitor --- bridges them, at the price of an assumption that itself
+needs evidence. We propose to systematise the certified-guarantee literature for
+learned perception, navigation and control by quantifier, to code SORA and EASA
+learning-assurance objectives the same way, and to tabulate which transfers are
+sound, which require a lift, and which are category errors. A SORA Annex~A
+evidence generator demonstrates the sound path end to end.
+\end{abstract}
+
+% =====================================================================
+\section{The observation}
+% =====================================================================
+P3 proposed mapping one certificate --- the parent manuscript's~\cite{parentpaper}
+--- onto SORA and ED-324 vocabulary, and its own honesty note predicted the
+likely finding: \emph{certified radii are per-input, while assurance objectives
+are per-operation}. That sentence is more general than P3 used it for. It is a
+claim about an entire literature, and it is testable.
+
+It is also incomplete in one direction, which is what makes it worth a
+systematisation rather than a remark. Aviation does not quantify only per
+operation. A SORA contingency volume is sized for one operation; but a safety
+objective expressed per flight hour, and EASA's learning-assurance expectation
+that a model generalises across its Operational Design Domain, are statements
+about \emph{populations}. So the two communities do not simply sit at two ends of
+one axis. Each produces statements at several quantifier levels, and the
+question is which pairs line up.
+
+% =====================================================================
+\section{The framework: four quantifier levels}
+\label{sec:framework}
+% =====================================================================
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}P{0.12\linewidth}P{0.25\linewidth}YY@{}}
+\toprule
+\textbf{Level} & \textbf{Quantifies over} & \textbf{Typical guarantee} &
+\textbf{Typical assurance objective} \\
+\midrule
+\Qin  & all perturbations of one input &
+certified radius: randomized smoothing~\cite{cohen2019smoothing}, bound
+propagation~\cite{wang2021betacrown}, SMT~\cite{katz2017reluplex} &
+rarely stated at this level \\
+\Qtr  & all disturbances along one trajectory, over a horizon &
+reachability tube; Lipschitz--Gr\"onwall~\cite{gronwall1919} &
+position-holding error; flight technical error \\
+\Qop  & one complete operation &
+mission predicate (spatial \emph{and} temporal); runtime assurance with
+handover~\cite{sha2001simplex} &
+SORA contingency volume~\cite{jarus_sora25} \\
+\Qpop & a distribution of operations &
+PAC-Bayes~\cite{mcallester1999pac}; regret~\cite{arora2012mwu}; mission
+completion rate & per-flight-hour safety objectives; generalisation over the
+ODD~\cite{easa_ai_concept2} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{definition}[Sound transfer]
+A guarantee at level $Q_g$ \emph{discharges} an objective at level $Q_o$ only if
+$Q_g$ quantifies over a superset of what $Q_o$ requires and under a perturbation
+model that covers the objective's hazard. Otherwise it is at most
+\emph{evidence}, or it is a \emph{category error}.
+\end{definition}
+
+\begin{definition}[Lift]
+A \emph{lift} is an argument that carries a guarantee from one level to another
+--- \Qin$\to$\Qtr{} by a dynamics bound, \Qtr$\to$\Qop{} by a horizon and
+re-anchoring argument, \Qop$\to$\Qpop{} by a concentration or PAC argument. Every
+lift introduces an assumption, and that assumption is itself an assurance
+obligation.
+\end{definition}
+
+\noindent
+The parent manuscript's composition chain is a worked instance:
+\Qin{} (a perturbation bound on the navigation input) lifted to \Qtr{} by
+Gr\"onwall under a Lipschitz hypothesis, to \Qop{} by a corridor predicate under
+re-anchoring, and to \Qpop{} by a mission distribution. Each of its three stated
+conditions is exactly one lift's assumption. That is why it serves as the SoK's
+running example rather than its subject.
+
+% =====================================================================
+\section{Hypotheses the systematisation tests}
+% =====================================================================
+These are predictions, and the paper is only worth writing if any of them can
+come out false.
+
+\begin{description}[leftmargin=2.4em,style=nextline]
+\item[H1] \textbf{Most certified-robustness work for learned perception sits at
+  \Qin, and therefore discharges no assurance objective without a lift.} The
+  corpus will show the proportion.
+\item[H2] \textbf{Lifts exist in the literature but are rarely accounted for as
+  obligations.} Papers that lift a guarantee seldom list the lift's assumption as
+  something requiring evidence. The coding scheme records this per paper.
+\item[H3] \textbf{The \Qpop{} objectives --- per flight hour, generalisation
+  over the ODD --- are the natural match for statistical guarantees, yet
+  statistical guarantees for learned perception are the least developed
+  class.} If true, this is the research agenda the SoK hands the community.
+\item[H4] \textbf{Runtime assurance is the dominant practical bridge} for
+  objectives no offline certificate discharges, because it converts a
+  per-operation obligation into a per-input check plus a verified fallback.
+\end{description}
+
+\begin{honestly}
+H1 could fail. If the corpus turns out to contain substantially more \Qtr{} and
+\Qpop{} work than expected --- closed-loop reachability for neural controllers
+is an active area --- the gap is narrower than this proposal claims, and the
+paper must report that. An SoK whose finding is ``it mostly lines up'' would be
+less exciting and still publishable, but only if it says so rather than choosing
+a corpus that confirms the thesis.
+\end{honestly}
+
+% =====================================================================
+\section{Method}
+\label{sec:method}
+% =====================================================================
+\subsection{The guarantee corpus}
+\begin{itemize}
+\item \textbf{Sources.} IEEE S\&P, ACM CCS, USENIX Security, NDSS; NeurIPS, ICML,
+  ICLR; CAV, HSCC, ICCPS, EMSOFT; DASC and the SAE/AIAA avionics venues. Years
+  2017--2026.
+\item \textbf{Inclusion.} A formal or statistical guarantee on a learned
+  component used, or evaluated, for perception, state estimation, navigation or
+  control of an autonomous vehicle. Benchmarks without a guarantee are out;
+  guarantees on non-learned components are out.
+\item \textbf{Search.} Keyword search seeded from the canonical systems
+  (\cite{katz2017reluplex,wang2021betacrown,cohen2019smoothing,julian2016acasxu}),
+  then forward and backward citation snowballing until saturation.
+\item \textbf{Expected size.} Of the order of 80--150 papers. This is a
+  prediction, not a count: \textbf{the corpus has not been collected.}
+\end{itemize}
+
+\subsection{The objective corpus}
+SORA~2.5 operational safety objectives and the contingency-volume definition
+in Annex~A~\cite{jarus_sora25}; the EASA AI Concept Paper Issue~2
+learning-assurance objectives~\cite{easa_ai_concept2}; the MLEAP
+findings~\cite{easa_mleap}; and ED-324 / ARP6983~\cite{ed324} at the level of
+concepts only, since it is in preparation.
+
+\subsection{Coding scheme}
+Each guarantee and each objective is coded on the same fields, so they can be
+joined:
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}P{0.24\linewidth}Y@{}}
+\toprule
+\textbf{Field} & \textbf{Values} \\
+\midrule
+Quantifier level & \Qin, \Qtr, \Qop, \Qpop \\
+Perturbation model & norm-bounded input; sensor delay; sensor bias; adversarial
+spoofing; distribution shift; none \\
+Lifts used & dynamics, horizon/re-anchoring, concentration, runtime monitor;
+each with its stated assumption \\
+Assumption accounted for? & yes / stated but not evidenced / unstated \\
+Evidence class & proof; measured; simulated; modelled \\
+Domain & perception, estimation, navigation, control, end-to-end \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent
+Two coders code independently; disagreements are resolved by discussion, and
+Cohen's $\kappa$ is reported for the quantifier and assumption fields, which are
+the ones the findings rest on.
+
+\subsection{The transfer table}
+The output joins the two corpora on quantifier level and perturbation model and
+classifies every (guarantee class, objective) pair as \textbf{discharge},
+\textbf{evidence via lift} (naming the lift), or \textbf{category error}. P3's
+discharge / evidence / untouched gap analysis becomes one slice of this table.
+
+% =====================================================================
+\section{The evidence generator}
+% =====================================================================
+Carried over from P3, and now with a sharper purpose: it demonstrates one
+\emph{sound} transfer path end to end. From a certified run of the parent
+project it emits a SORA Annex~A-shaped evidence pack in which
+\begin{itemize}
+\item the Operational Design Domain is the parent's \emph{measured} operating
+  region (attitudes off singularity, airspeed below stall, actuators unsaturated),
+  which P3 noticed is an ODD in all but name;
+\item the contingency extent is the certified tube radius;
+\item each lift's assumption appears as an explicit, open obligation rather than
+  disappearing into the result; and
+\item every figure carries its provenance tag.
+\end{itemize}
+The third point is the generator's real contribution. A compliance pack that
+lists the certificate but hides its assumptions would be precisely the category
+error the SoK exists to name.
+
+% =====================================================================
+\section{What the SoK delivers}
+% =====================================================================
+\begin{itemize}
+\item \textbf{A quantifier framework} that places certified guarantees and
+  assurance objectives on one axis.
+\item \textbf{A coded corpus} of certified guarantees for learned autonomy,
+  released with the coding scheme and agreement statistics.
+\item \textbf{The transfer table}: which guarantees discharge which objectives,
+  which need which lift, and which pairings are category errors.
+\item \textbf{An accounting of lifts as obligations}, testing whether the
+  literature treats them as such.
+\item \textbf{A research agenda}: the empty cells of the transfer table,
+  ranked by how many objectives they would discharge.
+\item \textbf{An evidence generator} demonstrating one sound path.
+\end{itemize}
+
+% =====================================================================
+\section{Relation to the parent manuscript}
+% =====================================================================
+P3 already said that it closes none of the parent's limitations, and the SoK
+does not change that. What it changes is how one of them reads. The parent's
+guarantee bounds a population of missions rather than a single flight, which a
+reviewer can read as a weakness. The SoK shows that this is a property of every
+\Qpop{} guarantee and of every per-flight-hour objective, so it is the correct
+level for an airworthiness argument rather than a compromise. That is a
+reframing, and it should be presented as one, not as a closure.
+
+% =====================================================================
+\section{Risks}
+% =====================================================================
+\begin{itemize}
+\item \textbf{A thin or biased corpus.} The main way an SoK fails at S\&P. Stated
+  inclusion criteria, snowballing to saturation, two coders and a reported
+  $\kappa$ are the defence. If time forces a smaller corpus, the paper says
+  how much smaller and drops the claims that need the full one.
+\item \textbf{The standards move.} ED-324 is in preparation. Key every claim to a
+  stable concept --- ODD, contingency volume, learning assurance --- and confine
+  clause numbers to an appendix.
+\item \textbf{Regulatory over-claim.} Nothing here certifies an aircraft. The
+  paper maps mathematical guarantees onto an evidence framework, and the
+  abstract must already say so.
+\item \textbf{Being read as a survey.} The quantifier framework and the transfer
+  table are what distinguish an SoK from a survey. If either is weak, the
+  fallback is ACM Computing Surveys, and the paper should be retargeted rather
+  than oversold.
+\end{itemize}
+
+% =====================================================================
+\section{Page plan and timeline}
+% =====================================================================
+\begin{center}\small
+\begin{tabular}{@{}lr@{\qquad}lr@{}}
+\toprule
+\textbf{Section} & \textbf{pp} & \textbf{Section} & \textbf{pp} \\
+\midrule
+Introduction                 & 1.25 & The transfer table          & 2.0 \\
+The quantifier framework     & 1.75 & Lifts as obligations        & 1.25 \\
+Method and corpus            & 1.5  & Evidence generator (case)   & 1.0 \\
+Guarantees by level          & 1.75 & Research agenda             & 1.0 \\
+Objectives by level          & 1.0  & Related SoKs, conclusion    & 0.5 \\
+\midrule
+\multicolumn{3}{@{}l}{\textbf{Body total}} & \textbf{13.0} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent
+About three months, and it needs no measurement, so it can start at once and
+run alongside Paper~I's hardware campaign. Weeks 1--6: search and coding.
+Weeks 5--8: transfer table and generator. Weeks 9--12: writing. Submit it
+before Paper~I, so that Paper~I can cite its vocabulary.
+
+\small
+\bibliographystyle{plain}
+\bibliography{proposals}
+
+\end{document}

@@ -1,0 +1,76 @@
+% =====================================================================
+%  Condensed abstract for paperD -- drop-in replacement
+%
+%  Replaces the abstract of paperD_v7b (455 words) with a 283-word
+%  version. Nothing was removed outright: every claim, number, and
+%  qualification in v7b survives, compressed rather than cut.
+%
+%  In Overleaf, select the whole existing abstract environment (from its
+%  begin line to its end line, inclusive) and paste the block below over
+%  it. This file contains exactly one abstract environment.
+%
+%  Spelling follows v7b (US: "defense"), as do the edits you made there
+%  ("currently", and avoiding "vacuous").
+% =====================================================================
+
+\begin{abstract}
+Unmanned aerial vehicle (UAV) security is studied from two directions that do
+not meet. Intrusion detection flags malicious traffic but is silent on the
+flight that follows a missed intrusion; certified robustness bounds a navigation
+model's response to a perturbation but asks neither where it originates nor how
+often an adversary can produce one. Neither answers the operator's question: if
+an attacker stays just below the alarm threshold, can the mission still be
+completed?
+
+We answer with a \emph{conditional} guarantee. A two-layer schema over six
+public datasets takes as its unit the \emph{cross-layer pairing}, a
+network-attack interval joined to the navigation degradation it causes and
+tagged with the strength of that causal evidence. We prove that, against an
+attacker who delays relayed messages just below threshold, the proportion of
+completed missions is bounded below by a quantity computable from that
+threshold. Two measurements make the bound useful: hidden delay saturates at
+$4.84$\,s across $15{,}392$ relay hops, and each second of delayed navigation
+input costs at most $1.63$\,m of position error across $674$ post-onset samples
+of real GPS-jamming and -spoofing flights, an order of magnitude below the
+kinematic worst case.
+
+The chain is not a theorem end to end. Its middle link is calibrated on three
+hover flights of one airframe, and that rate varies $6.1\times$ with attack
+type, satellite visibility and staleness, so the certificate uses its supremum.
+The guarantee further assumes Lipschitz dynamics, estimator re-anchoring within
+a stated interval, and calibration transfer, and it bounds a population of
+missions, not a single flight. Under these conditions the composed defense
+certifies a non-zero floor where neither single-layer defense certifies any.
+Schema, adapters and certificate engine are released as an open artifact.
+\end{abstract}
+
+% =====================================================================
+%  What was compressed, so a co-author can check nothing was lost
+%
+%   v7b sentence(s)                         condensed to
+%   -------------------------------------   --------------------------------
+%   two-approach framing (3 sentences)      one sentence per approach
+%   "Instantiating the schema over six      "A two-layer schema over six
+%    public datasets, we prove..."           public datasets takes as its
+%                                            unit..."  (schema and datasets
+%                                            now share one sentence)
+%   "does not grow without limit; it        "saturates at"  (saturation
+%    saturates at"                           already says it is bounded)
+%   "measured at every one of 674"          "across 674"
+%   "We are deliberate about what this      dropped -- the next sentence
+%    does and does not establish."           already does that work
+%   "each moving it in a mechanistically    dropped -- defended in the body
+%    explicable direction"                   (Sec. VII-C); the three factors
+%                                            are still named
+%   "rather than the average"               implied by "supremum"
+%   "Lipschitz navigation dynamics"         "Lipschitz dynamics"
+%   "a statement about a population of      "bounds a population of
+%    missions and not about any              missions, not a single flight"
+%    particular flight"
+%
+%  One judgement call worth a second opinion: "mechanistically explicable"
+%  is the phrase that tells a reviewer the 6.1x spread is understood rather
+%  than noise. If the advisor wants it back, it costs four words:
+%     "...with attack type, satellite visibility and staleness in
+%      explicable directions, so the certificate uses its supremum."
+% =====================================================================
