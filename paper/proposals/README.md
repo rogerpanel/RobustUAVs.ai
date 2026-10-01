@@ -4,12 +4,20 @@ Follow-on work from the composition theorem in the parent manuscript
 (`paper/paperD_v7.tex`). Prose source of truth for the original three is
 `docs/research_roadmap_2027.md`.
 
-There are now **two tracks of conference papers** from this project:
+There are now **five conference papers** from this project, in three groups:
 
 - **S&P track** — from the parent paper's own concepts (P1, P2, P3). See
   "three proposals → two IEEE S&P papers" below.
 - **MSCA track** — from the CERTIFLIGHT MSCA proposal's concepts. See
   "two papers from the CERTIFLIGHT proposal" below.
+- **Paper V** — `PaperV_safety_filter_llm_agent.tex` (IEEE SaTML). A
+  predictive safety filter that keeps an LLM-driven UAV agent inside the
+  certified envelope *regardless* of whether the language model is
+  compromised — turning a safety attack into a (measurable) liveness attack.
+  It is Paper III's projection layer lifted to continuous MPC with an
+  *untrusted* planner and an *adaptive* attacker; Prop. 3 shows its attacker
+  and Paper IV's share one perturbation budget. A two-page overview of all
+  five is in `SUPERVISOR_BRIEF.tex` (currently covers I–IV; extend if needed).
 
 All share `proposal_preamble.tex` and `proposals.bib`, and each `.tex`
 compiles independently.
