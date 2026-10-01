@@ -4,7 +4,35 @@ Follow-on work from the composition theorem in the parent manuscript
 (`paper/paperD_v7.tex`). Prose source of truth for the original three is
 `docs/research_roadmap_2027.md`.
 
-## Current plan: three proposals → two IEEE S&P papers
+There are now **two tracks of conference papers** from this project:
+
+- **S&P track** — from the parent paper's own concepts (P1, P2, P3). See
+  "three proposals → two IEEE S&P papers" below.
+- **MSCA track** — from the CERTIFLIGHT MSCA proposal's concepts. See
+  "two papers from the CERTIFLIGHT proposal" below.
+
+All share `proposal_preamble.tex` and `proposals.bib`, and each `.tex`
+compiles independently.
+
+## MSCA track: CERTIFLIGHT concept → two papers (NeurIPS + USENIX)
+
+| File | What it is |
+|---|---|
+| `MSCA_PAPERS_MAP.tex` | **Start here for this track.** Which CERTIFLIGHT objective/theorem becomes which paper, and how all four conference papers relate |
+| `PaperIII_certified_constrained_marl.tex` | **Paper III** (NeurIPS) — from MSCA O3/T3/T4 (WP4). A formal robustness certificate used as a *time-varying, pointwise* multi-agent constraint, feasibility preserved during learning; linear-time feasibility and k-robustness via the nested structure of certified radii; coverage-degradation bound |
+| `PaperIV_crosslayer_benchmark.tex` | **Paper IV** (USENIX Security) — from MSCA O1/O2, T1/T2 (WP2/WP3). The unified perturbation budget + cross-layer benchmark, reframed around the security point that an attacker can disguise interference as a fault or gust (adversarial equivalence) |
+
+Paper III's two combinatorial results (maximum coverage, and the k-robust
+condition) were **verified against a brute-force matching oracle over 3000
+random instances — exact agreement on both**. That is a check on the math, not
+evidence about flight.
+
+Paper IV's theoretical hinge — that the union-bound tightness gap is the
+Makarov / VaR-aggregation gap — is a **reduction to prove, not an assertion**;
+the sound union bound is the stated fallback. Its benchmark and evasion study
+stand regardless.
+
+## S&P track: three proposals → two IEEE S&P papers
 
 | File | What it is |
 |---|---|

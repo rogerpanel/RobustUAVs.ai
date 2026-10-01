@@ -1,0 +1,147 @@
+% =====================================================================
+%  MSCA PAPERS MAP -- which CERTIFLIGHT concept becomes which paper.
+%
+%  Standalone. Set as Overleaf's main document; pdfLaTeX + BibTeX.
+% =====================================================================
+\documentclass[11pt,a4paper]{article}
+\input{proposal_preamble}
+\usepackage{array}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\begin{document}
+
+\proposalheader
+  {MSCA $\to$ Papers}
+  {Two Conference Papers from the CERTIFLIGHT Proposal}
+  {RobustUAVs.ai research programme $\cdot$ Roger Nick Anaedevha $\cdot$
+   2026-10-01\\
+   Companion to the integration plan for Papers~I and II}
+
+% =====================================================================
+\section{The decision}
+% =====================================================================
+The CERTIFLIGHT MSCA proposal has four objectives (O1--O4) resting on four
+theorems (T1--T4) across five work packages. Two of them carry a self-contained
+technical result strong enough for a top venue \emph{now}, on the preliminary
+work already in hand. Each becomes one paper.
+
+\begin{itemize}
+\item \textbf{Paper~III} (NeurIPS) --- from O3/T3/T4, WP4.
+  \emph{Certificates as Constraints.} The certified-constrained multi-agent
+  controller: a formal robustness certificate used as a time-varying, pointwise
+  CMDP constraint, with feasibility preserved during learning.
+\item \textbf{Paper~IV} (USENIX Security) --- from O1/O2, T1/T2, WP2/WP3.
+  \emph{When the Attacker Is Indistinguishable from the Weather.} The unified
+  perturbation budget and cross-layer benchmark, reframed around the security
+  observation that an attacker can disguise interference as a fault or a gust.
+\end{itemize}
+
+\noindent
+O4/WP5 (the assurance mapping) is \emph{not} a third paper here: it is
+Paper~II of the earlier batch (the SoK), which already absorbed it. T1's
+tightness-gap result lives in Paper~IV; T2's interface-rate result is already in
+the parent manuscript and in Paper~I.
+
+% =====================================================================
+\section{Why these two venues}
+% =====================================================================
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}P{0.12\linewidth}P{0.16\linewidth}Y@{}}
+\toprule
+\textbf{Paper} & \textbf{Venue} & \textbf{Why it fits} \\
+\midrule
+III & NeurIPS & The result is about the \emph{quantifier} on a learned
+constraint --- pointwise vs.\ in-expectation, under a constraint set that is
+itself a certified, adversarially moving object. A safe-RL / learning-theory
+contribution. The swarm is the setting, not the claim. \\
+IV & USENIX Security & A threat-model correction (the attacker who dresses as the
+weather), an evaluation methodology with enforced provenance, and a released
+benchmark artifact. The shape USENIX rewards, and a venue where an evaluation
+substrate can become a community default. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =====================================================================
+\section{Which MSCA theorem each paper carries}
+% =====================================================================
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}P{0.10\linewidth}P{0.40\linewidth}Y@{}}
+\toprule
+\textbf{MSCA} & \textbf{What it is} & \textbf{Where it lands} \\
+\midrule
+T1 & Heterogeneous-source composition with a quantified tightness gap &
+\textbf{Paper~IV}, as the Makarov / VaR-aggregation characterisation of the
+union-bound slack. \\
+T2 & Interface theorem, discrete detection $\to$ continuous budget;
+$\gamma$ as a supremum over an ODD & Parent manuscript (proved) and
+\textbf{Paper~I} (the $\gamma$ side); the budget side is \textbf{Paper~IV}. \\
+T3 & Feasibility preservation for certified-constrained policies &
+\textbf{Paper~III}, Propositions~1--2. \\
+T4 & Coverage-degradation bound for fleets with degraded agents &
+\textbf{Paper~III}, Propositions~3--4. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =====================================================================
+\section{How the four papers relate}
+% =====================================================================
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}P{0.12\linewidth}Y@{}}
+\toprule
+\textbf{Paper} & \textbf{Object, and its place in the chain
+$\theta\to\Delta\to\delta\to\mathrm{MCR}$} \\
+\midrule
+Parent & Proves the chain for the time-delay class. \\
+I (S\&P) & Treats $\Delta$ and $\gamma$ as \emph{design variables}
+(authentication as credit and debit). \\
+II (SoK) & Systematises the whole field by what its guarantees
+\emph{quantify over}. \\
+IV (USENIX) & Broadens the \emph{source} of $\delta$ (fault, gust, disguised
+attack) and builds the benchmark that measures it. \\
+III (NeurIPS) & Consumes the per-agent radius the chain produces, as a
+\emph{fleet controller} constraint. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent
+The four are non-overlapping in object: a certificate with fixed inputs
+(parent), a certificate with tunable inputs (I), the field's certificates in
+general (II), a certificate against disguised sources (IV), and a controller
+that consumes certificates (III). Each cites the others; none repeats another's
+result.
+
+% =====================================================================
+\section{Readiness, honestly}
+% =====================================================================
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}P{0.10\linewidth}Y Y@{}}
+\toprule
+\textbf{Paper} & \textbf{Done} & \textbf{To do before submission} \\
+\midrule
+III & Propositions 1--4 proved and brute-force-checked (3000/3000);
+simulator and certificate exist &
+the CMDP wrapper, projection layer, degradation schedule, and the RL study \\
+IV & Six-corpus ingest, certificate engine, residual-budget lemma, provenance
+flags, $\gamma$ campaign &
+the fault/environment budget terms, the Makarov reduction (or its empirical
+fallback), the evasion construction, benchmark packaging and release \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{honestly}
+Two claims are not yet established and are flagged as such in the papers. In
+Paper~IV, that the three-source composition reduces cleanly to a
+fixed-marginals-unknown-copula problem (Makarov) is a reduction to prove, with
+the sound union bound as the stated fallback. In Paper~III, the empirical RL
+results do not yet exist; the three propositions are the contribution and already
+hold, so the paper degrades to a theory-plus-feasibility-layer result if MARL
+training is unstable at the target fleet size. Neither paper's headline depends
+on an unproven claim.
+\end{honestly}
+
+\end{document}
