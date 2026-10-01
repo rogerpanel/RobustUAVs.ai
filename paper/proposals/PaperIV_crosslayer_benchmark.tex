@@ -1,0 +1,275 @@
+% =====================================================================
+%  PAPER IV -- from the CERTIFLIGHT concept (MSCA O1/O2, T1-T2, WP2/WP3).
+%  Target: USENIX Security.
+%
+%  Standalone. Set as Overleaf's main document; pdfLaTeX + BibTeX.
+%    pdflatex PaperIV_crosslayer_benchmark && bibtex PaperIV_crosslayer_benchmark \
+%      && pdflatex PaperIV_crosslayer_benchmark && pdflatex PaperIV_crosslayer_benchmark
+% =====================================================================
+\documentclass[11pt,a4paper]{article}
+\input{proposal_preamble}
+\usepackage{array}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\dnet}{\delta_{\mathrm{net}}}
+\newcommand{\dfault}{\delta_{\mathrm{fault}}}
+\newcommand{\denv}{\delta_{\mathrm{env}}}
+\newcommand{\dgnss}{\delta_{\mathrm{gnss}}}
+\newcommand{\dtot}{\delta_{\mathrm{tot}}}
+\newcommand{\prov}[1]{\textsc{\small[#1]}}
+% Quantifier-level labels (defined in full in Paper II; referenced here).
+\newcommand{\Qlvl}[1]{\textbf{Q}\textsubscript{\textit{#1}}}
+\newcommand{\Qop}{\Qlvl{op}}
+\newcommand{\Qpop}{\Qlvl{pop}}
+
+\begin{document}
+
+\proposalheader
+  {Paper IV --- The Cross-Layer Evaluation}
+  {When the Attacker Is Indistinguishable from the Weather: A Cross-Layer
+   Benchmark and a Unified Perturbation Budget for Certified UAV Autonomy}
+  {Research proposal from the CERTIFLIGHT concept (WP2/WP3) $\cdot$ RobustUAVs.ai
+   $\cdot$ Roger Nick Anaedevha $\cdot$ 2026-10-01\\
+   Target: USENIX Security $\cdot$ extends the parent manuscript~\cite{parentpaper}}
+
+\begin{abstract}
+\noindent
+A UAV's navigation stack cannot tell, from the signal alone, whether its position
+error is caused by a jammer, a drifting inertial unit, or a gust. We take that
+indistinguishability as a security principle rather than a nuisance. If a
+certificate is to mean anything to an operator, it must bound the mission outcome
+under \emph{whatever} produced the perturbation, because the attacker is free to
+choose the component that the defence models least well. We develop a unified
+perturbation budget $\dtot=\dnet(\theta)\oplus\dgnss\oplus\dfault\oplus\denv$ that
+aggregates an adversarial residual (a function of a network detector's operating
+point), GNSS denial, stochastic faults and bounded environmental forcing into one
+certified floor on the mission-completion rate --- and we show the security
+consequence the single-source view misses: an adversary who shapes its
+interference to \emph{mimic} a fault or a gust evades a detector tuned to
+malicious signatures while producing the same navigation degradation. The
+evaluation substrate is the missing ingredient in this field: a reproducible
+cross-layer benchmark whose unit of record is the pairing of a network or
+environmental event with the navigation window it induces, each pairing carrying
+an auditable provenance flag that states whether the coupling was measured on one
+platform, derived from a physical model, or aligned in simulation. We quantify
+what the union-bound aggregation costs in tightness, and name the conditions
+under which a joint treatment recovers it.
+\end{abstract}
+
+% =====================================================================
+\section{The security argument}
+% =====================================================================
+Three communities each bound one layer and leave the interface to assumption.
+Network intrusion detection bounds what reaches the aircraft but says nothing
+about the flight after a missed intrusion. Certified
+robustness~\cite{cohen2019smoothing,gronwall1919} bounds what a model does with a
+perturbation but not where it comes from or how often an adversary can make one.
+Fault-tolerant control rejects disturbances but has not been composed with
+either. The property an operator, insurer and regulator actually need --- will
+this mission complete, and can we prove it? --- falls between them.
+
+The security content is sharper than ``let us unify three budgets''. It is an
+\textbf{adversarial-equivalence} observation:
+
+\begin{quote}\itshape
+From the navigation input alone, an adversary's shaped interference, a sensor
+fault, and an environmental disturbance are indistinguishable. An attacker will
+therefore choose the disguise the defender models least well. A certificate that
+is sound only against a declared attack model is unsound against the attacker who
+dresses as the weather.
+\end{quote}
+
+\noindent
+This is why the budget must be source-agnostic to be a security guarantee at all,
+and why a detector tuned to malicious signatures is the wrong last line: the
+decisive attack is the one that looks benign. A physical-invariant monitor such
+as SAVIOR~\cite{quinonez2020savior} checks the dynamics rather than the signature
+and is the right comparison point; our contribution is to carry its spirit
+through to a \emph{certified mission floor} and to a benchmark that can measure
+the evasion.
+
+% =====================================================================
+\section{The unified budget}
+% =====================================================================
+Navigation state $\dot x=F(x,u)$, $F$ Lipschitz with constant $L$ over the
+operating region, horizon $T$. A bounded input perturbation $\|\delta u\|\le\dtot$
+gives, through Gr\"onwall, a trajectory-tube radius $\rho=\dtot e^{LT}$; the
+mission completes while the tube fits the safe-corridor margin $m$, so the
+certified floor is $f(\dtot)=\Pr[\dtot e^{LT}\le m]$ (parent manuscript).
+
+The new object is the budget itself:
+\begin{equation}
+\label{eq:budget}
+\dtot \;=\; \dnet(\theta)\ \oplus\ \dgnss\ \oplus\ \dfault\ \oplus\ \denv ,
+\end{equation}
+aggregating sources with \emph{different probabilistic semantics}: $\dnet(\theta)$
+deterministic worst-case (adversarial residual below detector threshold $\theta$,
+bounded by the residual-budget lemma $\Delta(\theta)\le H\min(\theta,s)$),
+$\dgnss$ and $\dfault$ stochastic, $\denv$ bounded-but-unknown.
+
+\begin{proposition}[Heterogeneous composition, with its tightness cost]
+\label{pr:compose}
+The $\oplus$ of a deterministic, a stochastic and a bounded-unknown source admits
+a joint certificate. The union bound over independently certified sources is
+sound but loose; the looseness is exactly the dependence-uncertainty gap of
+Makarov's bound~\cite{makarov1981,embrechts2013var} on the distribution of a sum
+with fixed marginals and unknown coupling. A joint treatment recovers the union
+bound's slack precisely when the sources are comonotone, and we characterise the
+intermediate regime.
+\end{proposition}
+
+\begin{honestly}
+Naming the tightness gap as the Makarov/VaR-aggregation gap is the theoretical
+hinge, and it is a claim to prove, not assert: the mapping from ``three
+perturbation sources with mixed semantics'' to ``sum of random variables with
+fixed marginals and unknown copula'' has to be made rigorous, and the
+deterministic source needs a degenerate-marginal treatment. If that reduction
+does not hold cleanly, the paper falls back to the plain union bound --- which is
+already sound --- and reports the gap empirically instead.
+\end{honestly}
+
+% =====================================================================
+\section{The benchmark (the field's missing substrate)}
+% =====================================================================
+A guarantee spanning two layers needs data objects that record the coupling, and
+no public corpus does. The benchmark's unit of record is the \textbf{cross-layer
+pairing}: a network or environmental window joined to the navigation window it
+induces, carrying the detector operating point, the residual budget, the induced
+perturbation, and the mission outcome.
+
+\paragraph{Provenance is mandatory and enforced.} Every pairing carries a flag:
+\code{measured\_same\_platform} (both windows observed on one airframe),
+\code{physics\_model} (coupling through a stated physical relation), or
+\code{synthetic\_alignment} (aligned in simulation). A reviewer filters by
+evidence strength rather than trusting an unaudited join. This is the discipline
+that keeps the central honest qualification visible: of six corpora, only one
+observes a network event and the flight it degrades on the same platform, and its
+release carries no machine-readable attack intervals --- so the strongest
+evidence class is sparse, and the benchmark says so in every record rather than
+burying it.
+
+\paragraph{Contents.} Lossless ingestion adapters for six public corpora; a
+physics-informed navigation benchmark; a detector-operating-curve harness that
+sweeps $\theta$ and reports recall and false-positive rate (the network-side
+premise the composed guarantee consumes); and a reference pairing pipeline.
+Third-party data is fetched from origin under its own licence; adapters and
+unified labels are released, not redistributed corpora.
+
+% =====================================================================
+\section{The evasion study (the USENIX core)}
+% =====================================================================
+The benchmark makes the adversarial-equivalence claim measurable. The study:
+
+\begin{description}[leftmargin=2.6em,style=nextline]
+\item[RQ1] \textbf{Can an attacker mimic a fault/gust to evade a
+  signature-tuned detector while producing the same $\delta$?} Construct shaped
+  interference whose network-layer signature falls below $\theta$ but whose
+  induced navigation degradation equals that of a modelled fault, and measure the
+  detector's miss rate against the induced $\delta$.
+\item[RQ2] \textbf{Does the composed certificate bound the mission outcome even
+  when the detector is evaded?} This is the payoff: the floor should hold because
+  the budget is source-agnostic, where a detector-only defence fails silently.
+\item[RQ3] \textbf{How loose is the union bound in practice}, across the six
+  corpora and the physics benchmark, and where does the joint treatment of
+  Proposition~\ref{pr:compose} recover it?
+\item[RQ4] \textbf{Soundness:} does the certified floor lower-bound the measured
+  completion rate at \emph{every} operating point, across seeds, under
+  Holm-corrected tests? A violation is a bug in the instantiation.
+\end{description}
+
+\paragraph{Why USENIX Security.} The contribution is a threat-model correction
+(the attacker who dresses as the weather), an evaluation methodology with enforced
+provenance, and a released artifact --- the shape of contribution USENIX rewards,
+and the venue where an evaluation substrate can become a community default. The
+theorem is the frame; the benchmark and the evasion measurement are the paper.
+
+% =====================================================================
+\section{What is in hand, what is new}
+% =====================================================================
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}P{0.40\linewidth}Y@{}}
+\toprule
+\textbf{In hand (parent + Papers I--II)} & \textbf{New here} \\
+\midrule
+Six-corpus ingest, certificate engine, four certificate methods &
+$\dfault$ and $\denv$ as budget terms with mixed semantics \\
+Residual-budget lemma; $\gamma=1.625$\,m/s campaign supremum &
+the adversarial-equivalence threat model and the evasion study \\
+Detector-operating-curve harness; provenance flags &
+Proposition~\ref{pr:compose} and the Makarov/VaR tightness characterisation \\
+\dataset{HCRL UAVCAN}, \dataset{Whelan} and four more adapters &
+public benchmark release whose unit is the cross-layer pairing \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =====================================================================
+\section{Relation to the other papers}
+% =====================================================================
+\begin{itemize}
+\item \textbf{Parent manuscript} proves the composition for the time-delay class
+  on the network side. Paper~IV broadens the \emph{source} of the perturbation to
+  faults and environment and makes the threat model adversarial-equivalence; it
+  is the security-and-measurement paper to the parent's theory paper.
+\item \textbf{Paper~I} varies $\gamma$ and $\Delta$ as design variables; Paper~IV
+  varies the \emph{source} of $\delta$. Complementary axes of the same budget.
+\item \textbf{Paper~III} consumes the per-agent radius this budget produces.
+  Paper~IV is upstream of it.
+\item \textbf{Paper~II (SoK)} supplies the vocabulary; Paper~IV is a \Qop{}-level
+  security evaluation within it.
+\end{itemize}
+
+% =====================================================================
+\section{Risks}
+% =====================================================================
+\begin{itemize}
+\item \textbf{The equivalence attack may be only partially realisable.} Shaping
+  interference to match a fault's $\delta$ \emph{and} stay below $\theta$ may not
+  be achievable for every fault profile. That is itself a finding --- the subset
+  of degradations an attacker can disguise is the real attack surface --- and the
+  paper reports the achievable region rather than claiming the whole.
+\item \textbf{The tightness reduction (Prop.~\ref{pr:compose}) may not close.}
+  Fallback: the sound union bound plus an empirical gap measurement. The benchmark
+  and evasion study stand regardless.
+\item \textbf{Same-platform pairings stay scarce.} The provenance flags make this
+  explicit rather than hidden; \code{physics\_model} and
+  \code{synthetic\_alignment} pairings sustain coverage, and the limitation is
+  reported as a limitation. This is a standing constraint from the parent work,
+  carried forward honestly.
+\item \textbf{Fault/gust realism.} $\dfault$ and $\denv$ are modelled from the
+  fault-tolerant-control literature; every modelled number carries its provenance
+  tag, and the paper does not present a simulated gust as a measured one.
+\end{itemize}
+
+% =====================================================================
+\section{Page plan and timeline}
+% =====================================================================
+\begin{center}\small
+\begin{tabular}{@{}lr@{\qquad}lr@{}}
+\toprule
+\textbf{Section} & \textbf{pp} & \textbf{Section} & \textbf{pp} \\
+\midrule
+Introduction                 & 1.0  & Evasion study and results     & 2.5 \\
+Threat model (equivalence)   & 1.25 & Soundness and union-bound gap & 1.5 \\
+Unified budget and theory    & 1.75 & Discussion, ethics, limits    & 1.0 \\
+Benchmark design             & 1.75 & Related work, conclusion      & 1.0 \\
+\midrule
+\multicolumn{3}{@{}l}{\textbf{Body (USENIX 13-page limit)}} & \textbf{11.75} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent
+About five to six months. The ingest, harness and certificate engine exist; the
+new work is the fault and environment budget terms, the evasion construction, and the
+benchmark packaging and release. An ethics subsection is mandatory: the evasion
+method is dual-use, and following the parent's evasion analysis, it is presented
+with its mitigation (invariant-based monitoring, and source-agnostic
+certification) in the same section, bounds what the attacker achieves, and
+targets a defensive artifact.
+
+\small
+\bibliographystyle{plain}
+\bibliography{proposals}
+
+\end{document}

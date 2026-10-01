@@ -1,0 +1,304 @@
+% =====================================================================
+%  PAPER III -- from the CERTIFLIGHT concept (MSCA O3/T3/T4, WP4).
+%  Target: NeurIPS (main track).
+%
+%  Standalone. Set as Overleaf's main document; pdfLaTeX + BibTeX.
+%    pdflatex PaperIII_certified_constrained_marl && bibtex PaperIII_certified_constrained_marl \
+%      && pdflatex PaperIII_certified_constrained_marl && pdflatex PaperIII_certified_constrained_marl
+% =====================================================================
+\documentclass[11pt,a4paper]{article}
+\input{proposal_preamble}
+\usepackage{array}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\Rmin}{R_{\min}}
+\newcommand{\Ri}{R_i}
+\newcommand{\prov}[1]{\textsc{\small[#1]}}
+% Quantifier-level labels (defined in full in Paper II; referenced here).
+\newcommand{\Qlvl}[1]{\textbf{Q}\textsubscript{\textit{#1}}}
+\newcommand{\Qop}{\Qlvl{op}}
+\newcommand{\Qpop}{\Qlvl{pop}}
+
+\begin{document}
+
+\proposalheader
+  {Paper III --- Certified-Constrained MARL}
+  {Certificates as Constraints: Feasibility-Preserving Multi-Agent Reinforcement
+   Learning for Swarms Whose Guarantees Degrade}
+  {Research proposal from the CERTIFLIGHT concept (WP4) $\cdot$ RobustUAVs.ai
+   $\cdot$ Roger Nick Anaedevha $\cdot$ 2026-10-01\\
+   Target: NeurIPS, main track $\cdot$ builds on the parent
+   manuscript~\cite{parentpaper} and Papers~I--II}
+
+\begin{abstract}
+\noindent
+Safe reinforcement learning offers two kinds of guarantee and neither is the one
+a safety-critical fleet needs. Lagrangian methods satisfy constraints
+\emph{in expectation} over a horizon; barrier and shielding methods give
+\emph{pointwise} guarantees but read their constraint sets from hand-specified
+margins. We study the case where the constraint set is instead the output of a
+formal robustness certificate that is itself \emph{time-varying and
+observation-dependent}: each agent carries a certified navigation radius
+$\Ri(t)$ that shrinks as the agent is jammed or faulted, and may hold a task only
+while $\Ri(t)$ exceeds the radius that task provably requires. This couples a
+certificate to a constrained Markov decision process in a way the safe-RL
+literature has not analysed, because the feasible set moves as a function of the
+observation the policy is still learning to act on. We give three results: a
+projection safety layer that preserves pointwise feasibility at every step of
+\emph{both learning and deployment} whenever a feasible assignment exists; an
+exact, checkable condition for when one exists, via a deficiency form of Hall's
+theorem; and a bound on coverage loss as a function of the fraction of agents
+whose certificate has collapsed, matching a brute-force oracle in simulation. The
+contribution is not a new RL algorithm but a correctness analysis of
+certificate-as-constraint, with the certificate taken as an adversarially
+moving object rather than a fixed box.
+\end{abstract}
+
+% =====================================================================
+\section{The problem the existing guarantees miss}
+% =====================================================================
+A swarm flies a coverage mission --- urban-corridor monitoring, environmental
+transects, point-to-point medical delivery. Each aircraft's navigation stack
+carries a certificate (the parent manuscript's~\cite{parentpaper}, or any
+producing a radius $\Ri(t)$: the largest position error under which the aircraft
+still completes its assigned task). Under jamming or a sensor fault, $\Ri(t)$
+shrinks. Below the radius a task requires, the aircraft can no longer be trusted
+with it, and the fleet must re-allocate.
+
+The decision --- which aircraft holds which task, as certificates move --- is a
+constrained sequential control problem. The safe-RL literature has the pieces
+and not the composition:
+
+\begin{itemize}
+\item \textbf{Lagrangian constrained RL}~\cite{achiam2017cpo,paternain2019zeroduality}
+  satisfies constraints \emph{in expectation over the horizon}. A fleet that
+  violates a safety radius on $5\%$ of steps but satisfies it on average is not
+  acceptable; expectation is the wrong quantifier for flight.
+\item \textbf{Shielding and control barrier functions}~\cite{alshiekh2018shielding,ames2019cbf}
+  give pointwise guarantees, but from a \emph{hand-specified} safe set. The
+  margin is an engineering choice disconnected from any formal statement about
+  the perception stack.
+\item \textbf{Certified RL}~\cite{wu2022crop,yang2024carol} certifies a policy
+  against an observation-perturbation ball, single-agent, with the ball fixed in
+  advance. It never feeds a certificate into a \emph{fleet-level} constraint.
+\end{itemize}
+
+\noindent
+The gap is specific: \textbf{no analysis treats the constraint set of a
+multi-agent policy as the output of a formal certificate that varies with the
+observation.} That is the object here, and it is harder than a fixed constraint
+because the feasible region the policy must stay inside is itself a function of
+the jamming the policy is reacting to.
+
+% =====================================================================
+\section{Setup}
+% =====================================================================
+A fleet of $N$ agents and $M$ tasks is a constrained Markov decision
+process~\cite{altman1999cmdp} $(\mathcal S,\mathcal A,P,r,\{c_i\})$. Agent $i$'s
+state includes its certified radius $\Ri(t)$, computed online by the perception
+certificate from locally estimated jamming and fault conditions. An allocation
+$\pi$ assigns agents to tasks to maximise coverage, subject to the pointwise
+constraints
+\begin{equation}
+\label{eq:constraint}
+c_i:\quad \Ri(t)\;\ge\;\Rmin(\tau_i)\quad\text{whenever agent $i$ holds task
+$\tau_i$, at every $t$.}
+\end{equation}
+We take $\Ri(t)$ as given by the certificate and treat it, adversarially, as an
+arbitrary bounded cadlag process --- no distributional assumption, because a
+jammer is not a distribution. $\Rmin(\tau)$ is the task's required radius, from
+the mission geometry.
+
+% =====================================================================
+\section{Three results}
+% =====================================================================
+\subsection{Feasibility preservation (T3)}
+\begin{proposition}[Projection preserves pointwise feasibility]
+\label{pr:feas}
+Let $\mathcal F(t)$ be the set of assignments satisfying
+\eqref{eq:constraint} at the current radii $\Ri(t)$. If the policy's proposed
+assignment $a_t$ is replaced by its projection $\Pi_{\mathcal F(t)}(a_t)$ onto
+the feasible set whenever $\mathcal F(t)\neq\varnothing$, then every executed
+assignment satisfies
+\eqref{eq:constraint} pointwise, during learning and deployment alike, regardless
+of the policy's parameters.
+\end{proposition}
+\noindent
+The content is not the projection --- that is immediate once $\mathcal F(t)$ is
+known --- but that it holds \emph{during learning}, so a half-trained policy
+never flies an infeasible assignment, and that $\mathcal F(t)$ is cheap to
+represent (next section). This is what lets a certificate replace a hand-tuned
+barrier margin: the margin becomes a computed, auditable quantity.
+
+\subsection{When a feasible assignment exists (T3, exactly)}
+Feasibility is a bipartite matching: an edge joins agent $i$ to task $j$ iff
+$\Ri(t)\ge\Rmin(\tau_j)$. A full assignment exists iff the matching saturates the
+tasks, and Hall's theorem~\cite{hall1935} gives the condition. We use its
+deficiency form, specialised to the \emph{nested} structure that
+\eqref{eq:constraint} forces --- an agent that qualifies for a demanding task
+qualifies for every easier one --- which collapses the exponential Hall check to
+a linear one.
+
+\begin{proposition}[Checkable feasibility]
+\label{pr:hall}
+Sort task requirements descending, $\rho_1\ge\cdots\ge\rho_M$, and let
+$n(\rho)=|\{i:\Ri(t)\ge\rho\}|$. The maximum number of tasks simultaneously
+coverable is $M-d$, where the deficiency is
+\[
+d \;=\; \max_{1\le k\le M}\ \big(k-n(\rho_k)\big)^{+}.
+\]
+A full assignment exists iff $d=0$, checkable in $O(N+M\log M)$.
+\end{proposition}
+
+\begin{proposition}[$k$-robust coverage]
+\label{pr:krobust}
+Full coverage survives the collapse of any $k$ agents' certificates iff
+$n(\rho_j)\ge j+k$ for every $j$. The largest such $k$ is the fleet's coverage
+margin: the number of simultaneous certificate failures it tolerates with no
+coverage loss.
+\end{proposition}
+
+\begin{honestly}
+Both propositions are elementary once the nested structure is seen; the
+contribution is seeing it, and that it makes an otherwise NP-flavoured
+fleet-robustness question a linear-time check an onboard planner can run every
+control step. We verified both against a brute-force matching oracle over 3000
+random instances: exact agreement on the coverage count and on the $k$-robust
+condition. That is a sanity check on the math, not evidence about flight.
+\end{honestly}
+
+\subsection{Coverage loss as certificates degrade (T4)}
+\begin{proposition}[Coverage-degradation bound]
+\label{pr:coverage}
+If a fraction $\phi$ of agents have $\Ri(t)$ below the median task requirement,
+coverage loss is at most $\lceil\phi N\rceil$ tasks, and exactly
+$M-(M-d_\phi)$ with $d_\phi$ the deficiency of Proposition~\ref{pr:hall}
+recomputed on the degraded radii. The resulting curve, coverage versus $\phi$,
+is the operational trade-off between per-agent robustness investment and the
+fleet size needed for a target coverage guarantee.
+\end{proposition}
+\noindent
+Classical coverage control has results for \emph{failed} (binary) agents
+\cite{cortes2004coverage}; the novelty is a bound parameterised by
+\emph{continuous} certified-capability degradation, which is what a procurement
+decision turns on --- how many aircraft, carrying how good a navigation stack, to
+hold a coverage SLA under a given jamming level.
+
+% =====================================================================
+\section{What is proposed, and what is already in hand}
+% =====================================================================
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}P{0.34\linewidth}Y@{}}
+\toprule
+\textbf{In hand} & \textbf{To build} \\
+\midrule
+A certificate producing $\Ri(t)$ from jamming/fault state (parent manuscript;
+$\gamma=1.625$\,m/s campaign supremum) &
+the CMDP, the projection layer, and the learned allocation policy \\
+A physics-informed fleet simulator, \code{MAX\_FLEET}=12, ten attack classes &
+a jamming/fault/gust schedule driving $\Ri(t)$ per agent over the mission \\
+Propositions \ref{pr:feas}--\ref{pr:coverage}, brute-force-checked &
+the empirical study: feasibility violations, coverage curves, scaling \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =====================================================================
+\section{Experimental plan}
+% =====================================================================
+\begin{description}[leftmargin=2.6em,style=nextline]
+\item[RQ1] Does the projection layer achieve \emph{zero} pointwise violations
+  during training, where a PPO-Lagrangian baseline~\cite{yu2022mappo,achiam2017cpo}
+  achieves only in-expectation satisfaction? Report per-step violation counts,
+  not episode averages.
+\item[RQ2] How does the measured coverage-versus-$\phi$ curve compare to the
+  bound of Proposition~\ref{pr:coverage}, across jamming intensities and fault
+  and gust profiles?
+\item[RQ3] How does the certified-constraint policy compare to
+  jamming-blind and worst-case-fixed-margin baselines on coverage and on
+  completion?
+\item[RQ4] At what fleet size and task count does the projection step stop being
+  real-time? Report the scalability ceiling rather than hiding it.
+\end{description}
+
+\paragraph{Baselines.} Jamming-blind MAPPO~\cite{yu2022mappo}; PPO-Lagrangian
+and CPO~\cite{achiam2017cpo}; shielded MADDPG~\cite{lowe2017maddpg,alshiekh2018shielding};
+QMIX~\cite{rashid2018qmix}; and a worst-case fixed-margin allocator. The point of
+the comparison is to separate what the \emph{learned policy} achieves from what
+the \emph{guarantee mechanism} enforces --- so every method is reported both with
+and without the projection layer.
+
+\paragraph{Why NeurIPS and not a robotics venue.} The result is about the
+quantifier on a learned constraint --- pointwise versus in-expectation, under a
+constraint set that is itself a certified, adversarially moving object. That is a
+learning-theory and safe-RL contribution. The UAV swarm is the setting that makes
+it concrete and gives it a benchmark, not the contribution itself.
+
+% =====================================================================
+\section{Relation to the other papers and to the parent}
+% =====================================================================
+\begin{itemize}
+\item \textbf{Parent manuscript / Paper~I} supply $\Ri(t)$. Paper~III consumes it.
+  The interface is exactly the certified radius; nothing about how it is computed
+  leaks into the CMDP analysis, which is why Paper~III stands if the certificate
+  is swapped.
+\item \textbf{Paper~II (SoK)} places this work at its \Qop{}/\Qpop{} boundary:
+  pointwise feasibility is a per-operation guarantee, the coverage bound a
+  per-population one. Paper~III is a worked instance of a sound \Qop$\to$\Qpop{}
+  lift.
+\item \textbf{Distinct from all three} in object: Papers I, II and the parent are
+  about a certificate; Paper~III is about a \emph{controller that consumes}
+  one.
+\end{itemize}
+
+% =====================================================================
+\section{Risks}
+% =====================================================================
+\begin{itemize}
+\item \textbf{The analysis could outrun the experiments.} The three propositions
+  are the contribution and are already proved and checked; the RL study is
+  supporting evidence. If MARL training is unstable at the target fleet size, the
+  paper reports the projection layer's guarantees (which hold for \emph{any}
+  policy, including a random one) and the scalability ceiling, and still stands.
+\item \textbf{$\Ri(t)$ is only as good as the certificate.} Paper~III assumes it;
+  if the certificate is loose, constraints are conservative and coverage
+  suffers, but feasibility and the bounds are unaffected. This dependence is
+  stated, not hidden.
+\item \textbf{Sim-to-real.} The study is in simulation. The host's UAV testbed is
+  the path to a hardware vignette; it is a strengthener, not a dependency, and
+  over-claiming transfer from simulation is the failure mode to avoid.
+\item \textbf{Novelty challenge (``this is just matching + shielding'').} Pre-empt
+  it: the novelty is the \emph{coupling} --- a formal perception certificate as a
+  time-varying CMDP constraint with feasibility preserved \emph{during learning}
+  --- and the linear-time feasibility and $k$-robustness conditions that the
+  nested structure of certified radii makes possible.
+\end{itemize}
+
+% =====================================================================
+\section{Page plan and timeline}
+% =====================================================================
+\begin{center}\small
+\begin{tabular}{@{}lr@{\qquad}lr@{}}
+\toprule
+\textbf{Section} & \textbf{pp} & \textbf{Section} & \textbf{pp} \\
+\midrule
+Introduction                 & 1.0  & Experiments                 & 2.5 \\
+Related work                 & 1.0  & Discussion and limitations  & 0.75 \\
+Setup (CMDP, certificate)    & 1.0  & Conclusion                  & 0.25 \\
+Theory (Prop.\ 1--4)         & 2.0  & (appendix: proofs, uncapped)& --- \\
+\midrule
+\multicolumn{3}{@{}l}{\textbf{Body, within a 9-page NeurIPS limit}} & \textbf{8.5} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent
+About four to five months, and the theory is done, so writing can begin while the
+RL study runs. The simulator and certificate exist; the new engineering is the
+CMDP wrapper, the projection layer and the degradation schedule.
+
+\small
+\bibliographystyle{plain}
+\bibliography{proposals}
+
+\end{document}
