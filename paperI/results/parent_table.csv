@@ -1,0 +1,7 @@
+m,theta_star_s,certified_at_0p25,B_noauthgain_s
+2.0,0.189,False,-0.122
+5.0,0.472,True,0.444
+10.0,0.944,True,1.388
+20.0,1.888,True,3.277
+gamma_req@10,6.137,,
+m_min_unauth,2.648,,

@@ -1,0 +1,100 @@
+% =====================================================================
+% Fig. 1 -- Methodological framework of the certified budget.
+% Four stages left to right; a validation loop returns along the bottom.
+% Requires: tikz with arrows.meta, positioning, fit, backgrounds, calc.
+% =====================================================================
+\begin{figure*}[t]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  font=\footnotesize,
+  >={Stealth[length=2.2mm]},
+  inbox/.style={draw=black!55, rounded corners=2pt, fill=gray!8, align=center,
+                text width=29mm, minimum height=10mm, inner sep=2.5pt},
+  model/.style={draw=black!55, rounded corners=2pt, fill=orange!10, align=center,
+                text width=33mm, minimum height=10mm, inner sep=2.5pt},
+  core/.style={draw=black!80, thick, rounded corners=3pt, fill=blue!7,
+               align=center, text width=47mm, inner sep=4pt},
+  outbox/.style={draw=black!55, rounded corners=2pt, fill=green!8, align=left,
+                 text width=36mm, minimum height=7.5mm, inner sep=2.5pt},
+  lane/.style={draw=black!25, dashed, rounded corners=4pt, inner sep=4pt},
+  lbl/.style={font=\scriptsize\bfseries, text=black!70},
+  rq/.style={font=\scriptsize\bfseries\itshape, text=red!60!black},
+  flow/.style={->, draw=black!70, line width=0.6pt},
+  fb/.style={->, draw=red!60!black, line width=0.6pt, dashed}
+]
+% ---------------- (1) inputs ------------------------------------------
+\node[inbox] (par) {\textbf{Parent certificate}\\ $\Delta(\theta)\le H\min(\theta,s)$;\ $L,\,T_c,\,m$};
+\node[inbox, below=2.2mm of par] (fl) {\textbf{Real attack flights}\\ 674 post-onset $\gamma_\delta$ samples};
+\node[inbox, below=2.2mm of fl] (lit) {\textbf{Specifications}\\ FIPS 204/205, pqm4,\\ MAVLink~2, OSNMA};
+\node[inbox, below=2.2mm of lit] (bus) {\textbf{Real bus capture}\\ HCRL UAVCAN $\Rightarrow U_0$};
+\node[lane, fit=(par)(bus)] (L1) {};
+\node[lbl, above=0.4mm of L1] {(1) Inputs, provenance-tagged};
+
+% ---------------- (2) component models --------------------------------
+\node[model, right=8mm of par] (sens) {\textbf{Sensing side} \textcolor{red!60!black}{\textit{RQ1}}\\ $\gamma_{\mathrm{u}},\gamma_{\mathrm{a}}$;\ envelopes $\delta_{\mathrm{u}}(\tau),\delta_{\mathrm{a}}(\tau)$};
+\node[model, below=2.2mm of sens] (crypto) {\textbf{Cryptographic side} \textcolor{red!60!black}{\textit{RQ2}}\\ $t_{\mathrm{sign}}+R_{\mathrm{tx}}(r,U_0)+t_{\mathrm{ver}}+t_{\mathrm{proto}}$};
+\node[model, below=2.2mm of crypto] (clk) {\textbf{Time side} \textcolor{red!60!black}{\textit{RQ4}}\\ $\tau_{\mathrm{fresh}}$,\ $\varepsilon_{\mathrm{clk}}(t)$,\ push rate $\nu$};
+\node[model, below=2.2mm of clk] (adv) {\textbf{Adversary side} \textcolor{red!60!black}{\textit{RQ5}}\\ $\rho_{\mathrm{iv}}=t_{\mathrm{ver}}/(nC_{\mathrm{f}})$,\ CPU share $\beta$};
+\node[lane, fit=(sens)(adv)] (L2) {};
+\node[lbl, above=0.4mm of L2] {(2) Component models};
+
+% ---------------- (3) certified budget --------------------------------
+\node[core, right=8mm of L2] (core) {\textbf{Certified budget}\\[3pt]
+  $\rho=\Delta_{\mathrm{eff}}\;\gamma_{\mathrm{eff}}\;e^{LT_c}\;\le\;m$\\[3pt]
+  $\Delta_{\mathrm{eff}}=\min\!\big(\Delta(\theta),\,\tau_{\mathrm{fresh}}{+}\varepsilon_{\mathrm{clk}}\big)+\Delta_{\mathrm{auth}}$\\[5pt]
+  \begin{tabular}{@{}l@{}}
+  P1\ \ crossover $C(\theta)$\\
+  P2\ \ affordability vs.\ benefit\\
+  T1\ \ horizon-matched crossover\\
+  P3\ \ cliff at $r^\star$\\
+  P4\ \ delay vs.\ denial regime\\
+  P5\ \ clock push $\Rightarrow$ denial\\
+  P6\ \ induced verification
+  \end{tabular}};
+\node[lbl, above=0.6mm of core] {(3) Theory (Sec.~III)};
+
+% ---------------- (4) decisions ---------------------------------------
+\node[outbox, right=8mm of core, yshift=19mm] (o1) {Crossover map, $\theta_{\times}$ per scheme\ \textcolor{red!60!black}{\textit{RQ3}}};
+\node[outbox, below=2mm of o1] (o2) {Admissible rate $r^\star$ per transport};
+\node[outbox, below=2mm of o2] (o3) {Freshness binding, denial horizon};
+\node[outbox, below=2mm of o3] (o4) {Flood safety and mitigation};
+\node[outbox, below=2mm of o4, fill=green!18] (o5) {\textbf{Selection rule}: cheapest certified (scheme, $k$, mitigation)};
+\node[lane, fit=(o1)(o5)] (L4) {};
+\node[lbl, above=0.4mm of L4] {(4) Decisions (Sec.~V)};
+
+% ---------------- flows -------------------------------------------------
+\draw[flow] (fl.east)  -- ++(3mm,0) |- (sens.west);
+\draw[flow] (par.east) -- (sens.west |- par.east);
+\draw[flow] (lit.east) -- ++(3mm,0) |- (crypto.west);
+\draw[flow] (lit.east) -- ++(3mm,0) |- (clk.west);
+\draw[flow] (bus.east) -- ++(3mm,0) |- (adv.west);
+\draw[flow] (bus.east) -- ++(3mm,0) |- ([yshift=-2mm]crypto.west);
+\draw[flow] (L2.east) -- (core.west);
+\foreach \o in {o1,o2,o3,o4,o5} \draw[flow] (core.east) -- (\o.west);
+
+% ---------------- (5) validation loop ----------------------------------
+\path let \p1=(L1.west), \p2=(L4.east), \p3=(L2.south) in
+  node[draw=red!50!black, rounded corners=2pt, fill=red!5, align=center,
+       text width={\x2-\x1-8pt}, inner sep=3pt, anchor=north west] (val)
+  at (\x1,\y3-9mm)
+ {\textbf{(5) Validation and replacement loop (Sec.~IV-G)}:\ \
+  response-time bound vs.\ discrete-event simulation\ \textbullet\
+  PX4 SITL spoofer sweep and cruise (E3)\ \textbullet\
+  STM32H7 cycle counts (E4)\ \textbullet\ raw-bus timing (E5)\ \textbullet\
+  GNSS time push (E7)};
+\draw[fb] (L1.south |- val.north) -- (L1.south)
+  node[midway, right, font=\scriptsize, text=red!60!black]{replaces \textsc{literature}/\textsc{model} inputs};
+\draw[fb] (L4.south |- val.north) -- (L4.south)
+  node[midway, left, font=\scriptsize, text=red!60!black]{numbers regenerate};
+\end{tikzpicture}}
+\caption{Methodological framework. (1)~Every input carries a provenance tag: measured on
+real flights or buses, derived, taken from a specification, or modelled. (2)~Four component
+models quantify the two sides of the trade, sensing and cryptography, together with time
+and the flooding adversary. (3)~The certified budget composes them into one inequality in
+metres, from which the propositions follow. (4)~The decisions an engineer needs are read off
+the budget. (5)~Simulation and hardware experiments replace modelled inputs with measured
+ones; because every number in the paper is generated from result files, a replacement
+propagates to the text automatically.}
+\label{fig:framework}
+\end{figure*}
