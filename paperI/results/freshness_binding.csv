@@ -1,0 +1,17 @@
+theta,delta_theta_s,window,tau_fresh_s,binding,margin_s,holdover_to_loss_XO_s,holdover_to_loss_TCXO_s,holdover_to_loss_OCXO_s
+0.178,0.356,MAVLink 2 (60 s),60.0,False,-59.644,0,0,0
+0.178,0.356,OSNMA T_L (30 s),30.0,False,-29.644,0,0,0
+0.178,0.356,OSNMA max (165 s),165.0,False,-164.644,0,0,0
+0.178,0.356,tight (theta),0.178,True,0.178,8898.0,88802.9,3441556.9
+0.25,0.5,MAVLink 2 (60 s),60.0,False,-59.5,0,0,0
+0.25,0.5,OSNMA T_L (30 s),30.0,False,-29.5,0,0,0
+0.25,0.5,OSNMA max (165 s),165.0,False,-164.5,0,0,0
+0.25,0.5,tight (theta),0.25,True,0.25,12496.1,124611.8,4772255.8
+1.0,2.0,MAVLink 2 (60 s),60.0,False,-58.0,0,0,0
+1.0,2.0,OSNMA T_L (30 s),30.0,False,-28.0,0,0,0
+1.0,2.0,OSNMA max (165 s),165.0,False,-163.0,0,0,0
+1.0,2.0,tight (theta),1.0,True,1.0,49937.7,493901.5,17082039.3
+5.0,10.0,MAVLink 2 (60 s),60.0,False,-50.0,0,0,0
+5.0,10.0,OSNMA T_L (30 s),30.0,False,-20.0,0,0,0
+5.0,10.0,OSNMA max (165 s),165.0,False,-155.0,0,0,0
+5.0,10.0,tight (theta),5.0,True,5.0,248456.7,2360679.8,61803398.9
