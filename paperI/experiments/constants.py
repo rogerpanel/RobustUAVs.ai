@@ -72,13 +72,72 @@ class GammaScenario:
         return self.gamma_u / self.gamma_a
 
 
+# --------------------------------------------------------------------------
+# Measured overrides (runbook ground rule 2)
+#
+# A measured value never silently replaces a literature value or a proxy. Each
+# override below is read from a runbook result file only when that file
+# exists; otherwise the original value stands. Every decision, either way, is
+# recorded in results/provenance_paperI.csv by write_provenance().
+# --------------------------------------------------------------------------
+PROVENANCE: list[dict] = []
+
+
+def _note(name, used, source, value_used, fallback, measured_file, detail=""):
+    PROVENANCE.append(dict(constant=name, used=used, source=source,
+                           value_used=value_used, fallback_value=fallback,
+                           measured_file=measured_file, detail=detail))
+
+
+def _read_rows(name: str) -> list[dict] | None:
+    import csv
+    p = OUT / name
+    if not p.exists():
+        return None
+    with p.open() as fh:
+        return list(csv.DictReader(fh))
+
+
+# E1: dead reckoning after GNSS rejection, measured on the benign flight.
+# The proxy it tests is the jamming flight's EKF supremum in the [0.4,1) s
+# bin (results/gamma_campaign_bins.csv), i.e. GAMMA_JAM_EKF_SUP.
+E1_ROWS = _read_rows("e1_inertial_gamma.csv")
+GAMMA_DR = GAMMA_DR_CI = None
+_ga_head, _ga_cons, _ga_tag = GAMMA_JAM_EKF_SUP, GAMMA_JAM_RX_SUP, "measured_proxy"
+if E1_ROWS:
+    _b = next((r for r in E1_ROWS if r["tau_bin"] == "[0.4,1)"), None)
+    if _b is not None:
+        GAMMA_DR = float(_b["gamma_sup"])
+        GAMMA_DR_CI = (float(_b["sup_ci_lo"]), float(_b["sup_ci_hi"]))
+        if not (GAMMA_DR_CI[0] <= GAMMA_JAM_EKF_SUP <= GAMMA_DR_CI[1]):
+            _ga_head, _ga_cons, _ga_tag = GAMMA_DR, GAMMA_DR_CI[1], "measured"
+            _note("gamma_a (headline, conservative)", "measured", "e1_inertial_gamma.csv",
+                  f"{GAMMA_DR} / {GAMMA_DR_CI[1]}",
+                  f"{GAMMA_JAM_EKF_SUP} / {GAMMA_JAM_RX_SUP}", "e1_inertial_gamma.csv",
+                  f"proxy {GAMMA_JAM_EKF_SUP} lies outside the dead-reckoning "
+                  f"bootstrap interval {GAMMA_DR_CI}; headline uses the measured "
+                  "supremum, conservative its upper bound, secant is unchanged")
+        else:
+            _note("gamma_a (headline, conservative)", "proxy", "jamming flight (proxy)",
+                  f"{GAMMA_JAM_EKF_SUP} / {GAMMA_JAM_RX_SUP}",
+                  f"{GAMMA_JAM_EKF_SUP} / {GAMMA_JAM_RX_SUP}", "e1_inertial_gamma.csv",
+                  f"dead reckoning measured {GAMMA_DR} {GAMMA_DR_CI}: the proxy lies "
+                  "inside its interval, so the difference is not resolved; proxy kept")
+if not E1_ROWS or GAMMA_DR is None:
+    _note("gamma_a (headline, conservative)", "proxy", "jamming flight (proxy)",
+          f"{GAMMA_JAM_EKF_SUP} / {GAMMA_JAM_RX_SUP}",
+          f"{GAMMA_JAM_EKF_SUP} / {GAMMA_JAM_RX_SUP}", "",
+          "E1 result absent (raw Whelan logs not staged); proxy used")
+
 GAMMA_SCENARIOS = [
-    GammaScenario("conservative", GAMMA_SPOOF_EKF_SUP, GAMMA_JAM_RX_SUP,
-                  "measured_proxy",
-                  "gamma_a = largest jamming rate over either error signal"),
-    GammaScenario("headline", GAMMA_SPOOF_EKF_SUP, GAMMA_JAM_EKF_SUP,
-                  "measured_proxy",
-                  "EKF signal on both sides (the signal the certificate consumes)"),
+    GammaScenario("conservative", GAMMA_SPOOF_EKF_SUP, _ga_cons, _ga_tag,
+                  "gamma_a = largest jamming rate over either error signal"
+                  if _ga_tag == "measured_proxy" else
+                  "gamma_a = upper bootstrap bound of measured dead reckoning (E1)"),
+    GammaScenario("headline", GAMMA_SPOOF_EKF_SUP, _ga_head, _ga_tag,
+                  "EKF signal on both sides (the signal the certificate consumes)"
+                  if _ga_tag == "measured_proxy" else
+                  "gamma_a = measured dead reckoning after rejection (E1)"),
     GammaScenario("secant", GAMMA_SPOOF_EKF_SECANT, GAMMA_JAM_EKF_SECANT,
                   "measured_proxy",
                   "per-flight peak secant rates (coarser calibration)"),
@@ -160,7 +219,43 @@ def hcrl_benign_rates() -> list[float]:
         return [float(r["normal_rate_fps"]) for r in csv.DictReader(fh)]
 
 
-CAN_BITRATE = 1e6        # DroneCAN default, bit/s             [assumption: HCRL bitrate unconfirmed]
+CAN_BITRATE_ASSUMED = 1e6  # DroneCAN default, bit/s           [assumption]
+
+# E5: measured bus properties from the raw HCRL capture. The bitrate is
+# replaced only when E5's lower bound leaves a single standard rate; an
+# inconclusive bound keeps the assumption and says so.
+E5_ROWS = _read_rows("e5_hcrl_bus.csv")
+CAN_BITRATE = CAN_BITRATE_ASSUMED
+if E5_ROWS:
+    _pooled = next((r for r in E5_ROWS if r["scenario"] == "pooled"), None)
+    if _pooled is not None and _pooled.get("bitrate_measured"):
+        CAN_BITRATE = float(_pooled["bitrate_measured"])
+        _note("CAN_BITRATE", "measured", "e5_hcrl_bus.csv", CAN_BITRATE,
+              CAN_BITRATE_ASSUMED, "e5_hcrl_bus.csv", _pooled["bitrate_verdict"])
+    else:
+        _note("CAN_BITRATE", "assumption", "DroneCAN default", CAN_BITRATE,
+              CAN_BITRATE_ASSUMED, "e5_hcrl_bus.csv",
+              (_pooled or {}).get("bitrate_verdict", "no pooled row"))
+else:
+    _note("CAN_BITRATE", "assumption", "DroneCAN default", CAN_BITRATE,
+          CAN_BITRATE_ASSUMED, "", "E5 result absent (raw HCRL capture not staged)")
+
+
+def hcrl_measured_mix() -> list[tuple[float, float, float]] | None:
+    """Per-scenario (benign frame rate, mean frame bits worst-case, nominal)
+    from E5, or None when E5 has not been run."""
+    if not E5_ROWS:
+        return None
+    return [(float(r["rate_fps"]), float(r["mean_frame_bits_worst"]),
+             float(r["mean_frame_bits_nominal"]))
+            for r in E5_ROWS if r["scenario"] != "pooled"]
+
+
+_note("U0 frame model", "measured" if E5_ROWS else "assumption",
+      "e5_hcrl_bus.csv DLC mix" if E5_ROWS else "8-byte worst case",
+      "measured DLC mix" if E5_ROWS else "8 B per frame", "8 B per frame",
+      "e5_hcrl_bus.csv" if E5_ROWS else "",
+      "" if E5_ROWS else "E5 result absent; every benign frame taken as 8 B")
 CANFD_ARB_RATE = 1e6     # CAN FD arbitration phase, bit/s     [assumption]
 CANFD_DATA_RATE = 5e6    # CAN FD data phase, bit/s            [assumption]
 
@@ -173,3 +268,14 @@ BETA_CPU = 0.20          # [assumption; swept in the paper 0.05..1]
 TAU_FRESH_MAVLINK = 60.0   # MAVLink 2 signing accepts up to 1 min behind  [literature]
 TAU_FRESH_OSNMA = 30.0     # OSNMA loose-sync T_L for ADKD0/4              [literature]
 TAU_FRESH_OSNMA_MAX = 165.0  # receiver-guideline upper value              [literature]
+
+
+def write_provenance() -> None:
+    """Record which value each runbook-overridable constant used, and why."""
+    import csv
+    p = OUT / "provenance_paperI.csv"
+    with p.open("w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(PROVENANCE[0]), lineterminator="\n")
+        w.writeheader()
+        w.writerows(PROVENANCE)
+    print(f"-> {p} ({len(PROVENANCE)} decisions)")

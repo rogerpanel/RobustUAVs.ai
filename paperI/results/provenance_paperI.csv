@@ -1,0 +1,4 @@
+constant,used,source,value_used,fallback_value,measured_file,detail
+"gamma_a (headline, conservative)",proxy,jamming flight (proxy),0.9331 / 1.2309,0.9331 / 1.2309,,E1 result absent (raw Whelan logs not staged); proxy used
+CAN_BITRATE,assumption,DroneCAN default,1000000.0,1000000.0,,E5 result absent (raw HCRL capture not staged)
+U0 frame model,assumption,8-byte worst case,8 B per frame,8 B per frame,,E5 result absent; every benign frame taken as 8 B
