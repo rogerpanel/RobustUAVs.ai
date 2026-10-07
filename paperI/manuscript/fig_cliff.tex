@@ -1,0 +1,42 @@
+% Fig: the cliff. Worst-case response time of a signed transfer vs rate,
+% classic CAN with the HCRL-measured base load; data: figdata/cliff_*.dat
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=\columnwidth, height=56mm,
+  xmin=0, xmax=1.1, ymode=log, ymin=1, ymax=5000,
+  xlabel={signed message rate $r/r^\star$},
+  ylabel={latency of the signed transfer (ms)},
+  xtick={0,0.2,0.4,0.6,0.8,1.0},
+  legend style={font=\scriptsize, at={(0.5,-0.30)}, anchor=north, draw=none},
+  legend columns=2,
+  tick label style={font=\scriptsize}, label style={font=\small},
+  grid=major, grid style={gray!20},
+]
+\fill[red!8] (axis cs:1,1) rectangle (axis cs:1.1,5000);
+\addplot[thick, green!50!black, mark=*, mark size=1pt] table[x=frac, y=R] {figdata/cliff_ed25519.dat};
+\addlegendentry{Ed25519 ($r^\star{=}\nRstarEd$/s)}
+\addplot[thick, orange!80!black, mark=triangle*, mark size=1.3pt] table[x=frac, y=R] {figdata/cliff_fndsa512.dat};
+\addlegendentry{FN-DSA-512 ($\nRstarFal$/s)}
+\addplot[thick, blue!70!black, mark=square*, mark size=1pt] table[x=frac, y=R] {figdata/cliff_mldsa44.dat};
+\addlegendentry{ML-DSA-44 ($\nRstarML$/s)}
+\addplot[thick, red!70!black, mark=diamond*, mark size=1.3pt] table[x=frac, y=R] {figdata/cliff_slhdsa128s.dat};
+\addlegendentry{SLH-DSA-128s ($\nRstarSLHs$/s)}
+\addplot[thick, blue!70!black, dashed] table[x=frac, y=md1] {figdata/cliff_mldsa44.dat};
+\addlegendentry{ML-DSA-44, sporadic releases (mean)}
+\addplot[thin, black, densely dotted, domain=0:1.1, samples=2] {\nCopHead};
+\addlegendentry{benefit threshold $C(0.25)$}
+\draw[black, thick, dashed] (axis cs:1,1) -- (axis cs:1,5000);
+\node[font=\scriptsize, rotate=90, anchor=south] at (axis cs:1.0,30) {$R_{\mathrm{tx}}=\infty$ for $r\ge r^\star$};
+\end{axis}
+\end{tikzpicture}
+\caption{The cost is a cliff, not a slope (Proposition~\ref{pr:cliff}). Solid lines show the
+busy-period bound of a signed transfer with periodic releases on classic CAN at
+1\,Mbit/s, above the base load $U_0=\nUzeroMax$ derived from the HCRL UAVCAN capture. Below
+$r^\star$ the latency is essentially the transmission time of the signature; at $r^\star$
+the busy period no longer closes, and the latency, and with it the certificate, is
+unbounded. With sporadic (Poisson) releases the cliff softens into a slope (dashed), which
+crosses the benefit threshold $C(0.25)=\nCopHead$\,ms at $r\approx\nMDcross\,r^\star$.}
+\label{fig:cliff}
+\end{figure}

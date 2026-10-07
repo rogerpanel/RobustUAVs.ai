@@ -1,0 +1,475 @@
+% =====================================================================
+% Paper I -- new references (beyond the parent manuscript's bibliography)
+% Entries marked "% VERIFY" carry a detail that could not be checked from
+% a primary source in the drafting session; check before submission.
+% =====================================================================
+
+@misc{parentpaper,
+  author       = {{Anonymous}},
+  title        = {{From Wire to Flight: A Conditional Mission-Completion Guarantee for UAVs}},
+  year         = {2026},
+  note         = {Under submission; anonymised for double-blind review}}
+
+% ---------------- broadcast authentication / DoS-resistant verification
+@inproceedings{perrig2000tesla,
+  author    = {Perrig, Adrian and Canetti, Ran and Tygar, J. D. and Song, Dawn},
+  title     = {{Efficient Authentication and Signing of Multicast Streams over Lossy Channels}},
+  booktitle = {Proc. IEEE Symposium on Security and Privacy (S\&P)},
+  pages     = {56--73}, year = {2000}, doi = {10.1109/SECPRI.2000.848446}}
+
+@techreport{rfc4082,
+  author      = {Perrig, Adrian and Song, Dawn and Canetti, Ran and Tygar, J. D. and Briscoe, Bob},
+  title       = {{Timed Efficient Stream Loss-Tolerant Authentication (TESLA): Multicast Source Authentication Transform Introduction}},
+  institution = {IETF}, type = {RFC}, number = {4082}, year = {2005}}
+
+@article{perrig2002spins,
+  author  = {Perrig, Adrian and Szewczyk, Robert and Tygar, J. D. and Wen, Victor and Culler, David E.},
+  title   = {{SPINS}: Security Protocols for Sensor Networks},
+  journal = {Wireless Networks}, volume = {8}, number = {5}, pages = {521--534}, year = {2002}}
+
+@article{liu2004multilevel,
+  author  = {Liu, Donggang and Ning, Peng},
+  title   = {{Multilevel $\mu$TESLA}: Broadcast Authentication for Distributed Sensor Networks},
+  journal = {ACM Transactions on Embedded Computing Systems}, volume = {3}, number = {4},
+  pages   = {800--836}, year = {2004}}
+
+@inproceedings{dong2008prefilter,
+  author    = {Dong, Qi and Liu, Donggang and Ning, Peng},
+  title     = {{Pre-Authentication Filters: Providing DoS Resistance for Signature-Based Broadcast Authentication in Sensor Networks}},
+  booktitle = {Proc. 1st ACM Conference on Wireless Network Security (WiSec)},
+  year      = {2008}}
+
+@inproceedings{clogging2024v2v,
+  author    = {{(authors to be verified)}},
+  title     = {{Future-proofing Secure V2V Communication against Clogging DoS Attacks}},
+  booktitle = {Proc. 19th Int. Conf. on Availability, Reliability and Security (ARES)},
+  year      = {2024}, doi = {10.1145/3664476.3670932}} % VERIFY authors
+
+% ---------------- CAN / UAV link authentication
+@inproceedings{nurnberger2016vatican,
+  author    = {N{\"u}rnberger, Stefan and Rossow, Christian},
+  title     = {{-- vatiCAN -- Vetted, Authenticated CAN Bus}},
+  booktitle = {Cryptographic Hardware and Embedded Systems (CHES)}, series = {LNCS}, volume = {9813},
+  pages     = {106--124}, year = {2016}, doi = {10.1007/978-3-662-53140-2_6}}
+
+@inproceedings{radu2016leia,
+  author    = {Radu, Andreea-Ina and Garcia, Flavio D.},
+  title     = {{LeiA: A Lightweight Authentication Protocol for CAN}},
+  booktitle = {Computer Security -- ESORICS}, series = {LNCS}, volume = {9879},
+  pages     = {283--300}, year = {2016}, doi = {10.1007/978-3-319-45741-3_15}} % VERIFY bibliographic details
+
+@inproceedings{vanherrewege2011canauth,
+  author    = {Van Herrewege, Anthony and Singel{\'e}e, Dave and Verbauwhede, Ingrid},
+  title     = {{CANAuth -- A Simple, Backward Compatible Broadcast Authentication Protocol for CAN bus}},
+  booktitle = {ECRYPT Workshop on Lightweight Cryptography}, year = {2011}}
+
+@inproceedings{pese2021s2can,
+  author    = {Pes{\'e}, Mert D. and Schauer, Jay W. and Li, Junhui and Shin, Kang G.},
+  title     = {{S2-CAN}: Sufficiently Secure Controller Area Network},
+  booktitle = {Proc. Annual Computer Security Applications Conference (ACSAC)},
+  year      = {2021}} % VERIFY bibliographic details
+
+@misc{macsec_cansec2025,
+  author       = {{(authors to be verified)}},
+  title        = {{Robust Multicast Origin Authentication in MACsec and CANsec for Automotive Scenarios}},
+  howpublished = {arXiv:2502.20555}, year = {2025}} % VERIFY authors
+
+@misc{cia613,
+  author       = {{CAN in Automation}},
+  title        = {{CiA 613-2: CAN XL Security (CANsec)}},
+  howpublished = {CiA draft specification}, year = {2024}}
+
+@misc{mavlink_signing,
+  author       = {{MAVLink Development Team}},
+  title        = {{MAVLink Message Signing}},
+  howpublished = {\url{https://mavlink.io/en/guide/message_signing.html}},
+  note         = {Accessed 7 October 2026}}
+
+@article{koubaa2019mavlink,
+  author  = {Koub{\^a}a, Anis and Allouch, Azza and Alajlan, Maram and Javed, Yasir and Belghith, Abdelfettah and Khalgui, Mohamed},
+  title   = {{Micro Air Vehicle Link (MAVLink) in a Nutshell: A Survey}},
+  journal = {IEEE Access}, volume = {7}, pages = {87658--87680}, year = {2019},
+  doi     = {10.1109/ACCESS.2019.2924410}} % VERIFY bibliographic details
+
+@article{colton2025mavlink,
+  author  = {Colton, Zachary and Oracevic, Alma and Dilek, Selma},
+  title   = {{Timestamp Manipulation-Based GPS Spoofing Attacks on the MAVLink 2.0 Protocol for UAV Communication: An Empirical Study}},
+  journal = {IEEE Transactions on Communications}, year = {2025}} % VERIFY volume/pages
+
+@misc{kim2022uavcan,
+  author       = {Kim, Dongsung and Song, Yuchan and Kwon, Soonhyeon and Kim, Haerin and Yoo, Jeong Do and Kim, Huy Kang},
+  title        = {{UAVCAN Dataset Description}},
+  howpublished = {arXiv:2212.09268}, year = {2022}}
+
+% ---------------- post-quantum signatures and embedded benchmarks
+@techreport{fips204,
+  author = {{National Institute of Standards and Technology}},
+  title  = {{Module-Lattice-Based Digital Signature Standard}},
+  institution = {NIST}, type = {FIPS}, number = {204}, year = {2024}, doi = {10.6028/NIST.FIPS.204}}
+
+@techreport{fips205,
+  author = {{National Institute of Standards and Technology}},
+  title  = {{Stateless Hash-Based Digital Signature Standard}},
+  institution = {NIST}, type = {FIPS}, number = {205}, year = {2024}, doi = {10.6028/NIST.FIPS.205}}
+
+@techreport{fips203,
+  author = {{National Institute of Standards and Technology}},
+  title  = {{Module-Lattice-Based Key-Encapsulation Mechanism Standard}},
+  institution = {NIST}, type = {FIPS}, number = {203}, year = {2024}, doi = {10.6028/NIST.FIPS.203}}
+
+@techreport{nistir8547,
+  author      = {Moody, Dustin and Perlner, Ray and Regenscheid, Andrew and Robinson, Angela and Cooper, David},
+  title       = {{Transition to Post-Quantum Cryptography Standards}},
+  institution = {NIST}, type = {Internal Report (initial public draft)}, number = {8547}, year = {2024}} % VERIFY status
+
+@misc{kannwischer2019pqm4,
+  author       = {Kannwischer, Matthias J. and Rijneveld, Joost and Schwabe, Peter and Stoffelen, Ko},
+  title        = {{pqm4: Testing and Benchmarking NIST PQC on ARM Cortex-M4}},
+  howpublished = {IACR Cryptology ePrint Archive, Report 2019/844; benchmarks at \url{https://github.com/mupq/pqm4}},
+  year         = {2019}}
+
+@inproceedings{abdulrahman2025slothy,
+  author    = {Abdulrahman, Amin and Kannwischer, Matthias J. and Lim, Thing-Han},
+  title     = {{Enabling Microarchitectural Agility: Taking ML-KEM \& ML-DSA from Cortex-M4 to M7 with SLOTHY}},
+  booktitle = {Proc. ACM Asia Conference on Computer and Communications Security (AsiaCCS)},
+  year      = {2025}}
+
+@inproceedings{howe2023m7,
+  author    = {Howe, James and Westerbaan, Bas},
+  title     = {{Benchmarking and Analysing the NIST PQC Lattice-Based Signature Schemes Standards on the ARM Cortex M7}},
+  booktitle = {Progress in Cryptology -- AFRICACRYPT}, series = {LNCS}, volume = {14064},
+  pages     = {442--462}, year = {2023}, doi = {10.1007/978-3-031-37679-5_19}}
+
+@inproceedings{fujii2019curve25519,
+  author    = {Fujii, Hayato and Aranha, Diego F.},
+  title     = {{Curve25519 for the Cortex-M4 and Beyond}},
+  booktitle = {Progress in Cryptology -- LATINCRYPT 2017}, series = {LNCS}, volume = {11368},
+  year      = {2019}, doi = {10.1007/978-3-030-25283-0_6}}
+
+@inproceedings{campos2020lms,
+  author    = {Campos, Fabio and Kohlstadt, Tim and Reith, Steffen and St{\"o}ttinger, Marc},
+  title     = {{LMS vs XMSS: Comparison of Stateful Hash-Based Signature Schemes on ARM Cortex-M4}},
+  booktitle = {Progress in Cryptology -- AFRICACRYPT 2020}, series = {LNCS}, volume = {12174},
+  year      = {2020}, doi = {10.1007/978-3-030-51938-4_13}} % VERIFY bibliographic details
+
+@article{canfd_pqc2026,
+  author  = {{(authors to be verified)}},
+  title   = {{Design-Space Mapping of Post-Quantum Cryptographic Artifact Transport on CAN-FD: A Discrete-Event Simulation Study}},
+  journal = {Applied Sciences}, volume = {16}, number = {8}, pages = {3705}, year = {2026},
+  doi     = {10.3390/app16083705}} % VERIFY authors
+
+@misc{cifra,
+  author       = {Birr-Pixton, Joseph},
+  title        = {{cifra: A Collection of Cryptographic Primitives Targeted at Embedded Use}},
+  howpublished = {\url{https://github.com/ctz/cifra}}, note = {Non-peer-reviewed cycle counts}}
+
+% ---------------- GNSS authentication and time
+@article{galan2025osnma,
+  author  = {Galan-Figueras, Aleix and others},
+  title   = {{Improving Galileo OSNMA Time to First Authenticated Fix}},
+  journal = {IEEE Transactions on Aerospace and Electronic Systems}, year = {2025},
+  note    = {arXiv:2403.14739}} % VERIFY full author list
+
+@article{gotzelmann2023osnma,
+  author  = {G{\"o}tzelmann, Martin and K{\"o}ller, Eric and Viciano-Semper, Irma and Oskam, Daan and Gkougkas, Elias and Simon, Javier},
+  title   = {{Galileo Open Service Navigation Message Authentication: Preparation Phase and Drivers for Future Service Provision}},
+  journal = {NAVIGATION: Journal of the Institute of Navigation}, volume = {70}, number = {3}, year = {2023},
+  doi     = {10.33012/navi.572}}
+
+@misc{ardizzon2025crystal,
+  author       = {Ardizzon, Francesco and Laurenti, Nicola and Sarto, Cesare and Gamba, Giovanni and O'Driscoll, Cillian and Fern{\'a}ndez-Hern{\'a}ndez, Ignacio},
+  title        = {{Crystal Oscillators in OSNMA-Enabled Receivers: An Implementation View for Automotive Applications}},
+  howpublished = {arXiv:2501.15123}, year = {2025}}
+
+@misc{wang2025osnmaspoof,
+  author       = {Wang, Haocheng and Zhang, Yushi and Tan, Yuanqing and He, Jianbin and Zhao, Shuai and Xi, Ning and Shen, Yulong},
+  title        = {{Practical Spoofing Attacks against Galileo OSNMA with Time-Synchronization Manipulation}},
+  howpublished = {arXiv:2501.09246}, year = {2025}} % VERIFY author first names
+
+@misc{anderson2024timesync,
+  author       = {Anderson, Jason and Lo, Sherman and Walter, Todd},
+  title        = {{Time Synchronization of TESLA-enabled GNSS Receivers}},
+  howpublished = {arXiv:2407.13386}, year = {2024}}
+
+@inproceedings{anderson2017chimera,
+  author    = {Anderson, Jon M. and Carroll, Katherine L. and DeVilbiss, Nathan P. and Gillis, James T. and Hinks, Joanna C. and O'Hanlon, Brady W. and Rushanan, Joseph J. and Scott, Logan and Yazdi, Renee A.},
+  title     = {{Chips-Message Robust Authentication (Chimera) for GPS Civilian Signals}},
+  booktitle = {Proc. ION GNSS+}, pages = {2388--2416}, year = {2017}}
+
+@techreport{rfc8915,
+  author      = {Franke, Daniel and Sibold, Dieter and Teichel, Kristof and Dansarie, Marcus and Sundblad, Ragnar},
+  title       = {{Network Time Security for the Network Time Protocol}},
+  institution = {IETF}, type = {RFC}, number = {8915}, year = {2020}}
+
+% ---------------- navigation error growth
+@book{groves2013,
+  author    = {Groves, Paul D.},
+  title     = {{Principles of GNSS, Inertial, and Multisensor Integrated Navigation Systems}},
+  edition   = {2nd}, publisher = {Artech House}, year = {2013}}
+
+@article{burri2016euroc,
+  author  = {Burri, Michael and Nikolic, Janosch and Gohl, Pascal and Schneider, Thomas and Rehder, Joern and Omari, Sammy and Achtelik, Markus W. and Siegwart, Roland},
+  title   = {{The EuRoC Micro Aerial Vehicle Datasets}},
+  journal = {International Journal of Robotics Research}, volume = {35}, number = {10},
+  pages   = {1157--1163}, year = {2016}}
+
+@inproceedings{delmerico2018benchmark,
+  author    = {Delmerico, Jeffrey and Scaramuzza, Davide},
+  title     = {{A Benchmark Comparison of Monocular Visual-Inertial Odometry Algorithms for Flying Robots}},
+  booktitle = {Proc. IEEE Int. Conf. on Robotics and Automation (ICRA)}, year = {2018}}
+
+@article{campos2021orbslam3,
+  author  = {Campos, Carlos and Elvira, Richard and G{\'o}mez Rodr{\'i}guez, Juan J. and Montiel, Jos{\'e} M. M. and Tard{\'o}s, Juan D.},
+  title   = {{ORB-SLAM3}: An Accurate Open-Source Library for Visual, Visual-Inertial, and Multimap {SLAM}},
+  journal = {IEEE Transactions on Robotics}, volume = {37}, number = {6}, pages = {1874--1890}, year = {2021}}
+
+% ---------------- real-time analysis and design-space exploration
+@article{davis2007can,
+  author  = {Davis, Robert I. and Burns, Alan and Bril, Reinder J. and Lukkien, Johan J.},
+  title   = {{Controller Area Network (CAN) Schedulability Analysis: Refuted, Revisited and Revised}},
+  journal = {Real-Time Systems}, volume = {35}, number = {3}, pages = {239--272}, year = {2007},
+  doi     = {10.1007/s11241-007-9012-7}}
+
+@article{davis2013fifo,
+  author  = {Davis, Robert I. and Kollmann, Steffen and Pollex, Victor and Slomka, Frank},
+  title   = {{Schedulability Analysis for Controller Area Network (CAN) with FIFO Queues, Priority Queues and Gateways}},
+  journal = {Real-Time Systems}, volume = {49}, number = {1}, pages = {73--116}, year = {2013},
+  doi     = {10.1007/s11241-012-9167-8}}
+
+@inproceedings{lin2013security,
+  author    = {Lin, Chung-Wei and Zheng, Bowen and Zhu, Qi and Sangiovanni-Vincentelli, Alberto},
+  title     = {{Security-Aware Mapping for CAN-Based Real-Time Distributed Automotive Systems}},
+  booktitle = {Proc. IEEE/ACM Int. Conf. on Computer-Aided Design (ICCAD)}, year = {2013}}
+
+@article{mundhenk2017lasan,
+  author  = {Mundhenk, Philipp and Paverd, Andrew and Mrowca, Artur and Steinhorst, Sebastian and Lukasiewycz, Martin and Fahmy, Suhaib A. and Chakraborty, Samarjit},
+  title   = {{Security in Automotive Networks: Lightweight Authentication and Authorization}},
+  journal = {ACM Transactions on Design Automation of Electronic Systems}, volume = {22}, number = {2},
+  year    = {2017}, doi = {10.1145/2960407}} % VERIFY bibliographic details
+
+@article{kukkala2020sedan,
+  author  = {Kukkala, Vipin Kumar and Pasricha, Sudeep and Bradley, Thomas H.},
+  title   = {{SEDAN: Security-Aware Design of Time-Critical Automotive Networks}},
+  journal = {IEEE Transactions on Vehicular Technology}, volume = {69}, number = {8},
+  pages   = {9017--9030}, year = {2020}}
+
+% ---------------- robust control foundations
+@article{lohmiller1998contraction,
+  author  = {Lohmiller, Winfried and Slotine, Jean-Jacques E.},
+  title   = {On Contraction Analysis for Non-linear Systems},
+  journal = {Automatica}, volume = {34}, number = {6}, pages = {683--696}, year = {1998}}
+
+@article{mayne2005tube,
+  author  = {Mayne, David Q. and Seron, Mar{\'i}a M. and Rakovi{\'c}, Sa{\v s}a V.},
+  title   = {Robust Model Predictive Control of Constrained Linear Systems with Bounded Disturbances},
+  journal = {Automatica}, volume = {41}, number = {2}, pages = {219--224}, year = {2005}}
+
+@article{majumdar2017funnel,
+  author  = {Majumdar, Anirudha and Tedrake, Russ},
+  title   = {Funnel Libraries for Real-Time Robust Feedback Motion Planning},
+  journal = {International Journal of Robotics Research}, volume = {36}, number = {8},
+  pages   = {947--982}, year = {2017}}
+
+@misc{iso11898,
+  author       = {{International Organization for Standardization}},
+  title        = {{ISO 11898-1:2015 Road Vehicles -- Controller Area Network (CAN) -- Part 1: Data Link Layer and Physical Signalling}},
+  year         = {2015}}
+
+@misc{dronecan,
+  author       = {{DroneCAN Development Team}},
+  title        = {{DroneCAN Specification v1.0}},
+  howpublished = {\url{https://dronecan.github.io/Specification/}}} % VERIFY tail-byte and transfer-CRC rules
+
+% ---------------- reused from the parent manuscript
+@misc{whelan2020uav,
+  author = {Whelan, Jason and Sangarapillai, Thanigajan and Minawi, Omar and Almehmadi, Abdulaziz and El-Khatib, Khalil},
+  title  = {{UAV Attack Dataset}}, year = {2020}, howpublished = {IEEE DataPort},
+  doi    = {10.21227/00dg-0d12}}
+
+@inproceedings{whelan2020novelty,
+  author    = {Whelan, Jason and Sangarapillai, Thanigajan and Minawi, Omar and Almehmadi, Abdulaziz and El-Khatib, Khalil},
+  title     = {{Novelty-based Intrusion Detection of Sensor Attacks on Unmanned Aerial Vehicles}},
+  booktitle = {Proc. ACM Symp. on QoS and Security for Wireless and Mobile Networks (Q2SWinet)},
+  year      = {2020}, doi = {10.1145/3416013.3426446}}
+
+@misc{hcrl_uavcan,
+  author = {Kim, Dongsung and Song, Yuchan and Kwon, Soonhyeon and Kim, Haerin and Yoo, Jeong Do and Kim, Huy Kang},
+  title  = {{UAVCAN Intrusion Dataset}}, year = {2025}, howpublished = {IEEE DataPort},
+  doi    = {10.21227/fcyc-bb14}}
+
+@inproceedings{datamut2026,
+  author    = {Soltani, Keiwan and others},
+  title     = {{DATAMUt: Deterministic Algorithms for Time-Delay Attack Detection in Multi-Hop UAV Networks}},
+  booktitle = {Proc. 27th Int. Conf. on Distributed Computing and Networking (ICDCN)},
+  year      = {2026}, doi = {10.1145/3772290.3772293}}
+
+@inproceedings{humphreys2012texbat,
+  author    = {Humphreys, Todd E. and Bhatti, Jahshan A. and Shepard, Daniel P. and Wesson, Kyle D.},
+  title     = {{The Texas Spoofing Test Battery (TEXBAT): Toward a Standard for Evaluating GPS Signal Authentication Techniques}},
+  booktitle = {Proc. ION GNSS}, year = {2012}}
+
+@article{kerns2014capture,
+  author  = {Kerns, Andrew J. and Shepard, Daniel P. and Bhatti, Jahshan A. and Humphreys, Todd E.},
+  title   = {{Unmanned Aircraft Capture and Control via GPS Spoofing}},
+  journal = {Journal of Field Robotics}, volume = {31}, number = {4}, pages = {617--636}, year = {2014},
+  doi     = {10.1002/rob.21513}}
+
+@article{kassas2022jammer,
+  author  = {Kassas, Zaher M. and Khalife, Joe and Abdallah, Ali A. and Lee, Chiawei},
+  title   = {{I Am Not Afraid of the GPS Jammer: Resilient Navigation via Signals of Opportunity in GPS-Denied Environments}},
+  journal = {IEEE Aerospace and Electronic Systems Magazine},
+  volume  = {37}, number = {7}, pages = {4--19}, year = {2022},
+  doi     = {10.1109/MAES.2022.3154110}}
+
+% ---------- Certified robustness: smoothing / Lipschitz / NODE (Paper A) ----------
+
+@inproceedings{cohen2019smoothing,
+  author    = {Cohen, Jeremy M. and Rosenfeld, Elan and Kolter, J. Zico},
+  title     = {{Certified Adversarial Robustness via Randomized Smoothing}},
+  booktitle = {Proc. Int. Conf. on Machine Learning (ICML)}, year = {2019}}
+
+@inproceedings{wu2022crop,
+  author    = {Wu, Fan and Li, Linyi and Huang, Zijian and Vorobeychik, Yevgeniy and Zhao, Ding and Li, Bo},
+  title     = {{CROP: Certifying Robust Policies for Reinforcement Learning through Functional Smoothing}},
+  booktitle = {Proc. Int. Conf. on Learning Representations (ICLR)}, year = {2022}}
+
+@inproceedings{ivanov2019verisig,
+  author    = {Ivanov, Radoslav and Weimer, James and Alur, Rajeev and Pappas, George J. and Lee, Insup},
+  title     = {{Verisig: Verifying Safety Properties of Hybrid Systems with Neural Network Controllers}},
+  booktitle = {Proc. ACM Int. Conf. on Hybrid Systems: Computation and Control (HSCC)}, year = {2019}}
+
+@inproceedings{tran2020nnv,
+  author    = {Tran, Hoang-Dung and Yang, Xiaodong and Manzanas Lopez, Diego and others},
+  title     = {{NNV: The Neural Network Verification Tool for Deep Neural Networks and Learning-Enabled Cyber-Physical Systems}},
+  booktitle = {Proc. Int. Conf. on Computer Aided Verification (CAV)}, year = {2020}}
+
+% ---------- Composition / modular certification (Paper A crux) ----------
+
+@article{pacti2024,
+  author  = {Incer, I{\~n}igo and others},
+  title   = {{Pacti: Assume-Guarantee Contracts for Efficient Compositional Analysis and Design}},
+  journal = {ACM Transactions on Cyber-Physical Systems}, year = {2024},
+  doi     = {10.1145/3704736}}
+
+% ---------- MWU / Stackelberg / online learning (Paper A) ----------
+
+@techreport{do326a,
+  author = {{RTCA and EUROCAE}},
+  title  = {{DO-326A / ED-202A: Airworthiness Security Process Specification}},
+  institution = {RTCA, Inc. / EUROCAE}, year = {2014}}
+
+@misc{uavewbench2026,
+  author = {Anaedevha, Roger Nick},
+  title  = {{UAV-EW-Bench-2026: A Physics-Informed Benchmark for Certified UAV Mission Completion under Electronic Warfare}},
+  year   = {2026}, howpublished = {\url{https://github.com/rogerpanel/UAV-EW-Bench-2026}}}
+
+@article{fawzi2014secure,
+  author  = {Fawzi, Hamza and Tabuada, Paulo and Diggavi, Suhas},
+  title   = {{Secure Estimation and Control for Cyber-Physical Systems under Adversarial Attacks}},
+  journal = {IEEE Transactions on Automatic Control},
+  volume  = {59}, number = {6}, pages = {1454--1467}, year = {2014},
+  doi     = {10.1109/TAC.2014.2303233}}
+
+@article{shoukry2017smt,
+  author  = {Shoukry, Yasser and Nuzzo, Pierluigi and Puggelli, Alberto and
+             Sangiovanni-Vincentelli, Alberto L. and Seshia, Sanjit A. and Tabuada, Paulo},
+  title   = {{Secure State Estimation for Cyber-Physical Systems under Sensor Attacks: A Satisfiability Modulo Theory Approach}},
+  journal = {IEEE Transactions on Automatic Control},
+  volume  = {62}, number = {10}, pages = {4917--4932}, year = {2017},
+  doi     = {10.1109/TAC.2017.2676679}}
+
+@article{ding2021survey,
+  author  = {Ding, Derui and Han, Qing-Long and Ge, Xiaohua and Wang, Jun},
+  title   = {{Secure State Estimation and Control of Cyber-Physical Systems: A Survey}},
+  journal = {IEEE Transactions on Systems, Man, and Cybernetics: Systems},
+  volume  = {51}, number = {1}, pages = {176--190}, year = {2021},
+  doi     = {10.1109/TSMC.2020.3041121}}
+
+% Runtime assurance / Simplex (Paper A related work)
+
+@article{sha2001simplex,
+  author  = {Sha, Lui},
+  title   = {{Using Simplicity to Control Complexity}},
+  journal = {IEEE Software},
+  volume  = {18}, number = {4}, pages = {20--28}, year = {2001},
+  doi     = {10.1109/MS.2001.936213}}
+
+@inproceedings{mehmood2022blackbox,
+  author    = {Mehmood, Usama and Stoller, Scott D. and Grosu, Radu and Roy, Shouvik and
+               Damare, Amol and Smolka, Scott A.},
+  title     = {{The Black-Box Simplex Architecture for Runtime Assurance of Autonomous CPS}},
+  booktitle = {Proc. NASA Formal Methods (NFM)},
+  year      = {2022}}
+
+@inproceedings{cofer2020rta,
+  author    = {Cofer, Darren and Amundson, Isaac and Sattigeri, Ramachandra and others},
+  title     = {{Run-Time Assurance for Learning-Enabled Systems}},
+  booktitle = {Proc. NASA Formal Methods (NFM)},
+  pages     = {361--368}, year = {2020}}
+
+% Time-delay attacks on control (Paper A related work)
+
+@inproceedings{lou2019timedelay,
+  author    = {Lou, Xin and Tran, Cuong and Yau, David K. Y. and Tan, Rui and
+               Ng, Hongwei and Fu, Tom Zhengjia and Winslett, Marianne},
+  title     = {{Assessing and Mitigating Impact of Time Delay Attack: A Case Study for Power Grid Frequency Control}},
+  booktitle = {Proc. ACM/IEEE Int. Conf. on Cyber-Physical Systems (ICCPS)},
+  pages     = {207--216}, year = {2019},
+  doi       = {10.1145/3302509.3311042}}
+
+@article{etd2023uav,
+  author  = {Wang, Wenxin and others},
+  title   = {{ETD: An Efficient Time Delay Attack Detection Framework for UAV Networks}},
+  journal = {IEEE Transactions on Information Forensics and Security},
+  volume  = {18}, year = {2023}}
+
+% GNSS spoofing detection, learning-based (both papers)
+
+@inproceedings{humphreys2008assessing,
+  author    = {Humphreys, Todd E. and Ledvina, Brent M. and Psiaki, Mark L. and
+               O'Hanlon, Brady W. and Kintner, Paul M.},
+  title     = {{Assessing the Spoofing Threat: Development of a Portable GPS Civilian Spoofer}},
+  booktitle = {Proc. ION GNSS},
+  pages     = {2314--2325}, year = {2008}}
+
+% IDS dataset quality critique (Paper C related work)
+
+@article{gronwall1919,
+  author  = {Gr{\"o}nwall, Thomas H.},
+  title   = {{Note on the Derivatives with Respect to a Parameter of the Solutions of a System of Differential Equations}},
+  journal = {Annals of Mathematics},
+  volume  = {20}, number = {4}, pages = {292--296}, year = {1919}}
+
+@article{kong2024px4ekf,
+  author  = {Meier, Lorenz and Honegger, Dominik and Pollefeys, Marc},
+  title   = {{PX4: A Node-Based Multithreaded Open Source Robotics Framework for Deeply Embedded Platforms}},
+  journal = {Proc. IEEE Int. Conf. on Robotics and Automation (ICRA)},
+  pages   = {6235--6240}, year = {2015},
+  doi     = {10.1109/ICRA.2015.7140074}}
+
+@techreport{jarus_sora25,
+  author      = {{Joint Authorities for Rulemaking of Unmanned Systems}},
+  title       = {{JARUS} Guidelines on {Specific Operations Risk Assessment
+                 (SORA)}, Edition 2.5 --- Annex {A}: Guidelines on Collecting
+                 and Presenting System and Operation Information},
+  institution = {JARUS},
+  number      = {JAR-DEL-WG6-D.04},
+  year        = {2024},
+  note        = {Defines the operational volume, contingency volume, and ground
+                 risk buffer; the lateral contingency extent is the sum of GNSS
+                 accuracy, position-holding error, map error, reaction distance,
+                 and contingency-manoeuvre stopping distance},
+  url         = {http://jarus-rpas.org/publications/}
+}
+
+@misc{easa_uspace2021,
+  author       = {{European Union Aviation Safety Agency}},
+  title        = {Commission Implementing Regulation ({EU}) 2021/664 on a
+                  Regulatory Framework for the {U}-space},
+  howpublished = {Official Journal of the European Union},
+  year         = {2021},
+  note         = {Establishes U-space services, including geo-awareness and
+                  flight authorisation, with certified accuracy and performance
+                  requirements for UAS operating in designated airspace},
+  url          = {https://www.easa.europa.eu/en/domains/air-traffic-management/u-space}
+}

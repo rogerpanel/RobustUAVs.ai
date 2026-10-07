@@ -1,0 +1,37 @@
+% Fig: induced verification. p99 legitimate latency vs attacker bus share.
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=\columnwidth, height=54mm,
+  xmin=0, xmax=0.82, ymode=log, ymin=5, ymax=2e5,
+  xlabel={attacker bus share $a$},
+  ylabel={p99 legitimate $\Delta_{\mathrm{auth}}$ (ms)},
+  legend style={font=\scriptsize, at={(0.5,-0.3)}, anchor=north, draw=none},
+  legend columns=2,
+  tick label style={font=\scriptsize}, label style={font=\small},
+  grid=major, grid style={gray!20},
+]
+\addplot[very thick, green!50!black, mark=*, mark size=1.2pt] table[x=a, y=p99] {figdata/iv_can_ed25519_none.dat};
+\addlegendentry{Ed25519, CAN, none}
+\addplot[thick, green!50!black, dashed, mark=o, mark size=1.2pt] table[x=a, y=p99] {figdata/iv_can_ed25519_slot_k.dat};
+\addlegendentry{Ed25519, CAN, slot budget}
+\addplot[thick, green!50!black, dotted] table[x=a, y=p99] {figdata/iv_can_ed25519_prefilter.dat};
+\addlegendentry{Ed25519, CAN, pre-filter (out.)}
+\addplot[very thick, blue!70!black, mark=square*, mark size=1.1pt] table[x=a, y=p99] {figdata/iv_can_mldsa44_none.dat};
+\addlegendentry{ML-DSA-44, CAN, none}
+\addplot[very thick, blue!40, mark=triangle*, mark size=1.3pt] table[x=a, y=p99] {figdata/iv_canfd_mldsa44_none.dat};
+\addlegendentry{ML-DSA-44, CAN FD, none}
+\draw[green!50!black, densely dotted] (axis cs:\nAsatEd,5) -- (axis cs:\nAsatEd,2e5)
+  node[pos=0.93, right, font=\scriptsize]{$a_{\mathrm{sat}}$};
+\end{axis}
+\end{tikzpicture}
+\caption{Induced verification (Proposition~\ref{pr:iv}), discrete-event simulation with
+verification CPU share $\beta=0.2$ and the HCRL base load. Forged Ed25519 transfers cost
+the verifier $\nRhoivEd$ CPU-seconds per bus-second ($\rho_{\mathrm{iv}}$). Beyond
+$a_{\mathrm{sat}}=\nAsatEd$ of the bus, the verification queue diverges and the legitimate
+signed stream is denied (values above $10^5$\,ms are clipped). ML-DSA-44 on classic CAN is
+immune, because its signature is too expensive to \emph{transmit} for a flood to reach the
+CPU. On CAN FD the same scheme moves to $\rho_{\mathrm{iv}}=\nRhoivFDML$.}
+\label{fig:iv}
+\end{figure}

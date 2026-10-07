@@ -1,0 +1,39 @@
+% Fig: the sensing side. gamma_delta vs staleness, spoofing (unauthenticated)
+% vs jamming (authenticated-rejection proxy); data: figdata/gamma_*.dat
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=\columnwidth, height=48mm,
+  xmode=log, xmin=0.5, xmax=60,
+  ymin=0, ymax=1.8,
+  xlabel={staleness since onset $\tau$ (s)},
+  ylabel={$\gamma_\delta$ (m/s)},
+  legend style={font=\scriptsize, at={(0.5,-0.32)}, anchor=north, draw=none},
+  legend columns=2,
+  tick label style={font=\scriptsize}, label style={font=\small},
+  grid=major, grid style={gray!20},
+]
+\addplot[very thick, red!70!black, mark=*, mark size=1.3pt]
+  table[x=tau, y=gmax] {figdata/gamma_spoof.dat};
+\addlegendentry{spoofing, sup per bin ($\gamma_{\mathrm{u}}$)}
+\addplot[very thick, blue!70!black, mark=square*, mark size=1.2pt]
+  table[x=tau, y=gmax] {figdata/gamma_jam.dat};
+\addlegendentry{jamming, sup per bin ($\gamma_{\mathrm{a}}$, proxy)}
+\addplot[thin, red!70!black, dashed] table[x=tau, y=gmed] {figdata/gamma_spoof.dat};
+\addlegendentry{spoofing, median}
+\addplot[thin, blue!70!black, dashed] table[x=tau, y=gmed] {figdata/gamma_jam.dat};
+\addlegendentry{jamming, median}
+\draw[gray, densely dotted, thick] (axis cs:1,0) -- (axis cs:1,1.8)
+  node[pos=0.06, right, font=\scriptsize, text=gray!50!black]{$\tau\approx 1$\,s};
+\end{axis}
+\end{tikzpicture}
+\caption{The sensing side of the budget, measured on the real PX4 flights (EKF signal,
+baseline-corrected rate $\gamma_\delta$ of Eq.~\eqref{eq:gamma-delta}). In the first second
+of staleness the spoofed and the jammed estimator degrade at the same rate: the spoofer has
+not yet walked the fix away from where an honest estimator would put it. Beyond that, the
+spoofer out-runs the jammed (degraded but honest) estimator by up to $\nRatioHead\times$.
+Authentication can buy at most the gap between the curves. The jamming flight is a proxy for
+rejection, because its receiver never lost the fix.}
+\label{fig:gamma}
+\end{figure}

@@ -1,0 +1,2 @@
+model,n,tau_max_s,v0_m_s,b_m_s2,rmse_m,gamma_at_0p5s,gamma_at_1s,gamma_at_2s,tag
+e=v0*tau+b*tau^2/2,45,5.0,0.8571,-0.0139,0.164,0.8536,0.8502,0.8432,derived (fit to measured jamming flight)
