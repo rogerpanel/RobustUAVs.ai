@@ -67,13 +67,20 @@ def openalex_search(query: str, max_pages=10):
     base = "https://api.openalex.org/works"
     flt = f"from_publication_date:{YEARS[0]}-01-01,to_publication_date:{YEARS[1]}-12-31"
     cursor = "*"
-    for _ in range(max_pages):
+    for page in range(max_pages):
         params = {"search": query, "filter": flt, "per-page": 200, "cursor": cursor}
         if MAILTO:
             params["mailto"] = MAILTO
         url = base + "?" + urllib.parse.urlencode(params)
         js = get(url)
-        log({"source": "openalex", "query": query, "n": len(js.get("results", []))})
+        entry = {"source": "openalex", "query": query, "n": len(js.get("results", []))}
+        if page == 0:
+            # Total hits before paging. With max_pages x 200 per query, any
+            # query whose total exceeds the cap is truncated; logging the total
+            # lets PRISMA report that rather than hide it.
+            entry["total_hits"] = js.get("meta", {}).get("count")
+            entry["cap"] = max_pages * 200
+        log(entry)
         for w in js.get("results", []):
             yield w
         cursor = js.get("meta", {}).get("next_cursor")
