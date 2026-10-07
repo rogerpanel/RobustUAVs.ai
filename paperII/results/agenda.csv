@@ -1,0 +1,7 @@
+type,type_label,n_objectives,best_class,best_k,best_lifts,n_category_error,n_discharge
+T4,per operation,6,RTA,0,,6,1
+T2,ODD generalisation,4,CP,0,,2,3
+T3,average error,1,CP,0,,1,4
+T1,per flight hour,7,CP,1,L_rate,2,0
+T6,local robustness,3,SEM,1,,11,0
+T5,security threat,1,RTA,1,,6,0

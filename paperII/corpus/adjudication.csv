@@ -1,0 +1,51 @@
+gid,field,value,rationale
+G27,scope,pop,headline result is simulated collision-avoidance performance of the compressed policy
+G27,modality,E,performance reported as rates averaged over simulated encounters
+G27,perturbation,distribution,encounter sampling
+G27,assumption,S,encounter model stated
+G27,evidence,simulated,simulation campaign
+G28,perturbation,none,verified set is a state set without a separate disturbance
+G29,perturbation,semantic,verified set ranges over the generator latent (appearance variation)
+G30,perturbation,distribution,abstraction error estimated from data
+G32,perturbation,distribution,contract error estimated from data
+G32,evidence,simulated,contract validated on simulated data
+G35,perturbation,semantic,image variation through a generative surrogate
+G37,component,estimation,pose estimation is state estimation
+G38,perturbation,none,rule CLR-1: initial-set reachability without disturbance input
+G39,perturbation,none,rule CLR-1
+G40,perturbation,none,rule CLR-1
+G41,perturbation,none,rule CLR-1
+G42,perturbation,none,rule CLR-1
+G42,tier,B,benchmarks are generic dynamical systems
+G43,perturbation,none,rule CLR-1
+G43,tier,B,benchmarks are generic dynamical systems
+G44,perturbation,none,rule CLR-1
+G45,perturbation,none,rule CLR-1
+G46,perturbation,none,rule CLR-1
+G47,perturbation,none,rule CLR-1
+G49,perturbation,none,rule CLR-1
+G51,perturbation,none,rule CLR-1
+G53,tier,B,evaluated mainly on game environments
+G54,evidence,simulated,simulated pedestrian and cartpole environments
+G56,lifts,L_dyn,Lyapunov conditions are checked by a sound SMT falsifier through the dynamics
+G56,assumption,S,dynamics model stated
+G57,lifts,L_dyn,certificates are verified through the stated dynamics
+G58,component,estimation,the learned component is a trajectory predictor
+G59,component,estimation,the learned component is a trajectory predictor
+G60,component,estimation,the learned component is a trajectory predictor
+G60,assumption,S,shift radius is chosen rather than evidenced
+G61,component,estimation,the learned component is a predictor
+G62,component,estimation,the learned component is a predictor
+G62,tier,A,F-16 and vehicle case studies
+G63,evidence,proof,safety theorem conditional on the model
+G63,lifts,L_mon;L_dyn,decision module uses reachability through the plant model
+G64,evidence,proof,safety theorem conditional on the model
+G64,lifts,L_mon;L_dyn,decision module uses reachability through the plant model
+G66,evidence,measured,drone experiments
+G71,assumption,S,simulator fidelity stated
+G72,assumption,S,simulator fidelity stated
+G73,assumption,S,abstraction of the ML component stated
+G73,lifts,L_gen,ML component abstracted for falsification
+G74,assumption,S,simulator fidelity stated
+G83,lifts,L_op;L_conc;L_rate,framework combines operational profile and reliability per demand
+G86,scope,op,headline guarantee is the hybrid architecture with a verified safety net
