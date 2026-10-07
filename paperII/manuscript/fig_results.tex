@@ -1,0 +1,69 @@
+% =====================================================================
+% Fig. 3 -- Pilot corpus by component and scope (figdata/dist_*.dat)
+% Fig. 4 -- Per-flight-hour arithmetic (figdata/rate_*.dat)
+% =====================================================================
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1, horizontal sep=6mm, yticklabels at=edge left},
+  width=0.6\columnwidth, height=46mm, ybar stacked,
+  symbolic x coords={perception,estimation,control,planning,end2end},
+  xtick=data, x tick label style={rotate=40, anchor=east, font=\scriptsize},
+  ymin=0, ymax=46, ylabel style={font=\scriptsize}, yticklabel style={font=\scriptsize},
+  title style={font=\scriptsize, yshift=-1ex}, enlarge x limits=0.15,
+  legend style={font=\scriptsize, at={(1.0,1.0)}, anchor=north east, draw=none, fill=white, fill opacity=0.85, text opacity=1}]
+\nextgroupplot[title={(a) Tiers A and B}, ylabel={guarantees}]
+\addplot+[fill=blue!55, draw=black!60] table[x=component, y=in] {figdata/dist_AB.dat};
+\addplot+[fill=orange!60, draw=black!60] table[x=component, y=tr] {figdata/dist_AB.dat};
+\addplot+[fill=green!50!black!45, draw=black!60] table[x=component, y=op] {figdata/dist_AB.dat};
+\addplot+[fill=gray!45, draw=black!60] table[x=component, y=popd] {figdata/dist_AB.dat};
+\nextgroupplot[title={(b) Tier A only}]
+\addplot+[fill=blue!55, draw=black!60] table[x=component, y=in] {figdata/dist_A.dat};
+\addplot+[fill=orange!60, draw=black!60] table[x=component, y=tr] {figdata/dist_A.dat};
+\addplot+[fill=green!50!black!45, draw=black!60] table[x=component, y=op] {figdata/dist_A.dat};
+\addplot+[fill=gray!45, draw=black!60] table[x=component, y=popd] {figdata/dist_A.dat};
+\legend{$\mathsf{in}$, $\mathsf{tr}$, $\mathsf{op}$, $\mathsf{pop}$}
+\end{groupplot}
+\end{tikzpicture}
+\caption{The pilot corpus by component and scope after adjudication. (a)~Across both tiers,
+perception guarantees are mostly per input and control guarantees mostly per trajectory.
+(b)~Among guarantees evaluated on vehicles (tier A), perception is dominated by closed-loop
+verification through surrogates. The pilot was seeded purposively, so these shares illustrate
+the pipeline and do not estimate the field (Sec.~\ref{sec:limits}). Provenance: \prov{pilot coding}.}
+\label{fig:dist}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1, horizontal sep=13mm},
+  width=0.58\columnwidth, height=46mm, xlabel style={font=\scriptsize}, ylabel style={font=\scriptsize},
+  ticklabel style={font=\scriptsize}, title style={font=\scriptsize, yshift=-1ex}, grid=major, grid style={gray!20}]
+\nextgroupplot[title={(a) per-decision requirement}, xmode=log, ymode=log, xlabel={decision rate $f$ (Hz)},
+  ylabel={largest $p$ per decision}, ymin=1e-21, ymax=1e-5, xmin=1, xmax=100,
+  legend style={font=\tiny, at={(0.02,0.02)}, anchor=south west, draw=none, fill=white, fill opacity=0.8, text opacity=1}, legend columns=2]
+\addplot[thick, blue!70!black] table[x=f, y=l0] {figdata/rate_req.dat};
+\addplot[thick, orange!80!black] table[x=f, y=l1] {figdata/rate_req.dat};
+\addplot[thick, green!45!black] table[x=f, y=l2] {figdata/rate_req.dat};
+\addplot[thick, red!70!black] table[x=f, y=l3] {figdata/rate_req.dat};
+\addplot[thick, black, dashed] table[x=f, y=l4] {figdata/rate_req.dat};
+\legend{$10^{-3}$/h, $10^{-4}$/h, $10^{-5}$/h, $10^{-7}$/h, $10^{-9}$/h}
+\nextgroupplot[title={(b) credit for 3-of-3 confirmation}, ymode=log, xlabel={error persistence $\rho$},
+  ylabel={gain over $k{=}1$}, xmin=0, xmax=1, ymin=1, ymax=3e6, ytick={1,10,100,1e4,1e6}]
+\addplot[thick, blue!70!black, mark=*, mark size=1.2pt] table[x=rho, y=gain] {figdata/rate_corr.dat};
+\addplot[dashed, red!70!black, domain=0:1] {6.75};
+\addplot[dashdotted, gray, domain=0:1] {3};
+\addplot[dotted, black, thick, domain=0:1] {1.05e6};
+\node[font=\tiny, anchor=south, text=red!70!black] at (axis cs:0.45,7.5) {Markov floor 6.75};
+\node[font=\tiny, anchor=north] at (axis cs:0.45,9e5) {independence ($\approx10^{6}$)};
+\node[font=\tiny, anchor=north, text=gray] at (axis cs:0.45,2.9) {any dependence: $k=3$};
+\end{groupplot}
+\end{tikzpicture}
+\caption{The arithmetic of the per-flight-hour quantifier. (a)~Largest per-decision hazard
+probability compatible with a per-hour target, $p^\star=\lambda/(3600f)$ (Proposition~\ref{pr:rate}(a)).
+At 30\,Hz and $10^{-4}$/h it is $\ratePstarThirty$. (b)~What temporal confirmation buys at
+30\,Hz and $10^{-4}$/h. Under independence the gain is about $10^{6}$. Under a first-order
+Markov error process the gain is never below $6.75$, whatever the persistence $\rho$, and under
+arbitrary stationary dependence it is only guaranteed to be $k=3$ (Proposition~\ref{pr:rate}(b)). Provenance: \prov{derived} (closed form).}
+\label{fig:rate}
+\end{figure}

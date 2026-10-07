@@ -1,0 +1,18 @@
+class,label,n,scope,modality,perturbation,intrinsic,evidenced_share,note
+RS,Randomized smoothing (incl. detection and segmentation),6,in,Ac,norm,none,0.0,
+BP,Bound propagation and abstract interpretation,7,in,A,norm,none,0.0,
+SMT,Complete (SMT/MILP) verification,5,in,A,none,none,0.0,
+LIP,Lipschitz-constrained networks,3,in,A,norm,none,0.0,
+SEM,Semantic/geometric and patch certification,8,in,A,semantic,none,0.0,
+PIL,Perception-in-the-loop closed-loop verification,8,tr,A,distribution,O_lip;O_cov,0.625,
+DTMC,Probabilistic closed-loop (average-case) analysis,1,popd,E,distribution,O_lip;O_iid,1.0,
+CLR,Closed-loop reachability of NN control systems,14,tr,A,none,O_lip,0.0,
+CRL,Certified reinforcement learning,4,tr,Ac,norm,O_hor,0.0,
+NCERT,Neural Lyapunov and barrier certificates,2,tr,A,none,O_lip,0.0,
+CP,Conformal prediction for planning and runtime verification,5,op,P,distribution,O_iid,0.0,
+RTA,Runtime assurance (Simplex) and shielding,6,op,A,component_any,O_mcov;O_lat;O_rec;O_ind,0.0,Simplex holds for arbitrary behaviour of the monitored component but not for attacks on the monitor inputs
+MON,Out-of-distribution and activation monitors,3,in,A,distribution,O_mcov;O_lat;O_rec;O_ind,0.0,
+FALS,Falsification and scenario search,3,op,X,semantic,none,0.0,
+PACB,PAC-Bayes generalisation (incl. control),3,popd,P,distribution,O_iid,0.0,
+PROB,Probabilistic (local) robustness,3,in,P,norm,O_iid,0.333,
+OPREL,Operational-profile and operational-testing reliability,5,popd,P,distribution,O_iid;O_prof;O_dep,0.4,

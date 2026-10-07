@@ -1,0 +1,87 @@
+gid,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+G01,B,perception,in,Ac,norm,none,S,proof,Ac certificate counted as proof
+G02,B,perception,in,Ac,norm,none,S,proof,
+G03,B,perception,in,Ac,norm,none,S,proof,
+G04,B,perception,in,Ac,norm,none,S,proof,
+G05,B,perception,in,A,norm,none,S,proof,
+G06,B,perception,in,A,norm,none,S,proof,
+G07,B,perception,in,A,norm,none,S,proof,
+G08,B,perception,in,A,norm,none,S,proof,
+G09,B,perception,in,A,norm,none,S,proof,
+G10,B,perception,in,A,norm,none,S,proof,
+G11,B,perception,in,A,norm,none,S,proof,
+G12,A,control,in,A,none,none,S,proof,ACAS Xu input-region properties; advisory network treated as state-to-action
+G13,A,control,in,A,none,none,S,proof,lowconf tier; tool paper evaluated on ACAS Xu plus MNIST
+G14,B,perception,in,A,norm,none,S,proof,lowconf tier and component; unsure whether ACAS Xu in evaluation
+G15,B,perception,in,A,norm,none,S,proof,
+G16,B,perception,in,A,norm,none,S,proof,
+G17,B,perception,in,A,norm,none,S,proof,
+G18,B,perception,in,Ac,norm,none,S,proof,VOC/COCO treated as generic
+G19,A,perception,in,Ac,norm,none,S,proof,Cityscapes
+G20,B,perception,in,A,patch,none,S,proof,
+G21,B,perception,in,A,patch,none,S,proof,
+G22,B,perception,in,A,semantic,none,S,proof,
+G23,B,perception,in,Ac,semantic,none,S,proof,
+G24,B,perception,in,Ac,semantic,none,S,proof,
+G25,B,perception,in,A,semantic,none,S,proof,lowconf tier if GTSRB used
+G26,B,perception,in,A,semantic,none,S,proof,ModelNet40
+G27,A,control,pop,E,distribution,none,S,simulated,lowconf; encounter-set simulation metrics; modality E vs P unclear
+G28,A,perception,tr,A,none,L_gen;L_dyn,S,proof,camera geometry model as sensor surrogate
+G29,A,perception,tr,A,semantic,L_gen;L_dyn,S,proof,lowconf perturbation; GAN latent set
+G30,A,perception,tr,A,distribution,L_gen;L_dyn,SE,proof,lowconf evidence and modality
+G31,A,perception,tr,P,distribution,L_gen;L_dyn,SE,simulated,lowconf; probabilistic perception abstraction with model checking; tr vs op ambiguous
+G32,A,perception,tr,A,distribution,L_gen;L_dyn,SE,simulated,conditional on contract conformance measured in sim
+G33,A,perception,tr,P,distribution,L_gen;L_conc;L_dyn,SEC,simulated,lowconf
+G34,A,perception,tr,A,distribution,L_gen;L_dyn,SE,simulated,lowconf
+G35,A,perception,tr,A,semantic,L_gen;L_dyn,S,proof,lowconf; coded from title
+G36,A,perception,tr,P,distribution,L_gen;L_dyn;L_conc,SEC,simulated,lowconf
+G37,A,estimation,in,A,semantic,L_gen,S,proof,lowconf; scope in vs tr ambiguous
+G38,A,control,tr,A,none,L_dyn,S,proof,quadrotor MPC case
+G39,A,control,tr,A,none,L_dyn,S,proof,
+G40,A,control,tr,A,none,L_dyn,S,proof,ACC
+G41,A,control,tr,A,none,L_dyn,S,proof,lowconf headline component
+G42,B,control,tr,A,none,L_dyn,S,proof,synthetic systems and cartpole only
+G43,B,control,tr,A,none,L_dyn,S,proof,lowconf tier
+G44,A,control,tr,A,none,L_dyn,S,proof,
+G45,A,control,tr,A,none,L_dyn,S,proof,lowconf tier
+G46,A,control,tr,A,none,L_dyn,S,proof,
+G47,A,control,tr,A,none,L_dyn,S,proof,lowconf tier
+G48,A,control,tr,A,disturbance,L_dyn,S,proof,lowconf perturbation
+G49,A,control,tr,A,none,L_dyn,S,proof,lowconf tier
+G50,A,control,tr,A,disturbance,L_dyn,S,proof,quadrotor with noise
+G51,A,control,tr,A,none,L_dyn,S,proof,rule 4 inherits AINNCS scope
+G52,B,control,tr,Ac,norm,L_hor,S,proof,lowconf; episode reward bound; tr vs op chose smaller
+G53,B,control,in,Ac,norm,none,S,proof,per-step action certificate
+G54,A,control,in,A,norm,none,S,simulated,lowconf tier; pedestrian collision avoidance
+G55,B,control,in,A,poisoning,none,S,proof,lowconf scope
+G56,A,control,tr,A,none,L_dyn,S,proof,wheeled vehicle path following
+G57,B,control,tr,A,none,L_dyn,S,proof,
+G58,A,estimation,tr,P,distribution,L_conc,S,simulated,lowconf; scope tr vs pop
+G59,A,estimation,op,P,distribution,L_conc,S,simulated,lowconf tier F-16
+G60,A,estimation,op,P,distribution,L_conc,S,simulated,lowconf
+G61,B,estimation,pop,P,distribution,L_conc,S,simulated,lowconf scope
+G62,A,estimation,tr,P,distribution,L_conc,S,simulated,lowconf; tutorial
+G63,A,control,op,A,disturbance,L_mon;L_dyn,S,proof,lowconf evidence
+G64,A,control,op,A,disturbance,L_mon;L_dyn,S,proof,lowconf evidence
+G65,A,control,op,A,none,L_mon,S,modelled,lowconf; survey
+G66,A,control,op,A,none,L_mon,S,measured,lowconf evidence
+G67,B,control,op,A,none,L_mon,S,simulated,lowconf tier
+G68,B,perception,pop,E,distribution,L_mon,U,measured,lowconf
+G69,B,perception,pop,E,distribution,L_mon,U,measured,lowconf
+G70,B,perception,pop,E,distribution,L_mon,S,measured,lowconf
+G71,A,perception,tr,X,semantic,none,S,simulated,
+G72,A,perception,tr,X,semantic,none,S,simulated,
+G73,A,perception,tr,X,semantic,L_gen,S,simulated,lowconf lifts
+G74,A,end2end,pop,P,distribution,L_conc,S,simulated,lowconf modality; estimate not bound
+G75,B,perception,pop,P,distribution,L_conc,S,measured,
+G76,B,perception,pop,P,norm,L_conc,S,measured,
+G77,A,control,pop,P,distribution,L_conc,S,simulated,lowconf component and evidence
+G78,B,perception,in,P,norm,none,S,proof,lowconf modality
+G79,B,perception,in,P,norm,L_conc,S,measured,lowconf
+G80,B,perception,in,P,norm,L_conc,S,measured,lowconf modality
+G81,B,perception,pop,P,norm,L_op;L_conc,S,measured,lowconf
+G82,A,perception,pop,P,norm,L_op;L_conc;L_rate,S,simulated,lowconf; AUV and UGV case studies
+G83,B,perception,pop,P,distribution,L_op;L_conc;L_rate,S,modelled,lowconf tier and fields
+G84,A,end2end,pop,P,distribution,L_conc;L_rate,S,measured,
+G85,A,control,in,A,none,none,S,proof,lowconf; exact implementation equivalence
+G86,A,control,op,A,none,L_mon,S,proof,lowconf scope

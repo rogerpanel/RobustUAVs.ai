@@ -1,0 +1,87 @@
+gid,bibkey,year,venue,title
+G01,cohen2019certified,2019,ICML,Certified Adversarial Robustness via Randomized Smoothing
+G02,lecuyer2019pixeldp,2019,IEEE S&P,Certified Robustness to Adversarial Examples with Differential Privacy
+G03,salman2019provably,2019,NeurIPS,Provably Robust Deep Learning via Adversarially Trained Smoothed Classifiers
+G04,yang2020shapes,2020,ICML,Randomized Smoothing of All Shapes and Sizes
+G05,gowal2018ibp,2019,ICCV,Scalable Verified Training for Provably Robust Image Classification (IBP)
+G06,zhang2018crown,2018,NeurIPS,Efficient Neural Network Robustness Certification with General Activation Functions (CROWN)
+G07,xu2020autolirpa,2020,NeurIPS,Automatic Perturbation Analysis for Scalable Certified Robustness and Beyond
+G08,wang2021beta,2021,NeurIPS,Beta-CROWN: Efficient Bound Propagation with Per-Neuron Split Constraints
+G09,zhang2022gcp,2022,NeurIPS,General Cutting Planes for Bound-Propagation-Based Neural Network Verification
+G10,singh2019deeppoly,2019,POPL,An Abstract Domain for Certifying Neural Networks (DeepPoly)
+G11,gehr2018ai2,2018,IEEE S&P,AI2: Safety and Robustness Certification of Neural Networks with Abstract Interpretation
+G12,katz2017reluplex,2017,CAV,Reluplex: An Efficient SMT Solver for Verifying Deep Neural Networks (ACAS Xu properties)
+G13,katz2019marabou,2019,CAV,The Marabou Framework for Verification and Analysis of Deep Neural Networks
+G14,wu2024marabou2,2024,CAV,Marabou 2.0: A Versatile Formal Analyzer of Neural Networks
+G15,tsuzuku2018lipschitz,2018,NeurIPS,Lipschitz-Margin Training: Scalable Certification of Perturbation Invariance
+G16,trockman2021cayley,2021,ICLR,Orthogonalizing Convolutional Layers with the Cayley Transform
+G17,araujo2023sll,2023,ICLR,A Unified Algebraic Perspective on Lipschitz Neural Networks (SLL)
+G18,chiang2020detection,2020,NeurIPS,Detection as Regression: Certified Object Detection by Median Smoothing
+G19,fischer2021segmentation,2021,ICML,Scalable Certified Segmentation via Randomized Smoothing (Cityscapes)
+G20,xiang2021patchguard,2021,USENIX Security,PatchGuard: A Provably Robust Defense against Adversarial Patches
+G21,xiang2022patchcleanser,2022,USENIX Security,PatchCleanser: Certifiably Robust Defense against Adversarial Patches
+G22,balunovic2019geometric,2019,NeurIPS,Certifying Geometric Robustness of Neural Networks
+G23,fischer2020transformations,2020,NeurIPS,Certified Defense to Image Transformations via Randomized Smoothing
+G24,li2021tss,2021,ACM CCS,TSS: Transformation-Specific Smoothing for Robustness Certification
+G25,mohapatra2020semantic,2020,CVPR,Towards Verifying Robustness of Neural Networks Against a Family of Semantic Perturbations
+G26,lorenz2021pointcloud,2021,ICCV,Robustness Certification for Point Cloud Models
+G27,julian2019acasxu,2019,JGCD,Deep Neural Network Compression for Aircraft Collision Avoidance Systems
+G28,santacruz2022nnlander,2022,NFM,NNLander-VeriF: Formal Verification for Vision-Based Autonomous Aircraft Landing
+G29,katz2022taxi,2022,JAIS,Verification of Image-Based Neural Network Controllers Using Generative Models (TaxiNet)
+G30,hsieh2022abstractions,2022,IEEE TCAD,Verifying Controllers with Vision-Based Perception Using Safe Approximate Abstractions
+G31,pasareanu2023closedloop,2023,CAV,Closed-Loop Analysis of Vision-Based Autonomous Systems: A Case Study (Boeing taxiing)
+G32,astorga2023perception,2023,OOPSLA,Perception Contracts for Safety of ML-Enabled Systems
+G33,sun2023ipc,2023,arXiv,Learning-Based Inverse Perception Contracts and Applications
+G34,li2023refining,2023,arXiv,Refining Perception Contracts: Case Studies in Vision-Based Safe Auto-Landing
+G35,iccps2025imagenncs,2025,ICCPS,Scalable and Interpretable Verification of Image-Based Neural Network Controllers for Autonomous Vehicles
+G36,semiprob2025vision,2025,arXiv,Learning Vision-Based Neural Network Controllers with Semi-Probabilistic Safety Guarantees
+G37,posecbc2026,2026,arXiv,Correct-by-Construction Vision-Based Pose Estimation Using Geometric Generative Models (landing)
+G38,ivanov2019verisig,2019,HSCC,Verisig: Verifying Safety Properties of Hybrid Systems with Neural Network Controllers
+G39,ivanov2021verisig2,2021,CAV,Verisig 2.0: Verification of Neural Network Controllers Using Taylor Model Preconditioning
+G40,tran2020nnv,2020,CAV,NNV: The Neural Network Verification Tool for DNNs and Learning-Enabled CPS
+G41,lopez2023nnv2,2023,CAV,NNV 2.0: The Neural Network Verification Tool
+G42,huang2019reachnn,2019,ACM TECS,ReachNN: Reachability Analysis of Neural-Network Controlled Systems
+G43,fan2020reachnnstar,2020,ATVA,ReachNN*: A Tool for Reachability Analysis of Neural-Network Controlled Systems
+G44,huang2022polar,2022,ATVA,POLAR: A Polynomial Arithmetic Framework for Verifying Neural-Network Controlled Systems
+G45,schilling2022nncs,2022,AAAI,Verification of Neural-Network Control Systems by Integrating Taylor Models and Zonotopes
+G46,kochdumper2023polyzono,2023,NFM,Open- and Closed-Loop Neural Network Verification Using Polynomial Zonotopes
+G47,sidrane2022overt,2022,JMLR,OVERT: Safety Verification of Neural Network Control Policies for Nonlinear Systems
+G48,hu2020reachsdp,2020,IEEE CDC,Reach-SDP: Reachability Analysis of Closed-Loop Systems with NN Controllers via SDP
+G49,rober2022backward,2022,IEEE CDC,Backward Reachability Analysis for Neural Feedback Loops
+G50,everett2021reachlp,2021,IEEE ICRA,Efficient Reachability Analysis of Closed-Loop Systems with Neural Network Controllers
+G51,lopez2025archcomp,2025,ARCH,ARCH-COMP25 Category Report: AINNCS for Continuous and Hybrid Systems Plants
+G52,kumar2022policysmoothing,2022,ICLR,Policy Smoothing for Provably Robust Reinforcement Learning
+G53,wu2022crop,2022,ICLR,CROP: Certifying Robust Policies for Reinforcement Learning through Functional Smoothing
+G54,everett2021carrl,2021,IEEE TNNLS,Certifiable Robustness to Adversarial State Uncertainty in Deep Reinforcement Learning
+G55,wu2022copa,2022,ICLR,COPA: Certifying Robust Policies for Offline RL against Poisoning Attacks
+G56,chang2019neurallyapunov,2019,NeurIPS,Neural Lyapunov Control
+G57,abate2021fossil,2021,CAV,FOSSIL: A Software Tool for the Formal Synthesis of Lyapunov Functions and Barrier Certificates using Neural Networks
+G58,lindemann2023safeplanning,2023,IEEE RA-L,Safe Planning in Dynamic Environments Using Conformal Prediction
+G59,lindemann2023stlrv,2023,ICCPS,Conformal Prediction for STL Runtime Verification
+G60,zhao2024robustcp,2024,ICCPS,Robust Conformal Prediction for STL Runtime Verification under Distribution Shift
+G61,cairoli2023conformal,2023,HSCC,Conformal Quantitative Predictive Monitoring of STL Requirements for Stochastic Processes
+G62,lindemann2024formalcp,2024,arXiv,Formal Verification and Control with Conformal Prediction
+G63,mehmood2022bbsimplex,2022,NFM,The Black-Box Simplex Architecture for Runtime Assurance of Autonomous CPS
+G64,sheikhi2024bbsimplexma,2024,ISSE,The Black-Box Simplex Architecture for Runtime Assurance of Multi-Agent CPS
+G65,schierman2020rta,2020,JGCD,Runtime Assurance for Autonomous Aerospace Systems
+G66,desai2019soter,2019,IEEE/IFIP DSN,SOTER: A Runtime Assurance Framework for Programming Safe Robotics Systems
+G67,alshiekh2018shielding,2018,AAAI,Safe Reinforcement Learning via Shielding
+G68,cheng2019monitor,2019,DATE,Runtime Monitoring Neuron Activation Patterns
+G69,henzinger2020outside,2020,ECAI,Outside the Box: Abstraction-Based Monitoring of Neural Networks
+G70,aslansefat2020safeml,2020,IMBSA,SafeML: Safety Monitoring of ML Classifiers through Statistical Difference Measures
+G71,fremont2020taxi,2020,CAV,Formal Analysis and Redesign of a Neural Network-Based Aircraft Taxiing System with VerifAI
+G72,dreossi2019verifai,2019,CAV,VerifAI: A Toolkit for the Formal Design and Analysis of AI-Based Systems
+G73,dreossi2017compositional,2017,NFM,Compositional Falsification of Cyber-Physical Systems with Machine Learning Components
+G74,okelly2018rareevent,2018,NeurIPS,Scalable End-to-End Autonomous Vehicle Testing via Rare-Event Simulation
+G75,dziugaite2017nonvacuous,2017,UAI,Computing Nonvacuous Generalization Bounds for Deep (Stochastic) Neural Networks
+G76,viallard2021pacbayesadv,2021,NeurIPS,A PAC-Bayes Analysis of Adversarial Robustness
+G77,majumdar2021pacbayes,2021,IJRR,PAC-Bayes Control: Learning Policies that Provably Generalize to Novel Environments
+G78,weng2019proven,2019,ICML,PROVEN: Verifying Robustness of Neural Networks with a Probabilistic Approach
+G79,webb2019statistical,2019,ICLR,A Statistical Approach to Assessing Neural Network Robustness
+G80,baluta2021quantitative,2021,ICSE,Scalable Quantitative Verification for Deep Neural Networks
+G81,zhao2021ram,2021,AISafety@IJCAI,Assessing the Reliability of Deep Learning Classifiers Through Robustness Evaluation and Operational Profiles
+G82,dong2023reliability,2023,ACM TECS,Reliability Assessment and Safety Arguments for ML Components in System Assurance
+G83,zhao2020safecomp,2020,SAFECOMP,A Safety Framework for Critical Systems Utilising Deep Neural Networks
+G84,zhao2020operational,2020,IST,Assessing Safety-Critical Systems from Operational Testing: A Study on Autonomous Vehicles
+G85,gabreau2024acasxu,2024,ERTS,A Study of an ACAS-Xu Exact Implementation Using ED-324/ARP6983
+G86,damour2021acasxu,2021,SAFECOMP,Towards Certification of a Reduced Footprint ACAS-Xu System: A Hybrid ML-Based Solution

@@ -1,0 +1,178 @@
+{
+  "schema": "paperII.evidence_pack.v1",
+  "configuration": {
+    "theta_s": 0.25,
+    "H": 2,
+    "Tc_s": 1.0,
+    "L_local": 1.1814,
+    "mapping": "empirical_ekf"
+  },
+  "operational_design_domain": {
+    "source": "parent measured operating region",
+    "attitude": "away from gimbal singularity",
+    "airspeed": "below stall; hover/loiter measured",
+    "actuators": "unsaturated",
+    "coverage": {
+      "attack_type": "varied",
+      "gnss_condition": "varied",
+      "staleness": "varied",
+      "airspeed": "poor",
+      "platform": "not varied",
+      "flight_mode": "not varied"
+    }
+  },
+  "sora_annex_a": {
+    "operational_volume": "flight geography + contingency volume",
+    "contingency_volume_terms": {
+      "gnss_accuracy_m": "OPERATOR (open)",
+      "position_holding_error_under_attack_m": 2.223,
+      "map_error_m": "OPERATOR (open)",
+      "reaction_distance_m": "OPERATOR (open)",
+      "contingency_manoeuvre_m": "OPERATOR (open)"
+    },
+    "certified_margins_m": [
+      5.0,
+      10.0,
+      20.0
+    ],
+    "not_certified_margins_m": [
+      2.0
+    ]
+  },
+  "typed_chain": [
+    {
+      "step": 1,
+      "from": "detector threshold theta",
+      "to": "residual delay Delta(theta)",
+      "type_from": "in/A",
+      "type_to": "in/A",
+      "lift": "Lemma 1 (budget)",
+      "obligations": "",
+      "status": "proved; cap measured 4.84 s over 15392 hops"
+    },
+    {
+      "step": 2,
+      "from": "Delta(theta)",
+      "to": "input perturbation delta",
+      "type_from": "in/A",
+      "type_to": "in/A",
+      "lift": "interface gamma (calibration)",
+      "obligations": "O_cal",
+      "status": "measured on 3 flights of one airframe, 674 samples; supremum used"
+    },
+    {
+      "step": 3,
+      "from": "delta",
+      "to": "trajectory tube rho",
+      "type_from": "in/A",
+      "type_to": "tr/A",
+      "lift": "L_dyn",
+      "obligations": "O_lip",
+      "status": "local L = 1.181 measured on the checkpoint"
+    },
+    {
+      "step": 4,
+      "from": "rho over Tc",
+      "to": "corridor predicate over [0,T]",
+      "type_from": "tr/A",
+      "type_to": "op/A",
+      "lift": "L_hor",
+      "obligations": "O_hor",
+      "status": "assumed (Definition 2); holds by construction for a delay adversary only"
+    },
+    {
+      "step": 5,
+      "from": "per-operation predicate",
+      "to": "MCR over the mission distribution",
+      "type_from": "op/A",
+      "type_to": "popd/P",
+      "lift": "L_sup",
+      "obligations": "O_odd",
+      "status": "distribution named; MCR 0.882-0.893 across 9 profiles (simulation)"
+    },
+    {
+      "step": 6,
+      "from": "MCR per mission",
+      "to": "per flight hour objective",
+      "type_from": "popd/P",
+      "type_to": "poph/P",
+      "lift": "L_rate",
+      "obligations": "O_dep",
+      "status": "open: not claimed by the parent"
+    }
+  ],
+  "calculus_check": {
+    "in/A->poph/P": [
+      [
+        "L_op",
+        "L_rate"
+      ],
+      [
+        "O_prof",
+        "O_dep"
+      ]
+    ],
+    "in/A->op/A": [
+      [
+        "L_dyn",
+        "L_hor"
+      ],
+      [
+        "O_lip",
+        "O_hor"
+      ]
+    ]
+  },
+  "obligations": [
+    {
+      "id": "O_cal",
+      "text": "interface rate gamma transfers to the deployment (C3)",
+      "kind": "statistical",
+      "status": "partially evidenced",
+      "evidence": "real PX4 spoofing/jamming flights; hover only; one airframe",
+      "coverage_gap": "platform: not varied; flight mode: not varied; airspeed: poor"
+    },
+    {
+      "id": "O_lip",
+      "text": "Lipschitz constant / plant-model error bound over the operating region",
+      "kind": "model",
+      "status": "evidenced (model)",
+      "evidence": "local Lipschitz constant 1.1814 on operating-region trajectories",
+      "coverage_gap": "outside the smooth envelope (stall, saturation, aggressive manoeuvre) no finite L"
+    },
+    {
+      "id": "O_hor",
+      "text": "horizon or re-anchoring covers the whole operation",
+      "kind": "model",
+      "status": "assumed",
+      "evidence": "re-anchoring every Tc = 1 s; satisfied by construction for delay adversaries",
+      "coverage_gap": "fails under persistent denial (Paper I, Prop. regimes)"
+    },
+    {
+      "id": "O_odd",
+      "text": "deployment stays inside the certified set (ODD containment)",
+      "kind": "statistical",
+      "status": "stated",
+      "evidence": "mission distribution (3 profiles x 3 receivers) named; simulated",
+      "coverage_gap": "deployment distribution not sampled"
+    },
+    {
+      "id": "O_dep",
+      "text": "temporal dependence and exposure model (per demand -> per hour)",
+      "kind": "statistical",
+      "status": "open",
+      "evidence": "none",
+      "coverage_gap": "no per-hour claim is made"
+    },
+    {
+      "id": "O_thr",
+      "text": "perturbation model covers the objective's hazard",
+      "kind": "architectural",
+      "status": "stated",
+      "evidence": "time-delay adversary below detector threshold; GNSS RF manipulation via unit bridge",
+      "coverage_gap": "denial, insider key compromise, monitor-input attacks not covered"
+    }
+  ],
+  "provenance": "generated by paperII/experiments/evidence_pack.py from parent results/*.csv",
+  "disclaimer": "maps a mathematical guarantee onto an evidence framework; certifies nothing"
+}

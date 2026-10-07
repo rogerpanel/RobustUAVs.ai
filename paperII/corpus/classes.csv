@@ -1,0 +1,18 @@
+class,label,gids
+RS,Randomized smoothing (incl. detection and segmentation),G01;G02;G03;G04;G18;G19
+BP,Bound propagation and abstract interpretation,G05;G06;G07;G08;G09;G10;G11
+SMT,Complete (SMT/MILP) verification,G12;G13;G14;G27;G85
+LIP,Lipschitz-constrained networks,G15;G16;G17
+SEM,Semantic/geometric and patch certification,G20;G21;G22;G23;G24;G25;G26;G37
+PIL,Perception-in-the-loop closed-loop verification,G28;G29;G30;G32;G33;G34;G35;G36
+DTMC,Probabilistic closed-loop (average-case) analysis,G31
+CLR,Closed-loop reachability of NN control systems,G38;G39;G40;G41;G42;G43;G44;G45;G46;G47;G48;G49;G50;G51
+CRL,Certified reinforcement learning,G52;G53;G54;G55
+NCERT,Neural Lyapunov and barrier certificates,G56;G57
+CP,Conformal prediction for planning and runtime verification,G58;G59;G60;G61;G62
+RTA,Runtime assurance (Simplex) and shielding,G63;G64;G65;G66;G67;G86
+MON,Out-of-distribution and activation monitors,G68;G69;G70
+FALS,Falsification and scenario search,G71;G72;G73
+PACB,PAC-Bayes generalisation (incl. control),G75;G76;G77
+PROB,Probabilistic (local) robustness,G78;G79;G80
+OPREL,Operational-profile and operational-testing reliability,G74;G81;G82;G83;G84

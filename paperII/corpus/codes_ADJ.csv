@@ -1,0 +1,87 @@
+gid,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+G01,B,perception,in,Ac,norm,none,S,proof,
+G02,B,perception,in,Ac,norm,none,S,proof,
+G03,B,perception,in,Ac,norm,none,S,proof,
+G04,B,perception,in,Ac,norm,none,S,proof,
+G05,B,perception,in,A,norm,none,S,proof,
+G06,B,perception,in,A,norm,none,S,proof,
+G07,B,perception,in,A,norm,none,S,proof,
+G08,B,perception,in,A,norm,none,S,proof,
+G09,B,perception,in,A,norm,none,S,proof,
+G10,B,perception,in,A,norm,none,S,proof,
+G11,B,perception,in,A,norm,none,S,proof,
+G12,A,control,in,A,none,none,U,proof,input regions are slices of encounter state space
+G13,B,control,in,A,none,none,S,proof,ACAS Xu among benchmarks but tool paper
+G14,B,control,in,A,none,none,S,proof,
+G15,B,perception,in,A,norm,none,S,proof,
+G16,B,perception,in,A,norm,none,S,proof,
+G17,B,perception,in,A,norm,none,S,proof,
+G18,B,perception,in,Ac,norm,none,S,proof,
+G19,A,perception,in,Ac,norm,none,S,proof,Cityscapes driving scenes
+G20,B,perception,in,A,patch,none,S,proof,
+G21,B,perception,in,A,patch,none,S,proof,
+G22,B,perception,in,A,semantic,none,S,proof,
+G23,B,perception,in,Ac,semantic,none,S,proof,
+G24,B,perception,in,Ac,semantic,none,S,proof,
+G25,B,perception,in,A,semantic,none,S,proof,
+G26,B,perception,in,A,semantic,none,S,proof,
+G27,A,control,pop,E,distribution,none,S,simulated,table-to-network fidelity not argued at system level
+G28,A,perception,tr,A,none,L_dyn;L_gen,S,proof,camera model stands in for real images
+G29,A,perception,tr,A,semantic,L_dyn;L_gen,S,proof,GAN range assumed to cover real images
+G30,A,perception,tr,A,distribution,L_dyn;L_gen,SE,proof,abstraction validated on samples
+G31,A,perception,pop,E,distribution,L_dyn;L_conc,SEC,simulated,average-case DTMC analysis
+G32,A,perception,tr,A,distribution,L_dyn;L_gen,SE,simulated,contract checked empirically
+G33,A,perception,tr,P,distribution,L_gen;L_conc,SEC,simulated,
+G34,A,perception,tr,P,distribution,L_gen;L_conc,SEC,simulated,
+G35,A,perception,tr,A,semantic,L_dyn;L_gen,S,proof,
+G36,A,perception,tr,P,distribution,L_dyn;L_gen;L_conc,SEC,simulated,
+G37,A,estimation,in,A,semantic,L_gen,S,proof,
+G38,A,control,tr,A,none,L_dyn,S,proof,
+G39,A,control,tr,A,none,L_dyn,S,proof,
+G40,A,control,tr,A,none,L_dyn,S,proof,
+G41,A,control,tr,A,none,L_dyn,S,proof,
+G42,B,control,tr,A,none,L_dyn,S,proof,
+G43,B,control,tr,A,none,L_dyn,S,proof,
+G44,A,control,tr,A,none,L_dyn,S,proof,
+G45,A,control,tr,A,none,L_dyn,S,proof,
+G46,A,control,tr,A,none,L_dyn,S,proof,
+G47,A,control,tr,A,none,L_dyn,S,proof,
+G48,A,control,tr,A,disturbance,L_dyn,S,proof,
+G49,A,control,tr,A,none,L_dyn,S,proof,
+G50,A,control,tr,A,disturbance,L_dyn,S,proof,
+G51,A,control,tr,A,none,L_dyn,S,proof,competition report
+G52,B,control,tr,Ac,norm,L_hor,S,proof,certifies total reward
+G53,B,control,tr,Ac,norm,L_hor,S,proof,Highway-env among environments
+G54,A,control,in,A,norm,none,S,simulated,per-step action certificate
+G55,B,control,in,A,poisoning,none,S,proof,
+G56,A,control,tr,A,none,L_dyn,S,proof,falsifier-based check of Lyapunov conditions
+G57,B,control,tr,A,none,L_dyn,S,proof,SMT-verified certificates
+G58,A,estimation,tr,P,distribution,L_conc,S,simulated,exchangeability
+G59,A,estimation,op,P,distribution,L_conc,S,simulated,
+G60,A,estimation,op,P,distribution,L_conc,S,simulated,f-divergence shift bound
+G61,B,estimation,op,P,distribution,L_conc,S,simulated,
+G62,A,estimation,tr,P,distribution,L_conc,S,simulated,
+G63,A,control,op,A,none,L_mon;L_dyn,S,proof,
+G64,A,control,op,A,none,L_mon;L_dyn,S,proof,
+G65,A,control,op,A,none,L_mon,S,modelled,
+G66,A,control,op,A,none,L_mon,S,measured,
+G67,B,control,op,A,none,L_mon,S,simulated,
+G68,A,perception,in,A,distribution,L_mon,U,measured,monitor recall not bounded
+G69,B,perception,in,A,distribution,L_mon,U,measured,
+G70,B,perception,pop,P,distribution,L_mon,S,measured,
+G71,A,perception,op,X,semantic,none,S,simulated,
+G72,A,end2end,op,X,semantic,none,S,simulated,
+G73,A,end2end,op,X,semantic,L_gen,S,simulated,
+G74,A,end2end,pop,P,distribution,L_conc;L_gen,S,simulated,simulator fidelity
+G75,B,perception,pop,P,distribution,L_conc,S,proof,
+G76,B,perception,pop,P,norm,L_conc,S,proof,
+G77,A,control,pop,P,distribution,L_conc,S,simulated,
+G78,B,perception,in,P,norm,L_conc,S,proof,
+G79,B,perception,in,P,norm,L_conc,S,simulated,
+G80,B,perception,in,P,norm,L_conc,SEC,proof,
+G81,B,perception,pop,P,norm,L_op;L_conc,S,measured,
+G82,A,perception,pop,P,norm,L_op;L_conc;L_rate,SEC,simulated,
+G83,A,perception,pop,P,distribution,L_op;L_conc;L_rate,S,modelled,
+G84,A,end2end,pop,P,distribution,L_conc;L_rate,SEC,measured,
+G85,A,control,in,A,none,none,S,proof,
+G86,A,control,op,A,none,L_mon,S,proof,
