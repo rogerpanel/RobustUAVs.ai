@@ -1,0 +1,7 @@
+step,from,to,type_from,type_to,lift,obligations,status
+1,detector threshold theta,residual delay Delta(theta),in/A,in/A,Lemma 1 (budget),,proved; cap measured 4.84 s over 15392 hops
+2,Delta(theta),input perturbation delta,in/A,in/A,interface gamma (calibration),O_cal,"measured on 3 flights of one airframe, 674 samples; supremum used"
+3,delta,trajectory tube rho,in/A,tr/A,L_dyn,O_lip,local L = 1.181 measured on the checkpoint
+4,rho over Tc,"corridor predicate over [0,T]",tr/A,op/A,L_hor,O_hor,assumed (Definition 2); holds by construction for a delay adversary only
+5,per-operation predicate,MCR over the mission distribution,op/A,popd/P,L_sup,O_odd,distribution named; MCR 0.882-0.893 across 9 profiles (simulation)
+6,MCR per mission,per flight hour objective,popd/P,poph/P,L_rate,O_dep,open: not claimed by the parent

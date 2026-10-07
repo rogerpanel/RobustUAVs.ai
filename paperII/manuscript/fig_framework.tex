@@ -1,0 +1,99 @@
+% =====================================================================
+% Fig. 1 -- Methodological framework of the systematization.
+% Four stages left to right; demonstrator and validation loop along the bottom.
+% Requires: tikz with arrows.meta, positioning, fit, backgrounds, calc.
+% =====================================================================
+\begin{figure*}[t]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  font=\footnotesize,
+  >={Stealth[length=2.2mm]},
+  inbox/.style={draw=black!55, rounded corners=2pt, fill=gray!8, align=center,
+                text width=31mm, minimum height=11mm, inner sep=2.5pt},
+  pstep/.style={draw=black!55, rounded corners=2pt, fill=orange!10, align=center,
+               text width=35mm, minimum height=8.5mm, inner sep=2.5pt},
+  core/.style={draw=black!80, thick, rounded corners=3pt, fill=blue!7,
+               align=center, text width=50mm, inner sep=4pt},
+  outbox/.style={draw=black!55, rounded corners=2pt, fill=green!8, align=left,
+                 text width=38mm, minimum height=8mm, inner sep=2.5pt},
+  lane/.style={draw=black!25, dashed, rounded corners=4pt, inner sep=4pt},
+  lbl/.style={font=\scriptsize\bfseries, text=black!70},
+  flow/.style={->, draw=black!70, line width=0.6pt},
+  fb/.style={->, draw=red!60!black, line width=0.6pt, dashed}
+]
+% ---------------- (1) inputs ------------------------------------------
+\node[inbox] (lit) {\textbf{Guarantee literature}\\ IEEE, ACM, Scopus, WoS,\\ OpenAlex/arXiv, 2017--2026};
+\node[inbox, below=2.2mm of lit] (seed) {\textbf{Seed set}\\ canonical verifiers, NNCS,\\ RTA, conformal, PAC-Bayes};
+\node[inbox, below=2.2mm of seed] (reg) {\textbf{Objective corpus}\\ SORA 2.5 (Annexes A, E),\\ EASA CP Issue 02/03, MLEAP,\\ ED-324, AC 23.1309, F3269};
+\node[inbox, below=2.2mm of reg] (par) {\textbf{Parent artifact}\\ certificate engine and\\ committed result files};
+\node[lane, fit=(lit)(par)] (L1) {};
+\node[lbl, above=0.4mm of L1] {(1) Inputs, frozen at a cut-off date};
+
+% ---------------- (2) protocol ------------------------------------------
+\node[pstep, right=8mm of lit, yshift=3mm] (s1) {\textbf{Identify} (PRISMA 2020)\\ block search $A\wedge B\wedge C$};
+\node[pstep, below=2mm of s1] (s2) {\textbf{Screen}: 2 humans + LLM\\ (no LLM-only exclusion)};
+\node[pstep, below=2mm of s2] (s3) {\textbf{Snowball} (Wohlin)\\ stop: $<2\,\%$ new, no new cell};
+\node[pstep, below=2mm of s3] (s4) {\textbf{Code} 8 fields (Table~\ref{tab:codebook})\\ tier, component, \emph{scope}, \emph{modality},\\ perturbation, lifts, assumption, evidence};
+\node[pstep, below=2mm of s4] (s5) {\textbf{Reliability}: $\kappa$, $\alpha_K$, AC1, PABAK\\ $\rightarrow$ logged adjudication};
+\node[lane, fit=(s1)(s5)] (L2) {};
+\node[lbl, above=0.4mm of L2] {(2) Systematization protocol (Sec.~\ref{sec:protocol})};
+
+% ---------------- (3) theory core ----------------------------------------
+\node[core, right=8mm of L2] (core) {\textbf{Quantifier type system}\\[2pt]
+  $\tau=\langle\text{scope},\text{modality}\rangle$,\ \ scope $\in\{\mathsf{in},\mathsf{tr},\mathsf{op},\mathsf{pop}_\mathsf{d},\mathsf{pop}_\mathsf{h}\}$\\
+  modality $\in\{\forall,\forall_\alpha,\mathbb{P},\mathbb{E},\exists\}$\\[4pt]
+  \textbf{Lift calculus}: typed edges $\tau\xrightarrow{\ \ell\ }\tau'$\\ each emitting obligations $\mathcal{O}(\ell)$\\[4pt]
+  \begin{tabular}{@{}l@{}}
+  D1--D4\ \ type, dominance, lift, path\\
+  P1\ \ dominance is a partial order\\
+  T1\ \ transfer soundness (union bound)\\
+  P2\ \ no modality for free\\
+  P3\ \ rate lift and confirmation credit\\
+  P4\ \ zero-failure ladder $=$ SORA Annex E\\
+  P5\ \ runtime assurance relocates the gap
+  \end{tabular}};
+\node[lbl, above=0.6mm of core] {(3) Theory (Sec.~\ref{sec:theory})};
+
+% ---------------- (4) outputs ---------------------------------------------
+\node[outbox, right=8mm of core, yshift=19mm] (o1) {\textbf{H1} corpus by type and component};
+\node[outbox, below=2mm of o1] (o2) {\textbf{H2} lifts accounted as obligations?};
+\node[outbox, below=2mm of o2] (o3) {\textbf{H3} transfer table: D / L$_k$ / X};
+\node[outbox, below=2mm of o3] (o4) {\textbf{H4} runtime-assurance deficit};
+\node[outbox, below=2mm of o4, fill=green!18] (o5) {\textbf{Research agenda}: empty and costly cells, ranked};
+\node[lane, fit=(o1)(o5)] (L4) {};
+\node[lbl, above=0.4mm of L4] {(4) Findings (Secs.~\ref{sec:results}--\ref{sec:agenda})};
+
+% ---------------- flows -------------------------------------------------
+\draw[flow] (lit.east) -- (s1.west);
+\draw[flow] (seed.east) -- ++(3mm,0) |- (s3.west);
+\draw[flow] (s1) -- (s2); \draw[flow] (s2) -- (s3); \draw[flow] (s3) -- (s4); \draw[flow] (s4) -- (s5);
+\draw[flow] (reg.east) -- ++(3mm,0) |- ([yshift=-2mm]s4.west);
+\draw[flow] (L2.east) -- (core.west);
+\foreach \o in {o1,o2,o3,o4,o5} \draw[flow] (core.east) -- (\o.west);
+
+% ---------------- (5) demonstrator and validation ------------------------
+\path let \p1=(L1.west), \p2=(L4.east), \p3=(L2.south) in
+  node[draw=red!50!black, rounded corners=2pt, fill=red!5, align=center,
+       text width={\x2-\x1-8pt}, inner sep=3pt, anchor=north west] (val)
+  at (\x1,\y3-9mm)
+ {\textbf{(5) Demonstrator and validation loop}:\ \
+  SORA Annex A evidence pack from the parent certificate, every lift listed as an open or discharged obligation (Sec.~\ref{sec:case})\ \textbullet\
+  sensitivity analyses (tier, venue, period, strict coding)\ \textbullet\
+  the full dual-coder study replaces the pilot; numbers regenerate from result files};
+\draw[fb] (par.south) -- (par.south |- val.north);
+\draw[fb] (L4.south |- val.north) -- (L4.south)
+  node[midway, left, font=\scriptsize, text=red!60!black]{numbers regenerate};
+\end{tikzpicture}}
+\caption{Methodological framework. (1)~Two corpora enter the study: guarantees about learned
+components, and assurance objectives from aviation regulation and standards, both frozen at a
+cut-off date. (2)~A registered protocol identifies, screens, snowballs and codes the
+guarantees. Two coders work independently, a language model acts as a logged third coder, and
+reliability is reported per field before adjudication. (3)~Every guarantee and objective
+receives a quantifier type, and a calculus of typed lifts computes, for each pair, whether the
+guarantee discharges the objective, needs lifts whose assumptions become obligations, or is a
+category error. (4)~The coded corpus and the calculus answer H1--H4 and yield a ranked research
+agenda. (5)~An evidence generator instantiates one sound path end to end, and the validation
+loop regenerates every number from result files.}
+\label{fig:framework}
+\end{figure*}
