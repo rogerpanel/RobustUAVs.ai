@@ -52,3 +52,10 @@ paperI/manuscript/*.log
 paperI/manuscript/*.out
 paperI/manuscript/*.synctex.gz
 paperI/experiments/__pycache__/
+
+# paperII build and cache debris
+paperII/manuscript/*.aux
+paperII/manuscript/*.blg
+paperII/manuscript/*.log
+paperII/manuscript/*.out
+paperII/experiments/__pycache__/
