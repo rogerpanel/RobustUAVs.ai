@@ -41,3 +41,14 @@ paper/proposals/*.bbl
 paper/proposals/*.blg
 paper/proposals/*.log
 paper/proposals/*.out
+
+# paperI build and cache debris
+paperI/manuscript/*.aux
+paperI/manuscript/*.bbl
+paperI/manuscript/*.blg
+paperI/manuscript/*.fls
+paperI/manuscript/*.fdb_latexmk
+paperI/manuscript/*.log
+paperI/manuscript/*.out
+paperI/manuscript/*.synctex.gz
+paperI/experiments/__pycache__/

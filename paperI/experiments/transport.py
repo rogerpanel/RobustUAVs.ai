@@ -22,7 +22,7 @@ from dataclasses import dataclass
 
 from constants import (CAN_BITRATE, CANFD_ARB_RATE, CANFD_DATA_RATE, OUT,
                        SCHEMES, TESLA_KEY_BYTES, TESLA_MAC_BYTES,
-                       hcrl_benign_rates)
+                       hcrl_benign_rates, hcrl_measured_mix)
 
 # --------------------------------------------------------------------------
 # Frame models
@@ -119,10 +119,17 @@ def tx_time(transport: Transport, extra_bytes: int, msg_bytes: int = 0) -> float
 
 def u0_from_hcrl(transport: Transport, worst: bool = True) -> tuple[float, float, float]:
     """Base load implied by the HCRL benign frame rates (min, mean, max).
-    Only meaningful for CAN; the frame payload in HCRL is taken as 8 B."""
-    rates = hcrl_benign_rates()
-    ft = transport.frame_time if worst else transport.frame_time_nominal
-    us = [r * ft for r in rates]
+    Only meaningful for CAN. When E5 has measured the bus (results/
+    e5_hcrl_bus.csv), each scenario's measured frame rate is multiplied by
+    its measured mean frame length; otherwise every benign frame is taken as
+    8 B, the original worst case. See results/provenance_paperI.csv."""
+    mix = hcrl_measured_mix() if transport.key == "can" else None
+    if mix:
+        us = [rate * (bw if worst else bn) / CAN_BITRATE for rate, bw, bn in mix]
+    else:
+        rates = hcrl_benign_rates()
+        ft = transport.frame_time if worst else transport.frame_time_nominal
+        us = [r * ft for r in rates]
     return min(us), sum(us) / len(us), max(us)
 
 
