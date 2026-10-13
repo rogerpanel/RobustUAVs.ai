@@ -1,0 +1,787 @@
+% =====================================================================
+% Paper III bibliography.
+% Entries were assembled from the Paper III literature review (Oct 2026).
+% Those marked "% CHECK" were given from domain knowledge and their pages /
+% DOIs were not re-verified online; confirm before camera-ready.
+% =====================================================================
+
+% ---------------------------------------------------------- parent / companions
+@misc{parentpaper,
+  title  = {From Wire to Flight: A Conditional Mission-Completion Guarantee for {UAVs}},
+  author = {Anonymous},
+  note   = {Under review; artifact released with this submission},
+  year   = {2026}
+}
+@misc{paperI,
+  title  = {What Authenticity Costs in Metres: A Certified Budget for Cryptography and Sensing in {UAV} Navigation},
+  author = {Anonymous},
+  note   = {Companion paper, under review},
+  year   = {2026}
+}
+@misc{paperII,
+  title  = {{SoK}: The Quantifier Gap Between Certified Robustness and Airworthiness Assurance},
+  author = {Anonymous},
+  note   = {Companion paper, under review},
+  year   = {2026}
+}
+
+% ---------------------------------------------------------- CMDPs and constrained RL
+@book{altman1999cmdp,
+  title     = {Constrained {M}arkov Decision Processes},
+  author    = {Altman, Eitan},
+  publisher = {Chapman \& Hall/CRC},
+  year      = {1999}
+}
+@inproceedings{achiam2017cpo,
+  title     = {Constrained Policy Optimization},
+  author    = {Achiam, Joshua and Held, David and Tamar, Aviv and Abbeel, Pieter},
+  booktitle = {Proceedings of the 34th International Conference on Machine Learning (ICML)},
+  series    = {PMLR},
+  volume    = {70},
+  pages     = {22--31},
+  year      = {2017}
+}
+@techreport{ray2019safetygym,
+  title       = {Benchmarking Safe Exploration in Deep Reinforcement Learning},
+  author      = {Ray, Alex and Achiam, Joshua and Amodei, Dario},
+  institution = {OpenAI},
+  year        = {2019}
+}
+@inproceedings{paternain2019zeroduality,
+  title     = {Constrained Reinforcement Learning Has Zero Duality Gap},
+  author    = {Paternain, Santiago and Chamon, Luiz F. O. and Calvo-Fullana, Miguel and Ribeiro, Alejandro},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {32},
+  year      = {2019}
+}
+@inproceedings{stooke2020pid,
+  title     = {Responsive Safety in Reinforcement Learning by {PID} {L}agrangian Methods},
+  author    = {Stooke, Adam and Achiam, Joshua and Abbeel, Pieter},
+  booktitle = {Proceedings of the 37th International Conference on Machine Learning (ICML)},
+  series    = {PMLR},
+  volume    = {119},
+  pages     = {9133--9143},
+  year      = {2020}
+}
+@inproceedings{zhang2020focops,
+  title     = {First Order Constrained Optimization in Policy Space},
+  author    = {Zhang, Yiming and Vuong, Quan and Ross, Keith W.},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {33},
+  year      = {2020}
+}
+@inproceedings{xu2021crpo,
+  title     = {{CRPO}: A New Approach for Safe Reinforcement Learning with Convergence Guarantee},
+  author    = {Xu, Tengyu and Liang, Yingbin and Lan, Guanghui},
+  booktitle = {Proceedings of the 38th International Conference on Machine Learning (ICML)},
+  series    = {PMLR},
+  volume    = {139},
+  year      = {2021}
+}
+@inproceedings{sootla2022saute,
+  title     = {Saut\'e {RL}: Almost Surely Safe Reinforcement Learning Using State Augmentation},
+  author    = {Sootla, Aivar and Cowen-Rivers, Alexander I. and Jafferjee, Taher and Wang, Ziyan and Mguni, David H. and Wang, Jun and Bou Ammar, Haitham},
+  booktitle = {Proceedings of the 39th International Conference on Machine Learning (ICML)},
+  series    = {PMLR},
+  volume    = {162},
+  pages     = {20423--20443},
+  year      = {2022}
+}
+@inproceedings{mcmahan2024anytime,
+  title     = {Anytime-Constrained Reinforcement Learning},
+  author    = {McMahan, Jeremy and Zhu, Xiaojin},
+  booktitle = {Proceedings of the 27th International Conference on Artificial Intelligence and Statistics (AISTATS)},
+  series    = {PMLR},
+  volume    = {238},
+  pages     = {4321--4329},
+  year      = {2024}
+}
+@article{mcmahan2024anytimemarl,
+  title   = {Anytime-Constrained Multi-Agent Reinforcement Learning},
+  author  = {McMahan, Jeremy and Zhu, Xiaojin},
+  journal = {arXiv preprint arXiv:2410.23637},
+  year    = {2024}
+}
+@inproceedings{zhao2023statewise,
+  title     = {State-wise Safe Reinforcement Learning: A Survey},
+  author    = {Zhao, Weiye and He, Tairan and Chen, Rui and Wei, Tianhao and Liu, Changliu},
+  booktitle = {Proceedings of the 32nd International Joint Conference on Artificial Intelligence (IJCAI)},
+  pages     = {6814--6822},
+  year      = {2023},
+  doi       = {10.24963/ijcai.2023/763}
+}
+@article{zhao2024scpo,
+  title   = {State-wise Constrained Policy Optimization},
+  author  = {Zhao, Weiye and Chen, Rui and Sun, Yifan and Wei, Tianhao and Liu, Changliu},
+  journal = {Transactions on Machine Learning Research},
+  year    = {2024}
+}
+@inproceedings{wachi2024survey,
+  title     = {A Survey of Constraint Formulations in Safe Reinforcement Learning},
+  author    = {Wachi, Akifumi and Shen, Xun and Sui, Yanan},
+  booktitle = {Proceedings of the 33rd International Joint Conference on Artificial Intelligence (IJCAI)},
+  year      = {2024},
+  doi       = {10.24963/ijcai.2024/913}
+}
+@inproceedings{yu2022rcrl,
+  title     = {Reachability Constrained Reinforcement Learning},
+  author    = {Yu, Dongjie and Ma, Haitong and Li, Shengbo and Chen, Jianyu},
+  booktitle = {Proceedings of the 39th International Conference on Machine Learning (ICML)},
+  series    = {PMLR},
+  volume    = {162},
+  pages     = {25636--25655},
+  year      = {2022}
+}
+@inproceedings{shi2023instantaneous,
+  title     = {A Near-Optimal Algorithm for Safe Reinforcement Learning Under Instantaneous Hard Constraints},
+  author    = {Shi, Ming and Liang, Yingbin and Shroff, Ness},
+  booktitle = {Proceedings of the 40th International Conference on Machine Learning (ICML)},
+  year      = {2023}
+}
+@inproceedings{mondal2024pdanpg,
+  title     = {Sample-Efficient Constrained Reinforcement Learning with General Parameterization},
+  author    = {Mondal, Washim Uddin and Aggarwal, Vaneet},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {37},
+  pages     = {68380--68405},
+  year      = {2024}
+}
+@article{gu2024review,
+  title   = {A Review of Safe Reinforcement Learning: Methods, Theories and Applications},
+  author  = {Gu, Shangding and Yang, Long and Du, Yali and Chen, Guang and Walter, Florian and Wang, Jun and Knoll, Alois},
+  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  year    = {2024}
+}  % CHECK volume/pages
+
+% ---------------------------------------------------------- safety layers, shields, filters
+@article{dalal2018safety,
+  title   = {Safe Exploration in Continuous Action Spaces},
+  author  = {Dalal, Gal and Dvijotham, Krishnamurthy and Vecerik, Matej and Hester, Todd and Paduraru, Cosmin and Tassa, Yuval},
+  journal = {arXiv preprint arXiv:1801.08757},
+  year    = {2018}
+}
+@inproceedings{pham2018optlayer,
+  title     = {{OptLayer} -- Practical Constrained Optimization for Deep Reinforcement Learning in the Real World},
+  author    = {Pham, Tu-Hoa and De Magistris, Giovanni and Tachibana, Ryuki},
+  booktitle = {IEEE International Conference on Robotics and Automation (ICRA)},
+  year      = {2018}
+}
+@inproceedings{agrawal2019cvxpylayers,
+  title     = {Differentiable Convex Optimization Layers},
+  author    = {Agrawal, Akshay and Amos, Brandon and Barratt, Shane and Boyd, Stephen and Diamond, Steven and Kolter, J. Zico},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {32},
+  year      = {2019}
+}
+@article{gros2020projection,
+  title   = {Safe Reinforcement Learning via Projection on a Safe Set: How to Achieve Optimality?},
+  author  = {Gros, S{\'e}bastien and Zanon, Mario and Bemporad, Alberto},
+  journal = {IFAC-PapersOnLine},
+  volume  = {53},
+  number  = {2},
+  pages   = {8076--8081},
+  year    = {2020}
+}  % CHECK pages
+@article{markgraf2025actionprojection,
+  title   = {Safe Reinforcement Learning using Action Projection: Safeguard the Policy or the Environment?},
+  author  = {Markgraf, Hannah and Sawant, Shamburaj and Krasowski, Hanna and Sch{\"a}fer, Lukas and Gros, S{\'e}bastien and Althoff, Matthias},
+  journal = {Transactions on Machine Learning Research},
+  note    = {arXiv:2509.12833},
+  year    = {2025}
+}
+@inproceedings{alshiekh2018shielding,
+  title     = {Safe Reinforcement Learning via Shielding},
+  author    = {Alshiekh, Mohammed and Bloem, Roderick and Ehlers, R{\"u}diger and K{\"o}nighofer, Bettina and Niekum, Scott and Topcu, Ufuk},
+  booktitle = {Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume    = {32},
+  number    = {1},
+  pages     = {2669--2678},
+  year      = {2018},
+  doi       = {10.1609/aaai.v32i1.11797}
+}
+@inproceedings{elsayedaly2021marlshield,
+  title     = {Safe Multi-Agent Reinforcement Learning via Shielding},
+  author    = {ElSayed-Aly, Ingy and Bharadwaj, Suda and Amato, Christopher and Ehlers, R{\"u}diger and Topcu, Ufuk and Feng, Lu},
+  booktitle = {Proceedings of the 20th International Conference on Autonomous Agents and Multiagent Systems (AAMAS)},
+  pages     = {483--491},
+  year      = {2021}
+}
+@article{xiao2023dynamicshield,
+  title   = {Model-based Dynamic Shielding for Safe and Efficient Multi-Agent Reinforcement Learning},
+  author  = {Xiao, Wenli and Lyu, Yiwei and Dolan, John M.},
+  journal = {arXiv preprint arXiv:2304.06281},
+  year    = {2023}
+}  % CHECK authors
+@article{krasowski2023provably,
+  title   = {Provably Safe Reinforcement Learning: Conceptual Analysis, Survey, and Benchmarking},
+  author  = {Krasowski, Hanna and Thumm, Jakob and M{\"u}ller, Marlon and Sch{\"a}fer, Lukas and Wang, Xiao and Althoff, Matthias},
+  journal = {Transactions on Machine Learning Research},
+  year    = {2023}
+}
+@inproceedings{ames2019cbf,
+  title     = {Control Barrier Functions: Theory and Applications},
+  author    = {Ames, Aaron D. and Coogan, Samuel and Egerstedt, Magnus and Notomista, Gennaro and Sreenath, Koushil and Tabuada, Paulo},
+  booktitle = {18th European Control Conference (ECC)},
+  pages     = {3420--3431},
+  year      = {2019},
+  doi       = {10.23919/ECC.2019.8796030}
+}
+@inproceedings{cheng2019endtoend,
+  title     = {End-to-End Safe Reinforcement Learning through Barrier Functions for Safety-Critical Continuous Control Tasks},
+  author    = {Cheng, Richard and Orosz, G{\'a}bor and Murray, Richard M. and Burdick, Joel W.},
+  booktitle = {Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume    = {33},
+  year      = {2019}
+}
+@inproceedings{qin2021macbf,
+  title     = {Learning Safe Multi-Agent Control with Decentralized Neural Barrier Certificates},
+  author    = {Qin, Zengyi and Zhang, Kaiqing and Chen, Yuxiao and Chen, Jingkai and Fan, Chuchu},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2021}
+}
+@article{zhang2025gcbfplus,
+  title   = {{GCBF+}: A Neural Graph Control Barrier Function Framework for Distributed Safe Multiagent Control},
+  author  = {Zhang, Songyuan and So, Oswin and Garg, Kunal and Fan, Chuchu},
+  journal = {IEEE Transactions on Robotics},
+  volume  = {41},
+  pages   = {1533--1552},
+  year    = {2025},
+  doi     = {10.1109/TRO.2025.3530348}
+}
+@article{wabersich2021psf,
+  title   = {A Predictive Safety Filter for Learning-Based Control of Constrained Nonlinear Dynamical Systems},
+  author  = {Wabersich, Kim P. and Zeilinger, Melanie N.},
+  journal = {Automatica},
+  volume  = {129},
+  pages   = {109597},
+  year    = {2021},
+  doi     = {10.1016/j.automatica.2021.109597}
+}
+@article{hsu2024safetyfilter,
+  title   = {The Safety Filter: A Unified View of Safety-Critical Control in Autonomous Systems},
+  author  = {Hsu, Kai-Chieh and Hu, Haimin and Fisac, Jaime F.},
+  journal = {Annual Review of Control, Robotics, and Autonomous Systems},
+  volume  = {7},
+  pages   = {47--72},
+  year    = {2024},
+  doi     = {10.1146/annurev-control-071723-102940}
+}
+@inproceedings{bansal2017hj,
+  title     = {{H}amilton--{J}acobi Reachability: A Brief Overview and Recent Advances},
+  author    = {Bansal, Somil and Chen, Mo and Herbert, Sylvia and Tomlin, Claire J.},
+  booktitle = {IEEE 56th Conference on Decision and Control (CDC)},
+  year      = {2017}
+}
+@article{sha2001simplex,
+  title   = {Using Simplicity to Control Complexity},
+  author  = {Sha, Lui},
+  journal = {IEEE Software},
+  volume  = {18},
+  number  = {4},
+  pages   = {20--28},
+  year    = {2001}
+}
+
+% ---------------------------------------------------------- (safe) MARL
+@article{gu2023macpo,
+  title   = {Safe Multi-Agent Reinforcement Learning for Multi-Robot Control},
+  author  = {Gu, Shangding and Kuba, Jakub Grudzien and Chen, Yuanpei and Du, Yali and Yang, Long and Knoll, Alois and Yang, Yaodong},
+  journal = {Artificial Intelligence},
+  volume  = {319},
+  pages   = {103905},
+  year    = {2023},
+  doi     = {10.1016/j.artint.2023.103905}
+}
+@inproceedings{ji2023safetygymnasium,
+  title     = {Safety-Gymnasium: A Unified Safe Reinforcement Learning Benchmark},
+  author    = {Ji, Jiaming and Zhang, Borong and Zhou, Jiayi and Pan, Xuehai and Huang, Weidong and Sun, Ruiyang and Geng, Yiran and Zhong, Yifan and Dai, Juntao and Yang, Yaodong},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS), Datasets and Benchmarks Track},
+  year      = {2023}
+}
+@article{ji2024omnisafe,
+  title   = {{OmniSafe}: An Infrastructure for Accelerating Safe Reinforcement Learning Research},
+  author  = {Ji, Jiaming and Zhou, Jiayi and Zhang, Borong and Dai, Juntao and Pan, Xuehai and Sun, Ruiyang and Huang, Weidong and Geng, Yiran and Liu, Mickel and Yang, Yaodong},
+  journal = {Journal of Machine Learning Research},
+  year    = {2024}
+}  % CHECK volume
+@inproceedings{yu2022mappo,
+  title     = {The Surprising Effectiveness of {PPO} in Cooperative Multi-Agent Games},
+  author    = {Yu, Chao and Velu, Akash and Vinitsky, Eugene and Gao, Jiaxuan and Wang, Yu and Bayen, Alexandre and Wu, Yi},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS), Datasets and Benchmarks Track},
+  year      = {2022}
+}
+@article{schulman2017ppo,
+  title   = {Proximal Policy Optimization Algorithms},
+  author  = {Schulman, John and Wolski, Filip and Dhariwal, Prafulla and Radford, Alec and Klimov, Oleg},
+  journal = {arXiv preprint arXiv:1707.06347},
+  year    = {2017}
+}
+@article{rashid2020qmix,
+  title   = {Monotonic Value Function Factorisation for Deep Multi-Agent Reinforcement Learning},
+  author  = {Rashid, Tabish and Samvelyan, Mikayel and de Witt, Christian Schroeder and Farquhar, Gregory and Foerster, Jakob and Whiteson, Shimon},
+  journal = {Journal of Machine Learning Research},
+  volume  = {21},
+  number  = {178},
+  pages   = {1--51},
+  year    = {2020}
+}
+@inproceedings{lowe2017maddpg,
+  title     = {Multi-Agent Actor-Critic for Mixed Cooperative-Competitive Environments},
+  author    = {Lowe, Ryan and Wu, Yi and Tamar, Aviv and Harb, Jean and Abbeel, Pieter and Mordatch, Igor},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {30},
+  year      = {2017}
+}
+@inproceedings{kuba2022happo,
+  title     = {Trust Region Policy Optimisation in Multi-Agent Reinforcement Learning},
+  author    = {Kuba, Jakub Grudzien and Chen, Ruiqing and Wen, Muning and Wen, Ying and Sun, Fanglei and Wang, Jun and Yang, Yaodong},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2022}
+}
+
+% ---------------------------------------------------------- certified / robust RL, action sets
+@inproceedings{wu2022crop,
+  title     = {{CROP}: Certifying Robust Policies for Reinforcement Learning through Functional Smoothing},
+  author    = {Wu, Fan and Li, Linyi and Huang, Zijian and Vorobeychik, Yevgeniy and Zhao, Ding and Li, Bo},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2022}
+}
+@inproceedings{kumar2022policysmoothing,
+  title     = {Policy Smoothing for Provably Robust Reinforcement Learning},
+  author    = {Kumar, Aounon and Levine, Alexander and Feizi, Soheil},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2022}
+}
+@inproceedings{yang2024carol,
+  title     = {{CAROL}: Certifiably Robust Reinforcement Learning through Model-Based Abstract Interpretation},
+  author    = {Yang, Chenxi and Anderson, Greg and Chaudhuri, Swarat},
+  booktitle = {IEEE Conference on Secure and Trustworthy Machine Learning (SaTML)},
+  year      = {2024}
+}
+@inproceedings{zhang2020samdp,
+  title     = {Robust Deep Reinforcement Learning against Adversarial Perturbations on State Observations},
+  author    = {Zhang, Huan and Chen, Hongge and Xiao, Chaowei and Li, Bo and Liu, Mingyan and Boning, Duane and Hsieh, Cho-Jui},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {33},
+  year      = {2020}
+}
+@inproceedings{liu2023robustsafe,
+  title     = {On the Robustness of Safe Reinforcement Learning under Observational Perturbations},
+  author    = {Liu, Zuxin and Guo, Zijian and Cen, Zhepeng and Zhang, Huan and Tan, Jie and Li, Bo and Zhao, Ding},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2023}
+}
+@inproceedings{pinto2017rarl,
+  title     = {Robust Adversarial Reinforcement Learning},
+  author    = {Pinto, Lerrel and Davidson, James and Sukthankar, Rahul and Gupta, Abhinav},
+  booktitle = {Proceedings of the 34th International Conference on Machine Learning (ICML)},
+  year      = {2017}
+}
+@inproceedings{boutilier2018sas,
+  title     = {Planning and Learning with Stochastic Action Sets},
+  author    = {Boutilier, Craig and Cohen, Alon and Daniely, Amit and Hassidim, Avinatan and Mansour, Yishay and Meshi, Ofer and Mladenov, Martin and Schuurmans, Dale},
+  booktitle = {Proceedings of the 27th International Joint Conference on Artificial Intelligence (IJCAI)},
+  pages     = {4674--4682},
+  year      = {2018},
+  doi       = {10.24963/ijcai.2018/650}
+}
+@inproceedings{huang2022masking,
+  title     = {A Closer Look at Invalid Action Masking in Policy Gradient Algorithms},
+  author    = {Huang, Shengyi and Onta{\~n}{\'o}n, Santiago},
+  booktitle = {Proceedings of the International FLAIRS Conference},
+  volume    = {35},
+  year      = {2022},
+  doi       = {10.32473/flairs.v35i.130584}
+}
+@inproceedings{chandak2020changingactions,
+  title     = {Lifelong Learning with a Changing Action Set},
+  author    = {Chandak, Yash and Theocharous, Georgios and Nota, Chris and Thomas, Philip S.},
+  booktitle = {Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume    = {34},
+  year      = {2020}
+}
+@article{kleinberg2010sleeping,
+  title   = {Regret Bounds for Sleeping Experts and Bandits},
+  author  = {Kleinberg, Robert and Niculescu-Mizil, Alexandru and Sharma, Yogeshwer},
+  journal = {Machine Learning},
+  volume  = {80},
+  pages   = {245--272},
+  year    = {2010}
+}
+@inproceedings{sinha2024ocoadv,
+  title     = {Optimal Algorithms for Online Convex Optimization with Adversarial Constraints},
+  author    = {Sinha, Abhishek and Vaze, Rahul},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {37},
+  pages     = {41274--41302},
+  year      = {2024}
+}
+@article{mahdavi2012oco,
+  title   = {Trading Regret for Efficiency: Online Convex Optimization with Long Term Constraints},
+  author  = {Mahdavi, Mehrdad and Jin, Rong and Yang, Tianbao},
+  journal = {Journal of Machine Learning Research},
+  volume  = {13},
+  pages   = {2503--2528},
+  year    = {2012}
+}
+
+% ---------------------------------------------------------- matching
+@article{hall1935,
+  title   = {On Representatives of Subsets},
+  author  = {Hall, Philip},
+  journal = {Journal of the London Mathematical Society},
+  volume  = {10},
+  pages   = {26--30},
+  year    = {1935}
+}
+@article{ore1955,
+  title   = {Graphs and Matching Theorems},
+  author  = {Ore, Oystein},
+  journal = {Duke Mathematical Journal},
+  volume  = {22},
+  number  = {4},
+  pages   = {625--639},
+  year    = {1955},
+  doi     = {10.1215/S0012-7094-55-02268-7}
+}
+@book{lovasz1986matching,
+  title     = {Matching Theory},
+  author    = {Lov{\'a}sz, L{\'a}szl{\'o} and Plummer, Michael D.},
+  publisher = {North-Holland},
+  series    = {Annals of Discrete Mathematics},
+  volume    = {29},
+  year      = {1986}
+}
+@article{hammer1990difference,
+  title   = {Difference Graphs},
+  author  = {Hammer, Peter L. and Peled, Uri N. and Sun, Xiaorong},
+  journal = {Discrete Applied Mathematics},
+  volume  = {28},
+  number  = {1},
+  pages   = {35--44},
+  year    = {1990},
+  doi     = {10.1016/0166-218X(90)90092-Q}
+}
+@book{mahadev1995threshold,
+  title     = {Threshold Graphs and Related Topics},
+  author    = {Mahadev, N. V. R. and Peled, Uri N.},
+  publisher = {North-Holland},
+  series    = {Annals of Discrete Mathematics},
+  volume    = {56},
+  year      = {1995}
+}
+@article{glover1967convex,
+  title   = {Maximum Matching in a Convex Bipartite Graph},
+  author  = {Glover, Fred},
+  journal = {Naval Research Logistics Quarterly},
+  volume  = {14},
+  number  = {3},
+  pages   = {313--316},
+  year    = {1967}
+}
+@article{steiner1996linear,
+  title   = {A Linear Time Algorithm for Maximum Matchings in Convex, Bipartite Graphs},
+  author  = {Steiner, George and Yeomans, Julian Scott},
+  journal = {Computers \& Mathematics with Applications},
+  volume  = {31},
+  number  = {12},
+  pages   = {91--96},
+  year    = {1996}
+}
+@inproceedings{brodal2007dynamic,
+  title     = {Dynamic Matchings in Convex Bipartite Graphs},
+  author    = {Brodal, Gerth St{\o}lting and Georgiadis, Loukas and Hansen, Kristoffer Arnsfelt and Katriel, Irit},
+  booktitle = {Mathematical Foundations of Computer Science (MFCS)},
+  series    = {LNCS},
+  volume    = {4708},
+  pages     = {406--417},
+  year      = {2007}
+}  % CHECK pages
+@article{katriel2008weighted,
+  title   = {Matchings in Node-Weighted Convex Bipartite Graphs},
+  author  = {Katriel, Irit},
+  journal = {INFORMS Journal on Computing},
+  volume  = {20},
+  number  = {2},
+  pages   = {205--211},
+  year    = {2008},
+  doi     = {10.1287/ijoc.1070.0232}
+}  % CHECK pages
+@article{hopcroft1973,
+  title   = {An $n^{5/2}$ Algorithm for Maximum Matchings in Bipartite Graphs},
+  author  = {Hopcroft, John E. and Karp, Richard M.},
+  journal = {SIAM Journal on Computing},
+  volume  = {2},
+  number  = {4},
+  pages   = {225--231},
+  year    = {1973}
+}
+@article{kuhn1955hungarian,
+  title   = {The {H}ungarian Method for the Assignment Problem},
+  author  = {Kuhn, Harold W.},
+  journal = {Naval Research Logistics Quarterly},
+  volume  = {2},
+  pages   = {83--97},
+  year    = {1955}
+}
+@article{bertsekas1988auction,
+  title   = {The Auction Algorithm: A Distributed Relaxation Method for the Assignment Problem},
+  author  = {Bertsekas, Dimitri P.},
+  journal = {Annals of Operations Research},
+  volume  = {14},
+  pages   = {105--123},
+  year    = {1988}
+}
+@article{edmonds1965transversal,
+  title   = {Transversals and Matroid Partition},
+  author  = {Edmonds, Jack and Fulkerson, D. R.},
+  journal = {Journal of Research of the National Bureau of Standards},
+  volume  = {69B},
+  pages   = {147--153},
+  year    = {1965}
+}
+@inproceedings{adjiashvili2016robust,
+  title     = {Robust Assignments via Ear Decompositions and Randomized Rounding},
+  author    = {Adjiashvili, David and Bindewald, Viktor and Michaels, Dennis},
+  booktitle = {43rd International Colloquium on Automata, Languages, and Programming (ICALP)},
+  series    = {LIPIcs},
+  volume    = {55},
+  pages     = {71:1--71:14},
+  year      = {2016}
+}
+@article{adjiashvili2017vulnerable,
+  title   = {Robust Assignments with Vulnerable Nodes},
+  author  = {Adjiashvili, David and Bindewald, Viktor and Michaels, Dennis},
+  journal = {arXiv preprint arXiv:1703.06074},
+  year    = {2017}
+}
+@inproceedings{laroche2014interdiction,
+  title     = {Bipartite Complete Matching Vertex Interdiction Problem: Application to Robust Nurse Assignment},
+  author    = {Laroche, Pierre and Marchetti, Franc and Martin, S{\'e}bastien and R{\'o}ka, Zsuzsanna},
+  booktitle = {International Conference on Control, Decision and Information Technologies (CoDIT)},
+  pages     = {182--187},
+  year      = {2014},
+  doi       = {10.1109/CoDIT.2014.6996890}
+}
+@inproceedings{hommelsheim2019edge,
+  title     = {How to Secure Matchings Against Edge Failures},
+  author    = {Hommelsheim, Felix and M{\"u}hlenthaler, Moritz and Schaudt, Oliver},
+  booktitle = {36th International Symposium on Theoretical Aspects of Computer Science (STACS)},
+  series    = {LIPIcs},
+  year      = {2019},
+  doi       = {10.4230/LIPIcs.STACS.2019.38}
+}
+@article{bertsimas2004price,
+  title   = {The Price of Robustness},
+  author  = {Bertsimas, Dimitris and Sim, Melvyn},
+  journal = {Operations Research},
+  volume  = {52},
+  number  = {1},
+  pages   = {35--53},
+  year    = {2004}
+}
+@inproceedings{karp1990online,
+  title     = {An Optimal Algorithm for On-line Bipartite Matching},
+  author    = {Karp, Richard M. and Vazirani, Umesh V. and Vazirani, Vijay V.},
+  booktitle = {Proceedings of the 22nd Annual ACM Symposium on Theory of Computing (STOC)},
+  pages     = {352--358},
+  year      = {1990}
+}
+
+% ---------------------------------------------------------- multi-robot allocation and resilience
+@article{gerkey2004taxonomy,
+  title   = {A Formal Analysis and Taxonomy of Task Allocation in Multi-Robot Systems},
+  author  = {Gerkey, Brian P. and Matari{\'c}, Maja J.},
+  journal = {The International Journal of Robotics Research},
+  volume  = {23},
+  number  = {9},
+  pages   = {939--954},
+  year    = {2004}
+}
+@article{korsah2013taxonomy,
+  title   = {A Comprehensive Taxonomy for Multi-Robot Task Allocation},
+  author  = {Korsah, G. Ayorkor and Stentz, Anthony and Dias, M. Bernardine},
+  journal = {The International Journal of Robotics Research},
+  volume  = {32},
+  number  = {12},
+  pages   = {1495--1512},
+  year    = {2013}
+}
+@article{choi2009cbba,
+  title   = {Consensus-Based Decentralized Auctions for Robust Task Allocation},
+  author  = {Choi, Han-Lim and Brunet, Luc and How, Jonathan P.},
+  journal = {IEEE Transactions on Robotics},
+  volume  = {25},
+  number  = {4},
+  pages   = {912--926},
+  year    = {2009},
+  doi     = {10.1109/TRO.2009.2022423}
+}
+@article{zhou2019resilienttracking,
+  title   = {Resilient Active Target Tracking with Multiple Robots},
+  author  = {Zhou, Lifeng and Tzoumas, Vasileios and Pappas, George J. and Tokekar, Pratap},
+  journal = {IEEE Robotics and Automation Letters},
+  volume  = {4},
+  number  = {1},
+  pages   = {129--136},
+  year    = {2019}
+}
+@article{zhou2022attackrobust,
+  title   = {Distributed Attack-Robust Submodular Maximization for Multirobot Planning},
+  author  = {Zhou, Lifeng and Tzoumas, Vasileios and Pappas, George J. and Tokekar, Pratap},
+  journal = {IEEE Transactions on Robotics},
+  volume  = {38},
+  number  = {5},
+  pages   = {3097--3112},
+  year    = {2022}
+}
+@inproceedings{tzoumas2017resilient,
+  title     = {Resilient Monotone Submodular Function Maximization},
+  author    = {Tzoumas, Vasileios and Gatsis, Konstantinos and Jadbabaie, Ali and Pappas, George J.},
+  booktitle = {IEEE 56th Conference on Decision and Control (CDC)},
+  year      = {2017}
+}
+@article{cortes2004coverage,
+  title   = {Coverage Control for Mobile Sensing Networks},
+  author  = {Cort{\'e}s, Jorge and Mart{\'\i}nez, Sonia and Karata{\c{s}}, Timur and Bullo, Francesco},
+  journal = {IEEE Transactions on Robotics and Automation},
+  volume  = {20},
+  number  = {2},
+  pages   = {243--255},
+  year    = {2004}
+}
+@article{leblanc2013wmsr,
+  title   = {Resilient Asymptotic Consensus in Robust Networks},
+  author  = {LeBlanc, Heath J. and Zhang, Haotian and Koutsoukos, Xenofon and Sundaram, Shreyas},
+  journal = {IEEE Journal on Selected Areas in Communications},
+  volume  = {31},
+  number  = {4},
+  pages   = {766--781},
+  year    = {2013}
+}
+@article{nemhauser1978submodular,
+  title   = {An Analysis of Approximations for Maximizing Submodular Set Functions---{I}},
+  author  = {Nemhauser, George L. and Wolsey, Laurence A. and Fisher, Marshall L.},
+  journal = {Mathematical Programming},
+  volume  = {14},
+  pages   = {265--294},
+  year    = {1978}
+}
+@article{wang2020gat,
+  title   = {Learning Scheduling Policies for Multi-Robot Coordination with Graph Attention Networks},
+  author  = {Wang, Zheyuan and Gombolay, Matthew},
+  journal = {IEEE Robotics and Automation Letters},
+  volume  = {5},
+  number  = {3},
+  pages   = {4509--4516},
+  year    = {2020}
+}  % CHECK pages
+@inproceedings{notomista2019heterogeneous,
+  title     = {An Optimal Task Allocation Strategy for Heterogeneous Multi-Robot Systems},
+  author    = {Notomista, Gennaro and Mayya, Siddharth and Hutchinson, Seth and Egerstedt, Magnus},
+  booktitle = {18th European Control Conference (ECC)},
+  year      = {2019}
+}
+
+% ---------------------------------------------------------- GNSS, integrity, regulation, datasets
+@article{kerns2014capture,
+  title   = {Unmanned Aircraft Capture and Control via {GPS} Spoofing},
+  author  = {Kerns, Andrew J. and Shepard, Daniel P. and Bhatti, Jahshan A. and Humphreys, Todd E.},
+  journal = {Journal of Field Robotics},
+  volume  = {31},
+  number  = {4},
+  pages   = {617--636},
+  year    = {2014}
+}
+@techreport{rtca2016do229,
+  title       = {Minimum Operational Performance Standards for Global Positioning System/Satellite-Based Augmentation System Airborne Equipment},
+  institution = {RTCA, Inc.},
+  number      = {DO-229E},
+  year        = {2016}
+}  % CHECK revision letter
+@article{drones2025sail,
+  title   = {Assessment of {GNSS} Performance and Error Bounding for {SAIL} {III} {UAS} Operations},
+  author  = {{Drones authors}},
+  journal = {Drones},
+  volume  = {9},
+  number  = {11},
+  pages   = {776},
+  year    = {2025},
+  doi     = {10.3390/drones9110776}
+}  % CHECK author list
+@misc{whelan2020uavattack,
+  title        = {{UAV} Attack Dataset},
+  author       = {Whelan, Jason and Sangarapillai, Thanigajan and Minawi, Omar and Almehmadi, Abdulaziz and El-Khatib, Khalil},
+  howpublished = {IEEE Dataport},
+  year         = {2020},
+  doi          = {10.21227/00dg-0d12}
+}
+@techreport{jarus2019sora,
+  title       = {{JARUS} Guidelines on Specific Operations Risk Assessment ({SORA})},
+  institution = {Joint Authorities for Rulemaking of Unmanned Systems},
+  number      = {JAR-DEL-WG6-D.04, Edition 2.0},
+  year        = {2019}
+}
+@techreport{easa2024mlguidance,
+  title       = {{EASA} Concept Paper: Guidance for Level 1 \& 2 Machine Learning Applications, Issue 02},
+  institution = {European Union Aviation Safety Agency},
+  year        = {2024}
+}
+@inproceedings{panerati2021learningtofly,
+  title     = {Learning to Fly---a Gym Environment with {PyBullet} Physics for Reinforcement Learning of Multi-agent Quadcopter Control},
+  author    = {Panerati, Jacopo and Zheng, Hehui and Zhou, SiQi and Xu, James and Prorok, Amanda and Schoellig, Angela P.},
+  booktitle = {IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
+  year      = {2021}
+}
+@article{xu2024omnidrones,
+  title   = {{OmniDrones}: An Efficient and Flexible Platform for Reinforcement Learning in Drone Control},
+  author  = {Xu, Botian and Gao, Feng and Yu, Chao and Zhang, Ruize and Wu, Yi and Wang, Yu},
+  journal = {IEEE Robotics and Automation Letters},
+  year    = {2024}
+}  % CHECK volume
+@inproceedings{bettini2022vmas,
+  title     = {{VMAS}: A Vectorized Multi-Agent Simulator for Collective Robot Learning},
+  author    = {Bettini, Matteo and Kortvelesy, Ryan and Blumenkamp, Jan and Prorok, Amanda},
+  booktitle = {Distributed Autonomous Robotic Systems (DARS)},
+  year      = {2022}
+}
+@inproceedings{rutherford2024jaxmarl,
+  title     = {{JaxMARL}: Multi-Agent {RL} Environments and Algorithms in {JAX}},
+  author    = {Rutherford, Alexander and Ellis, Benjamin and Gallici, Matteo and Cook, Jonathan and Lupu, Andrei and Ingvarsson, Gardar and Willi, Timon and Khan, Akbir and Schroeder de Witt, Christian and Souly, Alexandra and others},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS), Datasets and Benchmarks Track},
+  year      = {2024}
+}
+
+% ---------------------------------------------------------- statistics
+@inproceedings{agarwal2021precipice,
+  title     = {Deep Reinforcement Learning at the Edge of the Statistical Precipice},
+  author    = {Agarwal, Rishabh and Schwarzer, Max and Castro, Pablo Samuel and Courville, Aaron and Bellemare, Marc G.},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {34},
+  year      = {2021}
+}
+@inproceedings{henderson2018matters,
+  title     = {Deep Reinforcement Learning that Matters},
+  author    = {Henderson, Peter and Islam, Riashat and Bachman, Philip and Pineau, Joelle and Precup, Doina and Meger, David},
+  booktitle = {Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume    = {32},
+  year      = {2018}
+}
+@article{clopper1934,
+  title   = {The Use of Confidence or Fiducial Limits Illustrated in the Case of the Binomial},
+  author  = {Clopper, C. J. and Pearson, E. S.},
+  journal = {Biometrika},
+  volume  = {26},
+  number  = {4},
+  pages   = {404--413},
+  year    = {1934}
+}
+@article{hanley1983ruleofthree,
+  title   = {If Nothing Goes Wrong, Is Everything All Right? Interpreting Zero Numerators},
+  author  = {Hanley, James A. and Lippman-Hand, Abby},
+  journal = {JAMA},
+  volume  = {249},
+  number  = {13},
+  pages   = {1743--1745},
+  year    = {1983}
+}

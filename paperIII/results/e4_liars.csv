@@ -1,0 +1,6 @@
+liars_f,instances,mean_abs_dev_d,max_abs_dev_d,violations_by_liars,violations_by_honest
+0,4000,0.0,0,0,0
+1,4000,0.182,1,2783,0
+2,4000,0.291,2,5199,0
+3,4000,0.34225,3,7269,0
+4,4000,0.35725,4,8817,0

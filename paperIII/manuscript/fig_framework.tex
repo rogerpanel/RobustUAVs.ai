@@ -1,0 +1,100 @@
+% Figure 1 -- methodological framework of Paper III (TikZ).
+% Four horizontal bands, read top to bottom: measured inputs, certificate,
+% constrained allocation and learning loop, guarantees and evaluation.
+\begin{figure}[t]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  font=\sffamily\footnotesize,
+  execute at begin node={\hyphenpenalty=10000\exhyphenpenalty=10000},
+  >={Stealth[length=2.2mm]},
+  box/.style={draw, rounded corners=2pt, align=center, minimum height=10mm,
+              text width=#1, inner sep=3pt, fill=white},
+  box/.default={31mm},
+  data/.style={box=30mm, fill=blue!6, draw=blue!50!black},
+  cert/.style={box=41mm, fill=orange!8, draw=orange!60!black},
+  cons/.style={box=31mm, fill=green!7, draw=green!40!black},
+  learn/.style={box=31mm, fill=violet!7, draw=violet!60!black},
+  outb/.style={box=30mm, fill=red!5, draw=red!50!black},
+  lane/.style={draw=black!30, dashed, rounded corners=4pt, inner xsep=6pt, inner ysep=5pt},
+  lbl/.style={font=\sffamily\bfseries\scriptsize, rotate=90, anchor=south, inner sep=2pt, align=center},
+  rq/.style={draw=black!60, fill=yellow!30, rounded corners=1pt, inner sep=1.5pt,
+             font=\sffamily\scriptsize\bfseries},
+  lab/.style={font=\sffamily\scriptsize, fill=white, inner sep=1pt}
+]
+% ================= band 1: measured inputs
+\node[data] (hop) at (0,0)     {Relay-hop ledger\\ \nNHops\ hops, residual $\le\nHiddenMax$\,s};
+\node[data] (gam) at (3.55,0)  {GNSS degradation\\ 674 samples, $\gamma_{\sup}=\nGammaSup$\,m/s};
+\node[data] (lip) at (7.1,0)   {Closed-loop Lipschitz\\ $L=\nLloc$, $T=1$\,s};
+\node[data] (thr) at (10.65,0) {Threat mechanisms\\ jamming, relay delay, faults};
+\node[lane, fit=(hop)(gam)(lip)(thr)] (L1) {};
+\node[lbl] at (L1.west) {\textcircled{\tiny 1}\\ Inputs};
+
+% ================= band 2: certificate as constraint
+\node[cert] (rho)  at (0.55,-2.25) {Certified protection level\\ $\rho_i(t)=e^{LT}\gamma_{\sup}\Delta_i(t)$};
+\node[cert] (proc) at (5.32,-2.25) {Adversarial c\`adl\`ag process: drift\\ $\le L_\rho=\nKappa$\,m/s, jumps $\approx\nJumpMed$\,m};
+\node[cert] (al)   at (10.1,-2.25) {Task alert limits $\alpha_j\in\{2,5,10,20\}$\,m;\\ constraint (C): $\rho_i(t_k)\le\alpha_{\sigma(i)}$};
+\node[lane, fit=(rho)(proc)(al)] (L2) {};
+\node[lbl] at (L2.west) {\textcircled{\tiny 2}\\ Certificate};
+
+% ================= band 3: allocation and learning
+\node[cons] (graph)  at (0,-4.5)     {Nested eligibility graph\\ $(i,j)\in E\iff\rho_i\le\alpha_j$};
+\node[cons] (closed) at (3.55,-4.5)  {Exact monitors\\ $d(t)$, $\mu(t)$, $d_b$ (Lem.~\ref{lem:ore}--Prop.~\ref{prop:graded})};
+\node[cons] (proj)   at (7.1,-4.5)   {Certified projection $\Pi$\\ feasible, maximal, closest (Alg.~\ref{alg:proj})};
+\node[cons] (dyn)    at (10.65,-4.5) {Dynamics: hysteresis $\eta$,\\ look-ahead $L_\rho H$, rate $\Delta t$};
+\node[learn] (pol)   at (3.55,-6.35) {Policy $\pi_\theta(a\mid o_t)$, $o_t\ni\rho(t)$;\\ shared actor, central critic};
+\node[learn] (env)   at (7.1,-6.35)  {Fleet environment\\ \textsc{CertSwarm} ($N$ UAVs, $M$ tasks)};
+\node[learn] (upd)   at (10.65,-6.35){Update on proposals (SE)\\ $r=r_{\mathrm{cert}}-\lambda_{\mathrm{dev}}\,\mathrm{dev}$};
+\coordinate (loopbot) at (3.55,-7.35);
+\node[lane, fit=(graph)(closed)(proj)(dyn)(pol)(env)(upd)(loopbot)] (L3) {};
+\node[lbl] at (L3.west) {\textcircled{\tiny 3}\\ Allocation and learning};
+
+% ================= band 4: guarantees and evaluation
+\node[outb] (qop)  at (0,-9.2)     {$\mathbf{Q_{op}}$: zero violations at every epoch (Thm.~\ref{thm:proj})};
+\node[outb] (exp)  at (3.55,-9.2)  {Inter-epoch exposure only from jumps (Thm.~\ref{thm:predict})};
+\node[outb] (qpop) at (7.1,-9.2)   {$\mathbf{Q_{pop}}$: sizing and tails, obligations O1--O2 (Prop.~\ref{prop:lift})};
+\node[outb] (ev)   at (10.65,-9.2) {Evidence: oracle checks, IQM CIs, CP bounds};
+\node[lane, fit=(qop)(exp)(qpop)(ev)] (L4) {};
+\node[lbl] at (L4.west) {\textcircled{\tiny 4}\\ Guarantees};
+
+% ================= arrows
+\draw[->] (hop.south) -- (hop.south |- rho.north);
+\draw[->] (gam.south) -- ++(0,-0.35) -| ([xshift=4mm]rho.north);
+\draw[->] (lip.south) -- ++(0,-0.35) -| (proc.north);
+\draw[->] (thr.south) -- (thr.south |- al.north);
+\draw[->] (thr.south) ++(0,-0.35) -| ([xshift=6mm]proc.north);
+\draw[->] (rho) -- (proc);
+\draw[->] (proc) -- (al);
+\draw[->] (al.south) -- ++(0,-0.3) -| (graph.north);
+\draw[->] (graph) -- (closed);
+\draw[->] (closed) -- (proj);
+\draw[->] (dyn) -- (proj);
+\draw[->] (pol.north) -- node[lab, left]{proposal $a_t$} ([xshift=-6mm]proj.south west |- proj.south) ;
+\draw[->] ([xshift=-2mm]proj.south) -- node[lab, right]{executed $\sigma_t$} ([xshift=-2mm]env.north);
+\draw[->] (env) -- (upd);
+\draw[->] (upd.south) -- ++(0,-0.4) -| node[lab, pos=0.25]{PPO step $\nabla_\theta$} (pol.south);
+\draw[->] (env) -- (pol);
+\draw[->] (L3.south -| qop) -- (qop.north);
+\draw[->] (L3.south -| exp) -- (exp.north);
+\draw[->] (L3.south -| qpop) -- (qpop.north);
+\draw[->] (L3.south -| ev) -- (ev.north);
+
+% ================= research-question tags
+\node[rq, anchor=south east] at ([yshift=-0.5pt]qop.north east) {RQ1};
+\node[rq, anchor=south east] at ([yshift=-0.5pt]exp.north east) {RQ5};
+\node[rq, anchor=south east] at ([yshift=-0.5pt]qpop.north east) {RQ2, RQ6};
+\node[rq, anchor=south east] at ([yshift=-0.5pt]ev.north east) {RQ3, RQ4};
+\end{tikzpicture}}
+\caption{Methodological framework, read top to bottom. \textcircled{\scriptsize 1}~Measured
+quantities from the parent artifact determine \textcircled{\scriptsize 2}~each aircraft's
+certified protection level $\rho_i(t)$, a bounded c\`adl\`ag process that drifts under
+jamming and jumps under relay delay; a task may be held only while $\rho_i(t)$ does not
+exceed its alert limit $\alpha_j$. \textcircled{\scriptsize 3}~Because the constraint is a
+scalar threshold on each side, the eligibility graph is nested. Closed forms monitor the
+coverage the fleet can certify, and a projection inside the environment maps every proposal
+of the learning policy to a feasible, coverage-maximal assignment, so training never executes
+an infeasible one. \textcircled{\scriptsize 4}~The outputs are a per-operation guarantee and
+a population statement whose assumptions are listed as evidence obligations. Tags give the
+research question that each output answers.}
+\label{fig:framework}
+\end{figure}

@@ -1,0 +1,13 @@
+name,value,provenance,source
+L_loc,1.1814,measured,results/local_lipschitz.csv
+T_c_s,1,assumption,parent certificate horizon
+gamma_sup_m_s,1.625,measured,max over 674 post-onset samples
+gamma_sup_check,1.625,measured,recomputed here
+kappa_m_per_s,5.29577,derived,exp(L*T)*gamma_sup
+n_benign_hops,10621,measured,hop_ledger.csv
+benign_residual_max_s,0.178,measured,hop_ledger.csv
+n_hidden_hops,1346,measured,"hop_ledger.csv, malicious & unflagged"
+hidden_residual_max_s,4.843,measured,hop_ledger.csv
+hidden_residual_median_s,3.942,measured,hop_ledger.csv
+rho_benign_max_m,0.942647,derived,kappa * benign max
+rho_jump_max_H2_m,51.2948,derived,kappa * 2 * hidden max

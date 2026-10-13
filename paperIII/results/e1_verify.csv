@@ -1,0 +1,10 @@
+check,instances,disagreements
+deficiency,10000,0
+gnp_cardinality,10000,0
+gnp_value,7963,0
+lex_cardinality,10000,0
+lex_value,7963,0
+coverage_margin,8973,0
+worst_case_collapse,8973,0
+hysteresis_bound,10000,0
+gnp_feasible,10000,0
