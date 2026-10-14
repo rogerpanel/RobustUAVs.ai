@@ -15,6 +15,13 @@
   agent-epochs, above the 0.5\% limit.
 \item \emph{Jamming-blind PPO.} It executed \nBlindTrainViol\ infeasible assignments
   ($\nBlindTrainRate\%$).
+\item \emph{Stronger in-expectation learners} (\cref{tab:r2}). MAPPO-Lagrangian with a cost
+  critic executed \nMLagTrainViol\ infeasible assignments while learning
+  ($\nMLagTrainRate\%$), and \nMLagZeroTrainViol\ with a cost limit of zero.
+  PID-Lagrangian executed \nPidLagTrainViol\ and then stopped serving tasks altogether.
+  QMIX without masks executed \nQmixTrainViol. Only the two methods that remove infeasible
+  actions by construction, our layer and masking (with PPO or with QMIX), learned without a
+  violation.
 \end{itemize}
 In-expectation methods violate the constraint while they learn, and learning is when a
 fleet would be flight-tested.
@@ -74,16 +81,16 @@ reassignments.
 \emph{Masking is safe but not maximal.} Its coverage ratio of $\nMaskRatio$ is the gap that
 \cref{thm:proj}(ii) closes. Agents that each pick an eligible task still collide.
 
-\emph{Learning helps on top of the guarantee, but where the layer sits during training does
-not matter at this scale.}
+\emph{Learning adds little on top of the guarantee, and where the layer sits during training
+does not matter.}
 \begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=1pt]
 \item The policy trained with the projection reaches $\nOursCov$ [$\nOursCovLo$,
-  $\nOursCovHi$] at a coverage ratio of $\nOursRatio$.
-\item The keep-or-nearest heuristic with the same projection reaches $\nHeurCov$, and the
-  intervals barely overlap.
+  $\nOursCovHi$] at a coverage ratio of $\nOursRatio$, over \nNSeeds\ training seeds.
+\item The keep-or-nearest heuristic with the same projection reaches $\nHeurCov$; the
+  intervals only just separate.
 \item Policies trained with masking, or blind, and projected at deployment do as well
-  ($\nMaskProjCov$, $\nBlindProjCov$).
-\item The deviation penalty makes no measurable difference ($\nNoDevCov$ without it).
+  ($\nMaskProjCov$, $\nBlindProjCov$), and the deviation penalty makes no measurable
+  difference ($\nNoDevCov$ without it).
 \end{itemize}
 What training \emph{with} the projection buys is the zero-violation learning of RQ1, not a
 better final policy.
@@ -106,3 +113,92 @@ agent-epochs. Train viol.: executed infeasible assignments over all of training.
 \label{tab:main}
 \input{tab_main}
 \end{table*}
+
+\subsection{RQ3 (continued): stronger baselines and a classical auction}
+\label{sec:rq3b}
+\Cref{tab:r2} adds the stronger learners and a non-learned consensus auction at the
+headline size. Three findings matter for the security argument.
+
+\emph{Better in-expectation learners still violate, and the monitor still repairs them.}
+MAPPO-Lagrangian with a cost critic is the strongest unconstrained learner: it reaches
+$\nMLagCov$ certified coverage and, once trained, violates on only $\nMLagEvalViolPct\%$ of
+agent-epochs. Its guarantee is nonetheless in expectation: it paid for that policy with
+\nMLagTrainViol\ violations during learning, and lowering its cost limit to zero did not
+remove them. With the projection at deployment, every learned policy in the table executes
+no violation and reaches a coverage ratio of at least $\nProjMinRatio$.
+
+\emph{A classical auction under the same constraint beats every learned allocator.} CBBA
+with feasibility enforced inside the bundle certifies $\nCbbaCov$ [$\nCbbaCovLo$,
+$\nCbbaCovHi$] of the task value, against $\nOursCov$ [$\nOursCovLo$, $\nOursCovHi$] for the
+best learned policy, with no violation and a coverage ratio of $\nCbbaRatio$. The comparison
+favours the auction in one respect: its consensus phase gives every aircraft the fleet's full
+state at every epoch, while the learned policies act on local observations in one shot. In
+our setting, that information is worth more than learning.
+
+\emph{The result supports the paper's claim, not a learning claim.} Our guarantees do not
+depend on which allocator proposes: they hold for the auction, for the heuristic, for every
+learned policy and for an adversarially chosen one (A4). The learning study shows that the
+monitor can sit in the training loop at no cost to learning; it does not show that learning
+is the best allocator, and we do not claim it.
+
+\begin{table}[t]
+\centering\footnotesize
+\setlength{\tabcolsep}{2.5pt}
+\caption{RQ3. Stronger baselines at $N=12$ (\nMLagSeeds\ training seeds $\times$ 3
+evaluation seeds $\times$ 16 fleets; CBBA is deterministic, 3 $\times$ 16). Columns as in
+\cref{tab:main}; eval.\ violations in \% of agent-epochs.}
+\label{tab:r2}
+\resizebox{\columnwidth}{!}{\input{tab_r2}}
+\end{table}
+
+\subsection{RQ3 (continued): fleet size}
+\label{sec:rq3c}
+\Cref{tab:scale,fig:scale} repeat the core methods at $N\in\{\nScaleSizes\}$.
+\begin{itemize}[leftmargin=1.2em,itemsep=1pt,topsep=1pt]
+\item \emph{The guarantees scale.} Our layer and masking executed no infeasible assignment
+  during training at any size, and our coverage ratio was at least $\nScaleMinRatio$
+  throughout. PPO-Lagrangian executed millions of violations at every size and, from
+  $N=24$ on, converged to idling ($\nScaleTwentyFourLag$ certified coverage).
+\item \emph{Learning does not scale with our budget.} Certified coverage of the learned
+  policy fell from $\nScaleTwelveOurs$ at $N=12$ to $\nScaleFortyEightOurs$ at $N=48$, with
+  masking plus projection matching it at every size. It stayed above keep-or-nearest plus
+  projection, separated at $N=\nScaleBeatsHeur$ and within the confidence intervals elsewhere.
+\item \emph{The auction does.} CBBA certified $\nScaleTwelveCbba$, $\nScaleTwentyFourCbba$ and
+  $\nScaleFortyEightCbba$ of the task value at the three sizes.
+\end{itemize}
+Our budget per size was 200 updates on 4 CPU cores, below the runbook's 400--600; larger
+budgets may narrow the gap to the auction, and the artifact runs them unchanged.
+
+\begin{table*}[t]
+\centering\footnotesize
+\caption{RQ3, fleet size. Certified coverage (IQM, 95\% stratified-bootstrap CI) of the
+learned policy with the projection in the environment, masking with the projection at
+deployment, and two non-learned allocators; $M=\lceil2N/3\rceil$, arena and jammers scaled
+with $N$.}
+\label{tab:scale}
+\input{tab_scale}
+\end{table*}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=\columnwidth, height=4.6cm, xmode=log, log basis x=2,
+  xtick={12,24,48,96}, xticklabels={12,24,48,96}, xlabel={fleet size $N$},
+  ylabel={certified coverage $r_{\mathrm{cert}}$}, ymin=0, ymax=0.7, grid=major,
+  grid style={black!10}, tick label style={font=\scriptsize}, label style={font=\small},
+  legend style={font=\scriptsize, at={(0.5,-0.32)}, anchor=north, legend columns=2, draw=none}]
+\addplot[red!70!black, thick, mark=*, mark size=1.4pt, error bars/.cd, y dir=both, y explicit]
+  table[x=N, y=rcert, y error plus expr=\thisrow{hi}-\thisrow{rcert}, y error minus expr=\thisrow{rcert}-\thisrow{lo}]{figdata/scale_ours.dat};
+\addplot[orange!80!black, thick, densely dashed, mark=square*, mark size=1.3pt] table[x=N, y=rcert]{figdata/scale_mask_proj.dat};
+\addplot[gray, thick, mark=triangle*, mark size=1.5pt] table[x=N, y=rcert]{figdata/scale_heuristic_proj.dat};
+\addplot[green!50!black, thick, mark=diamond*, mark size=1.6pt, error bars/.cd, y dir=both, y explicit]
+  table[x=N, y=rcert, y error plus expr=\thisrow{hi}-\thisrow{rcert}, y error minus expr=\thisrow{rcert}-\thisrow{lo}]{figdata/scale_cbba.dat};
+\addplot[blue!70!black, thick, dotted, mark=o, mark size=1.3pt] table[x=N, y=rcert]{figdata/scale_lagrangian.dat};
+\legend{projection + PPO (ours), masking + projection, keep-or-nearest + projection, CBBA (feasible bundles), PPO-Lagrangian}
+\end{axis}
+\end{tikzpicture}
+\caption{RQ3, fleet size. Every method shown except PPO-Lagrangian executes no infeasible
+assignment; the learned allocators lose coverage as the fleet grows at a fixed training
+budget, while the auction does not.}
+\label{fig:scale}
+\end{figure}

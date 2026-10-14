@@ -102,9 +102,11 @@ fleet-sizing statements and exposes their independence obligation: common-cause 
 breaks it, and the independent model then understates the probability of losing six of
 eight tasks by $\nLiftUnder\times$. Every constant comes from released measurements, and a
 brute-force oracle confirms every closed form on \nVerTotal\ checks with \nVerDisagree\
-disagreements. In a multi-agent study the monitor executes no infeasible assignment during
-learning, where in-expectation baselines execute millions, and it lifts every learned policy
-to maximal coverage at deployment.
+disagreements. In a multi-agent study up to 96 aircraft, the monitor executes no infeasible
+assignment during learning, where in-expectation baselines (PPO-, PID- and
+MAPPO-Lagrangian, QMIX) execute millions, and it lifts every learned policy to maximal
+coverage at deployment. A classical consensus auction under the same monitor outperforms
+every learned allocator: the security guarantee comes from the monitor, not from learning.
 \end{abstract}
 
 % =====================================================================
@@ -181,7 +183,8 @@ composition makes possible.
   multi-agent RL (MARL) study with stronger in-expectation baselines and larger fleets, a
   scalability study, a consensus study with Byzantine aircraft and a vector-certificate
   study answer seven research questions. They separate what a learned policy contributes
-  from what the monitor enforces.
+  from what the monitor enforces, and show that a classical auction under the monitor is the
+  stronger allocator in our setting.
 \end{enumerate}
 
 % =====================================================================
@@ -1023,12 +1026,13 @@ obligations O1--O2, which we show can fail.
   conservative and coverage suffers. Feasibility and the bounds are unaffected.
 \item \emph{Inherited caveats.} The parent certificate's own caveats carry over: a hover-regime
   calibration of $\gamma$, Lipschitz dynamics and estimator re-anchoring~\cite{parentpaper}.
-\item \emph{Simulation.} Our study is in simulation. The rates of the threat process are
-  modelling assumptions; only its magnitudes are measured.
-\item \emph{Scale of the learning study.} It is deliberately compact (12 aircraft,
-  \nNSeeds\ seeds, CPU only). The guarantees hold for any policy, including a random one, so
-  they do not depend on training scale. The comparative return figures do, and the runbook
-  in our artifact scales them to larger fleets and to software-in-the-loop flight.
+\item \emph{Learning budget.} The learning study reaches 96 aircraft but with a fixed budget
+  of 150--200 PPO updates on CPU cores. The guarantees hold for any policy, including a random
+  or adversarial one, so they do not depend on training scale; the comparative coverage
+  figures do, and a classical auction beat every learned allocator at the budgets we ran.
+\item \emph{Simulation and traces.} Threat rates are modelling assumptions; the artifact's
+  measured-trace replay and software-in-the-loop flight (runbook R3, R4) are scripted but
+  their results are not part of this version.
 \item \emph{Scalar certificates only.} Vector certificates lose the closed forms
   (\cref{rem:frontier}).
 \end{itemize}
