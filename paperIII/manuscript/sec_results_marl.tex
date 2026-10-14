@@ -19,11 +19,11 @@
 In-expectation methods violate the constraint while they learn, and learning is when a
 fleet would be flight-tested.
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
 \begin{tikzpicture}
 \begin{groupplot}[group style={group size=2 by 1, horizontal sep=1.4cm},
-  width=0.5\linewidth, height=4.5cm, xlabel={fleet-epochs ($\times10^3$)},
+  width=0.46\textwidth, height=4.2cm, xlabel={fleet-epochs ($\times10^3$)},
   grid=major, grid style={black!10}, tick label style={font=\scriptsize},
   label style={font=\small}, xmin=0, xmax=480,
   legend style={font=\scriptsize, fill=white, fill opacity=0.85, text opacity=1}]
@@ -51,7 +51,7 @@ fleet would be flight-tested.
 violations on a log axis. Zero is drawn at 1 for visibility. The projection and masking
 curves lie on the floor throughout.}
 \label{fig:training}
-\end{figure}
+\end{figure*}
 
 \subsection{RQ3: what the policy learns and what the mechanism enforces}
 \label{sec:rq3}
@@ -94,8 +94,8 @@ reassignments) and certifies only $\nGnpCov$. A fixed design margin certifies $\
 and still violates on $\nFixedViolMean\%$ of agent-epochs, because a margin fixed at design
 time cannot track a certificate that moves.
 
-\begin{table}[t]
-\centering\scriptsize
+\begin{table*}[t]
+\centering\footnotesize
 \setlength{\tabcolsep}{3.5pt}
 \caption{RQ3. Held-out evaluation ($N=12$, $M=8$; \nNSeeds\ training seeds $\times$ 3
 evaluation seeds $\times$ 16 fleets for learned methods; 3 $\times$ 16 for the references
@@ -105,4 +105,4 @@ x)$'': none observed, with the 95\% CP upper bound on the rate, assuming indepen
 agent-epochs. Train viol.: executed infeasible assignments over all of training.}
 \label{tab:main}
 \input{tab_main}
-\end{table}
+\end{table*}

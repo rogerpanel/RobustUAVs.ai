@@ -52,3 +52,6 @@ paperI/manuscript/*.log
 paperI/manuscript/*.out
 paperI/manuscript/*.synctex.gz
 paperI/experiments/__pycache__/
+
+# per-job training logs of the R-MARL queue (the CSVs carry the results)
+paperIII/results/logs_r/
