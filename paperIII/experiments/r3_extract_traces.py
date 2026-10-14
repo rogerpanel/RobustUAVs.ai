@@ -59,22 +59,27 @@ def _read_csv(path: Path) -> dict[str, np.ndarray]:
 GPS_SUFFIXES = tuple(f"_{t}_0.csv" for t in GPS_TOPICS)
 
 
-def find_flights(root: Path) -> list[tuple[str, Path, str]]:
-    """Every flight under root, whatever the staging layout. A flight is one
-    .ulg file, or one ulog2csv log prefix ("<log>_vehicle_gps_position_0.csv"
-    and its sibling topic files). fetch_kaggle.py stages files flat, so the
-    directory alone does not identify a flight."""
-    out, seen = [], set()
+def find_flights(root: Path) -> list[tuple[str, Path, str, str]]:
+    """Every flight under root, whatever the staging layout: one .ulg file, or one
+    ulog2csv log prefix ("<log>_vehicle_gps_position_0.csv" plus sibling topics)
+    when no .ulg of the same name exists (a .ulg and its CSV export are one
+    flight). fetch_kaggle.py stages files flat as symlinks into the kagglehub
+    cache, so the label is read from the symlink's TARGET path, which keeps the
+    dataset's own folder names (benign / jamming / spoofing ...)."""
+    out = []
+    ulg_stems = set()
     for p in sorted(root.rglob("*.ulg")):
-        out.append((str(p.relative_to(root)), p, "ulg"))
+        ulg_stems.add((p.parent, p.stem))
+        out.append((str(p.relative_to(root)), p, "ulg", str(p.resolve())))
+    seen = set()
     for suf in GPS_SUFFIXES:
         for p in sorted(root.rglob(f"*{suf}")):
             prefix = p.name[: -len(suf)]
             key = (p.parent, prefix)
-            if key in seen:
+            if key in seen or key in ulg_stems:
                 continue
             seen.add(key)
-            out.append((str((p.parent / prefix).relative_to(root)), p.parent / prefix, "csv"))
+            out.append((str((p.parent / prefix).relative_to(root)), p.parent / prefix, "csv", str(p.resolve())))
     return out
 
 
@@ -141,20 +146,20 @@ def main():
         print(f"SKIPPED: no flights under {a.root}. Stage with data/fetch_kaggle.py --copy.")
         return 0
     rows, summ = [], []
-    for name, path, kind in flights:
+    for name, path, kind, origin in flights:
         tr = staleness_trace(load_flight(path, kind))
         if tr is None:
             print(f"  {name}: no GNSS topic, skipped")
             continue
         t, st, fx, sats, src = tr
-        lab = label_of(name)
+        lab = label_of(name + " " + origin)
         for i in range(t.size):
             rows.append({"flight": name, "label": lab, "t_s": round(float(t[i]), 3),
                          "staleness_s": round(float(st[i]), 4), "fix_type": int(fx[i]),
                          "sats": ("" if np.isnan(sats[i]) else int(sats[i])),
                          "fused_source": src, "provenance": "measured"})
         ep = np.diff(np.r_[0, (st > 1.0).astype(int)]) == 1
-        summ.append({"flight": name, "label": lab, "duration_s": float(t[-1]), "epochs": int(t.size),
+        summ.append({"flight": name, "label": lab, "source_path": origin.split("/datasets/")[-1], "duration_s": float(t[-1]), "epochs": int(t.size),
                      "staleness_p50_s": float(np.median(st)), "staleness_p99_s": float(np.percentile(st, 99)),
                      "staleness_max_s": float(st.max()), "frac_epochs_stale_gt1s": float(np.mean(st > 1.0)),
                      "n_episodes_gt1s": int(ep.sum()), "min_fix_type": int(fx.min()),
