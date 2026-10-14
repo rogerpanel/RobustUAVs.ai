@@ -55,3 +55,4 @@ paperI/experiments/__pycache__/
 
 # per-job training logs of the R-MARL queue (the CSVs carry the results)
 paperIII/results/logs_r/
+paperIV/results/logs/
