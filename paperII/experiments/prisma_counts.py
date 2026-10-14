@@ -48,14 +48,17 @@ def _lines(path: Path) -> int:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--corpus", type=Path, default=HERE.parent / "corpus")
+    ap.add_argument("--search", default="search_raw.jsonl", help="database-search raw file")
+    ap.add_argument("--venues", nargs="+", default=["venue_raw.jsonl"], help="venue-sweep raw files")
     a = ap.parse_args()
     cand = a.corpus / "candidates.csv"
-    n_search = _lines(a.corpus / "search_raw.jsonl")
+    n_search = _lines(a.corpus / a.search)
     if not n_search or not cand.exists():
         print(f"[S1] not run yet: need search_raw.jsonl(.gz) and candidates.csv in {a.corpus}. "
               "Run search_corpus.py search and dedup first. Nothing written.")
         return 1
-    n_venue = _lines(a.corpus / "venue_raw.jsonl")
+    per_venue_file = {v: _lines(a.corpus / v) for v in a.venues}
+    n_venue = sum(per_venue_file.values())
 
     csv.field_size_limit(10 ** 8)
     rows = list(csv.DictReader(cand.open()))
@@ -84,6 +87,8 @@ def main() -> int:
         w.writerow(["identified_venues", n_venue])
         w.writerow(["identified_external", len(external)])
         w.writerow(["truncated_queries", truncated])
+        for v, n in per_venue_file.items():
+            w.writerow([f"identified_{v.split('.')[0]}", n])
     print(f"[S1] identified {identified} (search {n_search}, venue sweeps {n_venue}, "
           f"other databases {len(external)}); duplicates {identified - unique}; "
           f"{unique} records to screen; {truncated} queries truncated")

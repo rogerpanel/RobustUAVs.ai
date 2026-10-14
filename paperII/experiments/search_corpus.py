@@ -53,6 +53,21 @@ BLOCK_B = '("neural network" OR "deep learning" OR "learning-enabled" OR "machin
 BLOCK_C = ('("aircraft" OR "UAV" OR "UAS" OR "drone" OR "quadrotor" OR "autonomous vehicle" OR "autonomous driving" '
            'OR "avionics" OR "airworthiness" OR "collision avoidance" OR "safety-critical")')
 
+# Revision 1 (F2). The uncapped revision-0 search found 56% of the pilot set.
+# Terms were chosen from the misses of the DEVELOPMENT half of the pilot set only
+# (odd gid numbers) -- control and cyber-physical phrasings of the same autonomy
+# scope, and one guarantee phrase -- and recall is reported on the held-out even
+# half, so the revision is not tuned to the set it is judged on.
+BLOCK_A_REV1 = BLOCK_A + ['"formal analysis"']
+BLOCK_C_REV1 = ('("aircraft" OR "UAV" OR "UAS" OR "drone" OR "quadrotor" OR "autonomous vehicle" OR "autonomous driving" '
+                'OR "avionics" OR "airworthiness" OR "collision avoidance" OR "safety-critical" '
+                'OR "aerospace" OR "autonomous system" OR "control system" OR "controller" OR "closed-loop" '
+                'OR "cyber-physical" OR "hybrid system" OR "robot")')
+
+
+def blocks(rev: int):
+    return (BLOCK_A_REV1, BLOCK_C_REV1) if rev >= 1 else (BLOCK_A, BLOCK_C)
+
 
 def log(event: dict):
     event["utc"] = datetime.now(timezone.utc).isoformat()
@@ -217,7 +232,8 @@ def _done_queries(records):
 
 
 def cmd_search(a):
-    queries = [f"{qa} {BLOCK_B} {BLOCK_C}" for qa in BLOCK_A]
+    ba, bc = blocks(a.revision)
+    queries = [f"{qa} {BLOCK_B} {bc}" for qa in ba]
     if a.dry_run:
         print("\n".join(queries)); return
     done = set()
@@ -368,6 +384,7 @@ VENUES = [
     ("CDC", "Conference on Decision and Control"), ("DASC", "Digital Avionics Systems Conference"),
 ]
 BLOCK_A_PLAIN = [q.strip('"').lower() for q in BLOCK_A]
+BLOCK_A_PLAIN_REV1 = [q.strip('"').lower() for q in BLOCK_A_REV1]
 
 
 def resolve_sources(phrase: str) -> list[dict]:
@@ -385,9 +402,9 @@ def resolve_sources(phrase: str) -> list[dict]:
     return out
 
 
-def title_hit(title: str) -> str:
+def title_hit(title: str, rev: int = 0) -> str:
     t = (title or "").lower()
-    return next((p for p in BLOCK_A_PLAIN if p in t), "")
+    return next((p for p in (BLOCK_A_PLAIN_REV1 if rev >= 1 else BLOCK_A_PLAIN) if p in t), "")
 
 
 def cmd_venues(a):
@@ -423,7 +440,7 @@ def cmd_venues(a):
                     flt = "primary_location.source.id:" + "|".join(ids[i:i + 50])
                     for w in openalex_search_filter(flt):
                         toc += 1
-                        hit = title_hit(w.get("title"))
+                        hit = title_hit(w.get("title"), a.revision)
                         if hit:
                             rec = slim(w); rec["found_by"] = f"venue:{short}"; rec["query"] = f"venue:{short}|{hit}"
                             buf.append(rec); kept += 1
@@ -453,6 +470,138 @@ def cmd_venues(a):
               file=sys.stderr)
         sys.exit(3)
 
+
+
+# --------------------------------------------------------------------------
+# F1: venue sweeps through DBLP. OpenAlex files LNCS proceedings (CAV, TACAS,
+# NFM, SAFECOMP) under the book series and misses others (CDC, CoRL), so the
+# OpenAlex sweep found 0-60 papers for those venues over ten years. DBLP keeps
+# the authoritative table of contents of every volume. Each 2017-2026 main-
+# proceedings volume is paged in full, a paper is kept when its title contains
+# a block-A phrase, and kept papers with a DOI are completed from OpenAlex by a
+# singleton lookup (free of charge) so abstracts are available for screening.
+# --------------------------------------------------------------------------
+DBLP_STREAMS = {
+    "S&P": "conf/sp", "USENIX Sec": "conf/uss", "CCS": "conf/ccs", "NDSS": "conf/ndss",
+    "CAV": "conf/cav", "TACAS": "conf/tacas", "HSCC": "conf/hybrid", "ICCPS": "conf/iccps",
+    "EMSOFT": "conf/emsoft", "NFM": "conf/nfm", "SAFECOMP": "conf/safecomp", "DSN": "conf/dsn",
+    "NeurIPS": "conf/nips", "ICML": "conf/icml", "ICLR": "conf/iclr", "CoRL": "conf/corl",
+    "CDC": "conf/cdc", "DASC": "conf/dasc-avionics",
+}
+
+
+def dblp_get(url: str, as_json=True, retries=8):
+    import urllib.error
+    for i in range(retries):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "paperII-sok/1.0 (systematic review)"})
+            with urllib.request.urlopen(req, timeout=90) as r:
+                body = r.read().decode("utf-8", "replace")
+            time.sleep(1.0)                                   # DBLP asks for about 1 request/s
+            return json.loads(body) if as_json else body
+        except Exception as e:  # noqa: BLE001
+            status = getattr(e, "code", None)
+            if status == 404:
+                return None
+            wait = min(120, 2 ** i)
+            hdr = getattr(e, "headers", None) or {}
+            ra = hdr.get("Retry-After")
+            if ra and str(ra).isdigit():
+                wait = max(wait, min(600, int(ra)))
+            log({"source": "dblp", "error": str(e), "status": status, "url": url, "try": i, "wait_s": wait})
+            time.sleep(wait)
+    raise RuntimeError(f"failed: {url}")
+
+
+def dblp_tocs(stream: str) -> list[str]:
+    """Main-proceedings volumes 2017-2026 of a DBLP stream, e.g. conf/cav/cav2023-1."""
+    html = dblp_get(f"https://dblp.org/db/{stream}/index.html", as_json=False)
+    if not html:
+        return []
+    names = set(re.findall(rf"(?:https://dblp\.org/db/{re.escape(stream)}/|href=\")([a-z]+\d{{4}}(?:-\d+)?)\.html",
+                           html))
+    out = []
+    for n in sorted(names):
+        y = int(re.search(r"(\d{4})", n).group(1))
+        if YEARS[0] <= y <= YEARS[1]:
+            out.append(f"{stream}/{n}")
+    return out
+
+
+def cmd_venues_dblp(a):
+    rows, kept_total, toc_total, incomplete = [], 0, 0, []
+    done = set()
+    if a.resume:
+        done = {e["venue"] for e in _read_jsonl(C / "search_log.jsonl")
+                if e.get("source") == "dblp_venue" and e.get("complete")}
+        old = [r for r in _read_jsonl(a.out) if r.get("found_by", "").removeprefix("venue_dblp:") in done]
+        with open(a.out, "w") as fh:
+            for r in old:
+                fh.write(json.dumps(r) + "\n")
+        print(f"resume: {len(done)} of {len(DBLP_STREAMS)} venues complete ({len(old)} records kept)")
+    with open(a.out, "a" if a.resume else "w") as fh:
+        for short, stream in DBLP_STREAMS.items():
+            if short in done:
+                continue
+            try:
+                tocs = dblp_tocs(stream)
+                buf, n_toc = [], 0
+                for toc in tocs:
+                    off, n_vol = 0, 0
+                    while True:
+                        q = urllib.parse.quote(f"toc:db/{toc}.bht:")
+                        js = dblp_get(f"https://dblp.org/search/publ/api?q={q}&h=1000&f={off}&format=json")
+                        hits = (((js or {}).get("result") or {}).get("hits") or {})
+                        items = hits.get("hit", []) or []
+                        for it in items:
+                            info = it.get("info", {})
+                            if info.get("type", "").startswith("Editorship"):
+                                continue
+                            n_vol += 1
+                            title = re.sub(r"\.$", "", info.get("title", "") or "")
+                            hit = title_hit(title, a.revision)
+                            if not hit:
+                                continue
+                            doi = (info.get("doi") or "").lower()
+                            rec = {"openalex": "", "doi": doi, "title": title, "year": int(info.get("year") or 0) or None,
+                                   "venue": short, "type": info.get("type", ""), "abstract": "",
+                                   "referenced_works": [], "cited_by_api": ""}
+                            if doi:
+                                try:
+                                    w = get("https://api.openalex.org/works/doi:" + urllib.parse.quote(doi), retries=3)
+                                    rec.update({k: v for k, v in slim(w).items() if v})
+                                except (RuntimeError, BudgetExhausted):
+                                    pass                  # keep the DBLP record; dedup merges on DOI/title
+                            rec["found_by"] = f"venue_dblp:{short}"
+                            rec["query"] = f"venue_dblp:{short}|{hit}"
+                            buf.append(rec)
+                        total = int(hits.get("@total", 0) or 0)
+                        off += len(items)
+                        if not items or off >= total:
+                            break
+                    n_toc += n_vol
+                    rows.append({"venue": short, "toc": toc, "papers": n_vol})
+            except RuntimeError as e:
+                log({"source": "dblp_venue", "venue": short, "complete": False, "error": str(e)})
+                print(f"INCOMPLETE {short}", flush=True)
+                incomplete.append(short)
+                continue
+            for rec in buf:
+                fh.write(json.dumps(rec) + "\n")
+            fh.flush()
+            log({"source": "dblp_venue", "venue": short, "tocs": len(tocs), "toc": n_toc, "kept": len(buf),
+                 "complete": True})
+            print(f"{short:<11} {len(tocs):>3} volumes {n_toc:>7} papers 2017-2026 {len(buf):>5} block-A titles",
+                  flush=True)
+            toc_total += n_toc; kept_total += len(buf)
+    p = C / "venue_dblp_sources.csv"
+    old = list(csv.DictReader(p.open())) if (a.resume and p.exists()) else []
+    with p.open("w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=["venue", "toc", "papers"])
+        w.writeheader(); w.writerows([r for r in old if r["venue"] in done] + rows)
+    print(f"DBLP venue sweep: {toc_total} papers scanned in this attempt, {kept_total} kept")
+    if incomplete:
+        sys.exit(3)
 
 def openalex_search_filter(flt: str):
     """Page every work matching a filter (no search term), 2017-2026, uncapped."""
@@ -517,13 +666,17 @@ if __name__ == "__main__":
     sp.add_parser("budget")
     s = sp.add_parser("search"); s.add_argument("--out", default=str(C / "search_raw.jsonl")); s.add_argument("--dry-run", action="store_true")
     s.add_argument("--resume", action="store_true", help="keep completed queries, re-page the rest")
+    s.add_argument("--revision", type=int, default=0, help="0 = protocol search; 1 = F2 widened blocks")
     s.add_argument("--max-pages", type=int, default=0, help="0 = no cap (default); 10 reproduces the capped pilot run")
     d = sp.add_parser("dedup"); d.add_argument("--inp", nargs="+", default=[str(C / "search_raw.jsonl")],
                                              help="one or more raw files (.jsonl or .jsonl.gz), e.g. search + venue sweeps")
     d.add_argument("--out", default=str(C / "candidates.csv"))
     v = sp.add_parser("venues"); v.add_argument("--out", default=str(C / "venue_raw.jsonl"))
     v.add_argument("--resume", action="store_true", help="keep completed venues, sweep the rest")
+    v.add_argument("--revision", type=int, default=0)
+    vd = sp.add_parser("venues_dblp"); vd.add_argument("--out", default=str(C / "venue_dblp_raw.jsonl"))
+    vd.add_argument("--resume", action="store_true"); vd.add_argument("--revision", type=int, default=1)
     b = sp.add_parser("snowball"); b.add_argument("--inp", required=True); b.add_argument("--out", required=True)
     a = p.parse_args()
     {"search": cmd_search, "dedup": cmd_dedup, "venues": cmd_venues, "snowball": cmd_snowball,
-     "budget": cmd_budget}[a.cmd](a)
+     "budget": cmd_budget, "venues_dblp": cmd_venues_dblp}[a.cmd](a)
