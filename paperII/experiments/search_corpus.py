@@ -77,6 +77,32 @@ class Incomplete(Exception):
     """A query or venue could not be paged to the end; rerun with --resume."""
 
 
+# Only the fields slim() reads: a full OpenAlex work carries authorships,
+# concepts and locations that multiply the payload, and very large pages are
+# what the API times out on.
+SELECT = ("id,doi,title,publication_year,primary_location,type,abstract_inverted_index,"
+          "referenced_works,cited_by_api_url")
+PAGE_SIZES = (200, 50, 25)      # a page that keeps failing is retried smaller
+
+
+def fetch_page(base: str, params: dict) -> dict:
+    """One cursor page, falling back to smaller pages on persistent failure.
+    The cursor marks a position in the result list, so a smaller page resumes
+    from the same record; the next cursor continues from wherever it ended."""
+    last = None
+    for k, size in enumerate(PAGE_SIZES):
+        p = dict(params, **{"per-page": size, "select": SELECT})
+        if MAILTO:
+            p["mailto"] = MAILTO
+        try:
+            return get(base + "?" + urllib.parse.urlencode(p),
+                       retries=5 if k < len(PAGE_SIZES) - 1 else 10)
+        except RuntimeError as e:
+            last = e
+            log({"page_size_fallback": size, "error": str(e)})
+    raise last
+
+
 def openalex_search(query: str, max_pages=0, extra_filter=""):
     """Cursor-page through every result. max_pages=0 means no cap (the
     full-study default); a positive value reproduces a capped pilot run."""
@@ -87,12 +113,8 @@ def openalex_search(query: str, max_pages=0, extra_filter=""):
     cursor = "*"
     page = 0
     while not max_pages or page < max_pages:
-        params = {"search": query, "filter": flt, "per-page": 200, "cursor": cursor}
-        if MAILTO:
-            params["mailto"] = MAILTO
-        url = base + "?" + urllib.parse.urlencode(params)
         try:
-            js = get(url)
+            js = fetch_page(base, {"search": query, "filter": flt, "cursor": cursor})
         except RuntimeError as e:
             raise Incomplete(str(e)) from e
         entry = {"source": "openalex", "query": query, "n": len(js.get("results", []))}
@@ -390,10 +412,7 @@ def openalex_search_filter(flt: str):
     full = f"from_publication_date:{YEARS[0]}-01-01,to_publication_date:{YEARS[1]}-12-31," + flt
     cursor = "*"
     while cursor:
-        params = {"filter": full, "per-page": 200, "cursor": cursor}
-        if MAILTO:
-            params["mailto"] = MAILTO
-        js = get(base + "?" + urllib.parse.urlencode(params))
+        js = fetch_page(base, {"filter": full, "cursor": cursor})
         yield from js.get("results", [])
         cursor = js.get("meta", {}).get("next_cursor") if js.get("results") else None
 
