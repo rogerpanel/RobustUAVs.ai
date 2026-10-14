@@ -6,6 +6,7 @@ and coverage margin), (ii) unweighted greedy nested projection, (iii) the
 exact lexicographic projection (Hungarian, scipy), (iv) a generic
 Hopcroft-Karp maximum matching on the same graph, for N agents and M = N/2
 tasks. Hardware is recorded in the CSV. Output: results/e3_latency.csv
+(R8: `--board pi5` writes results/e3_latency_pi5.csv on a companion computer).
 """
 from __future__ import annotations
 
@@ -32,9 +33,20 @@ def timeit(fn, reps):
     return np.asarray(ts) * 1e3
 
 
-def main():
+def cpu_model():
+    """CPU model string (runbook: record the CPU with every latency run)."""
+    try:
+        for line in Path("/proc/cpuinfo").read_text().splitlines():
+            if line.lower().startswith(("model name", "hardware", "model\t")):
+                return line.split(":", 1)[1].strip()
+    except OSError:
+        pass
+    return platform.processor() or platform.machine()
+
+
+def main(board=""):
     rng = np.random.default_rng(0)
-    cpu = platform.processor() or platform.machine()
+    cpu = cpu_model()
     rows = []
     for N in (12, 25, 50, 100, 250, 500, 1000, 2000, 5000, 10000, 100000):
         M = max(1, N // 2)
@@ -59,11 +71,15 @@ def main():
                          "p50_ms": float(np.median(t)), "p99_ms": float(np.percentile(t, 99)),
                          "max_ms": float(t.max()), "cpu": cpu, "threads": os.cpu_count()})
             print(rows[-1])
-    with (OUT / "e3_latency.csv").open("w", newline="") as fh:
+    out = OUT / (f"e3_latency_{board}.csv" if board else "e3_latency.csv")
+    with out.open("w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0]))
         w.writeheader()
         w.writerows(rows)
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--board", default="", help="R8: board name, e.g. pi5 or orin_nano")
+    main(ap.parse_args().board)

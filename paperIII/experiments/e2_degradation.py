@@ -149,14 +149,16 @@ def p_full_iid(N, alpha, q):
     return float(sum(state.values()))
 
 
-def part_c(seed=7, N=12, M=8, B=64, T=400):
+def part_c(seed=7, N=12, M=8, B=64, T=400, process="synthetic"):
     """Stationary per-agent level distribution and full-coverage frequency."""
     rows, sizing = [], []
     for corr in ("independent", "spatial_jammers"):
         cfg = EnvConfig(N=N, M=M, n_jammers=(3 if corr == "spatial_jammers" else 0),
                         jam_radius=260.0)
-        if corr == "independent":   # same marginal stress, but per-agent and independent
+        if corr == "independent" and process == "synthetic":
+            # same marginal stress, but per-agent and independent
             cfg.threat = ThreatProfile(jam_rate=0.03)
+        cfg.process = process
         env = CertSwarm(B, cfg, seed=seed)
         env.reset()
         # hold alert limits fixed across the batch to make the lift well-posed
@@ -204,7 +206,36 @@ def part_c(seed=7, N=12, M=8, B=64, T=400):
     return rows, sizing
 
 
+def main_trace():
+    """R3: part (c) with measured staleness traces (needs r3_extract_traces.py).
+    Adds the total-variation distance between the trace-driven and the
+    synthetic class laws q. Output: results/e2_lift_trace.csv"""
+    lift, _ = part_c(process="trace")
+    syn = {}
+    p = OUT / "e2_lift.csv"
+    if p.exists():
+        with p.open() as fh:
+            for r in csv.DictReader(fh):
+                syn.setdefault(r["dependence"], r)
+    for r in lift:
+        s0 = syn.get(r["dependence"])
+        r["provenance"] = "measured"
+        if s0 is None:
+            r["tv_vs_synthetic"] = ""
+            continue
+        def law(x):
+            c = [float(x["q_le2"]), float(x["q_le10"]), float(x["q_le20"])]
+            return np.array([c[0], c[1] - c[0], c[2] - c[1], 1 - c[2]])
+        # q_le5 is not stored; TV over the stored classes {<=2, (2,10], (10,20], >20}
+        r["tv_vs_synthetic"] = 0.5 * float(np.abs(law(r) - law(s0)).sum())
+    write("e2_lift_trace.csv", lift)
+    for r in lift:
+        print(r)
+
+
 def main():
+    if "--process" in sys.argv and sys.argv[sys.argv.index("--process") + 1] == "trace":
+        return main_trace()
     rng = np.random.default_rng(3)
     write("e2_collapse.csv", part_a(rng))
     write("e2_graded.csv", part_b(rng))

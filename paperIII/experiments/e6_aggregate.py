@@ -7,6 +7,7 @@ methods that observed zero violations, the exact one-sided 95% Clopper-Pearson
 upper bound on the per-agent-step violation rate given the total exposure in
 agent-steps (training and evaluation reported separately).
 Outputs: results/e6_main.csv, results/e6_curves.csv
+(`--dir e5_marl_N48` aggregates another run directory into e6_main_e5_marl_N48.csv)
 """
 from __future__ import annotations
 
@@ -55,8 +56,10 @@ def read(path):
         return list(csv.DictReader(fh))
 
 
-def main():
+def main(sub="e5_marl"):
     cfg = EnvConfig()
+    RES = OUT / sub
+    suffix = "" if sub == "e5_marl" else f"_{sub}"
     rows = []
     by = {}
     for p in sorted(glob.glob(str(RES / "*_eval.csv"))):   # includes references_eval.csv
@@ -66,7 +69,7 @@ def main():
     for p in glob.glob(str(RES / "*_train.csv")):
         name = Path(p).name.rsplit("_s", 1)[0]
         tr = read(p)
-        steps = int(tr[-1]["env_steps"]) * cfg.N
+        steps = int(tr[-1]["env_steps"]) * int(tr[-1].get("N") or cfg.N)
         train_viol.setdefault(name, [0, 0])
         train_viol[name][0] += int(tr[-1]["cum_violations"])
         train_viol[name][1] += steps
@@ -82,8 +85,10 @@ def main():
             out[f"{k}_iqm"] = iqm(vals)
             out[f"{k}_lo"] = lo
             out[f"{k}_hi"] = hi
-        eval_steps = len(rs) * 16 * cfg.horizon * cfg.N
-        k_eval = int(round(sum(float(r["viol"]) for r in rs) * 16 * cfg.horizon * cfg.N))
+        def per_run(r):     # agent-steps behind one evaluation row
+            return int(r.get("eval_B") or 16) * cfg.horizon * int(r.get("N") or cfg.N)
+        eval_steps = sum(per_run(r) for r in rs)
+        k_eval = int(round(sum(float(r["viol"]) * per_run(r) for r in rs)))
         out["eval_agent_steps"] = eval_steps
         out["eval_violations"] = k_eval
         out["eval_viol_cp95"] = cp_upper(k_eval, eval_steps)
@@ -96,7 +101,7 @@ def main():
         else:
             out["train_agent_steps"] = out["train_violations"] = out["train_viol_cp95"] = ""
         rows.append(out)
-    with (OUT / "e6_main.csv").open("w", newline="") as fh:
+    with (OUT / f"e6_main{suffix}.csv").open("w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0]))
         w.writeheader(); w.writerows(rows)
     # learning curves: mean and min/max across seeds, per update
@@ -114,7 +119,7 @@ def main():
                            "viol_mean": vi.mean(), "cum_viol_mean": cv.mean(),
                            "n_seeds": len(runs)})
     if curves:
-        with (OUT / "e6_curves.csv").open("w", newline="") as fh:
+        with (OUT / f"e6_curves{suffix}.csv").open("w", newline="") as fh:
             w = csv.DictWriter(fh, fieldnames=list(curves[0]))
             w.writeheader(); w.writerows(curves)
     for r in rows:
@@ -123,4 +128,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--dir", default="e5_marl")
+    main(ap.parse_args().dir)

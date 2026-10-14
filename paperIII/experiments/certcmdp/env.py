@@ -41,6 +41,7 @@ class EnvConfig:
     jam_radius: float = 200.0
     jam_speed: float = 4.0
     threat: ThreatProfile = field(default_factory=ThreatProfile)
+    process: str = "synthetic"     # "trace": R3 measured-trace replay
 
 
 class CertSwarm:
@@ -59,7 +60,11 @@ class CertSwarm:
         self.value = np.vectorize(VALUE_OF_ALPHA.get)(self.alpha).astype(float)
         self.jam = rng.uniform(0, c.L, (B, c.n_jammers, 2))
         self.jam_v = rng.normal(0, 1, (B, c.n_jammers, 2))
-        self.cert = CertificateProcess(B, c.N, c.threat, rng)
+        if c.process == "trace":
+            from .trace_process import TraceProcess
+            self.cert = TraceProcess(B, c.N, c.threat, rng)
+        else:
+            self.cert = CertificateProcess(B, c.N, c.threat, rng)
         self.rho = self.cert.rho()
         self.rho_prev = self.rho.copy()
         self.assign = np.full((B, c.N), IDLE, dtype=int)
