@@ -508,14 +508,20 @@ Section~\ref{sec:case} shows what it buys.
 \paragraph*{Sources and search}
 The protocol follows the systematic-review guidelines of Kitchenham and
 Charters~\cite{kitchenham2007slr} and reports with the Preferred Reporting Items for Systematic
-reviews and Meta-Analyses (PRISMA) 2020~\cite{page2021prisma}. We search IEEE Xplore, the ACM
-Digital Library, Scopus, Web of Science, and OpenAlex (which indexes arXiv and DBLP) for
-2017--2026. Each query conjoins three blocks: A, a guarantee term (16 phrases, from ``certified
-robustness'' and ``reachability analysis'' to ``conformal prediction'', ``PAC-Bayes'' and
-``runtime assurance''); B, a learning term; and C, an autonomy term (Appendix~\ref{app:search}).
-We add venue sweeps of IEEE S\&P, USENIX Security, CCS, NDSS, CAV, TACAS, HSCC, ICCPS, EMSOFT,
-NFM, SAFECOMP, DSN, NeurIPS, ICML, ICLR, CoRL, CDC and DASC. Every request is logged with a
-timestamp.
+reviews and Meta-Analyses (PRISMA) 2020~\cite{page2021prisma}. We search OpenAlex~\cite{priem2022openalex}
+for 2017--2026, retrieving every result of every query. OpenAlex indexes the Crossref records of
+publications in IEEE Xplore and the ACM Digital Library, together with arXiv and DBLP, so one
+search reaches most of what those libraries hold; we did not run separate searches of the
+subscription databases Scopus and Web of Science. Each query conjoins three blocks: A, a
+guarantee term (16 phrases, from ``certified robustness'' and ``reachability analysis'' to
+``conformal prediction'', ``PAC-Bayes'' and ``runtime assurance''); B, a learning term; and C,
+an autonomy term (Appendix~\ref{app:search}). Through OpenAlex we also sweep the complete
+2017--2026 tables of contents of IEEE S\&P, USENIX Security, CCS, NDSS, CAV, TACAS, HSCC, ICCPS,
+EMSOFT, NFM, SAFECOMP, DSN, NeurIPS, ICML, ICLR, CoRL, CDC and DASC, keeping papers whose title
+contains a block-A phrase. Records are merged when they share a DOI, or a title with publication
+years at most two apart, so a preprint and its published version count once. Every request is
+logged with a timestamp, and we report the search's sensitivity against the pilot set
+(Section~\ref{sec:pilot}): the share of its papers the search retrieves.
 
 \paragraph*{Inclusion}
 We include a paper if it states a formal, statistical or architectural guarantee about a learned
