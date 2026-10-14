@@ -6,7 +6,7 @@
 \centering
 \begin{tikzpicture}
 \begin{groupplot}[group style={group size=2 by 1, horizontal sep=6mm, yticklabels at=edge left},
-  width=0.6\columnwidth, height=46mm, ybar stacked,
+  width=0.585\columnwidth, height=46mm, ybar stacked,
   symbolic x coords={perception,estimation,control,planning,end2end},
   xtick=data, x tick label style={rotate=40, anchor=east, font=\scriptsize},
   ymin=0, ymax=46, ylabel style={font=\scriptsize}, yticklabel style={font=\scriptsize},
@@ -37,7 +37,7 @@ the pipeline and do not estimate the field (Sec.~\ref{sec:limits}). Provenance: 
 \centering
 \begin{tikzpicture}
 \begin{groupplot}[group style={group size=2 by 1, horizontal sep=13mm},
-  width=0.58\columnwidth, height=46mm, xlabel style={font=\scriptsize}, ylabel style={font=\scriptsize},
+  width=0.515\columnwidth, height=46mm, xlabel style={font=\scriptsize}, ylabel style={font=\scriptsize},
   ticklabel style={font=\scriptsize}, title style={font=\scriptsize, yshift=-1ex}, grid=major, grid style={gray!20}]
 \nextgroupplot[title={(a) per-decision requirement}, xmode=log, ymode=log, xlabel={decision rate $f$ (Hz)},
   ylabel={largest $p$ per decision}, ymin=1e-21, ymax=1e-5, xmin=1, xmax=100,

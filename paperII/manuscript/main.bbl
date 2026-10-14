@@ -201,6 +201,11 @@ M.~J. Page, J.~E. McKenzie, P.~M. Bossuyt, I.~Boutron, T.~C. Hoffmann, C.~D.
   Mulrow \emph{et~al.}, ``The {PRISMA} 2020 statement: An updated guideline for
   reporting systematic reviews,'' \emph{BMJ}, vol. 372, p. n71, 2021.
 
+\bibitem{priem2022openalex}
+J.~Priem, H.~Piwowar, and R.~Orr, ``{OpenAlex: A Fully-Open Index of Scholarly
+  Works, Authors, Venues, Institutions, and Concepts},'' arXiv:2205.01833,
+  2022.
+
 \bibitem{wohlin2014snowballing}
 C.~Wohlin, ``Guidelines for snowballing in systematic literature studies and a
   replication in software engineering,'' in \emph{Proc. Int. Conf. on
