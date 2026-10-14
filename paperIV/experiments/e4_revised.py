@@ -149,9 +149,9 @@ def main():
     b = simulate(n_fpr, 9001, w20=RP.wind(n_fpr, 9001))
     rows = []
     for fpr in RP.OPS:
-        base = ~_orig_mask(b, cal, "ALL", fpr)
+        quiet = _orig_mask(b, cal, "ALL", fpr)               # no alarm from the stack + anchor gate
         rev = stealth_rev(b, cal, "ALL", fpr)
-        rows.append({"fpr_target": fpr, "fpr_stack_anchor": round(1 - float(base.mean()), 4),
+        rows.append({"fpr_target": fpr, "fpr_stack_anchor": round(1 - float(quiet.mean()), 4),
                      "fpr_with_sat_alarm": round(1 - float(rev.mean()), 4),
                      "sat_alarm_alone": round(float(b["sat"].mean()), 4), "n": n_fpr, "provenance": "sim"})
     write("e4r_fpr.csv", rows); log(f"FPR: {rows}")
