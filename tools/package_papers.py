@@ -159,7 +159,7 @@ def overleaf(paper: str, src: Path, work: Path) -> Path:
         raise SystemExit(f"Overleaf build failed for Paper {paper}; see {test}/main.log")
     txt = subprocess.run(["pdftotext", "main.pdf", "-"], cwd=test, capture_output=True, text=True).stdout
     meta = subprocess.run(["pdfinfo", "main.pdf"], cwd=test, capture_output=True, text=True).stdout
-    rx = re.compile(r"rogerpanel|rogernickanaedevha|Anaedevha|robustuavs\.ai|robustidps\.ai|10\.34740"
+    rx = re.compile(r"rogerpanel|rogernickanaedevha|Anaedevha|robustuavs|robustidps|10\.34740"
                     r"|MEPhI|Padova|Claude", re.I)
     leaks = rx.findall(txt + meta)
     if leaks:

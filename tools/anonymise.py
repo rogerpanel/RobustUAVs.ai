@@ -75,6 +75,9 @@ RULES: list[tuple[str, str]] = [
     (r"\bRobustUAVs\.ai\b", "the platform"),
     (r"\brobustuavs\.ai\b", "anonymised.example"),
     (r"\brobustuavs-api\b", "platform-api"),
+    # bare project name in identifiers, logger names and paths (any case)
+    (r"(?i:robustuavs)", "uavplatform"),
+    (r"(?i:robustidps)", "priorplatform"),
     (r"\bRobustIDPS\.ai\b", "the prior platform"),
     (r"\brobustidps\.ai\b", "prior-platform.example"),
     # Author names and affiliations.
@@ -260,7 +263,7 @@ def verify(dst: Path) -> list[tuple[Path, int, str]]:
     # is caught rather than trusted.
     tokens = [
         r"rogerpanel", r"rogernickanaedevha", r"Anaedevha", r"MEPhI",
-        r"robustuavs\.ai", r"robustidps\.ai", r"10\.34740", r"Mauro Conti",
+        r"(?i:robustuavs)", r"(?i:robustidps)", r"10\.34740", r"Mauro Conti",
         r"Cor\\`o", r"Corò", r"SPRITZ", r"Padova", r"Padua", r"Missouri S",
         r"CLAUDE\.md", r"Claude Code", r"Co-Authored-By", r"Claude-Session",
         r"[A-Za-z0-9._%+-]+@(?!example\.org)[A-Za-z0-9.-]+\.(?:com|org|net|edu|ru|it|ai)\b",
