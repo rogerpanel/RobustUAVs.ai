@@ -1,0 +1,51 @@
+cid,include,reason
+O4310747098,1,high-probability safety certificate on learning-based controller
+O7167944388,0,"survey/position, no guarantee of its own"
+O4406969982,0,"security report, no learned-component guarantee"
+O3163395228,1,falsification of formal DNN safety properties (refute-only guarantee)
+O7127151533,0,"overview, no guarantee"
+O7216388127,1,"data-driven safety certificate, learned model possibly; check full text"
+O4399260001,0,"survey, no guarantee"
+O3210111690,1,statistical uncertainty bounds on learned model possibly
+O7203597834,1,CBF safety on system containing neural surrogate
+O7164824487,1,conformal action-level safety guarantee on RL controller
+O7112024565,1,conformal statistical guarantee on learned classifier
+O7116405509,1,provable robustness guarantee on DNNs (thesis)
+O4402933835,0,"dataset perspective, no guarantee"
+O7161246425,1,reachability verification of learned navigation policy
+O2980442539,0,"topic models, no guarantee on learned safety-relevant component"
+O4308613806,0,"RL application, no guarantee"
+O4298147687,0,"proceedings front matter, no guarantee"
+O2930361557,0,"neural beamforming, no guarantee"
+O4312989560,1,"title only: Stratego learned strategies with safety, possible"
+O4414928438,0,"review, no guarantee"
+O3112804989,1,stability certificate on RL policy
+O2909303050,0,"empirical attack study, no guarantee"
+O4390002238,0,"survey, no learned-component guarantee"
+O4388858342,1,conformal statistical guarantee on GNN segmentation
+O7131191285,0,"legal framework, no guarantee"
+O4404091882,0,no learned component
+O4391210586,1,safety filter guarantee on system with learning-based controller
+O7140282909,1,CBF safety guarantee on RL controller
+O7216589167,0,"networking framework, no guarantee"
+O7214913654,0,"empirical operating characteristics, explicitly no guarantee"
+O4391697114,1,conformal prediction guarantee on AV perception
+O4393299932,0,no learned component
+O4392888180,0,"review, no guarantee"
+O4395080409,0,"legal study, no guarantee"
+O2897543967,0,guarantee about non-learned components
+O4389820654,0,"empirical robustness, no guarantee"
+O7161676350,0,"position paper, no guarantee"
+O3210770784,0,"prediction methods, no guarantee"
+O4297672475,1,"title only: NN verification, possible"
+O7153067931,0,"survey, no guarantee"
+O2972868728,1,statistical model checking bound on LSTM predictor for UAV
+O7161596408,0,"survey, no guarantee"
+O7118093577,0,"empirical defence, explicitly no certified robustness"
+O7221025302,1,risk-control guarantee on black-box AI decisions
+O7130951503,0,"editorial, no guarantee"
+O7126123338,0,"LLM planning, no guarantee"
+O4411973399,0,guarantee about non-learned control system
+O4407552699,1,scenario collision bound possibly over learned motion predictions
+O7126240292,0,"review, no guarantee"
+O4389325524,0,"empirical attack study, no guarantee"

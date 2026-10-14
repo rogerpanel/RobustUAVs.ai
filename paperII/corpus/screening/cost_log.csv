@@ -1,0 +1,4 @@
+batch,run,model,records,subagent_tokens,tool_uses,duration_ms,includes_in_file,includes_self_reported
+001,1,session default (general-purpose sub-agent),50,79213,4,35228,18,18
+001,2,session default (general-purpose sub-agent),50,79721,4,40135,19,19
+001,3,session default (general-purpose sub-agent),50,79234,4,34940,19,21
