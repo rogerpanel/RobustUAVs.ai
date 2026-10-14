@@ -43,10 +43,21 @@ stage() {   # stage <name> <command...>
   done
 }
 RESUME=${RESUME:-}
+REV=${REV:-0}          # 0 = protocol search (2026-10-14 run); 1 = F1 + F2 revision
 python3 search_corpus.py budget || true
-stage search python3 -u search_corpus.py search $RESUME
-stage venues python3 -u search_corpus.py venues $RESUME
-python3 search_corpus.py dedup --inp ../corpus/search_raw.jsonl ../corpus/venue_raw.jsonl || exit 4
-python3 prisma_counts.py || exit 5
-python3 search_sensitivity.py || exit 6
-echo "== S1 complete ($(date -u +%Y-%m-%dT%H:%M:%SZ))"
+if [ "$REV" = 0 ]; then
+  stage search python3 -u search_corpus.py search $RESUME
+  stage venues python3 -u search_corpus.py venues $RESUME
+  python3 search_corpus.py dedup --inp ../corpus/search_raw.jsonl ../corpus/venue_raw.jsonl || exit 4
+  python3 prisma_counts.py || exit 5
+  python3 search_sensitivity.py --label rev0 || exit 6
+else
+  stage search python3 -u search_corpus.py search --revision 1 --out ../corpus/search_raw_rev1.jsonl $RESUME
+  stage venues python3 -u search_corpus.py venues --revision 1 --out ../corpus/venue_raw_rev1.jsonl $RESUME
+  stage venues_dblp python3 -u search_corpus.py venues_dblp --revision 1 --out ../corpus/venue_dblp_raw.jsonl $RESUME
+  python3 search_corpus.py dedup --inp ../corpus/search_raw_rev1.jsonl ../corpus/venue_raw_rev1.jsonl \
+    ../corpus/venue_dblp_raw.jsonl || exit 4
+  python3 prisma_counts.py --search search_raw_rev1.jsonl --venues venue_raw_rev1.jsonl venue_dblp_raw.jsonl || exit 5
+  python3 search_sensitivity.py --label rev1 --raw search_raw_rev1.jsonl venue_raw_rev1.jsonl venue_dblp_raw.jsonl || exit 6
+fi
+echo "== S1 complete, revision $REV ($(date -u +%Y-%m-%dT%H:%M:%SZ))"
