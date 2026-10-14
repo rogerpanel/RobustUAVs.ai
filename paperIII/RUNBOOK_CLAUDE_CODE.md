@@ -1,6 +1,6 @@
 # Paper III — Claude Code Runbook
 
-**Paper:** *Certificates as Constraints: Feasibility-Preserving Multi-Agent Reinforcement Learning for UAV Swarms Whose Guarantees Degrade* (target: NeurIPS, main track)
+**Paper:** *Certificates as Constraints: Feasibility-Preserving Multi-Agent Reinforcement Learning for UAV Swarms Whose Guarantees Degrade* (target: IEEE Symposium on Security and Privacy; IEEEtran conference format, body within 13 pages)
 **Repository:** `rogerpanel/RobustUAVs.ai`, branch `claude/whelan-uavcas-ingest-u00isn`
 **Folder:** `paperIII/` (`experiments/`, `results/`, `manuscript/`)
 
@@ -35,6 +35,24 @@ cd ../manuscript && latexmk -pdf main.tex
 2. Baselines are re-implemented in a compact form: PPO-Lagrangian with plain dual ascent and no PID; no MACPO, QMIX or shielded MADDPG. **R2 is load-bearing.**
 3. Threat *rates* are modelling assumptions; only magnitudes are measured. R3 replays measured traces instead.
 4. No flight-dynamics simulator. R4 (PX4 SITL) closes this.
+
+## Status of the runbook items (October 2026)
+
+| Item | Status | Where | Deviation from the plan above, stated |
+|---|---|---|---|
+| R1 fleet size | run | `results/e5_marl_N{24,48,96}/`, `e6_main_e5_marl_N*.csv`, `run_r_marl.sh` | 200 updates (N <= 48) and 150 (N = 96) instead of 400/600; 5 seeds (3 at N = 96) instead of 10; agent-samples per update held fixed by B = 192/N; MLP actor up to N = 48, attention actor at N = 96. The fixed +3 keep prior lowered the initial keep probability as M grew; scaled-prior reruns in `run_r1_kbs.sh`, `run_r1_kbs24.sh` (tag `kbs`). |
+| R1 headline | run | `results/e5_marl/` seeds 0-9 | 10 seeds instead of 20. |
+| R2 baselines | run | `results/e5_marl/{mappo_lag,mappo_lag0,pid_lag,qmix,qmix_mask}_s*`; CBBA in `references_eval.csv` | Implemented in-repo, not through SafePO/OmniSafe/EPyMARL. MACPO not run; shielded MADDPG not run (masking = factored shield, trained with PPO). CBBA computed as its converged sequential auction (bundle length 1, connected network). |
+| R3 trace replay | scripted, not run | `r3_extract_traces.py`, `certcmdp/trace_process.py`, `run_server_paperIII.sh r3` | Needs the Kaggle corpus. The hop ledger has one packet per run, so the relay channel keeps the measured-magnitude episode model; only GNSS staleness is replayed. |
+| R4 PX4 SITL | scripted, not run | `r4_sitl_fleet.py`, `run_server_paperIII.sh r4` | SIH quadrotors in Docker instead of Gazebo x500; GNSS loss by failure injection or SIM_GPS_USED = 0; spoofing logged as unsupported if PX4 refuses FailureType.WRONG. |
+| R5 consensus | run | `r5_consensus.py`, `results/r5_consensus.csv` | Two-phase protocol (signed report flooding, then W-MSR on local count profiles); graph robustness computed exactly by enumeration. |
+| R6 vector certificates | run | `r6_vector.py`, `results/r6_vector.csv` | Vertical/horizontal ratio and vertical alert limits are assumptions (stated in the script). |
+| R7 learned jammer | not run | -- | -- |
+| R8 embedded latency | scripted, not run | `e3_latency.py --board <name>` | Needs a Raspberry Pi / Jetson. |
+| R9 sensitivity | run | `results/r9/`, `manuscript/tab_r9.tex` | 3 seeds per value; the default of each knob is the headline run on seeds 0-2. |
+| E3 on an idle machine | not rerun | `run_server_paperIII.sh e3` | The committed E3 numbers come from a shared 2-core VM. |
+
+Rebuild every number after any run: `python3 e6_aggregate.py; for d in e5_marl_N24 e5_marl_N48 e5_marl_N96 r9; do python3 e6_aggregate.py --dir $d; done; python3 export_figdata.py; python3 make_numbers.py`.
 
 ---
 

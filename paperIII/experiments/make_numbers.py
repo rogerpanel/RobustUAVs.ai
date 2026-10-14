@@ -328,7 +328,7 @@ def r1_scale(m):
     fig = MS / "figdata"
     fig.mkdir(exist_ok=True)
     meths = ("ours", "mask", "mask+proj", "lagrangian", "lagrangian+proj", "blind", "blind+proj",
-             "heuristic+proj", "cbba")
+             "heuristic+proj", "cbba", "ours-kbs", "mask-kbs+proj")
     for meth in meths:
         pts = []
         for n, rows in sizes:
@@ -353,7 +353,11 @@ def r1_scale(m):
         lag = b.get("lagrangian")
         seeds = o["n_train_seeds"]
         cb = b.get("cbba")
-        cells = [str(n), seeds, cell(o), f"${float(o['cov_ratio_iqm']):.2f}$",
+        ok = b.get("ours-kbs")
+        if ok is None and n == 12:
+            ok = o                       # at N=12 the default prior already gives keep probability 0.69
+        cells = [str(n), seeds, cell(o), cell(ok) if ok else "--",
+                 f"${float((ok or o)['cov_ratio_iqm']):.2f}$",
                  cell(b["mask+proj"]) if "mask+proj" in b else "--",
                  cell(h) if h else "--", cell(cb) if cb else "--",
                  viol_cell(lag, "train") if lag else "--"]
@@ -361,6 +365,14 @@ def r1_scale(m):
         nm = names[n]
         m[f"Scale{nm}Ours"] = f(o["r_cert_iqm"], 3)
         m[f"Scale{nm}Ratio"] = f(o["cov_ratio_iqm"], 2)
+        if ok is not None and ok is not o:
+            m[f"Scale{nm}OursKbs"] = f(ok["r_cert_iqm"], 3)
+            m[f"Scale{nm}OursKbsLo"] = f(ok["r_cert_lo"], 3)
+            m[f"Scale{nm}OursKbsHi"] = f(ok["r_cert_hi"], 3)
+            m[f"Scale{nm}OursKbsSwitch"] = f(100 * float(ok["switches_iqm"]), 1)
+            if ok["train_violations"] not in ("", None) and int(ok["train_violations"]) > 0:
+                zero_ok = False
+        m[f"Scale{nm}OursSwitch"] = f(100 * float(o["switches_iqm"]), 1)
         if cb:
             m[f"Scale{nm}Cbba"] = f(cb["r_cert_iqm"], 3)
             m[f"Scale{nm}CbbaLo"] = f(cb["r_cert_lo"], 3)
@@ -376,9 +388,9 @@ def r1_scale(m):
             beats.append((n, sep))
         if lag and lag["train_violations"] not in ("", None):
             m[f"Scale{nm}LagTrain"] = tex_int(lag["train_violations"])
-    head = ("\\begin{tabular}{@{}rrcccccc@{}}\n\\toprule\n$N$ & seeds & ours $r_{\\mathrm{cert}}$ & "
-            "cov.\\ ratio & masking + proj. & keep-or-nearest + proj. & CBBA & Lagrangian train viol.\\\\\n"
-            "\\midrule\n")
+    head = ("\\begin{tabular}{@{}rrccccccc@{}}\n\\toprule\n$N$ & seeds & ours, prior $+3$ & "
+            "ours, scaled prior & cov.\\ ratio & masking + proj. & keep-or-nearest + proj. & CBBA & "
+            "Lagrangian train viol.\\\\\n\\midrule\n")
     (MS / "tab_scale.tex").write_text(head + "\n".join(lines) + "\n\\bottomrule\n\\end{tabular}\n")
     m["ScaleMinRatio"] = f(min(ratios), 2)
     m["ScaleZeroTrain"] = "yes" if zero_ok else "no"
