@@ -8,9 +8,9 @@ runbook names: identified, duplicates, screened, full-text, included.
               appended to candidates.csv from other databases (IEEE Xplore,
               ACM DL, Scopus, Web of Science), recognised by an empty openalex
               column.
-  duplicates  identified minus the number of distinct records, keyed exactly as
-              search_corpus.py dedup keys them (DOI if present, else the
-              normalised title), so the count matches the candidates file.
+  duplicates  identified minus the unique records in candidates.csv, which
+              search_corpus.py dedup produces by merging on DOI or on title
+              (dedup_groups); this script does not re-derive the grouping.
   screened, full-text, included
               left empty until S2-S4 have produced decisions. They are filled
               from the screening and inclusion files when those exist; this
@@ -33,37 +33,35 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from search_corpus import norm_title  # noqa: E402  (same key as dedup)
 
 
-def key(doi: str, title: str) -> str:
-    return (doi or "").lower() or norm_title(title)
+def _lines(path: Path) -> int:
+    """Records in a raw file, read from the .gz copy when only that exists."""
+    if not path.exists() and path.with_suffix(".jsonl.gz").exists():
+        path = path.with_suffix(".jsonl.gz")
+    if not path.exists():
+        return 0
+    opener = gzip.open if path.suffix == ".gz" else open
+    return sum(1 for line in opener(path, "rt") if line.strip())
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--corpus", type=Path, default=HERE.parent / "corpus")
     a = ap.parse_args()
-    raw, cand = a.corpus / "search_raw.jsonl", a.corpus / "candidates.csv"
-    if not raw.exists() and raw.with_suffix(".jsonl.gz").exists():
-        raw = raw.with_suffix(".jsonl.gz")   # the committed, compressed copy
-    if not raw.exists() or not cand.exists():
-        print(f"[S1] not run yet: need {raw.name} and {cand.name} in {a.corpus}. "
+    cand = a.corpus / "candidates.csv"
+    n_search = _lines(a.corpus / "search_raw.jsonl")
+    if not n_search or not cand.exists():
+        print(f"[S1] not run yet: need search_raw.jsonl(.gz) and candidates.csv in {a.corpus}. "
               "Run search_corpus.py search and dedup first. Nothing written.")
         return 1
+    n_venue = _lines(a.corpus / "venue_raw.jsonl")
 
-    opener = gzip.open if raw.suffix == ".gz" else open
-    n_oa = sum(1 for line in opener(raw, "rt") if line.strip())
     csv.field_size_limit(10 ** 8)
     rows = list(csv.DictReader(cand.open()))
     external = [r for r in rows if not (r.get("openalex") or "").strip()]
-    oa_keys = set()
-    for line in opener(raw, "rt"):
-        if line.strip():
-            r = json.loads(line)
-            oa_keys.add(key(r.get("doi", ""), r.get("title", "")))
-    all_keys = oa_keys | {key(r.get("doi", ""), r.get("title", "")) for r in external}
-    identified = n_oa + len(external)
+    identified = n_search + n_venue + len(external)
+    unique = len(rows)          # dedup_groups() in search_corpus.py is authoritative
 
     truncated = 0
     log = a.corpus / "search_log.jsonl"
@@ -78,16 +76,17 @@ def main() -> int:
         w = csv.writer(fh, lineterminator="\n")
         w.writerow(["stage", "n"])
         w.writerow(["identified", identified])
-        w.writerow(["duplicates", identified - len(all_keys)])
+        w.writerow(["duplicates", identified - unique])
         w.writerow(["screened", ""])
         w.writerow(["full-text", ""])
         w.writerow(["included", ""])
-        w.writerow(["identified_openalex", n_oa])
+        w.writerow(["identified_openalex", n_search])
+        w.writerow(["identified_venues", n_venue])
         w.writerow(["identified_external", len(external)])
         w.writerow(["truncated_queries", truncated])
-    print(f"[S1] identified {identified} (OpenAlex {n_oa}, other databases {len(external)}); "
-          f"duplicates {identified - len(all_keys)}; {len(all_keys)} records to screen; "
-          f"{truncated} queries hit the page cap")
+    print(f"[S1] identified {identified} (search {n_search}, venue sweeps {n_venue}, "
+          f"other databases {len(external)}); duplicates {identified - unique}; "
+          f"{unique} records to screen; {truncated} queries truncated")
     print(f"[S1] wrote {out}")
     return 0
 
