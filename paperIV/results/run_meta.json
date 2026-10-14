@@ -1,1 +1,1 @@
-{"N_cal": 4000, "N_eval": 1000, "cem_gens": 25, "cem_K": 48, "cem_lambda": 12, "n_missions": 1839600, "wall_s": 1637.3}
+{"N_cal": 4000, "N_eval": 1000, "cem_gens": 25, "cem_K": 48, "cem_lambda": 12, "n_missions": 1839600, "wall_s": 1637.3, "r1": {"budget": {"gens": 200, "pop": 16, "k": 128, "trials": 400}, "n_eval": 5000, "held_seeds": 5, "seed_blocks": {"optimise": "6000+j (inner (6000+j)*1000+g)", "pooled_delta": "1700+id", "heldout_cem": "7000+h", "heldout_eval": "8000+10h+w"}, "quick": false}}
