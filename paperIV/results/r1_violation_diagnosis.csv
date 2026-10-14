@@ -1,0 +1,4 @@
+family,fpr,heldout_seed,wind,mission,theta_net_max_violated,maxdev_full_m,maxdev_attack_only_m,maxdev_benign_only_m,superposition_excess_m,saturated_full,saturated_benign_only,benign_only_fails_m20,provenance
+fault_mimic,0.01,7013,moderate,3742,0.25,36.452,2.268,34.517,-0.333,1,1,1,sim
+mixed,0.01,7027,moderate,3129,0.25,19.229,1.022,19.229,-1.022,1,1,0,sim
+ramp,0.1,7065,moderate,46,0.25,20.42,1.335,21.791,-2.706,1,1,1,sim

@@ -16,13 +16,18 @@ Revisions, fixed BEFORE this evaluation and judged on fresh seeds:
         (anchor gate + D1, T_a = 5 s), which holds for EVERY stealthy attack
         with probability >= 1 - eps over the benign noise; eps is added to the
         bound.
-  (iii) per-source Clopper-Pearson upper tails (alpha/3 each) aggregated by the
-        union (Makarov) bound over all splits of the available budget.
+  (iii) per-source Clopper-Pearson upper tails aggregated by the union
+        (Makarov) bound over all splits of the available budget. The splits are
+        chosen after seeing the data, so the tails must hold SIMULTANEOUSLY on
+        the whole split grid: each of the 3 x G_GRID tail bounds is taken at
+        level alpha / (3 G_GRID) (Bonferroni), and with probability >= 1 - alpha
+        every pbar_U below is a valid upper bound on the true union bound.
 Bound tested:  Pr[fail and undetected] <= pbar_U(m - delta_LP - net) + eps.
 
-Seed blocks (fresh): 9001 benign FPR check; 9000 + h held-out CEM attackers,
-9500 + h held-out tail-TPE attackers (both optimised AGAINST the revised stack);
-90000 + 10 h + w held-out evaluation missions.
+Seed blocks (fresh; the --quick smoke test used 9000/9500/90000 and is NOT
+reused): 9201 benign FPR check; 9200 + h held-out CEM attackers, 9700 + h
+held-out tail-TPE attackers (both optimised AGAINST the revised stack);
+92000 + 10 h + w (+5000 for TPE) held-out evaluation missions.
 Outputs: results/e4r_fpr.csv, e4r_heldout.csv, e4r_soundness.csv
 Usage:   python3 e4_revised.py [--quick] [--par 4]
 """
@@ -60,18 +65,27 @@ def cp_upper(k, n, a):
     return 1.0 if k >= n else float(beta.ppf(1 - a, k + 1, n - k))
 
 
-def pbar_union_cp(margs, s, alpha=0.05, step=0.05):
-    """min over s1 + s2 + s3 = s of sum_i CP-upper tail of source i at s_i."""
-    if s <= 0:
-        return 1.0
-    G = int(np.floor(s / step)) + 1
-    grid = np.arange(G) * step
-    a_i = alpha / len(margs)
+STEP, S_MAX = 0.05, 25.0
+G_GRID = int(round(S_MAX / STEP)) + 1          # split grid 0, 0.05, ..., 25 m
+
+
+def cp_tails(margs, alpha=0.05):
+    """Simultaneous CP upper tails Pr[X_i > grid_j] for every source i and grid point j."""
+    a = alpha / (len(margs) * G_GRID)
+    grid = np.arange(G_GRID) * STEP
     U = []
     for x in margs:
         xs = np.sort(x); n = len(xs)
         k = n - np.searchsorted(xs, grid, side="right")
-        U.append(np.array([cp_upper(int(kk), n, a_i) for kk in k]))
+        U.append(np.array([cp_upper(int(kk), n, a) for kk in k]))
+    return U
+
+
+def pbar_union_cp(U, s):
+    """min over grid splits s1 + s2 + s3 <= s of sum_i U_i(s_i)."""
+    if s <= 0:
+        return 1.0
+    G = min(int(np.floor(s / STEP + 1e-9)) + 1, G_GRID)
     Ug, Uf, Ue = U
     best = 1.0
     for i in range(G):
@@ -84,16 +98,16 @@ def pbar_union_cp(margs, s, alpha=0.05, step=0.05):
 def _held_cem(args):
     fam, fpr, h, gens, k = args
     cal = R1.load_cal()
-    J, u = RP.cem(fam, "ALL", fpr, cal, 9000 + h, gens=gens, K=k)
-    return "cem", fam, fpr, 9000 + h, J, u.tolist()
+    J, u = RP.cem(fam, "ALL", fpr, cal, 9200 + h, gens=gens, K=k)
+    return "cem", fam, fpr, 9200 + h, J, u.tolist()
 
 
 def _held_tail(args):
     fam, fpr, h, budget = args
     R1.OBJECTIVE = "tail"
     cal = R1.load_cal()
-    (J, u), _ = R1.run_tpe(fam, "ALL", fpr, cal, 3500 + h, budget["trials"], budget["k"])
-    return "tpe_tail", fam, fpr, 9500 + h, J, [float(x) for x in u]
+    (J, u), _ = R1.run_tpe(fam, "ALL", fpr, cal, 3700 + h, budget["trials"], budget["k"])
+    return "tpe_tail", fam, fpr, 9700 + h, J, [float(x) for x in u]
 
 
 def _eval(args):
@@ -102,7 +116,7 @@ def _eval(args):
     rows = []
     for wi, (wname, (wl, wh)) in enumerate((("light", (RP.W_LO, RP.W_LO)), ("moderate", (RP.W_HI, RP.W_HI)),
                                             ("envelope", (RP.W_LO, RP.W_HI)))):
-        o, oa, ob = RP.run_attack(fam, u, n, 90000 + 10 * (hseed % 1000) + wi + (5000 if opt != "cem" else 0),
+        o, oa, ob = RP.run_attack(fam, u, n, 92000 + 10 * (hseed % 1000) + wi + (5000 if opt != "cem" else 0),
                                   wl=wl, wh=wh)
         st = stealth_rev(o, cal, "ALL", fpr)
         n_u = int(st.sum())
@@ -146,7 +160,7 @@ def main():
     log = lambda s: print(f"[{time.time() - t0:7.0f}s] {s}", flush=True)
     cal = R1.load_cal()
     # benign false-alarm rate of the revised stack (envelope wind, fresh seed)
-    b = simulate(n_fpr, 9001, w20=RP.wind(n_fpr, 9001))
+    b = simulate(n_fpr, 9201, w20=RP.wind(n_fpr, 9201))
     rows = []
     for fpr in RP.OPS:
         quiet = _orig_mask(b, cal, "ALL", fpr)               # no alarm from the stack + anchor gate
@@ -162,11 +176,12 @@ def main():
     eps = float(r8[0]["eps"])
     z = np.load(RES / "e3_marginals.npz")
     margs = [z["gnss"], z["fault"], z["env"]]
+    U = cp_tails(margs)
     pb = {}
     for fpr in RP.OPS:
         for m in (5.0, 10.0, 20.0):
             for tn in (0.0, 0.25):
-                pb[(fpr, m, tn)] = pbar_union_cp(margs, m - dadv[fpr] - RP.net_tube(tn))
+                pb[(fpr, m, tn)] = pbar_union_cp(U, m - dadv[fpr] - RP.net_tube(tn))
     log(f"delta_LP {dadv}; pbar computed")
     with Pool(a.par) as pool:
         jobs_c = [(f, p, h, gens, k) for h, (f, p) in
@@ -194,8 +209,9 @@ def main():
     meta = RES / "run_meta.json"
     mm = json.loads(meta.read_text()) if meta.exists() else {}
     mm["e4_revised"] = {"n": n, "held_cem_seeds": seeds_cem, "tail_tpe": budget, "quick": a.quick,
-                        "seed_blocks": {"fpr": 9001, "held_cem": "9000+h", "held_tail": "9500+h",
-                                        "eval": "90000+10h+w (+5000 for tail)"}}
+                        "seed_blocks": {"fpr": 9201, "held_cem": "9200+h", "held_tail": "9700+h (TPE seed 3700+h)",
+                                        "eval": "92000+10h+w (+5000 for tail)"},
+                        "cp_band": f"simultaneous Bonferroni over 3 x {G_GRID} grid points, alpha 0.05"}
     meta.write_text(json.dumps(mm))
 
 
