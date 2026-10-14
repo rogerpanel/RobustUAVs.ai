@@ -20,19 +20,27 @@ so the bound remains an upper bound for every stack containing the kept ones:
       |nu^a_i| <= sqrt(S_i) (sqrt(theta_A) + sqrt(SA_benign)).
 D2-D4 alarm on runs of consecutive exceedances or on quadratic statistics,
 which are not convex in d; they are dropped (conservative).
-Benign terms are bounded by their (1 - eps/2) quantiles on the E1 calibration
+  D_sat (saturation alarm, revised stack): no alarm  =>  |u_raw| < U_MAX at every
+      step, so the attack-only raw command |u^a_k| <= U_MAX + max_k |u^b_k|.
+Benign terms are bounded by their (1 - eps/3) quantiles on the E1 calibration
 missions, so the bound holds with probability at least 1 - eps over the benign
 noise (eps = 0.01), jointly over every attack.
 
-Scope stated in the output: (i) unsaturated controller (|u| <= U_MAX ignored;
-checked against the pilot's saturated attack-only deviations), (ii) actuator
-loss of effectiveness held constant at its worst value in [0.7, 1], (iii) no
-GNSS outage (an outage removes the attacker's channel and cannot extend reach
-beyond holding d constant), (iv) maximised over every control step of the
-mission and over attack onset (d is free from t = 0).
+Scope: (i) unsaturated missions only -- the revised stack enforces this with
+D_sat; for the first two constraint sets saturation is simply ignored;
+(ii) actuator loss of effectiveness held constant at a value in {1, 0.9, 0.8,
+0.7} (worst reported), not switched mid-mission; (iii) no GNSS outage -- this is
+NOT proved: an outage changes the filter, and outage missions are covered only
+by the empirical check in e4_revised.py; (iv) maximised over every control step
+(coarse grid plus local refinement) and over attack onset (d is free from t = 0);
+(v) the benign margins are empirical quantiles of the calibration missions.
 
 Output: results/r8_analytic_bound.csv (provenance = physics_model)
-Usage:  python3 r8_analytic_bound.py [--quick]
+Search over the evaluation step k: a coarse grid every --stride control steps,
+then every step within +-stride of the coarse maximum. A HiGHS numerical
+failure is reported as "unsolved", never as a number.
+
+Usage:  python3 r8_analytic_bound.py [--quick] [--par 4] [--stride 10]
 """
 from __future__ import annotations
 
@@ -41,6 +49,8 @@ import csv
 import json
 
 import numpy as np
+from multiprocessing import Pool
+
 from scipy.optimize import linprog
 
 from constants import *  # noqa: F401,F403
@@ -63,9 +73,11 @@ def response_rows(anchor, loe):
     Q = np.diag([0.25 * dt ** 4 * KF_QV, dt * dt * KF_QV, dt * KF_QB])
     Pk = np.diag([1.0, 0.1, 0.02 ** 2])
     anchor_every = None if anchor is None else int(round(anchor / dt))
-    P_rows, Z_rows, A_rows, A_var = [], [], [], []
+    P_rows, Z_rows, A_rows, A_var, U_rows = [], [], [], [], []
     for k in range(N_STEPS):
-        u = (-KP * xh[0] - KD * xh[1]) * loe
+        u_raw = -KP * xh[0] - KD * xh[1]
+        U_rows.append(u_raw.copy())
+        u = u_raw * loe
         a = u - C_DRAG * v
         v = v + a * dt
         p = p + v * dt
@@ -86,11 +98,11 @@ def response_rows(anchor, loe):
             xh = xh + np.outer(K, nu)
             Pk = Pk - np.outer(K, Pk[0, :])
         P_rows.append(p.copy())
-    return np.array(P_rows), np.array(Z_rows), np.array(A_rows), np.array(A_var)
+    return np.array(P_rows), np.array(Z_rows), np.array(A_rows), np.array(A_var), np.array(U_rows)
 
 
-def bound(anchor, loe, c1, ca_scale, use_d1=True, stride=5):
-    P, Z, A, Av = response_rows(anchor, loe)
+def bound(anchor, loe, c1, ca_scale, use_d1=True, stride=5, cu=None):
+    P, Z, A, Av, Ur = response_rows(anchor, loe)
     n = Z.shape[1]
     G, h = [], []
     if use_d1 and c1 is not None:
@@ -99,17 +111,25 @@ def bound(anchor, loe, c1, ca_scale, use_d1=True, stride=5):
     if len(A):
         lim = np.sqrt(Av) * ca_scale
         G += [A, -A]; h += [lim, lim]
+    if cu is not None:                          # saturation alarm: |u_raw^a| <= U_MAX + benign margin
+        G += [Ur, -Ur]; h += [np.full(len(Ur), cu)] * 2
     G = np.vstack(G) if G else np.zeros((0, n)); h = np.concatenate(h) if h else np.zeros(0)
     if anchor is None and not use_d1:
         return float("inf"), -1
 
     def solve(k):
         r = linprog(-P[k], A_ub=G, b_ub=h, bounds=[(None, None)] * n, method="highs")
-        if r.status == 3:
+        if r.status == 3 or (r.status == 4 and anchor is None and not use_d1):
             return float("inf")
-        return -r.fun if r.status == 0 else float("nan")
+        if r.status != 0:                       # numerical failure: never silently dropped
+            raise RuntimeError(f"HiGHS status {r.status} at k={k} (anchor={anchor}, loe={loe}, D1={use_d1})")
+        return -r.fun
     ks = list(range(stride, N_STEPS, stride)) + [N_STEPS - 1]
-    vals = {k: solve(k) for k in ks}
+    vals = {}
+    for k in ks:
+        vals[k] = solve(k)
+        if not np.isfinite(vals[k]):            # unbounded at one step: the supremum is infinite
+            return float("inf"), k
     kbest = max(vals, key=lambda k: vals[k])
     for k in range(max(1, kbest - stride), min(N_STEPS, kbest + stride + 1)):   # refine
         if k not in vals:
@@ -118,9 +138,22 @@ def bound(anchor, loe, c1, ca_scale, use_d1=True, stride=5):
     return float(vals[kbest]), kbest
 
 
+def _job(args):
+    fpr, Ta, cset, loe, c1, ca_scale, stride, cu = args
+    use_d1 = cset >= 1
+    try:
+        b, kb = bound(Ta, loe, c1, ca_scale, use_d1, stride=stride, cu=cu if cset == 2 else None)
+    except RuntimeError as e:                   # report the cell as unsolved rather than guess
+        print(f"UNSOLVED {e}", flush=True)
+        b, kb = float("nan"), -1
+    return fpr, Ta, cset, loe, b, kb
+
+
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--quick", action="store_true")
     ap.add_argument("--eps", type=float, default=0.01)
+    ap.add_argument("--par", type=int, default=4)
+    ap.add_argument("--stride", type=int, default=10, help="coarse grid in control steps, then +-stride refine")
     a = ap.parse_args()
     js = json.loads((RES / "e1_calibration.json").read_text())
     stack = {float(k): v for k, v in js["stack"].items()}
@@ -128,8 +161,10 @@ def main():
     thA = js["anchor"]
     N = 1000 if a.quick else 4000
     ben = simulate(N, 1001, w20=RP.wind(N, 1001))            # the E1 calibration missions
-    q1 = float(np.quantile(ben["S1"], 1 - a.eps / 2))
-    qA = float(np.quantile(ben["SA"], 1 - a.eps / 2))
+    q1 = float(np.quantile(ben["S1"], 1 - a.eps / 3))       # three benign margins, eps/3 each
+    qA = float(np.quantile(ben["SA"], 1 - a.eps / 3))
+    qu = float(np.quantile(ben["umax"], 1 - a.eps / 3))
+    cu = U_MAX + qu
     ca_scale = np.sqrt(thA) + np.sqrt(qA)
     emp = {float(r["fpr"]): float(r["delta_adv_cal_m"]) for r in csv.DictReader((RES / "e4_delta_adv.csv").open())}
     r1 = RES / "r1_delta_adv.csv"
@@ -137,25 +172,34 @@ def main():
     rows = []
     loes = (1.0, 0.7) if a.quick else (1.0, 0.9, 0.8, 0.7)
     anchors = (5.0, None) if a.quick else (5.0, 10.0, 20.0, None)
+    stride = 20 if a.quick else a.stride
+    LAB = {0: "anchor gate only (every stack)", 1: "anchor gate + D1 (stacks D1, ALL)",
+           2: "anchor gate + D1 + D_sat (revised stack)"}
+    jobs = [(fpr, Ta, cs, loe, (stack[fpr]["D1"] + q1) if cs >= 1 else None, ca_scale, stride, cu)
+            for fpr in RP.OPS for Ta in anchors for cs in (0, 1, 2) for loe in loes]
+    with Pool(a.par) as pool:
+        res = pool.map(_job, jobs, chunksize=1)
     for fpr in RP.OPS:
         for Ta in anchors:
-            for use_d1, th1, label in ((False, None, "anchor gate only (every stack)"),
-                                       (True, stack[fpr]["D1"], "anchor gate + D1 (stacks D1, ALL)")):
-                c1 = (th1 + q1) if use_d1 else None
-                worst = (-1.0, None, None)
-                for loe in loes:
-                    b, kb = bound(Ta, loe, c1, ca_scale, use_d1, stride=20 if a.quick else 5)
-                    if b > worst[0]:
-                        worst = (b, loe, kb)
+            for cs in (0, 1, 2):
+                use_d1 = cs >= 1
+                cand = [(b, loe, kb) for f_, t_, d_, loe, b, kb in res if (f_, t_, d_) == (fpr, Ta, cs)]
+                if any(np.isnan(b) for b, _, _ in cand):
+                    worst = (float("nan"), None, None)
+                else:
+                    worst = max(cand, key=lambda x: x[0])
+                th1 = stack[fpr]["D1"] if use_d1 else None
                 e = emp.get(fpr, float("nan"))
-                rows.append({"fpr": fpr, "T_anchor_s": Ta if Ta else "none (C2' violated)", "constraints": label,
+                fin = np.isfinite(worst[0])
+                rows.append({"fpr": fpr, "T_anchor_s": Ta if Ta else "none (C2' violated)", "constraints": LAB[cs],
                              "theta_D1": round(th1, 4) if th1 else "", "S1_benign_q": round(q1, 4),
-                             "theta_anchor": round(thA, 4), "SA_benign_q": round(qA, 4), "eps": a.eps,
-                             "delta_lp_m": round(worst[0], 3) if np.isfinite(worst[0]) else "inf",
-                             "worst_loe": worst[1], "argmax_t_s": round(worst[2] * DT, 2) if worst[2] is not None and worst[2] >= 0 else "",
+                             "theta_anchor": round(thA, 4), "SA_benign_q": round(qA, 4),
+                             "umax_benign_q": round(qu, 4) if cs == 2 else "", "eps": a.eps,
+                             "delta_lp_m": round(worst[0], 3) if fin else ("unsolved" if np.isnan(worst[0]) else "inf"),
+                             "worst_loe": worst[1], "argmax_t_s": round(worst[2] * DT, 2) if fin else "",
+                             "stride_steps": stride,
                              "delta_emp_pilot_m": e, "delta_emp_r1_m": emp_r1.get(fpr, ""),
-                             "ratio_lp_to_emp": round(worst[0] / max(e, emp_r1.get(fpr, 0.0)), 3)
-                             if np.isfinite(worst[0]) else "inf",
+                             "ratio_lp_to_emp": round(worst[0] / max(e, emp_r1.get(fpr, 0.0)), 3) if fin else "",
                              "provenance": "physics_model"})
                 print({k: rows[-1][k] for k in ("fpr", "T_anchor_s", "constraints", "delta_lp_m", "worst_loe",
                                                 "ratio_lp_to_emp")}, flush=True)

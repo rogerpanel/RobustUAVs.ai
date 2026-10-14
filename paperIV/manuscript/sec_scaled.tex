@@ -1,0 +1,53 @@
+% ------------------------------------------------------------- Scaled test (R1) and revision
+\subsection{RQ5: the test at scale breaks the pilot instantiation}
+\label{sec:scaled}
+The pilot's zero violations rested on five CEM attackers per cell and a
+conservative bound. We therefore strengthened the attacker and the test before
+drawing conclusions (runbook R1). \nROneAttackers{} further attackers were
+optimised against the full stack: CMA-ES (population \nROneCmaPop,
+\nROneCmaGens{} generations, one restart)~\cite{hansen2016cma}, Bayesian
+optimisation with a tree-structured Parzen estimator (\nROneTrials{}
+trials), and the same TPE with a tail objective (the 90th percentile of the
+undetected deviation instead of its mean). Every candidate was scored on
+\nROneK{} missions with common random numbers, and a sixth \emph{mixed} family
+switches between any two disguises mid-mission. The scaled soundness test
+re-optimised \nROneHeldSeeds{} independent CEM attackers per (family, FPR) cell
+and evaluated each on \nROneEvalN{} fresh missions under three wind
+conditions: \nROneTests{} tests over \nROneUndet{} undetected-attack missions.
+
+\paragraph{The stealth budget grew by 25\%.}
+The pooled budget rose from \nDadvFive{} to \nROneDadvFive\,m at 1\% and 5\% FPR
+(\nROneDadvRatioFive$\times$) and to \nROneDadvTen\,m at 10\%, attained by the
+\nROneDadvArg. Only the tail objective found more than the pilot's CEM: the
+mean-objective CMA-ES and TPE peaked at \nROneSupCma{} and \nROneSupTpe\,m. An
+attacker that optimises its typical deviation is not the attacker that sets an
+empirical supremum. Even the larger budget was exceeded by a held-out attacker
+in \nROneSupExceed{} of \nROneCells{} cells, by the mixed family up to
+\nROneAdvMax\,m. An empirical supremum is a lower bound on $\dadv$, and more
+search keeps raising it.
+
+\paragraph{Five Holm-significant violations.}
+With $\dadv=\nROneDadvFive$\,m, the test flagged \nROneViol{} of \nROneTests{}
+points, all at $m=\nROneViolM$\,m, where the bound claimed $\pbar=0$. We
+re-simulated each flagged cell with its seeds
+(\code{r1\_violation\_diagnosis.csv}). The violations come from
+\nDiagMissions{} missions, and the attacker caused none of them. Each fails
+under its benign inputs alone (benign-only deviation \nDiagBenignMin--\nDiagBenignMax\,m),
+the attack adds at most \nDiagAttackMax\,m, and \nDiagAllSat{} three saturate the
+actuator with or without the attack. Two conditions of \cref{thm:floor} failed,
+and neither is about disguise.
+\begin{itemize}
+\item \emph{(C3) for the marginals.} The empirical marginal of each source has
+  finite support. Beyond the largest of \nCalMissions{} calibration samples,
+  $\pbar$ is exactly zero, and the bound claims certainty that no sample can
+  justify. One benign mission in 5{,}000 fails at $m=20$\,m.
+\item \emph{(C1), which nothing enforced.} Superposition held in at least
+  \nROneSuperposMin{} of missions. Every failure of it, and every
+  violating mission, involved saturation. The pilot had stated (C1) as an
+  assumption, but no component of the stack checked it at run time.
+\end{itemize}
+This is a negative result about the pilot instantiation, not about
+\cref{thm:floor}. The theorem's conclusion requires its conditions, and the
+scaled test found two that the instantiation did not secure. We report the
+violation as found. The revision below fixes the instantiation before looking at
+new data and does not tune the old run until it passes.
