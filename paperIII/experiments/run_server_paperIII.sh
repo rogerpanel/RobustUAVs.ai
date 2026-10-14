@@ -7,8 +7,11 @@
 #   r8   embedded latency: prints the one command to run on a Pi / Jetson
 # Results come back as one tarball (the server's deploy key is read-only).
 #
-# Usage, from a clone of the repository on the server:
-#   git fetch origin claude/whelan-uavcas-ingest-u00isn && git checkout claude/whelan-uavcas-ingest-u00isn
+# Usage, from a separate worktree on the server (do NOT switch the branch of a
+# checkout another job is using, e.g. ~/paper-work while Paper II runs):
+#   git -C ~/paper-work fetch -q origin claude/whelan-uavcas-ingest-u00isn
+#   git -C ~/paper-work worktree add -f -B p3 ~/paper3-work origin/claude/whelan-uavcas-ingest-u00isn
+#   cd ~/paper3-work
 #   bash paperIII/experiments/run_server_paperIII.sh e3 r3            # the quick part
 #   bash paperIII/experiments/run_server_paperIII.sh r4               # the SITL part
 #   scp deploy@<server>:~/paperIII-server-*.tgz .                     # bring results back
@@ -51,8 +54,8 @@ stage_e3() {
 }
 
 stage_r3() {
-  say "R3: staging the Kaggle corpus"
-  (cd "$REPO" && python3 data/fetch_kaggle.py --copy) > "$LOG/r3_fetch.txt" 2>&1 || {
+  say "R3: staging the Kaggle corpus (symlinks into the kagglehub cache; no second copy on disk)"
+  (cd "$REPO" && python3 data/fetch_kaggle.py) > "$LOG/r3_fetch.txt" 2>&1 || {
     say "R3: Kaggle fetch failed (see $LOG/r3_fetch.txt); R3 skipped, nothing fabricated"; return 0; }
   (cd "$HERE" && python3 r3_extract_traces.py) > "$LOG/r3_extract.txt" 2>&1
   if [ ! -f "$RES/r3_staleness_traces.csv" ]; then
