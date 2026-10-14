@@ -55,15 +55,21 @@ def load_cal():
             "stack": {float(k): v for k, v in js["stack"].items()}, "anchor": js["anchor"]}
 
 
+OBJECTIVE = "mean"
+
+
 def objective(U, family, stack, fpr, cal, seed, k=K):
-    """J for each row of U, all rows on the same k missions (CRN)."""
+    """J for each row of U, all rows on the same k missions (CRN). 'mean' is the
+    pilot's objective (mean stealthy post-onset deviation); 'tail' targets the
+    supremum that defines delta_adv (90th percentile over the k missions)."""
     U = np.atleast_2d(U)
     pop = len(U)
     P = decode(family, np.repeat(U, k, axis=0))
     w = np.tile(wind(k, seed), pop)
     o = simulate(pop * k, seed, w20=w, attack=family, aparams=P, crn=k)
     st = stealth_mask(o, cal, stack, fpr)
-    return (o["maxdev_after"] * st).reshape(pop, k).mean(1)
+    x = (o["maxdev_after"] * st).reshape(pop, k)
+    return np.quantile(x, 0.9, axis=1) if OBJECTIVE == "tail" else x.mean(1)
 
 
 def run_cma(family, stack, fpr, cal, job, gens, pop, k):
@@ -105,14 +111,17 @@ def run_tpe(family, stack, fpr, cal, job, trials, k):
 
 
 def _job(args):
-    opt, family, stack, fpr, job, budget = args
+    global OBJECTIVE
+    opt, family, stack, fpr, job, budget, objective_name = args
+    OBJECTIVE = objective_name
     cal = load_cal()
     t0 = time.time()
     if opt == "cma":
         (J, u), n = run_cma(family, stack, fpr, cal, job, budget["gens"], budget["pop"], budget["k"])
     else:
         (J, u), n = run_tpe(family, stack, fpr, cal, job, budget["trials"], budget["k"])
-    return {"optimiser": opt, "family": family, "origin_stack": stack, "origin_fpr": fpr,
+    return {"optimiser": opt + ("_tail" if objective_name == "tail" else ""), "family": family,
+            "origin_stack": stack, "origin_fpr": fpr,
             "job_seed": 6000 + job, "evaluations": n, "J_train": round(J, 4),
             "params": json.dumps([round(float(x), 5) for x in u]), "wall_s": round(time.time() - t0, 1)}
 
@@ -178,7 +187,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--quick", action="store_true")
     ap.add_argument("--par", type=int, default=4)
-    ap.add_argument("--stage", default="all", choices=("all", "optimise", "delta", "e4"))
+    ap.add_argument("--stage", default="all", choices=("all", "optimise", "optimise_tail", "delta", "e4"))
     a = ap.parse_args()
     budget = dict(gens=GENS, pop=POP, k=K, trials=TRIALS)
     n_eval, held_seeds, held_gens, held_k = 5000, 5, RP.CEM_GENS, RP.CEM_K
@@ -188,9 +197,18 @@ def main():
     t0 = time.time()
     log = lambda s: print(f"[{time.time() - t0:7.0f}s] {s}", flush=True)
     with Pool(a.par) as pool:
+        combos = [(f, s, 0.05) for s in STACKS for f in FAMS] + [(f, "ALL", p) for p in (0.01, 0.10) for f in FAMS]
+        if a.stage == "optimise_tail":
+            # tail objective, TPE only: seeds 6500 + j, ids after the mean-objective attackers
+            jobs = [("tpe", f, s, p, 500 + j, budget, "tail") for j, (f, s, p) in enumerate(combos)]
+            rows = []
+            for r in pool.imap_unordered(_job, jobs):
+                rows.append(r); log(f"{r['optimiser']} {r['family']} {r['origin_stack']} {r['origin_fpr']} J={r['J_train']}")
+            rows.sort(key=lambda r: (r["origin_stack"], r["origin_fpr"], r["family"]))
+            base = 35 + sum(1 for _ in csv.DictReader((RES / "r1_attackers.csv").open()))
+            write("r1_attackers_tail.csv", [{"attacker_id": base + i, **r} for i, r in enumerate(rows)])
         if a.stage in ("all", "optimise"):
-            combos = [(f, s, 0.05) for s in STACKS for f in FAMS] + [(f, "ALL", p) for p in (0.01, 0.10) for f in FAMS]
-            jobs = [(opt, f, s, p, j, budget) for j, (opt, (f, s, p)) in
+            jobs = [(opt, f, s, p, j, budget, "mean") for j, (opt, (f, s, p)) in
                     enumerate([(o, c) for o in ("tpe", "cma") for c in combos])]
             rows = []
             for r in pool.imap_unordered(_job, jobs):
@@ -202,6 +220,8 @@ def main():
         if a.stage in ("all", "delta"):
             pilot = list(csv.DictReader((RES / "e2_attackers.csv").open()))
             r1 = list(csv.DictReader((RES / "r1_attackers.csv").open()))
+            if (RES / "r1_attackers_tail.csv").exists():
+                r1 += list(csv.DictReader((RES / "r1_attackers_tail.csv").open()))
             allatt = [dict(p, optimiser="cem") for p in pilot] + r1
             res = dict(pool.map(_delta_job, [(x, OPS) for x in allatt]))
             pilot_d = {float(r["fpr"]): float(r["delta_adv_cal_m"]) for r in csv.DictReader((RES / "e4_delta_adv.csv").open())}
