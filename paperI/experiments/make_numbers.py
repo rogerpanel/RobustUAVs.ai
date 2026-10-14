@@ -87,6 +87,14 @@ def main():
         m["EfiveDLCmin"], m["EfiveDLCmax"] = f(min(dl), 2), f(max(dl), 2)
         m["EfiveLBmin"], m["EfiveLBmax"] = f(min(lb), 2), f(max(lb), 2)
         m["EfiveMFmin"], m["EfiveMFmax"] = f(min(mf), 2), f(max(mf), 2)
+    # E1 dead reckoning after a synthetic rejection, when present
+    if (OUT / "e1_inertial_gamma.csv").exists():
+        e1 = {r["tau_bin"]: r for r in rd("e1_inertial_gamma.csv")}
+        b, lng = e1["[0.4,1)"], e1["[10,20)"]
+        m["EoneOnsets"] = b["n_onsets"]
+        m["EoneSup"], m["EoneCIlo"], m["EoneCIhi"] = f(b["gamma_sup"], 2), f(b["sup_ci_lo"], 2), f(b["sup_ci_hi"], 2)
+        m["EoneP"], m["EoneMed"] = f(b["gamma_p95"], 2), f(b["gamma_med"], 2)
+        m["EoneSupLong"], m["EoneMedLong"] = f(lng["gamma_sup"], 2), f(lng["gamma_med"], 2)
 
     da = rd("dauth.csv")
     for sk, nm in (("mav2", "Mac"), ("ed25519", "Ed"), ("fndsa512", "Fal"), ("mldsa44", "ML"),

@@ -1,4 +1,4 @@
 constant,used,source,value_used,fallback_value,measured_file,detail
-"gamma_a (headline, conservative)",proxy,jamming flight (proxy),0.9331 / 1.2309,0.9331 / 1.2309,,E1 result absent (raw Whelan logs not staged); proxy used
+"gamma_a (headline, conservative)",proxy,jamming flight (proxy),0.9331 / 1.2309,0.9331 / 1.2309,e1_inertial_gamma.csv,"dead reckoning measured 1.1398 (0.6769, 1.1398): the proxy lies inside its interval, so the difference is not resolved; proxy kept"
 CAN_BITRATE,assumption,DroneCAN default,1000000.0,1000000.0,e5_hcrl_bus.csv,lower bound 2113 kbit/s exceeds 1 Mbit/s: timestamps unreliable
 U0 frame model,measured,e5_hcrl_bus.csv DLC mix,measured DLC mix,8 B per frame,e5_hcrl_bus.csv,

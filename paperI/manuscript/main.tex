@@ -634,8 +634,9 @@ a \emph{measured proxy}.
 The proxy is exact for an adversary-free estimator that keeps fusing honest GNSS. It is
 \emph{not} a measurement of dead reckoning after rejection. Pure dead reckoning may be
 slower, since the noisy fixes are gone, or faster, since nothing bounds the inertial drift.
-Experiments E1 and E3 measure it directly (Section~\ref{sec:runbook}), and every conclusion
-that depends on $\ga$ is stated as conditional on the proxy.
+Experiment E1 measures it directly on the benign flight (Section~\ref{sec:rq1}), and E3 will
+add rejection under spoofing and in cruise (Section~\ref{sec:runbook}); every conclusion that
+depends on $\ga$ is stated as conditional on the proxy.
 
 We report three scenarios. The \emph{headline} scenario uses the EKF signal on both sides,
 giving $\gu/\ga=\nRatioHead$. The \emph{conservative} scenario uses the largest jamming
@@ -730,7 +731,7 @@ the processor load, with a small charge for slot budgeting.
 Stage~(5) of Fig.~\ref{fig:framework} consists of eight experiments, specified in the
 artifact's runbook:
 \begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
-\item[E1] inertial $\gamma$ from synthetic GNSS outages on the benign flight's IMU log;
+\item[E1] inertial $\gamma$ from synthetic GNSS outages on the benign flight's IMU log (done, Section~\ref{sec:rq1});
 \item[E2] visual--inertial odometry (VIO) $\gamma$ on EuRoC~\cite{burri2016euroc};
 \item[E3] a software-in-the-loop (SITL) PX4 sweep of spoofer walk rate, with an
   authenticated-rejection arm, in hover and in cruise at 5--15\,m/s;
@@ -765,7 +766,19 @@ $v_0=\nDRvzero$\,m/s and $b=\nDRb$\,m/s$^2$, with a root-mean-square error (RMSE
 $\nDRrmse$\,m over $\nDRn$ samples. The growth is linear, which is consistent with a
 velocity bias in a degraded but still-fused estimator. Because this flight never lost its
 fix, the fit characterises the proxy and does not show what pure dead reckoning would do.
-That is the question E1 answers.
+
+E1 answers that question. At \nEoneOnsets\ onsets on the benign flight we withhold GNSS,
+dead-reckon on the logged IMU with the EKF's accelerometer bias, and compare against the
+GNSS-aided EKF. In the first second the supremum is \nEoneSup\,m/s, with a bootstrap interval
+of \nEoneCIlo--\nEoneCIhi\,m/s that contains the proxy ($\nGammaA$\,m/s), so we keep the proxy:
+at the supremum, which is what the certificate uses, measured dead reckoning does not refute
+it. The typical rate is far lower, with a median of \nEoneMed\,m/s and a 95th percentile of
+\nEoneP\,m/s, so in the typical case the proxy overstates $\ga$ and understates what
+authentication buys. Two caveats bound this. The reference is the GNSS-aided EKF, whose
+position steps when a fix is fused, so part of the short-horizon supremum may be reference
+noise rather than drift. And the attitude used for dead reckoning stays GNSS-aided; after a
+real rejection, attitude error would also grow, so true drift would be somewhat faster,
+mostly at long horizons (supremum \nEoneSupLong\,m/s at 10--20\,s here).
 
 \subsection{RQ2: What Authentication Costs}
 \label{sec:rq2}
@@ -1101,7 +1114,10 @@ signing cost on a 480\,MHz MCU exceeds a 20\,\% processor share at 10\,Hz.
 \emph{The authenticated rate is a proxy.} The jamming flight kept a degraded
 three-dimensional fix throughout, so $\ga$ measures an estimator fed honest but noisy GNSS,
 not one that has rejected GNSS. Every conclusion that compares $\gu$ and $\ga$ inherits this
-proxy, and E1 and E3 replace it with direct measurements of dead reckoning after rejection.
+proxy. E1 measured dead reckoning after a synthetic rejection: its first-second supremum
+(\nEoneSup\,m/s, interval \nEoneCIlo--\nEoneCIhi) contains the proxy, so the proxy stands, but
+E1 rests on one hover flight and on GNSS-aided attitude. E3 adds rejection under spoofing,
+and cruise, in simulation.
 
 \emph{The sensing side is one airframe in hover.} Both rates come from one spoofing and
 one jamming flight of a PX4 Holybro S500~\cite{whelan2020uav}, inherited from the parent.

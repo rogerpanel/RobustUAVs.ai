@@ -1,0 +1,6 @@
+tau_bin,n,gamma_sup,gamma_p95,gamma_med,provenance,n_onsets,sup_ci_lo,sup_ci_hi,bias_source,norm,segment_rule
+"[0.4,1)",24000,1.1398,0.4856,0.1144,measured,200,0.6769,1.1398,estimator_sensor_bias,horizontal,vehicle_land_detected.landed == 0
+"[1,2)",40000,0.7923,0.4845,0.1219,measured,200,0.7118,0.7923,estimator_sensor_bias,horizontal,vehicle_land_detected.landed == 0
+"[2,5)",120000,0.7314,0.4711,0.1366,measured,200,0.6823,0.7314,estimator_sensor_bias,horizontal,vehicle_land_detected.landed == 0
+"[5,10)",200000,0.7056,0.4463,0.1636,measured,200,0.5835,0.7056,estimator_sensor_bias,horizontal,vehicle_land_detected.landed == 0
+"[10,20)",399992,0.707,0.411,0.1999,measured,200,0.534,0.707,estimator_sensor_bias,horizontal,vehicle_land_detected.landed == 0
