@@ -505,6 +505,7 @@ def cmd_budget(a):
         print("no OPENALEX_API_KEY (or ~/.config/openalex_key): about $0.01/day, ~10 searches")
     try:
         js = get("https://api.openalex.org/rate-limit", retries=2)
+        js.pop("api_key", None)               # never echo any part of the key into a log
         print(json.dumps(js, indent=1)[:1500])
     except Exception as e:  # noqa: BLE001
         print("rate-limit endpoint unavailable:", e)

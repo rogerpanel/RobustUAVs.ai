@@ -1,10 +1,10 @@
 stage,n
-identified,16376
-duplicates,4996
+identified,22243
+duplicates,6894
 screened,
 full-text,
 included,
-identified_openalex,16376
-identified_venues,0
+identified_openalex,22091
+identified_venues,152
 identified_external,0
-truncated_queries,3
+truncated_queries,0
