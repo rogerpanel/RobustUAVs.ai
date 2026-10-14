@@ -249,7 +249,8 @@ def cmd_search(a):
         with open(a.out, "w") as fh:
             for r in keep:
                 fh.write(json.dumps(r) + "\n")
-        print(f"resume: {len(done)} of {len(queries)} queries complete ({len(keep)} records kept)")
+        n_done = len(done & set(queries))       # the log also holds earlier revisions' queries
+        print(f"resume: {n_done} of {len(queries)} queries complete ({len(keep)} records kept)")
     incomplete = []
     with open(a.out, "a" if a.resume else "w") as fh:
         for q in queries:
