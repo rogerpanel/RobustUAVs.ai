@@ -32,6 +32,15 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 C = HERE.parent / "corpus"
 MAILTO = os.environ.get("OPENALEX_MAILTO", "")
+# OpenAlex meters usage per day (search ~$0.001, list/filter ~$0.0001 per call;
+# a free key from openalex.org/settings/api gives $1/day, no key about $0.01).
+# Read from the environment or ~/.config/openalex_key -- never from the repository.
+API_KEY = os.environ.get("OPENALEX_API_KEY", "")
+if not API_KEY:
+    _kf = Path.home() / ".config" / "openalex_key"
+    if _kf.exists():
+        API_KEY = _kf.read_text().strip()
+BUDGET_EXIT = 75             # exit code: daily budget exhausted, resume after 00:00 UTC
 YEARS = (2017, 2026)
 
 # Block A (guarantee) x Block B (learned) x Block C (autonomy).  Each OpenAlex
@@ -51,11 +60,24 @@ def log(event: dict):
         fh.write(json.dumps(event) + "\n")
 
 
+class BudgetExhausted(Exception):
+    """OpenAlex refused with 429 because the daily usage budget is spent."""
+
+
+def _redact(url: str) -> str:
+    return re.sub(r"api_key=[^&]+", "api_key=***", url)
+
+
 def get(url: str, headers=None, retries=10):
-    """GET with retries. Backoff doubles up to 120 s (about 8 min in total) and
-    honours Retry-After on 429/503, so a rate-limit burst or a short OpenAlex
-    outage does not end an hours-long uncapped run."""
+    """GET with retries. Backoff doubles up to 120 s and honours Retry-After.
+    A 429 whose X-RateLimit-Remaining-USD is spent, or a 429 that persists through
+    every retry, means the daily budget is gone: raise BudgetExhausted so the run
+    stops cleanly and resumes after the midnight-UTC reset, instead of burning
+    retries (or shrinking pages, which would only spend more calls)."""
     import urllib.error
+    if API_KEY and "api_key=" not in url:
+        url += ("&" if "?" in url else "?") + "api_key=" + urllib.parse.quote(API_KEY)
+    n429 = 0
     for i in range(retries):
         try:
             req = urllib.request.Request(url, headers=headers or {"User-Agent": "paperII-sok/1.0"})
@@ -64,13 +86,27 @@ def get(url: str, headers=None, retries=10):
         except Exception as e:                       # rate limit or transient
             wait = min(120, 2 ** i)
             status = getattr(e, "code", None)
-            if isinstance(e, urllib.error.HTTPError) and status in (429, 503):
-                ra = e.headers.get("Retry-After") if e.headers else None
-                if ra and ra.isdigit():
+            hdr = getattr(e, "headers", None) or {}
+            if status == 429:
+                n429 += 1
+                left = hdr.get("X-RateLimit-Remaining-USD")
+                try:
+                    spent = left is not None and float(left) <= 0
+                except ValueError:
+                    spent = False
+                if spent:
+                    log({"error": str(e), "status": 429, "budget_exhausted": True,
+                         "reset": hdr.get("X-RateLimit-Reset"), "url": _redact(url)})
+                    raise BudgetExhausted(hdr.get("X-RateLimit-Reset") or "00:00 UTC")
+            if status in (429, 503):
+                ra = hdr.get("Retry-After")
+                if ra and str(ra).isdigit():
                     wait = max(wait, min(600, int(ra)))
-            log({"error": str(e), "status": status, "url": url, "try": i, "wait_s": wait})
+            log({"error": str(e), "status": status, "url": _redact(url), "try": i, "wait_s": wait})
             time.sleep(wait)
-    raise RuntimeError(f"failed: {url}")
+    if n429 == retries:
+        raise BudgetExhausted("persistent 429")
+    raise RuntimeError(f"failed: {_redact(url)}")
 
 
 class Incomplete(Exception):
@@ -206,6 +242,11 @@ def cmd_search(a):
                 fh.flush()
                 log({"query_done": q, "retrieved": n, "complete": True})
                 print(f"done  {n:>6}  {q[:60]}", flush=True)
+            except BudgetExhausted as e:
+                log({"query_done": q, "retrieved": n, "complete": False, "error": f"budget: {e}"})
+                print(f"OpenAlex daily budget exhausted during: {q[:60]} -- resume after 00:00 UTC "
+                      f"(`search --resume`)", flush=True)
+                sys.exit(BUDGET_EXIT)
             except Incomplete as e:
                 log({"query_done": q, "retrieved": n, "complete": False, "error": str(e)})
                 print(f"INCOMPLETE after {n} records: {q[:60]}", flush=True)
@@ -365,6 +406,9 @@ def cmd_venues(a):
         for short, phrase in VENUES:
             try:
                 srcs = resolve_sources(phrase)
+            except BudgetExhausted:
+                print("OpenAlex daily budget exhausted -- resume after 00:00 UTC (`venues --resume`)", flush=True)
+                sys.exit(BUDGET_EXIT)
             except RuntimeError:
                 incomplete.append(short); print(f"INCOMPLETE {short} (source lookup)"); continue
             for x in srcs:
@@ -383,6 +427,10 @@ def cmd_venues(a):
                         if hit:
                             rec = slim(w); rec["found_by"] = f"venue:{short}"; rec["query"] = f"venue:{short}|{hit}"
                             buf.append(rec); kept += 1
+            except BudgetExhausted:
+                print(f"OpenAlex daily budget exhausted during {short} -- resume after 00:00 UTC "
+                      f"(`venues --resume`)", flush=True)
+                sys.exit(BUDGET_EXIT)
             except RuntimeError as e:
                 log({"source": "openalex_venue", "venue": short, "complete": False, "error": str(e)})
                 print(f"INCOMPLETE {short} after {toc} papers", flush=True)
@@ -451,9 +499,21 @@ def openalex_search_cites(wid: str, max_pages=0):
             break
 
 
+def cmd_budget(a):
+    """Print today's OpenAlex usage budget for the configured key."""
+    if not API_KEY:
+        print("no OPENALEX_API_KEY (or ~/.config/openalex_key): about $0.01/day, ~10 searches")
+    try:
+        js = get("https://api.openalex.org/rate-limit", retries=2)
+        print(json.dumps(js, indent=1)[:1500])
+    except Exception as e:  # noqa: BLE001
+        print("rate-limit endpoint unavailable:", e)
+
+
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
     sp = p.add_subparsers(dest="cmd", required=True)
+    sp.add_parser("budget")
     s = sp.add_parser("search"); s.add_argument("--out", default=str(C / "search_raw.jsonl")); s.add_argument("--dry-run", action="store_true")
     s.add_argument("--resume", action="store_true", help="keep completed queries, re-page the rest")
     s.add_argument("--max-pages", type=int, default=0, help="0 = no cap (default); 10 reproduces the capped pilot run")
@@ -464,4 +524,5 @@ if __name__ == "__main__":
     v.add_argument("--resume", action="store_true", help="keep completed venues, sweep the rest")
     b = sp.add_parser("snowball"); b.add_argument("--inp", required=True); b.add_argument("--out", required=True)
     a = p.parse_args()
-    {"search": cmd_search, "dedup": cmd_dedup, "venues": cmd_venues, "snowball": cmd_snowball}[a.cmd](a)
+    {"search": cmd_search, "dedup": cmd_dedup, "venues": cmd_venues, "snowball": cmd_snowball,
+     "budget": cmd_budget}[a.cmd](a)
