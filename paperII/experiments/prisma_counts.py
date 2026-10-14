@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import gzip
 import json
 import sys
 from pathlib import Path
@@ -44,16 +45,20 @@ def main() -> int:
     ap.add_argument("--corpus", type=Path, default=HERE.parent / "corpus")
     a = ap.parse_args()
     raw, cand = a.corpus / "search_raw.jsonl", a.corpus / "candidates.csv"
+    if not raw.exists() and raw.with_suffix(".jsonl.gz").exists():
+        raw = raw.with_suffix(".jsonl.gz")   # the committed, compressed copy
     if not raw.exists() or not cand.exists():
         print(f"[S1] not run yet: need {raw.name} and {cand.name} in {a.corpus}. "
               "Run search_corpus.py search and dedup first. Nothing written.")
         return 1
 
-    n_oa = sum(1 for line in raw.open() if line.strip())
+    opener = gzip.open if raw.suffix == ".gz" else open
+    n_oa = sum(1 for line in opener(raw, "rt") if line.strip())
+    csv.field_size_limit(10 ** 8)
     rows = list(csv.DictReader(cand.open()))
     external = [r for r in rows if not (r.get("openalex") or "").strip()]
     oa_keys = set()
-    for line in raw.open():
+    for line in opener(raw, "rt"):
         if line.strip():
             r = json.loads(line)
             oa_keys.add(key(r.get("doi", ""), r.get("title", "")))
