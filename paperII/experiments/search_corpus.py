@@ -412,7 +412,8 @@ def cmd_venues(a):
     done = set()
     if a.resume:
         done = {e["venue"] for e in _read_jsonl(C / "search_log.jsonl")
-                if e.get("source") == "openalex_venue" and e.get("complete", True)}
+                if e.get("source") == "openalex_venue" and e.get("complete", True)
+                and e.get("revision", 0) == a.revision}
         old = _read_jsonl(a.out)
         keep = [r for r in old if r.get("found_by", "").removeprefix("venue:") in done]
         with open(a.out, "w") as fh:
@@ -449,7 +450,8 @@ def cmd_venues(a):
                       f"(`venues --resume`)", flush=True)
                 sys.exit(BUDGET_EXIT)
             except RuntimeError as e:
-                log({"source": "openalex_venue", "venue": short, "complete": False, "error": str(e)})
+                log({"source": "openalex_venue", "venue": short, "complete": False, "error": str(e),
+                     "revision": a.revision})
                 print(f"INCOMPLETE {short} after {toc} papers", flush=True)
                 incomplete.append(short)
                 continue
@@ -457,7 +459,7 @@ def cmd_venues(a):
                 fh.write(json.dumps(rec) + "\n")
             fh.flush()
             log({"source": "openalex_venue", "venue": short, "n_sources": len(srcs), "toc": toc, "kept": kept,
-                 "complete": True})
+                 "complete": True, "revision": a.revision})
             print(f"{short:<11} {len(srcs):>4} sources  {toc:>7} papers 2017-2026  {kept:>5} block-A titles",
                   flush=True)
             n_toc += toc; n_kept += kept
