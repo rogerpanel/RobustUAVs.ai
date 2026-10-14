@@ -1,0 +1,106 @@
+% =====================================================================
+% Fig. 1 -- Methodological framework of Paper IV (TikZ, full width).
+% Requires: tikz libraries positioning, arrows.meta, fit, backgrounds,
+%           shapes.geometric; colours cBlue..cGray defined in main.tex.
+% Layout: explicit grid (x, y in cm), three tracks:
+%   top    = data and stochastic track (Phases I, II, IV)
+%   middle = adversarial track (Phase III)
+%   bottom = measurement and soundness (Phase V)
+% =====================================================================
+\begin{figure*}[t]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  font=\sffamily\scriptsize,
+  >={Stealth[length=1.8mm]},
+  box/.style={draw=#1!70!black, fill=#1!8, rounded corners=2pt, align=center,
+              minimum height=9mm, text width=#1W, inner sep=2pt, line width=0.5pt},
+  b/.style 2 args={draw=#1!70!black, fill=#1!9, rounded corners=2pt, align=center,
+              minimum height=8mm, text width=#2, inner sep=2pt, line width=0.5pt},
+  d/.style={draw=#1!70!black, fill=#1!20, align=center, minimum height=6.5mm,
+              text width=21mm, inner sep=1.5pt, line width=0.5pt},
+  dia/.style={draw=cRed!70!black, fill=cRed!8, diamond, aspect=2.2, align=center,
+              inner sep=0pt, text width=15mm, line width=0.5pt},
+  phase/.style={draw=black!40, dashed, rounded corners=4pt, inner sep=5pt},
+  ptitle/.style={font=\sffamily\bfseries\scriptsize, fill=white, inner sep=1.5pt, anchor=west},
+  arr/.style={->, line width=0.6pt, draw=black!70},
+  fb/.style={->, line width=0.6pt, draw=cRed!80!black, dashed},
+  lab/.style={font=\sffamily\tiny, fill=white, inner sep=0.8pt, align=center},
+]
+% ======================= top track ======================================
+% Phase I
+\node[b={cBlue}{27mm}] (net) at (0, 0.2)  {\textbf{Network corpora}\\HCRL UAVCAN $\cdot$ UAVIDS-2025\\UAV-CAS $\cdot$ DATAMUt replay};
+\node[b={cBlue}{27mm}] (nav) at (0,-1.25) {\textbf{Navigation corpora}\\Whelan (real flights)\\UAV-EW-Bench};
+\node[b={cBlue}{27mm}] (flt) at (0,-2.7)  {\textbf{Fault / environment}\\RflyMAD $\cdot$ ALFA\\Dryden (MIL-F-8785C)};
+\node[b={cBlue}{30mm}] (schema) at (3.75,-0.45) {\textbf{Lossless adapters}\\two-layer schema v0.2\\Event $\cdot$ AttackWindow\\\textbf{CrossLayerPairing}};
+\node[b={cBlue}{30mm}] (prov) at (3.75,-2.3) {\textbf{Provenance flag}\\{\tiny\texttt{measured\_same\_platform}\\\texttt{physics\_model}\\\texttt{synthetic\_alignment}}};
+\draw[arr] (net.east) -- ++(1.5mm,0) |- (schema.west);
+\draw[arr] (nav.east) -- ++(1.5mm,0) |- (schema.west);
+\draw[arr] (flt.east) -- ++(1.5mm,0) |- (schema.west);
+\draw[arr] (schema) -- (prov);
+% Phase II
+\node[d=cGreen]  (dgnss)  at (7.35, 0.35) {$\dgnss$: stochastic};
+\node[d=cGreen]  (dfault) at (7.35,-0.6)  {$\dfault$: stochastic};
+\node[d=cOrange] (denv)   at (7.35,-1.55) {$\denv$: bounded-unknown\\(p-box envelope)};
+\node[d=cRed]    (dnet)   at (7.35,-2.6)  {$\dnet(\theta)$: worst case\\(Dirac)};
+\node[b={cGreen}{22mm}] (marg) at (10.15,-0.6) {\textbf{Marginals} $F_i$\\calibration split\\$[\underline F_{\mathrm{env}},\overline F_{\mathrm{env}}]$};
+\draw[arr] (dgnss.east) -- ++(1.5mm,0) |- (marg.west);
+\draw[arr] (dfault.east) -- (marg.west);
+\draw[arr] (denv.east) -- ++(1.5mm,0) |- (marg.west);
+\draw[arr] (prov.east) -- ++(2.5mm,0) |- node[lab, pos=0.3, left] {source\\tags} (dfault.west);
+% Phase IV
+\node[b={cPurple}{36mm}] (gron)  at (14.0, 0.55) {\textbf{Gr\"onwall tube} (parent)\\$\rho=\delta\,e^{LT}\le m$\\under (C1)--(C3)};
+\node[b={cPurple}{36mm}] (agg)   at (14.0,-0.9) {\textbf{Dependence-sharp aggregation}\\$\overline p(s)=\sup_{C}\Pr_C[\sum_i X_i>s]$\\union, RA (indep., comon.\ for reference)};
+\node[b={cPurple}{36mm}] (floor) at (14.0,-2.55) {\textbf{Certified bound}\\$\Pr[\mathrm{fail}\wedge U]\le\overline p(s_m)$\\$s_m=m-e^{LT}\dnet-\delta_{\mathrm{adv}}$};
+\draw[arr] (marg.east) -- (agg.west);
+\draw[arr] (gron) -- (agg);
+\draw[arr] (agg) -- (floor);
+\draw[arr] (dnet.east) -- node[lab, pos=0.45, above] {Dirac shift} (floor.west |- dnet.east);
+% ======================= middle track (Phase III) ======================
+\node[b={cRed}{31mm}] (threat) at (1.4,-5.0) {\textbf{Adversarial equivalence}\\$\mathrm{TV}(P_a,P_d)\le\varepsilon$ on $O_{0:T}$\\attacker picks disguise $\mathcal D^\star$};
+\node[b={cRed}{31mm}] (dets)   at (5.3,-5.0) {\textbf{Detector stack} at $\theta$\\D1 signature $\cdot$ D2 $\chi^2$ gate\\D3 SAVIOR-style CUSUM\\D4 IMU--GNSS invariant\\+ anchor gate (C2$'$)};
+\node[b={cRed}{28mm}] (opt)    at (9.0,-5.0) {\textbf{Disguise optimiser}\\$\max\delta$ s.t.\ $S_D<\theta_D\ \forall D$\\5 families $\cdot$ CEM;\\ cross-evaluated};
+\node[b={cRed}{26mm}] (dadv)   at (12.6,-5.0) {\textbf{Stealth budget}\\$\delta_{\mathrm{adv}}(\theta)$: pooled\\supremum, monotone in $\theta$};
+\draw[arr] (threat) -- (dets);
+\draw[arr] (dets) -- (opt);
+\draw[arr] (opt) -- (dadv);
+\draw[arr] (dadv.north) -- node[lab, pos=0.5, left] {adversarial shift} (dadv.north |- floor.south);
+% ======================= bottom track (Phase V) =========================
+\node[b={cGray}{34mm}] (eval)  at (9.6,-7.4) {\textbf{Evaluation} (held-out seeds)\\RQ1 evasion $\cdot$ RQ2 floor under\\evasion $\cdot$ RQ3 gap $\cdot$ RQ4 soundness};
+\node[dia] (sound) at (13.4,-7.4) {Holm-adjusted\\violation?};
+\node[b={cGray}{27mm}] (audit) at (5.3,-7.4) {\textbf{Condition audit}\\C1 $\cdot$ C2$'$ $\cdot$ C3 $\cdot$ p-box\\$\delta_{\mathrm{adv}}$ calibration};
+\node[b={cGray}{22mm}] (rel)   at (16.6,-7.4) {\textbf{Release}\\artifact + pairings};
+\draw[arr] (floor.east) -- ++(2.5mm,0) |- ([yshift=6mm]eval.north) -- (eval.north);
+\draw[arr] (eval) -- (sound);
+\draw[arr] (sound.south) -- ++(0,-4mm) -| node[lab, pos=0.25, above] {yes} (audit.south);
+\draw[arr] (sound.east) -- node[lab, above] {no} (rel.west);
+\draw[fb] (audit.north) -- node[lab, left, pos=0.35] {revise the model,\\never the constants} (dets.south);
+% ======================= phase frames ===================================
+\begin{scope}[on background layer]
+\node[phase, fit=(net)(flt)(schema)(prov)] (P1) {};
+\node[phase, fit=(dgnss)(dnet)(marg)] (P2) {};
+\node[phase, fit=(gron)(floor)] (P4) {};
+\node[phase, fit=(threat)(dets)(opt)(dadv)] (P3) {};
+\node[phase, fit=(eval)(sound)(audit)(rel)] (P5) {};
+\end{scope}
+\node[ptitle] at ([yshift=0.5mm]P1.north west) {I.\ Cross-layer benchmark (\S\ref{sec:benchmark})};
+\node[ptitle] at ([yshift=0.5mm]P2.north west) {II.\ Sources and semantics (\S\ref{sec:budget})};
+\node[ptitle] at ([yshift=0.5mm]P4.north west) {IV.\ Source-agnostic floor (\S\ref{sec:budget})};
+\node[ptitle] at ([yshift=0.5mm]P3.north west) {III.\ Threat model and evasion (\S\ref{sec:threat}, \S\ref{sec:evasion})};
+\node[ptitle] at ([yshift=0.5mm]P5.north west) {V.\ Measurement and soundness (\S\ref{sec:eval})};
+\end{tikzpicture}}
+\caption{Methodological framework. Phase~I unifies network, navigation, fault and
+environment corpora under one schema whose unit of record is the cross-layer
+pairing, each carrying a mandatory provenance flag. Phase~II assigns every
+perturbation source its probabilistic semantics and estimates its marginal on a
+calibration split. Phase~III formalises adversarial equivalence and searches,
+for each detector stack and operating point~$\theta$, for the disguise that
+maximises undetected deviation; the pooled supremum is the stealth budget
+$\delta_{\mathrm{adv}}(\theta)$. Phase~IV aggregates the stochastic and
+bounded-unknown terms with dependence-sharp bounds and shifts the result by the
+deterministic terms, yielding a certified floor that does not depend on which
+source produced the perturbation. Phase~V tests that floor on held-out attackers
+and rollouts; a Holm-significant violation triggers an audit of the stated
+conditions rather than a re-tuning of constants (dashed feedback).}
+\label{fig:framework}
+\end{figure*}

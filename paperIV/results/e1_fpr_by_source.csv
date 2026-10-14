@@ -1,0 +1,13 @@
+source,detector,fpr
+wind_only,D1,0.0
+wind_only,D2,0.0
+wind_only,D3,0.0
+wind_only,D4,0.0
+gnss_only,D1,0.0475
+gnss_only,D2,0.053
+gnss_only,D3,0.0125
+gnss_only,D4,0.053
+fault_only,D1,0.0
+fault_only,D2,0.0
+fault_only,D3,0.0
+fault_only,D4,0.0

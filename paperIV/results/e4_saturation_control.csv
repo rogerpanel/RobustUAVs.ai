@@ -1,0 +1,6 @@
+family,superposition_frac_saturated,superposition_frac_unsaturated,max_excess_unsaturated_m
+step,0.999,1.0,8.881784197001252e-16
+ramp,0.999,1.0,1.3322676295501878e-15
+fault_mimic,0.984,1.0,7.771561172376096e-15
+gnss_mimic,0.998,1.0,2.6645352591003757e-15
+weather_mimic,1.0,1.0,1.3322676295501878e-15

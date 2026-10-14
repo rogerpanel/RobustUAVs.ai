@@ -1,0 +1,4 @@
+fpr,delta_adv_cal_m,argmax_family,n_attackers_pooled
+0.01,4.371,fault_mimic,35
+0.05,4.371,fault_mimic,35
+0.1,4.371,fault_mimic,35

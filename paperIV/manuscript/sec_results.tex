@@ -1,0 +1,270 @@
+% ------------------------------------------------------------- Results
+\input{fig_results}
+The pilot comprises \nMissionsTotal{} simulated missions and ran in
+\nWallMin{} minutes on two CPU cores. Every number below is generated from the
+released result files.
+
+\subsection{Calibration: who sets the thresholds?}
+At the 5\% operating point, the per-detector FPR stays between \nFprModMin{}
+and \nFprModMax{} under moderate wind, and the anchor gate alone contributes
+\nFprAnchor. One finding shapes everything that follows: \emph{wind and faults
+alone trip no detector} (FPR \nFprWindFaultMax{} for every detector when either
+is the only benign source), whereas GNSS error alone produces up to
+\nFprGnssOnlyMax{}. The thresholds are therefore set by the tails of the GNSS
+error, and the tolerance they grant is the space an attacker exploits. Severe
+turbulence, outside the declared envelope, raises the FPR of the SAVIOR-style
+detector D3, which models no wind, to \nFprSevereDThree{}; the others stay at or
+below \nFprSevereOtherMax{}.
+
+\Cref{fig:roc} shows the operating curves against naive offsets. At 5\% FPR the
+$\chi^2$ gate detects a 5\,m step in \nTprStepDTwo{} of missions and the
+invariant D4 in \nTprStepDFour{}, but the signature monitor and D3 detect it in
+only \nTprStepDOne{} and \nTprStepDThree{}, which is close to chance. A 0.5\,m/s
+ramp is caught by D2 (\nTprRampDTwo{}) and essentially by no other detector
+($\le$\nTprRampDThree{}).
+
+\figROC
+
+\subsection{RQ1: evasion is universal; the damage is not}
+\paragraph{Cross-evaluation.}
+We evaluated each of the \nPooledAttackers{} optimised attackers against every
+stack. In \nOwnOptFail{} of \nCells{} (stack, family) cells, the CEM run that
+targeted that stack found no parameterisation evading in at least 5\% of
+missions, although an attacker optimised for a different stack does. Reading detector strength off the
+optimiser's own target would therefore have been wrong, so
+\cref{tab:disguise} reports the best attacker of each family, wherever it was
+optimised.
+
+\paragraph{With the anchor gate, the anchor sets the budget.}
+With condition C2$'$ in force and its gate armed (\cref{tab:disguise}, top),
+every one of the five families evades every detector, and the full stack, in
+at least \nCrossEvMin{} of missions; for reference, benign missions raise no
+alarm in about \nBenignNoAlarm{} under the full stack. Each family has
+parameterisations that offset GNSS by about 1--2\,m, and every detector must
+tolerate offsets of that size to keep its FPR at 5\%. Among attackers that evade
+in at least 5\% of missions, the largest undetected contribution lies between
+\nDevSingleMin{} and \nDevSingleMax\,m \emph{whichever detector is deployed}.
+Rarer evasions go further: up to \nGatedUnfMax\,m against \nGatedUnfStacks{}
+(\nGatedUnfFam). The pooled supremum against the full stack is \nAnchorMaxFive\,m
+(\cref{fig:anchor}), and the stealth budget is $\dadv=\nDadvFive$\,m. Within that
+range the trusted fix, not the detector design, decides how far an undetected
+attacker gets. The median KS distance between a detector's statistic under an
+evading attack and under benign conditions is \nKsStealthyMed{}, against
+\nKsCaughtMed{} for detected ones. This is the empirical face of
+\cref{lem:lecam}: an attack that evades is, to the detector, almost
+indistinguishable from the benign population.
+
+\paragraph{Without the gate, each detector admits a different disguise.}
+The bottom of \cref{tab:disguise} repeats the cross-evaluation with the anchor
+still fused into the filter but its alarm removed, isolating what the detectors
+themselves discriminate. Evasion stays at or above \nNgEvMin{}, but the
+undetected contribution now depends sharply on the pairing of disguise and
+detector.
+\begin{itemize}
+\item The fault mimic drives \nNgDOneFaultMimic{}\,m past D1, D3 and D4. Its slow,
+  bias-shaped curvature has no jumps for D1, matches the bias drift that D4
+  tolerates by design, and looks like an unmodelled disturbance to D3.
+\item The GNSS mimic and the weather mimic exploit the two detectors that do
+  not cross-check the IMU, D1 and D3 (up to \nNgDOneGnssMimic{} and
+  \nNgDOneWeatherMimic\,m). Among frequently evading attackers, D4 caps them at
+  \nNgDFourWeatherMimic\,m or below, because their acceleration content
+  contradicts the accelerometer; a rare GNSS-mimic evasion still reached
+  \nNgDFourGnssUnf\,m.
+\item Rare step offsets that happen to land in a benign noise trough evade D1,
+  D3 and D4 in about 3\% of missions and reach \nNgStepUnfMax\,m.
+\item Only the $\chi^2$ gate D2, whose filter models the accelerometer bias,
+  caps every family, at \nNgCapDTwo\,m (fault mimic), including rare evasions
+  (\nNgDTwoUnfMax\,m); the full stack, which contains D2, is capped at
+  \nNgCapALL\,m.
+\end{itemize}
+This is the pattern adversarial equivalence predicts. The disguise that wins
+is the one the detector models as benign: bias drift for an invariant that
+tolerates bias, and drift or wind-shaped motion for detectors without an
+inertial cross-check.
+
+\begin{table}[t]
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\caption{Disguise matrix at 5\% FPR, cross-evaluated over all
+\nPooledAttackers{} optimised attackers on \nEvalMissions{} held-out missions
+per attacker. \emph{Top:} anchor gate armed; best evasion rate (\%) / largest
+undetected attack contribution (m). \emph{Bottom:} anchor fused but its gate
+removed; largest undetected contribution (m). Contributions are taken over
+attackers that evade in at least 5\% (and at least 10) of missions; rarer
+evasions are reported in the text. Benign missions raise no alarm in about
+\nBenignNoAlarm{}. Darker cells are evaded more often (top) or admit more
+deviation (bottom).}
+\label{tab:disguise}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+& \textbf{step} & \textbf{ramp} & \textbf{fault} & \textbf{GNSS} & \textbf{weather} \\
+& & & \textbf{mimic} & \textbf{mimic} & \textbf{mimic} \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{anchor gate armed (C2$'$)}}\\
+\tabinput{tab_disguise_body.tex}
+\midrule
+\multicolumn{6}{@{}l}{\emph{anchor fused, gate removed}}\\
+\tabinput{tab_disguise_nogate_body.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{The terminal window.}
+\Cref{fig:anchor} sweeps the re-anchoring interval against the full stack,
+pooling all attackers on common missions. With every interval closed, the
+largest undetected contribution grows from \nAnchorMaxFive\,m at $T_a=5$\,s to
+\nAnchorMaxTwenty\,m at 20\,s (\nAnchorMultTwenty$\times$). The attacker must
+return near zero before each trusted fix, so the budget is set by how far it can
+travel and come back within one interval. When the segment before mission end
+is left unchecked, no return leg is needed, and the contribution reaches
+\nOpenMaxTwenty\,m, \nOpenRatioTwenty$\times$ the closed value. The terminal
+window is where an equivalence attacker spends its budget.
+
+\figAnchor
+
+\subsection{RQ3: where the looseness lives}
+\Cref{fig:gap} decomposes the tail of the benign budget; the ratios below are
+at $s=\nGapS$\,m, and their ordering changes in the far tail, where few joint
+exceedances remain.
+\begin{enumerate}
+\item For two sources, the union and RA bounds agree to within
+  \nUnionRaDtwoMaxErr{}, as Makarov's theorem requires. For three, the RA
+  tightens the union bound by \nRaGain{} (\nGapUnion{} to \nGapRa{}). Under
+  unknown dependence, the union bound is nearly the right quantity.
+\item The worst coupling exceeds independent sums at the same marginals by
+  \nDepRatio$\times$ (\emph{dependence gap}). Evaluating the wind at the upper
+  envelope rather than at the conditions actually flown costs a further
+  \nEnvRatio$\times$ (\emph{envelope gap}).
+\item Independent sums at matched wind agree with the sum of per-source
+  suprema measured on the same missions to within \nNatRatio$\times$,
+  consistent with the benign sources being independent, as they are by
+  construction in the simulator.
+\item The sum of per-source suprema exceeds the supremum of the joint deviation
+  by \nTimeRatio$\times$ (\emph{temporal gap}; \nGapJointK{} joint exceedances in
+  \nJointMissions{} missions). Sources seldom peak at the same instant, but a
+  budget built from per-source suprema must assume they do.
+\end{enumerate}
+The dependence gap can be closed only by \emph{knowing} the coupling, which an
+attacker who controls jamming denies the defender. The envelope gap shrinks
+with better wind knowledge. The temporal gap, the largest of the three at
+this $s$, can be
+closed without either, by bounding the supremum of the summed trajectory
+directly, for example with a reachable-set computation per certification
+window. Condition (C5), which licenses adding per-source suprema, held in
+\nSubaddSources{} of joint missions.
+
+\figGap
+
+\subsection{RQ2 and RQ4: the bound under evasion}
+Pooling all attackers on calibration missions gives a stealth budget of
+$\dadv=\nDadvFive$\,m, attained by the \nDadvArgFive. The budget is identical at
+1\%, 5\% and 10\% FPR. It is a single pooled maximum over common missions, so this
+says that no attacker in the pool gains from looser thresholds in that range,
+not that thresholds never matter.
+
+\Cref{tab:soundness} reports, for each operating point, the bounds on
+$\Pr[\text{fail}\wedge U]$ and the largest observed frequency of that event over
+five held-out attackers and three wind conditions. Across \nSoundPoints{}
+distinct operating points and \nUndetectedTotal{} undetected-attack missions,
+\textbf{no point shows a Holm-significant violation} (\nSoundViol{} of
+\nSoundPoints). Wherever the bound is informative ($\pbar<1$), the observed
+frequency of undetected failure was zero. The bound is therefore conservative,
+and the zero violations by themselves carry little evidence: the negative
+controls below are what show that the test can fail.
+
+Three further checks belong with the result.
+\begin{itemize}
+\item \emph{The empirical budget is not a theorem.} The held-out attacker
+  exceeded $\dadv$ in \nSupExceed{} of \nSupChecks{} (family $\times$ FPR $\times$
+  wind) cells, reaching \nHeldoutAdvMax\,m with the \nHeldoutAdvFam{} at
+  \nHeldoutAdvFpr{} FPR (\nHeldoutAdvRatio$\times$). The bound absorbed it, but
+  this is why runbook items R1 (stronger optimisers) and R8 (an analytic
+  stealthy-reachable-set bound) are load-bearing. In \nZeroUndet{} cells, the
+  held-out optimiser found no evading attack at all.
+\item \emph{\Cref{lem:subadd} holds where (C1) holds.} Attack/benign
+  superposition held in at least \nSuperposMin{} of missions at every point. A
+  control run with the actuator limit removed (5\% FPR, envelope wind, all five
+  families) restored it in \nSatUnsatMin{} of missions (largest excess
+  \nSatUnsatExcess\,m). We attribute the larger excesses at other points, up to
+  \nSuperposExcessMax\,m, to the same mechanism, saturation, which (C1)
+  excludes; they were not re-run.
+\item \emph{Independence is not certified.} The independence bound
+  $p_\perp$ was not violated either, because the simulated sources are
+  independent. It would claim a 0.9 floor at $m=\nMNinetyIndep$\,m, against
+  \nMNinety\,m for the certified bound (\cref{fig:floor}); nothing guarantees
+  that independence when an attacker controls jamming.
+\end{itemize}
+
+\begin{table}[t]
+\centering\footnotesize
+\setlength{\tabcolsep}{2.2pt}
+\caption{Soundness of \cref{thm:floor} on held-out attackers. Bounds on
+$\Pr[\text{fail}\wedge U]$: union $p_U$, RA $\pbar$ (certified) and independence
+$p_\perp$ (not certified). Obs.\ = largest observed frequency of
+$\{\text{fail}\wedge U\}$ over five families and three wind conditions;
+MCR$_U$ = smallest completion rate among undetected missions; viol.\ =
+Holm-significant violations of $\pbar$ and of $p_\perp$. $\dadv=\nDadvFive$\,m.
+Rows with $\theta_{\mathrm{net}}=0.25$\,s shift the margin analytically by
+$e^{LT_c}\dnet=\nNetTubeQuarter$\,m; the network term itself is not simulated.
+$p_U$ is a proven upper bound; the RA column is a numerical approximation of
+the sharp $\pbar$, reported as $\min(\mathrm{RA},p_U)$.}
+\label{tab:soundness}
+\begin{tabular}{@{}cccccccccc@{}}
+\toprule
+\textbf{FPR} & $\theta_{\mathrm{net}}$ & $m$ & $p_U$ & $\pbar$ & $p_\perp$ & \textbf{obs.} & \textbf{MCR$_U$} & \multicolumn{2}{c}{\textbf{viol.}} \\
+\midrule
+\tabinput{tab_soundness_body.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\figFloor
+
+\paragraph{Negative controls: does the test have power?}
+A soundness test that cannot fail is uninformative, so we broke two conditions
+deliberately and re-optimised the attacker under each (\cref{tab:negative}).
+\begin{itemize}
+\item \emph{(C2$'$) broken, no re-anchoring.} Undetected deviation reaches
+  \nNegCtwoMaxDev\,m, and the test flags \nNegCtwoViol{} of \nNegCtwoRows{}
+  points (\nNegCtwoViolFam{}), every one where the bound is informative.
+\item \emph{(C4) broken, severe turbulence (45--60\,kt).} The fault mimic
+  reaches \nNegCfourMaxDev\,m undetected, and the test flags the bound at
+  $m=20$\,m, where $\pbar=0$ because the empirical marginals have finite
+  support. At $m=10$\,m the observed frequency stays below $\pbar$, so this
+  break is detected only where the bound is tightest. The weather mimic was
+  detected in every mission, so there was nothing to test.
+\end{itemize}
+The test thus detects unsoundness when a stated condition fails and enough
+undetected missions remain to measure it, which is the behaviour the audit
+loop of \cref{fig:framework} relies on.
+
+\begin{table}[t]
+\centering\footnotesize
+\setlength{\tabcolsep}{2.4pt}
+\caption{Negative controls at 5\% FPR. Undet.\ = undetected missions out of
+\nEvalMissions; fails = failures among them; viol.\ = Holm-significant violation
+of $\pbar$; dev.\ = largest undetected deviation (m).}
+\label{tab:negative}
+\begin{tabular}{@{}llcccccc@{}}
+\toprule
+\textbf{Control} & \textbf{disguise} & $m$ & \textbf{undet.} & \textbf{fails} & $\pbar$ & \textbf{viol.} & \textbf{dev.} \\
+\midrule
+\tabinput{tab_negative_body.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Summary}
+\textbf{RQ1:} every disguise family evades every detector; what differs is the
+damage. With the anchor gate armed, frequent evasions stay within
+\nGatedCap\,m and the pooled supremum is \nAnchorMaxFive\,m, whatever the
+detector. Without the gate, the damage depends on whether the detector models
+the disguise, from \nNgCapDTwo\,m (D2) to \nNgMax\,m (D1, D3, D4 against the
+fault mimic).
+\textbf{RQ2:} the source-agnostic bound held for every undetected-attack
+population we tested. \textbf{RQ3:} under unknown dependence the union bound is
+nearly sharp; the slack lies in the dependence, envelope and, above all,
+temporal gaps (the last largest at $s=\nGapS$\,m). \textbf{RQ4:} we found no Holm-significant violation at
+\nSoundPoints{} held-out points, but the bound is conservative, and the
+evidence for the test's power comes from the negative controls, which it
+detected.
