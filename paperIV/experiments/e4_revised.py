@@ -44,11 +44,12 @@ import time
 from multiprocessing import Pool
 
 import numpy as np
-from scipy.stats import beta, binom
+from scipy.stats import binom
 
 import run_pilot as RP
 import r1_attackers as R1
 from sim import simulate
+from depbounds import cp_tails, pbar_union_cp, G_GRID
 
 RES = RP.RES
 FAMS = R1.FAMS
@@ -63,40 +64,6 @@ def stealth_rev(o, cal, stack, fpr):
 # every optimiser and evaluation below sees the revised stack
 RP.stealth_mask = stealth_rev
 R1.stealth_mask = stealth_rev
-
-
-def cp_upper(k, n, a):
-    return 1.0 if k >= n else float(beta.ppf(1 - a, k + 1, n - k))
-
-
-STEP, S_MAX = 0.05, 25.0
-G_GRID = int(round(S_MAX / STEP)) + 1          # split grid 0, 0.05, ..., 25 m
-
-
-def cp_tails(margs, alpha=0.05):
-    """Simultaneous CP upper tails Pr[X_i > grid_j] for every source i and grid point j."""
-    a = alpha / (len(margs) * G_GRID)
-    grid = np.arange(G_GRID) * STEP
-    U = []
-    for x in margs:
-        xs = np.sort(x); n = len(xs)
-        k = n - np.searchsorted(xs, grid, side="right")
-        U.append(np.array([cp_upper(int(kk), n, a) for kk in k]))
-    return U
-
-
-def pbar_union_cp(U, s):
-    """min over grid splits s1 + s2 + s3 <= s of sum_i U_i(s_i)."""
-    if s <= 0:
-        return 1.0
-    G = min(int(np.floor(s / STEP + 1e-9)) + 1, G_GRID)
-    Ug, Uf, Ue = U
-    best = 1.0
-    for i in range(G):
-        j = np.arange(G - i)
-        tot = Ug[i] + Uf[j] + Ue[G - 1 - i - j]
-        best = min(best, float(tot.min()))
-    return min(1.0, best)
 
 
 def _held_cem(args):

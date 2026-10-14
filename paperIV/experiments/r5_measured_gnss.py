@@ -16,7 +16,10 @@ Construction (stated, conservative):
   noise P_JAMNOISE for JAMNOISE_S); the measured-envelope GNSS deviation is
   max(simulated GNSS deviation, e_meas(D)) -- never smaller than the pilot's.
   A stress variant sets every episode to the measured 45 s duration.
-The certified floor 1 - pbar_RA(s) is recomputed on the E4 grid with the
+floor_* = 1 - pbar_RA(s) on the empirical marginals (a point estimate: it is 1
+wherever s exceeds the sum of sample maxima); floor_cp_* = 1 - the union bound on
+simultaneous Clopper-Pearson upper tails (depbounds.cp_tails, alpha = 0.05),
+which is a valid bound with probability >= 0.95. Both are recomputed on the E4 grid with the
 pilot's env and fault marginals and the pooled delta_adv (R1 if present).
 
 Outputs: results/r5_gnss_envelope.csv, results/r5_floor_sensitivity.csv
@@ -76,23 +79,27 @@ def main():
     else:
         dadv = {float(r["fpr"]): float(r["delta_adv_cal_m"]) for r in csv.DictReader((RES / "e4_delta_adv.csv").open())}
         src = "pilot"
+    CP = {k: db.cp_tails([g, fa, env]) for k, g in (("sim", gn), ("measured_env", gn_meas),
+                                                    ("measured_45s", gn_long))}
     rows = []
     for fpr in RP.OPS:
         for m in (5.0, 10.0, 20.0):
             for tn in (0.0, 0.25):
                 s_av = m - dadv[fpr] - RP.net_tube(tn)
-                vals = {}
+                vals, cpv = {}, {}
                 for name, g in (("sim", gn), ("measured_env", gn_meas), ("measured_45s", gn_long)):
                     vals[name] = 1.0 if s_av <= 0 else db.ra_bound([g, fa, env], s_av, N=1000)
+                    cpv[name] = db.pbar_union_cp(CP[name], s_av)
                 rows.append({"fpr": fpr, "m": m, "theta_net": tn, "delta_adv": round(dadv[fpr], 3),
                              "delta_adv_source": src, "s_available_m": round(s_av, 3),
                              **{f"floor_{k}": round(1 - v, 5) for k, v in vals.items()},
+                             **{f"floor_cp_{k}": round(1 - v, 5) for k, v in cpv.items()},
                              "gnss_p99_sim": round(float(np.quantile(gn, .99)), 3),
                              "gnss_p99_measured_env": round(float(np.quantile(gn_meas, .99)), 3),
                              "gnss_p99_measured_45s": round(float(np.quantile(gn_long, .99)), 3),
                              "provenance": "measured+sim"})
                 print({k: rows[-1][k] for k in ("fpr", "m", "theta_net", "floor_sim", "floor_measured_env",
-                                                "floor_measured_45s")}, flush=True)
+                                                "floor_measured_45s", "floor_cp_sim", "floor_cp_measured_env")}, flush=True)
     with (RES / "r5_floor_sensitivity.csv").open("w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
 

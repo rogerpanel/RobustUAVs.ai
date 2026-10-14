@@ -16,6 +16,7 @@ single coupling with any other variable, so it contributes no dependence gap.
 from __future__ import annotations
 
 import numpy as np
+from scipy.stats import beta
 
 
 def _q(sample, u):
@@ -113,3 +114,38 @@ def comon_tail(samples, s, n=4001):
     u = (np.arange(n) + 0.5) / n
     tot = sum(_q(x, u) for x in samples)
     return float(np.mean(tot > s))
+
+
+# ---------------------------------------------------------------- finite-sample band
+def cp_upper(k, n, a):
+    return 1.0 if k >= n else float(beta.ppf(1 - a, k + 1, n - k))
+
+
+STEP, S_MAX = 0.05, 25.0
+G_GRID = int(round(S_MAX / STEP)) + 1          # split grid 0, 0.05, ..., 25 m
+
+
+def cp_tails(margs, alpha=0.05):
+    """Simultaneous CP upper tails Pr[X_i > grid_j] for every source i and grid point j."""
+    a = alpha / (len(margs) * G_GRID)
+    grid = np.arange(G_GRID) * STEP
+    U = []
+    for x in margs:
+        xs = np.sort(x); n = len(xs)
+        k = n - np.searchsorted(xs, grid, side="right")
+        U.append(np.array([cp_upper(int(kk), n, a) for kk in k]))
+    return U
+
+
+def pbar_union_cp(U, s):
+    """min over grid splits s1 + s2 + s3 <= s of sum_i U_i(s_i)."""
+    if s <= 0:
+        return 1.0
+    G = min(int(np.floor(s / STEP + 1e-9)) + 1, G_GRID)
+    Ug, Uf, Ue = U
+    best = 1.0
+    for i in range(G):
+        j = np.arange(G - i)
+        tot = Ug[i] + Uf[j] + Ue[G - 1 - i - j]
+        best = min(best, float(tot.min()))
+    return min(1.0, best)
