@@ -1,31 +1,52 @@
 #!/usr/bin/env bash
 # Paper II S1 on a machine with open internet: uncapped OpenAlex search, the 18
 # venue sweeps, DOI-or-title deduplication, PRISMA counts and search sensitivity.
-# Resilient: each stage resumes where it stopped (completed queries and venues
-# are kept) and is retried up to 6 times; a stage that still cannot finish stops
-# the pipeline rather than letting PRISMA count an incomplete retrieval.
 #
-#   export OPENALEX_MAILTO=you@example.org      # any address; OpenAlex sends no mail
+# OpenAlex meters usage per day: a free API key (openalex.org/settings/api)
+# buys about 1,000 search pages and 10,000 list pages a day; without one, about
+# 10 searches. Put the key in ~/.config/openalex_key (chmod 600) or export
+# OPENALEX_API_KEY -- never in the repository.
+#
+# Resilient: every stage resumes where it stopped. When the daily budget runs
+# out (exit 75) the script sleeps until 00:05 UTC and resumes, for up to 7 days.
+# Other failures are retried 6 times; a stage that still cannot finish stops the
+# pipeline before PRISMA can count an incomplete retrieval.
+#
 #   setsid nohup bash run_s1_full.sh > ~/log-s1-full.txt 2>&1 < /dev/null &
 set -uo pipefail
 cd "$(dirname "$0")"
+if [ -z "${OPENALEX_API_KEY:-}" ] && [ ! -s "$HOME/.config/openalex_key" ] && [ -z "${ALLOW_NO_KEY:-}" ]; then
+  echo "No OpenAlex API key (OPENALEX_API_KEY or ~/.config/openalex_key). Without one OpenAlex allows"
+  echo "about 10 searches a day. Get a free key at https://openalex.org/settings/api, or set ALLOW_NO_KEY=1."
+  exit 2
+fi
+until_reset() {   # seconds until 00:05 UTC
+  local now tgt; now=$(date -u +%s); tgt=$(date -u -d "tomorrow 00:05" +%s); echo $((tgt - now))
+}
 stage() {   # stage <name> <command...>
   local name=$1; shift
-  for attempt in 1 2 3 4 5 6; do
-    echo "== $name, attempt $attempt ($(date -u +%H:%M:%SZ))"
+  local fails=0 days=0
+  while :; do
+    echo "== $name ($(date -u +%Y-%m-%dT%H:%M:%SZ))"
     "$@"; rc=$?
     [ "$rc" = 0 ] && return 0
-    echo "== $name stopped (exit $rc); waiting 5 min before resuming"
     case " $* " in *" --resume "*) ;; *) set -- "$@" --resume ;; esac
+    if [ "$rc" = 75 ]; then
+      days=$((days + 1)); [ "$days" -gt 7 ] && { echo "== $name: budget exhausted 7 days running; stopping"; exit 3; }
+      s=$(until_reset); echo "== $name: OpenAlex daily budget spent; sleeping ${s}s until 00:05 UTC"
+      sleep "$s"; continue
+    fi
+    fails=$((fails + 1))
+    [ "$fails" -ge 6 ] && { echo "== $name could not complete after 6 attempts; stopping. Rerun to resume."; exit 3; }
+    echo "== $name stopped (exit $rc); waiting 5 min before resuming"
     sleep 300
   done
-  echo "== $name could not complete after 6 attempts; stopping. Rerun this script to resume."
-  exit 3
 }
 RESUME=${RESUME:-}
+python3 search_corpus.py budget || true
 stage search python3 -u search_corpus.py search $RESUME
 stage venues python3 -u search_corpus.py venues $RESUME
 python3 search_corpus.py dedup --inp ../corpus/search_raw.jsonl ../corpus/venue_raw.jsonl || exit 4
 python3 prisma_counts.py || exit 5
 python3 search_sensitivity.py || exit 6
-echo "== S1 complete ($(date -u +%H:%M:%SZ))"
+echo "== S1 complete ($(date -u +%Y-%m-%dT%H:%M:%SZ))"
