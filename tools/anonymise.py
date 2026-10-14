@@ -307,9 +307,11 @@ def main() -> int:
     ap.add_argument("--init-git", action="store_true",
                     help="initialise a fresh single-commit history in --out")
     ap.add_argument("--zip", action="store_true", help="also write <out>.zip")
+    ap.add_argument("--src", type=Path, default=None,
+                    help="tree to anonymise (default: this repository); e.g. a git-archive export")
     args = ap.parse_args()
 
-    src = Path(__file__).resolve().parent.parent
+    src = (args.src or Path(__file__).resolve().parent.parent).resolve()
     dst = args.out.resolve()
     if dst.exists():
         if not args.force:
