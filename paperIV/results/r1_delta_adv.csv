@@ -1,4 +1,4 @@
-fpr,delta_pilot_m,delta_pooled_m,ratio,accept_1p25,argmax_optimiser,argmax_family,argmax_attacker_id,sup_cem,sup_cma,sup_tpe,n_attackers,provenance
-0.01,4.371,4.371,1.0,1,cem,fault_mimic,22,4.371,3.853,3.088,119,sim
-0.05,4.371,4.371,1.0,1,cem,fault_mimic,22,4.371,3.853,3.088,119,sim
-0.1,4.371,4.371,1.0,1,cem,fault_mimic,22,4.371,3.853,3.088,119,sim
+fpr,delta_pilot_m,delta_pooled_m,ratio,accept_1p25,argmax_optimiser,argmax_family,argmax_attacker_id,sup_cem,sup_cma,sup_tpe,sup_tpe_tail,n_attackers,provenance
+0.01,4.371,5.463,1.25,1,tpe_tail,gnss_mimic,126,4.371,3.853,3.088,5.463,161,sim
+0.05,4.371,5.463,1.25,1,tpe_tail,gnss_mimic,126,4.371,3.853,3.088,5.463,161,sim
+0.1,4.371,5.038,1.153,1,tpe_tail,weather_mimic,148,4.371,3.853,3.088,5.038,161,sim
