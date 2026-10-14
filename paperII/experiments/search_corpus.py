@@ -51,16 +51,30 @@ def log(event: dict):
         fh.write(json.dumps(event) + "\n")
 
 
-def get(url: str, headers=None, retries=4):
+def get(url: str, headers=None, retries=10):
+    """GET with retries. Backoff doubles up to 120 s (about 8 min in total) and
+    honours Retry-After on 429/503, so a rate-limit burst or a short OpenAlex
+    outage does not end an hours-long uncapped run."""
+    import urllib.error
     for i in range(retries):
         try:
             req = urllib.request.Request(url, headers=headers or {"User-Agent": "paperII-sok/1.0"})
-            with urllib.request.urlopen(req, timeout=60) as r:
+            with urllib.request.urlopen(req, timeout=90) as r:
                 return json.loads(r.read().decode())
         except Exception as e:                       # rate limit or transient
-            log({"error": str(e), "url": url, "try": i})
-            time.sleep(2 ** i)
+            wait = min(120, 2 ** i)
+            status = getattr(e, "code", None)
+            if isinstance(e, urllib.error.HTTPError) and status in (429, 503):
+                ra = e.headers.get("Retry-After") if e.headers else None
+                if ra and ra.isdigit():
+                    wait = max(wait, min(600, int(ra)))
+            log({"error": str(e), "status": status, "url": url, "try": i, "wait_s": wait})
+            time.sleep(wait)
     raise RuntimeError(f"failed: {url}")
+
+
+class Incomplete(Exception):
+    """A query or venue could not be paged to the end; rerun with --resume."""
 
 
 def openalex_search(query: str, max_pages=0, extra_filter=""):
@@ -77,7 +91,10 @@ def openalex_search(query: str, max_pages=0, extra_filter=""):
         if MAILTO:
             params["mailto"] = MAILTO
         url = base + "?" + urllib.parse.urlencode(params)
-        js = get(url)
+        try:
+            js = get(url)
+        except RuntimeError as e:
+            raise Incomplete(str(e)) from e
         entry = {"source": "openalex", "query": query, "n": len(js.get("results", []))}
         if page == 0:
             # Total hits before paging, so retrieved can be checked against
@@ -117,15 +134,63 @@ def norm_title(t: str) -> str:
     return re.sub(r"[^a-z0-9]", "", (t or "").lower())
 
 
+def _read_jsonl(path):
+    p = Path(path)
+    if not p.exists():
+        return []
+    with p.open() as fh:
+        return [json.loads(l) for l in fh if l.strip()]
+
+
+def _done_queries(records):
+    """Queries finished in an earlier attempt: a query_done marker, or (for logs
+    written before markers existed) as many records as its logged total_hits."""
+    ev = _read_jsonl(C / "search_log.jsonl")
+    done = {e["query_done"] for e in ev if e.get("query_done") and e.get("complete")}
+    total = {}
+    for e in ev:
+        if e.get("source") == "openalex" and e.get("total_hits") is not None:
+            total[e["query"]] = e["total_hits"]
+    got = {}
+    for r in records:
+        got[r["query"]] = got.get(r["query"], 0) + 1
+    done |= {q for q, t in total.items() if t and got.get(q, 0) >= t}
+    return done
+
+
 def cmd_search(a):
     queries = [f"{qa} {BLOCK_B} {BLOCK_C}" for qa in BLOCK_A]
     if a.dry_run:
         print("\n".join(queries)); return
-    with open(a.out, "w") as fh:
+    done = set()
+    if a.resume:
+        old = _read_jsonl(a.out)
+        done = _done_queries(old)
+        keep = [r for r in old if r["query"] in done]       # drop partial queries; they are re-paged
+        with open(a.out, "w") as fh:
+            for r in keep:
+                fh.write(json.dumps(r) + "\n")
+        print(f"resume: {len(done)} of {len(queries)} queries complete ({len(keep)} records kept)")
+    incomplete = []
+    with open(a.out, "a" if a.resume else "w") as fh:
         for q in queries:
-            for w in openalex_search(q, max_pages=a.max_pages):
-                rec = slim(w); rec["query"] = q
-                fh.write(json.dumps(rec) + "\n")
+            if q in done:
+                continue
+            n = 0
+            try:
+                for w in openalex_search(q, max_pages=a.max_pages):
+                    rec = slim(w); rec["query"] = q
+                    fh.write(json.dumps(rec) + "\n"); n += 1
+                fh.flush()
+                log({"query_done": q, "retrieved": n, "complete": True})
+                print(f"done  {n:>6}  {q[:60]}", flush=True)
+            except Incomplete as e:
+                log({"query_done": q, "retrieved": n, "complete": False, "error": str(e)})
+                print(f"INCOMPLETE after {n} records: {q[:60]}", flush=True)
+                incomplete.append(q)
+    if incomplete:
+        print(f"{len(incomplete)} queries incomplete: rerun `search --resume`", file=sys.stderr)
+        sys.exit(3)
 
 
 TITLE_MIN = 25      # normalised title length below which titles never merge
@@ -263,29 +328,60 @@ def title_hit(title: str) -> str:
 
 
 def cmd_venues(a):
-    src_rows, n_toc, n_kept = [], 0, 0
-    with open(a.out, "w") as fh:
+    src_rows, n_toc, n_kept, incomplete = [], 0, 0, []
+    done = set()
+    if a.resume:
+        done = {e["venue"] for e in _read_jsonl(C / "search_log.jsonl")
+                if e.get("source") == "openalex_venue" and e.get("complete", True)}
+        old = _read_jsonl(a.out)
+        keep = [r for r in old if r.get("found_by", "").removeprefix("venue:") in done]
+        with open(a.out, "w") as fh:
+            for r in keep:
+                fh.write(json.dumps(r) + "\n")
+        print(f"resume: {len(done)} of {len(VENUES)} venues complete ({len(keep)} records kept)")
+    with open(a.out, "a" if a.resume else "w") as fh:
         for short, phrase in VENUES:
-            srcs = resolve_sources(phrase)
+            try:
+                srcs = resolve_sources(phrase)
+            except RuntimeError:
+                incomplete.append(short); print(f"INCOMPLETE {short} (source lookup)"); continue
             for x in srcs:
                 src_rows.append({"venue": short, "phrase": phrase, **x})
+            if short in done:
+                continue
             ids = [x["id"].rsplit("/", 1)[-1] for x in srcs]
             toc = kept = 0
-            for i in range(0, len(ids), 50):            # OpenAlex OR-filter limit
-                flt = "primary_location.source.id:" + "|".join(ids[i:i + 50])
-                for w in openalex_search_filter(flt):
-                    toc += 1
-                    hit = title_hit(w.get("title"))
-                    if hit:
-                        rec = slim(w); rec["found_by"] = f"venue:{short}"; rec["query"] = f"venue:{short}|{hit}"
-                        fh.write(json.dumps(rec) + "\n"); kept += 1
-            log({"source": "openalex_venue", "venue": short, "n_sources": len(srcs), "toc": toc, "kept": kept})
-            print(f"{short:<11} {len(srcs):>4} sources  {toc:>7} papers 2017-2026  {kept:>5} block-A titles")
+            buf = []
+            try:
+                for i in range(0, len(ids), 50):            # OpenAlex OR-filter limit
+                    flt = "primary_location.source.id:" + "|".join(ids[i:i + 50])
+                    for w in openalex_search_filter(flt):
+                        toc += 1
+                        hit = title_hit(w.get("title"))
+                        if hit:
+                            rec = slim(w); rec["found_by"] = f"venue:{short}"; rec["query"] = f"venue:{short}|{hit}"
+                            buf.append(rec); kept += 1
+            except RuntimeError as e:
+                log({"source": "openalex_venue", "venue": short, "complete": False, "error": str(e)})
+                print(f"INCOMPLETE {short} after {toc} papers", flush=True)
+                incomplete.append(short)
+                continue
+            for rec in buf:                                # a venue is written only when complete
+                fh.write(json.dumps(rec) + "\n")
+            fh.flush()
+            log({"source": "openalex_venue", "venue": short, "n_sources": len(srcs), "toc": toc, "kept": kept,
+                 "complete": True})
+            print(f"{short:<11} {len(srcs):>4} sources  {toc:>7} papers 2017-2026  {kept:>5} block-A titles",
+                  flush=True)
             n_toc += toc; n_kept += kept
     with open(C / "venue_sources.csv", "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=["venue", "phrase", "id", "display_name", "works_count"])
         w.writeheader(); w.writerows(src_rows)
-    print(f"venue sweep: {n_toc} papers scanned, {n_kept} kept; sources -> {C / 'venue_sources.csv'}")
+    print(f"venue sweep: {n_toc} papers scanned in this attempt, {n_kept} kept; sources -> {C / 'venue_sources.csv'}")
+    if incomplete:
+        print(f"{len(incomplete)} venues incomplete ({', '.join(incomplete)}): rerun `venues --resume`",
+              file=sys.stderr)
+        sys.exit(3)
 
 
 def openalex_search_filter(flt: str):
@@ -340,11 +436,13 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser()
     sp = p.add_subparsers(dest="cmd", required=True)
     s = sp.add_parser("search"); s.add_argument("--out", default=str(C / "search_raw.jsonl")); s.add_argument("--dry-run", action="store_true")
+    s.add_argument("--resume", action="store_true", help="keep completed queries, re-page the rest")
     s.add_argument("--max-pages", type=int, default=0, help="0 = no cap (default); 10 reproduces the capped pilot run")
     d = sp.add_parser("dedup"); d.add_argument("--inp", nargs="+", default=[str(C / "search_raw.jsonl")],
                                              help="one or more raw files (.jsonl or .jsonl.gz), e.g. search + venue sweeps")
     d.add_argument("--out", default=str(C / "candidates.csv"))
     v = sp.add_parser("venues"); v.add_argument("--out", default=str(C / "venue_raw.jsonl"))
+    v.add_argument("--resume", action="store_true", help="keep completed venues, sweep the rest")
     b = sp.add_parser("snowball"); b.add_argument("--inp", required=True); b.add_argument("--out", required=True)
     a = p.parse_args()
     {"search": cmd_search, "dedup": cmd_dedup, "venues": cmd_venues, "snowball": cmd_snowball}[a.cmd](a)
