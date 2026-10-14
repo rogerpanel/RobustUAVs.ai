@@ -13,6 +13,7 @@ cal_j = json.loads((RES / "e1_calibration.json").read_text())
 single = {float(k): v for k, v in cal_j["single"].items()}
 stack = {float(k): v for k, v in cal_j["stack"].items()}
 N = json.loads((RES / "run_meta.json").read_text())["N_eval"]
+(RES / "mission_count_e2y.txt").write_text("")      # a re-run must not append to an earlier count
 os.environ["P4_COUNT_FILE"] = str(RES / "mission_count_e2y.txt")
 rows = []
 for a in __import__("csv").DictReader(open(RES / "e2_attackers.csv")):
