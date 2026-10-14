@@ -74,6 +74,19 @@ def main():
         m[f"FramesFD{nm}"] = r["extra_frames"]
     m["RstarTesla"] = f(pick(fr, transport="can", scheme="tesla")["r_star_u0"], 1)
     m["UzeroMax"] = f(pick(fr, transport="can", scheme="mav2")["u0"], 3)
+    # lower end of the U0 range, from the same model that gives the maximum
+    from transport import TRANSPORT, u0_from_hcrl
+    m["UzeroMin"] = f(u0_from_hcrl(TRANSPORT["can"])[0], 3)
+    # E5 bus measurements, when present (results/e5_hcrl_bus.csv)
+    if (OUT / "e5_hcrl_bus.csv").exists():
+        e5 = [r for r in rd("e5_hcrl_bus.csv") if r["scenario"] != "pooled"]
+        dl = [float(r["mean_dlc"]) for r in e5]
+        lb = [float(r["bitrate_lower_bound"]) / 1e6 for r in e5]
+        mf = [float(r["multiframe_frac"]) for r in e5]
+        m["EfiveScen"] = str(len(e5))
+        m["EfiveDLCmin"], m["EfiveDLCmax"] = f(min(dl), 2), f(max(dl), 2)
+        m["EfiveLBmin"], m["EfiveLBmax"] = f(min(lb), 2), f(max(lb), 2)
+        m["EfiveMFmin"], m["EfiveMFmax"] = f(min(mf), 2), f(max(mf), 2)
 
     da = rd("dauth.csv")
     for sk, nm in (("mav2", "Mac"), ("ed25519", "Ed"), ("fndsa512", "Fal"), ("mldsa44", "ML"),

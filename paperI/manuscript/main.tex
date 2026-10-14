@@ -610,7 +610,7 @@ $\gu$ & 178 post-onset samples, spoofing flight~\cite{whelan2020uav} & \prov{mea
 $\ga$ & 496 post-onset samples, jamming flight (proxy for rejection) & \prov{measured proxy} \\
 $\Delta(\theta)$, $L$ & parent artifact~\cite{parentpaper} & \prov{measured} \\
 $T_c$, $\theta=0.25$\,s, $m$ & parent choices & \prov{assumption} \\
-$U_0$ & HCRL frame rate (measured) $\times$ assumed 1\,Mbit/s, 8-byte frames~\cite{hcrl_uavcan} & \prov{derived} \\
+$U_0$ & HCRL frame rate and payload mix (measured, E5) $\times$ assumed 1\,Mbit/s~\cite{hcrl_uavcan} & \prov{derived} \\
 cycle counts & pqm4~\cite{kannwischer2019pqm4}, SLOTHY-M7~\cite{abdulrahman2025slothy}, \cite{fujii2019curve25519,cifra} & \prov{literature} \\
 tag sizes & FIPS 204/205~\cite{fips204,fips205}, MAVLink~\cite{mavlink_signing} & \prov{literature} \\
 $\tfresh$ & MAVLink~2 (60\,s), OSNMA (30--165\,s)~\cite{ardizzon2025crystal} & \prov{literature} \\
@@ -682,15 +682,19 @@ with a 1/5\,Mbit/s bit-rate switch and the field sizes of ISO~11898-1~\cite{iso1
 MAVLink~2 over serial we use 8N1 framing (eight data bits, no parity, one stop bit), so that
 each byte occupies ten bit times. We
 derive the base load from the benign segments of the HCRL UAVCAN capture~\cite{hcrl_uavcan}
-(508--619 frames/s): with
-8-byte frames, $U_0\in[0.081,\nUzeroMax]$, and we use the maximum. The frame rate is
-measured; the bitrate and payload length are assumptions, so $U_0$ is tagged \prov{derived}.
+(508--619 frames/s). Experiment E5 decoded the raw capture: across its \nEfiveScen\
+scenarios the mean payload is \nEfiveDLCmin--\nEfiveDLCmax\ bytes per frame, not the 8-byte
+worst case, and \nEfiveMFmin--\nEfiveMFmax\ of transfers are multi-frame. With the measured
+payload mix, $U_0\in[\nUzeroMin,\nUzeroMax]$, and we use the maximum. The frame rate and payload
+mix are measured; the bitrate is an assumption, so $U_0$ is tagged \prov{derived}.
 
 $\Rtx$ is the busy-period bound of a lowest-priority signed transfer below 24 periodic
 background streams carrying $U_0$. We check it against a discrete-event simulation (DES) of frame-level arbitration with
 random background phases. The simulation shares the periodic background model, so it checks
-the analysis for self-consistency and tightness; it does not validate the model, which is
-what experiment E5 does on real bus timing.
+the analysis for self-consistency and tightness; it does not validate the model. The HCRL
+capture cannot do so either: its software timestamps place consecutive 8-byte frames closer
+than one frame time, implying \nEfiveLBmin--\nEfiveLBmax\,Mbit/s on a bus whose maximum is
+1\,Mbit/s, so they are not frame-accurate. Validating bus timing needs E5's hardware arm.
 
 \paragraph*{Protocol}
 TESLA~\cite{perrig2000tesla,rfc4082} authenticates a message only when its key is
@@ -731,7 +735,7 @@ artifact's runbook:
 \item[E3] a software-in-the-loop (SITL) PX4 sweep of spoofer walk rate, with an
   authenticated-rejection arm, in hover and in cruise at 5--15\,m/s;
 \item[E4] STM32H7 cycle counts, including ML-DSA tails;
-\item[E5] raw-bus timing and payload-length mix from the HCRL capture;
+\item[E5] payload-length mix from the HCRL capture (done, above) and bus timing on hardware;
 \item[E6] a hardware flood test;
 \item[E7] a GNSS time push against MAVLink~2 signing in SITL;
 \item[E8] an OSNMA time-offset replay.
@@ -1109,10 +1113,10 @@ simulation.
 24\,MHz will change at 480\,MHz with flash wait states and caches. ML-DSA's tail is modelled,
 not measured, and FN-DSA's tail is not modelled. E4 replaces all of these.
 
-\emph{The transport model is worst-case and partly assumed.} The HCRL bitrate and payload
-mix are assumed (1\,Mbit/s, 8-byte frames), and the DroneCAN framing rules should be
-confirmed against the specification. The busy-period bound treats the background as
-periodic. E5 checks all of these.
+\emph{The transport model is worst-case and partly assumed.} The HCRL payload mix is
+measured, but the bitrate (1\,Mbit/s) is assumed: the capture's timestamps are too coarse to
+check it, and the DroneCAN framing rules should be confirmed against the specification. The
+busy-period bound treats the background as periodic. Both need E5's hardware arm.
 
 \emph{Additivity.} Eq.~\eqref{eq:deff} adds $\Dauth$ to the hidden delay. This is
 conservative when the authenticated message is not on the delayed path.
