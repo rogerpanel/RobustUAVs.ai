@@ -469,3 +469,130 @@ def api_upload_compare(body: CompareRequest) -> dict:
 def api_upload_fly(body: FlyRequest) -> dict:
     return upload_mod.fly(body.summary, body.corridor_m, body.mapping,
                           body.n_malicious_hops)
+
+
+# ---------------------------------------------------------------- papers --
+#
+# The three follow-on papers (paperI/, paperII/, paperIII/): every result CSV
+# each harness wrote, plus calculators that call the papers' own code. Same
+# conventions as above: a file or folder absent here is a 503, an unknown
+# paper a 404, and unknown request keys are rejected rather than ignored.
+
+from typing import Optional  # noqa: E402
+
+from fastapi import Request  # noqa: E402
+from fastapi.responses import FileResponse  # noqa: E402
+from pydantic import ConfigDict  # noqa: E402
+
+from . import papers  # noqa: E402
+
+
+def _papers(fn, *args, **kwargs):
+    try:
+        return fn(*args, **kwargs)
+    except papers.UnknownPaper as exc:
+        raise HTTPException(404, {"error": f"no paper '{exc.args[0]}'",
+                                  "available": sorted(papers.PAPERS)})
+    except results.ResultUnavailable as exc:
+        raise HTTPException(503, {"error": str(exc), "unavailable": exc.name})
+    except papers.PathRejected as exc:
+        raise HTTPException(400, str(exc))
+    except papers.BadRequest as exc:
+        raise HTTPException(422, str(exc))
+
+
+class _Strict(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+
+class BudgetRequest(_Strict):
+    theta_s: Optional[float] = None
+    delta_s: Optional[float] = None
+    delta_auth_s: Optional[float] = None
+    scheme: Optional[str] = None
+    transport: Optional[str] = None
+    gamma_scenario: Optional[str] = None
+    gamma_m_s: Optional[float] = None
+    L: Optional[float] = None
+    T_c_s: Optional[float] = None
+    alert_limit_m: Optional[float] = None
+
+
+class CertifyRequest(_Strict):
+    rho: Optional[list[float]] = None
+    staleness_s: Optional[list[float]] = None
+    alpha: list[float]
+    b: Optional[int] = None
+    proposal: Optional[list[int]] = None
+
+
+class LiftRequest(_Strict):
+    N: int
+    alpha: list[float]
+    q: list[float]
+
+
+@app.get("/api/papers", tags=["papers"])
+def api_papers() -> dict:
+    return _papers(papers.catalogue)
+
+
+@app.get("/api/papers/I/budget", tags=["papers"])
+def api_paper1_budget_defaults() -> dict:
+    return _papers(papers.budget_defaults)
+
+
+@app.post("/api/papers/I/budget", tags=["papers"])
+def api_paper1_budget(body: BudgetRequest | None = None) -> dict:
+    return _papers(papers.budget, body.model_dump() if body else {})
+
+
+_CORPUS_RESERVED = {"table", "year_min", "year_max"}
+
+
+@app.get("/api/papers/II/corpus", tags=["papers"])
+def api_paper2_corpus(request: Request, table: str = Query("ADJ"),
+                      year_min: Optional[int] = Query(None),
+                      year_max: Optional[int] = Query(None)) -> dict:
+    # Any other query parameter is a codebook field = value filter
+    # (?tier=A&lifts=L_dyn); unknown field names are rejected by papers.corpus.
+    filters = {k: v for k, v in request.query_params.items()
+               if k not in _CORPUS_RESERVED}
+    return _papers(papers.corpus, table=table, filters=filters,
+                   year_min=year_min, year_max=year_max)
+
+
+@app.get("/api/papers/III/certify", tags=["papers"])
+def api_paper3_certify_defaults() -> dict:
+    return _papers(papers.certify_defaults)
+
+
+@app.post("/api/papers/III/certify", tags=["papers"])
+def api_paper3_certify(body: CertifyRequest) -> dict:
+    return _papers(papers.certify, body.model_dump())
+
+
+@app.post("/api/papers/III/lift", tags=["papers"])
+def api_paper3_lift(body: LiftRequest) -> dict:
+    return _papers(papers.lift, body.model_dump())
+
+
+@app.get("/api/papers/III/marl", tags=["papers"])
+def api_paper3_marl() -> dict:
+    return _papers(papers.marl)
+
+
+@app.get("/api/papers/{pid}/results", tags=["papers"])
+def api_paper_results(pid: str) -> dict:
+    return _papers(papers.results_index, pid)
+
+
+@app.get("/api/papers/{pid}/results/{name:path}", tags=["papers"])
+def api_paper_result(pid: str, name: str,
+                     format: str = Query("json", pattern="^(json|csv)$"),
+                     limit: Optional[int] = Query(None, ge=1, le=1_000_000)):
+    if format == "csv":
+        path = _papers(papers.resolve_result, pid, name)
+        return FileResponse(path, media_type="text/csv",
+                            filename=f"{papers.PAPERS[pid]}__{name.replace('/', '__')}")
+    return _papers(papers.result_file, pid, name, limit)

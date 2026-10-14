@@ -161,6 +161,42 @@ export const LEFT_GROUPS = [
     ],
   },
   {
+    // The three follow-on papers. Each page pairs a calculator that calls the
+    // paper's own code with a browser over every CSV its harness wrote.
+    label: 'Papers',
+    items: [
+      { key: 'PaperI', glyph: 'Ⅰ', title: 'Paper I · Auth budget', grounded: true,
+        blurb: 'What authenticity costs in metres',
+        steps: [
+          "Read the verdict first: with nothing changed it is the paper's unauthenticated case at θ = 0.25 s.",
+          "Pick a transport and a signature scheme. Its certified Δ_auth is read from dauth.csv and γ switches to the authenticated rate.",
+          "Compare ρ with and without authentication — the benefit line says whether the swap pays at this margin.",
+          "Edit any field to test a what-if; edited fields are marked and exported as 'user', everything else keeps the paper's provenance.",
+          "Browse the result files at the bottom and export any of them as CSV or JSON.",
+        ],
+        tip: "Typing θ re-derives Δ through the parent's Lemma 1; typing Δ overrides it." },
+      { key: 'PaperII', glyph: 'Ⅱ', title: 'Paper II · Corpus', grounded: true,
+        blurb: 'The quantifier-gap SoK, filterable',
+        steps: [
+          "Read the PRISMA flow: an empty stage is one not yet run, not a count of zero.",
+          "Pick the coded table — adjudicated by default, or either coder's raw codes.",
+          "Filter by year and by any codebook field; counts per category update for the filtered set.",
+          "Export the matching rows or the counts as CSV or JSON.",
+        ],
+        tip: "If this deployment does not carry paperII/, the page says so rather than showing an empty corpus." },
+      { key: 'PaperIII', glyph: 'Ⅲ', title: 'Paper III · Certificates', grounded: true,
+        blurb: 'Coverage, the lift, and the MARL tables',
+        steps: [
+          "Type staleness (s) or ρ (m) per agent and the tasks' alert limits, then press certify.",
+          "Read the deficiency and coverage margin: how many tasks can be held, and how many collapses that survives.",
+          "Add a policy proposal to see what the lexicographic projection keeps of it.",
+          "Use the lift to predict full coverage for a larger fleet, and check it against the paper's simulation rows.",
+          "Switch MARL run directories to compare methods across fleet sizes.",
+        ],
+        tip: "Every number on this page is computed by paperIII/experiments code or read from paperIII/results." },
+    ],
+  },
+  {
     label: 'Analyse',
     items: [
       { key: 'Upload', glyph: '⬆', title: 'Upload & Analyse', grounded: true,

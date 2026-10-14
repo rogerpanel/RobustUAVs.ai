@@ -21,7 +21,8 @@ uvicorn app.main:app --reload --port 8000
 ```
 
 Endpoints: `/api/health`, `/api/models[/{id}]`, `/api/results[/{name}]`,
-`/api/certify/staleness`, `/api/copilot/{tools,tool/{name},ask}`.
+`/api/certify/staleness`, `/api/copilot/{tools,tool/{name},ask}`, and the
+`/api/papers/...` surface described under [Papers I–III](#papers-iiii).
 
 Two conventions worth knowing:
 
@@ -41,6 +42,35 @@ python3 tests_smoke.py
 `test_copilot_symmetry` is the load-bearing one — a tool advertised to the model
 but absent from the dispatcher is a lie told to the model, and RobustIDPS
 enforces the same invariant in CI.
+
+## Papers I–III
+
+`app/papers.py` serves the three follow-on papers (`paperI/`, `paperII/`,
+`paperIII/`); the client shows them under **Papers**, one page each. Paths are
+derived from the repository root, and paper code is imported lazily from the
+paper's own `experiments/` (no bytecode written into it), so an import failure
+is a 503 naming the file rather than a 500.
+
+    GET  /api/papers                              catalogue: id, title (from manuscript/main.tex), folder, CSVs + row counts
+    GET  /api/papers/{I|II|III}/results           every CSV under paper*/results/ (logs_r/, server_logs/, *.pt skipped):
+                                                  name, rows, columns, distinct provenance values
+    GET  /api/papers/{pid}/results/{name}?format=json|csv
+                                                  one file as typed JSON rows, or the committed file itself;
+                                                  only .csv, resolved and confined to that results/ (else 400)
+    GET  /api/papers/I/budget                     Paper I defaults: constants.py values + provenance, dauth.csv schemes
+    POST /api/papers/I/budget                     rho = (Delta + Delta_auth) * gamma * e^{L T_c} <= m; any input overridable
+    GET  /api/papers/II/corpus?table=ADJ&year_min=&year_max=&<codebook field>=<value>
+                                                  filtered coded corpus, counts per category, PRISMA, search sensitivity
+    GET  /api/papers/III/certify                  Paper III constants (KAPPA, THETA_BENIGN, ALERT_LIMITS), lift reference
+    POST /api/papers/III/certify                  {rho | staleness_s, alpha, b?, proposal?} -> deficiency, coverage margin,
+                                                  worst case, nested_greedy_fast, lexicographic_projection (N, M <= 2000)
+    POST /api/papers/III/lift                     {N <= 200, alpha, q[5]} -> P(full coverage) via e2_degradation.p_full_iid
+    GET  /api/papers/III/marl                     e6_main.csv and every e6_main_<dir>.csv, as {dir: rows}
+
+Unknown paper -> 404; file or folder not present here -> 503; bad calculator
+input or an unknown request key -> 422. `paperII/` lives on the
+`paperII/full-study` branch, so a checkout without it reports Paper II as not
+present and its endpoints answer 503.
 
 ## LLM providers
 
