@@ -58,7 +58,11 @@ BLOCK_C = ('("aircraft" OR "UAV" OR "UAS" OR "drone" OR "quadrotor" OR "autonomo
 # (odd gid numbers) -- control and cyber-physical phrasings of the same autonomy
 # scope, and one guarantee phrase -- and recall is reported on the held-out even
 # half, so the revision is not tuned to the set it is judged on.
-BLOCK_A_REV1 = BLOCK_A + ['"formal analysis"']
+# "formal analysis" is used ONLY as a title filter in the venue sweeps: as a
+# database search term it matched the CRediT contributor role "Formal analysis"
+# printed in the full text of most journal articles (>146,000 records on
+# 2026-10-14 before it was stopped), so it is not a search term.
+BLOCK_A_REV1 = BLOCK_A + ['"formal analysis"']       # title filter (venue sweeps)
 BLOCK_C_REV1 = ('("aircraft" OR "UAV" OR "UAS" OR "drone" OR "quadrotor" OR "autonomous vehicle" OR "autonomous driving" '
                 'OR "avionics" OR "airworthiness" OR "collision avoidance" OR "safety-critical" '
                 'OR "aerospace" OR "autonomous system" OR "control system" OR "controller" OR "closed-loop" '
@@ -66,7 +70,8 @@ BLOCK_C_REV1 = ('("aircraft" OR "UAV" OR "UAS" OR "drone" OR "quadrotor" OR "aut
 
 
 def blocks(rev: int):
-    return (BLOCK_A_REV1, BLOCK_C_REV1) if rev >= 1 else (BLOCK_A, BLOCK_C)
+    """Database-search blocks. Revision 1 widens block C only (see above)."""
+    return (BLOCK_A, BLOCK_C_REV1) if rev >= 1 else (BLOCK_A, BLOCK_C)
 
 
 def log(event: dict):
