@@ -161,7 +161,7 @@ export const LEFT_GROUPS = [
     ],
   },
   {
-    // The three follow-on papers. Each page pairs a calculator that calls the
+    // The follow-on papers. Each page pairs a calculator that calls the
     // paper's own code with a browser over every CSV its harness wrote.
     label: 'Papers',
     items: [
@@ -194,6 +194,16 @@ export const LEFT_GROUPS = [
           "Switch MARL run directories to compare methods across fleet sizes.",
         ],
         tip: "Every number on this page is computed by paperIII/experiments code or read from paperIII/results." },
+      { key: 'PaperIV', glyph: 'Ⅳ', title: 'Paper IV · Budget floor', grounded: true,
+        blurb: 'The certified floor under unknown coupling',
+        steps: [
+          "Read the floor first: it opens at m = 10 m with the R1 pooled stealth budget δ_adv and no network tube.",
+          "Pick a δ_adv preset (R1 pooled or pilot, per FPR) and a network-tube preset, or type your own values in metres.",
+          "Compare the two floors: the union bound on the empirical marginals is a point estimate; the Clopper–Pearson floor is the one that holds with probability ≥ 1 − α.",
+          "Check the computed floor against the paper's own rows in r5_floor_sensitivity.csv.",
+          "Browse the result files at the bottom and export any of them as CSV or JSON.",
+        ],
+        tip: "When m − δ_adv − net ≤ 0 there is no room left for benign perturbation, so the floor is 0." },
     ],
   },
   {

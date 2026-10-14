@@ -22,7 +22,7 @@ uvicorn app.main:app --reload --port 8000
 
 Endpoints: `/api/health`, `/api/models[/{id}]`, `/api/results[/{name}]`,
 `/api/certify/staleness`, `/api/copilot/{tools,tool/{name},ask}`, and the
-`/api/papers/...` surface described under [Papers I–III](#papers-iiii).
+`/api/papers/...` surface described under [Papers I–IV](#papers-iiv).
 
 Two conventions worth knowing:
 
@@ -43,16 +43,16 @@ python3 tests_smoke.py
 but absent from the dispatcher is a lie told to the model, and RobustIDPS
 enforces the same invariant in CI.
 
-## Papers I–III
+## Papers I–IV
 
-`app/papers.py` serves the three follow-on papers (`paperI/`, `paperII/`,
-`paperIII/`); the client shows them under **Papers**, one page each. Paths are
+`app/papers.py` serves the follow-on papers (`paperI/`, `paperII/`,
+`paperIII/`, `paperIV/`); the client shows them under **Papers**, one page each. Paths are
 derived from the repository root, and paper code is imported lazily from the
 paper's own `experiments/` (no bytecode written into it), so an import failure
 is a 503 naming the file rather than a 500.
 
     GET  /api/papers                              catalogue: id, title (from manuscript/main.tex), folder, CSVs + row counts
-    GET  /api/papers/{I|II|III}/results           every CSV under paper*/results/ (logs_r/, server_logs/, *.pt skipped):
+    GET  /api/papers/{I|II|III|IV}/results        every CSV under paper*/results/ (logs_r/, server_logs/, *.pt skipped):
                                                   name, rows, columns, distinct provenance values
     GET  /api/papers/{pid}/results/{name}?format=json|csv
                                                   one file as typed JSON rows, or the committed file itself;
@@ -66,6 +66,11 @@ is a 503 naming the file rather than a 500.
                                                   worst case, nested_greedy_fast, lexicographic_projection (N, M <= 2000)
     POST /api/papers/III/lift                     {N <= 200, alpha, q[5]} -> P(full coverage) via e2_degradation.p_full_iid
     GET  /api/papers/III/marl                     e6_main.csv and every e6_main_<dir>.csv, as {dir: rows}
+    GET  /api/papers/IV/floor                     Paper IV defaults: delta_adv presets (r1_delta_adv.csv, e4_delta_adv.csv),
+                                                  net-tube presets (e4_soundness.csv), r5_floor_sensitivity.csv reference
+    POST /api/papers/IV/floor                     {m in (0, 40], delta_adv >= 0, net? >= 0, alpha? in (0, 1)} -> s = m - delta_adv - net,
+                                                  depbounds.union_bound on e3_marginals.npz (point estimate) and
+                                                  depbounds.pbar_union_cp on cp_tails(alpha) (valid w.p. >= 1 - alpha), floors 1 - each
 
 Unknown paper -> 404; file or folder not present here -> 503; bad calculator
 input or an unknown request key -> 422. `paperII/` lives on the

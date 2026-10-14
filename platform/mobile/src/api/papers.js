@@ -1,7 +1,7 @@
 import { request, API_BASE } from './client';
 
 /**
- * The three follow-on papers: result browser plus each paper's calculator.
+ * The follow-on papers: result browser plus each paper's calculator.
  *
  * Result names are relative paths (`e5_marl_N24/references_eval.csv`), so each
  * segment is encoded on its own and the slashes are kept: encoding the whole
@@ -44,4 +44,8 @@ export const papersApi = {
   certify: (body) => post('/api/papers/III/certify', body),
   lift: (body) => post('/api/papers/III/lift', body),
   marl: () => request('/api/papers/III/marl'),
+
+  // Paper IV -- the dependence-uncertainty floor of the unified budget.
+  floorDefaults: () => request('/api/papers/IV/floor'),
+  floor: (body) => post('/api/papers/IV/floor', body),
 };

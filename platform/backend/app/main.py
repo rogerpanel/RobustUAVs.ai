@@ -473,7 +473,7 @@ def api_upload_fly(body: FlyRequest) -> dict:
 
 # ---------------------------------------------------------------- papers --
 #
-# The three follow-on papers (paperI/, paperII/, paperIII/): every result CSV
+# The follow-on papers (paperI/ .. paperIV/): every result CSV
 # each harness wrote, plus calculators that call the papers' own code. Same
 # conventions as above: a file or folder absent here is a 503, an unknown
 # paper a 404, and unknown request keys are rejected rather than ignored.
@@ -580,6 +580,23 @@ def api_paper3_lift(body: LiftRequest) -> dict:
 @app.get("/api/papers/III/marl", tags=["papers"])
 def api_paper3_marl() -> dict:
     return _papers(papers.marl)
+
+
+class FloorRequest(_Strict):
+    m: float
+    delta_adv: float
+    net: float = 0.0
+    alpha: float = 0.05
+
+
+@app.get("/api/papers/IV/floor", tags=["papers"])
+def api_paper4_floor_defaults() -> dict:
+    return _papers(papers.floor_defaults)
+
+
+@app.post("/api/papers/IV/floor", tags=["papers"])
+def api_paper4_floor(body: FloorRequest) -> dict:
+    return _papers(papers.floor, body.model_dump())
 
 
 @app.get("/api/papers/{pid}/results", tags=["papers"])

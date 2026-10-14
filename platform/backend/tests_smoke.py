@@ -81,7 +81,7 @@ def test_papers_catalogue():
     r = _client().get("/api/papers")
     assert r.status_code == 200, r.text
     ids = [p["id"] for p in r.json()["papers"]]
-    assert ids == ["I", "II", "III"], ids
+    assert ids == ["I", "II", "III", "IV"], ids
 
 
 def test_papers_result_roundtrip():
@@ -126,7 +126,7 @@ def test_papers_traversal_rejected():
             pass
         else:
             raise AssertionError(f"traversal accepted: {bad}")
-    assert c.get("/api/papers/IV/results").status_code == 404
+    assert c.get("/api/papers/V/results").status_code == 404
 
 
 def test_paper1_budget_finite():
@@ -200,6 +200,63 @@ def test_paper3_marl_tables():
         return
     assert r.status_code == 200, r.text
     assert "e5_marl" in r.json()["tables"], r.json()["dirs"]
+
+
+def test_paper4_results_listed():
+    c = _client()
+    r = c.get("/api/papers/IV/results")
+    if r.status_code == 503:     # paperIV/results/ not present in this deployment
+        return
+    assert r.status_code == 200, r.text
+    idx = r.json()
+    assert idx["folder"] == "paperIV" and idx["n_files"] == len(idx["files"]) > 0
+    names = {f["name"] for f in idx["files"]}
+    assert not any(n.startswith("logs/") for n in names), names
+    cat = {p["id"]: p for p in c.get("/api/papers").json()["papers"]}["IV"]
+    assert cat["title"] and "\\" not in cat["title"], cat["title"]
+    if "r1_delta_adv.csv" in names:
+        f = c.get("/api/papers/IV/results/r1_delta_adv.csv").json()
+        assert f["n_rows"] == len(f["rows"]) and f["provenance"] == ["sim"], f
+
+
+def test_paper4_floor():
+    """The CP floor at the paper's own operating point must reproduce the
+    floor_cp_sim column of r5_floor_sensitivity.csv, which the paper's
+    harness computed with the same depbounds functions."""
+    import math
+    c = _client()
+    r = c.post("/api/papers/IV/floor", json={"m": 10, "delta_adv": 5.463, "net": 0})
+    if r.status_code == 503:     # paperIV/ code or marginals not present here
+        return
+    assert r.status_code == 200, r.text
+    d = r.json()
+    assert abs(d["s"] - 4.537) < 1e-9 and d["provenance"] == "sim"
+    for k in ("union_bound", "pbar_union_cp", "floor_union", "floor_cp"):
+        assert isinstance(d[k], float) and 0.0 <= d[k] <= 1.0, (k, d[k])
+    assert math.isclose(d["floor_cp"], 1 - d["pbar_union_cp"])
+    # The finite-sample bound is never tighter than the point estimate.
+    assert d["pbar_union_cp"] >= d["union_bound"] - 1e-12, d
+    from app import papers
+    try:
+        _, rows = papers.read_table(results.REPO / "paperIV" / "results"
+                                    / "r5_floor_sensitivity.csv")
+    except results.ResultUnavailable:
+        rows = []
+    ref = [x for x in rows if float(x["m"]) == 10.0 and float(x["theta_net"]) == 0.0
+           and abs(float(x["delta_adv"]) - 5.463) < 1e-9]
+    if ref:
+        assert abs(d["floor_cp"] - float(ref[0]["floor_cp_sim"])) < 1e-4, (d, ref[0])
+        print(f"        floor_cp {d['floor_cp']:.5f} == r5_floor_sensitivity "
+              f"floor_cp_sim {ref[0]['floor_cp_sim']}")
+    # No room left for benign perturbation: bound 1, floor 0.
+    z = c.post("/api/papers/IV/floor", json={"m": 5, "delta_adv": 5.463}).json()
+    assert z["pbar_union_cp"] == z["union_bound"] == 1.0 and z["floor_cp"] == 0.0
+    assert c.get("/api/papers/IV/floor").status_code == 200
+    for bad in ({"m": 0, "delta_adv": 1}, {"m": 41, "delta_adv": 1},
+                {"m": 10, "delta_adv": -1}, {"m": 10, "delta_adv": 1, "net": -0.5},
+                {"m": 10, "delta_adv": 1, "alpha": 1.5}, {"m": 10},
+                {"m": 10, "delta_adv": 1, "not_a_knob": 1}):
+        assert c.post("/api/papers/IV/floor", json=bad).status_code == 422, bad
 
 
 if __name__ == "__main__":

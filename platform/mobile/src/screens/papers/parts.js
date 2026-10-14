@@ -10,7 +10,7 @@ import ExportMenu from '../../components/ExportMenu';
 import { Panel, Unavailable } from '../uav/parts';
 
 /**
- * Chrome shared by the three paper pages: the catalogue entry, the results
+ * Chrome shared by the paper pages: the catalogue entry, the results
  * browser, a scrolling table, and the small form controls.
  *
  * The results browser is the same component on every page on purpose. Each
@@ -68,6 +68,7 @@ export const provColor = (t, p) => ({
   proxy: t.bridge,
   literature: t.info,
   physics_model: t.info,
+  sim: t.info,
   user: t.accent,
   pilot_llm: t.bridge,
   human: t.ok,

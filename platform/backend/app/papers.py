@@ -1,8 +1,10 @@
-"""The three follow-on papers as an experimentable surface.
+"""The follow-on papers as an experimentable surface.
 
 Paper I    paperI/    what authenticity costs in metres (the authentication budget)
 Paper II   paperII/   the quantifier-gap SoK (the coded corpus and its PRISMA flow)
 Paper III  paperIII/  certificates as constraints (nested-eligibility allocation)
+Paper IV   paperIV/   the attacker indistinguishable from the weather (the unified
+                      perturbation budget and its dependence-uncertainty floor)
 
 Two kinds of thing are served here, and the module keeps them apart:
 
@@ -10,9 +12,9 @@ Two kinds of thing are served here, and the module keeps them apart:
              as-is (JSON rows or the file itself). Nothing is summarised or
              rounded on the way out, so an export is the committed file.
   live       a small number of calculators that call the papers' OWN code --
-             `paperI/experiments/constants.py`, `paperIII/experiments/certcmdp`
-             and `e2_degradation.p_full_iid` -- rather than a re-implementation
-             of it. The one exception is Paper I's budget, which is a single
+             `paperI/experiments/constants.py`, `paperIII/experiments/certcmdp`,
+             `e2_degradation.p_full_iid` and `paperIV/experiments/depbounds.py`
+             -- rather than a re-implementation of it. The one exception is Paper I's budget, which is a single
              product (rho = (Delta + Delta_auth) * gamma * e^{L T_c}) that the
              paper computes inline in budget.py and exposes no function for.
 
@@ -43,7 +45,7 @@ from . import results
 
 REPO = results.REPO
 
-PAPERS = {"I": "paperI", "II": "paperII", "III": "paperIII"}
+PAPERS = {"I": "paperI", "II": "paperII", "III": "paperIII", "IV": "paperIV"}
 
 # Never listed and never served: run logs, checkpoints, the raw-run scratch
 # directories the MARL launcher writes next to its results.
@@ -54,6 +56,9 @@ SKIP_DIRS = {"logs", "logs_r", "server_logs", "__pycache__"}
 MAX_AGENTS = 2000
 MAX_TASKS = 2000
 MAX_LIFT_N = 200
+# Paper IV's floor: the largest margin accepted. The paper evaluates m <= 20 m;
+# beyond its CP split grid (depbounds.S_MAX) the bound is evaluated at S_MAX.
+MAX_FLOOR_M = 40.0
 
 
 class Unavailable(results.ResultUnavailable):
@@ -810,3 +815,191 @@ def marl() -> dict:
         raise Unavailable("paperIII/results/e6_main.csv")
     return {"tables": tables, "dirs": list(tables), "sources": sources,
             "source": ", ".join(sources.values())}
+
+
+# ================================================== Paper IV: the floor ===
+#
+# Paper IV's certified floor: with margin m, stealth budget delta_adv and the
+# network tube net, the benign perturbations (GNSS error, benign fault, wind)
+# must fit in what is left, s = m - delta_adv - net. Their marginals are known
+# (e3_marginals.npz) but their coupling is not, so the paper bounds
+# p(s) = Pr[gnss + fault + env > s] over every coupling and reports the floor
+# 1 - p(s). Both bounds below are depbounds.py's own functions.
+
+IV_MARGINALS = ("gnss", "fault", "env")   # the order pbar_union_cp unpacks
+
+
+def _paperIV_depbounds():
+    exp = REPO / "paperIV" / "experiments"
+    src = exp / "depbounds.py"
+    if not src.exists():
+        raise Unavailable("paperIV/experiments/depbounds.py")
+    name = "_robustuavs_paperIV_depbounds"
+    if name in sys.modules:
+        return sys.modules[name]
+    # A private module name, as for Paper I: `depbounds` is the paper's name
+    # for it, not ours to claim on sys.path.
+    try:
+        with _paper_imports(exp):
+            spec = importlib.util.spec_from_file_location(name, src)
+            mod = importlib.util.module_from_spec(spec)
+            sys.modules[name] = mod
+            spec.loader.exec_module(mod)
+    except Exception as exc:  # noqa: BLE001
+        sys.modules.pop(name, None)
+        raise Unavailable("paperIV/experiments/depbounds.py",
+                          f"Paper IV's depbounds.py could not be imported in this "
+                          f"deployment ({type(exc).__name__}: {exc}).") from exc
+    return mod
+
+
+def _iv_marginals_path() -> tuple[Path, int, int]:
+    p = REPO / "paperIV" / "results" / "e3_marginals.npz"
+    if not p.is_file():
+        raise Unavailable(_rel(p))
+    st = p.stat()
+    return p, st.st_mtime_ns, st.st_size
+
+
+@functools.lru_cache(maxsize=4)
+def _iv_marginals_load(path: str, mtime_ns: int, size: int) -> tuple:
+    import numpy as np
+    with np.load(path, allow_pickle=False) as z:
+        missing = [k for k in IV_MARGINALS if k not in z.files]
+        if missing:
+            raise KeyError(f"arrays {missing} not in {Path(path).name}")
+        return tuple(np.asarray(z[k], dtype=float) for k in IV_MARGINALS)
+
+
+def _paperIV_marginals() -> tuple:
+    p, mt, sz = _iv_marginals_path()
+    try:
+        return _iv_marginals_load(str(p), mt, sz)
+    except (OSError, KeyError, ValueError) as exc:
+        raise Unavailable(_rel(p), f"{_rel(p)} could not be read in this deployment "
+                                   f"({type(exc).__name__}: {exc}).") from exc
+
+
+@functools.lru_cache(maxsize=8)
+def _iv_cp_tails(alpha: float, path: str, mtime_ns: int, size: int) -> tuple:
+    # cp_tails is ~1500 beta quantiles; computed once per alpha and per
+    # version of the marginals file, as the paper itself computes it once.
+    db = _paperIV_depbounds()
+    return tuple(db.cp_tails(list(_paperIV_marginals()), alpha=alpha))
+
+
+def _scalar(name: str, v: Any, default: Optional[float] = None) -> float:
+    if v is None:
+        if default is None:
+            raise BadRequest(f"{name} is required")
+        return default
+    x = _num(v)
+    if x is None or not math.isfinite(x):
+        raise BadRequest(f"{name} must be a finite number")
+    return x
+
+
+def _iv_rows(name: str) -> list[dict]:
+    try:
+        return read_table(REPO / "paperIV" / "results" / name)[1]
+    except Unavailable:
+        return []
+
+
+def floor_defaults() -> dict:
+    import inspect
+    db = _paperIV_depbounds()
+    X = _paperIV_marginals()
+    r1 = _iv_rows("r1_delta_adv.csv")
+    pilot = _iv_rows("e4_delta_adv.csv")
+    presets = [{"label": f"R1 pooled, FPR {r['fpr']}", "fpr": r["fpr"],
+                "delta_adv_m": r["delta_pooled_m"], "source": "paperIV/results/r1_delta_adv.csv",
+                "provenance": r.get("provenance")} for r in r1] + \
+              [{"label": f"pilot, FPR {r['fpr']}", "fpr": r["fpr"],
+                "delta_adv_m": r["delta_adv_cal_m"], "source": "paperIV/results/e4_delta_adv.csv",
+                "provenance": None} for r in pilot]
+    nets = sorted({(r["theta_net"], r["net_tube"]) for r in _iv_rows("e4_soundness.csv")
+                   if _num(r.get("net_tube")) is not None},
+                  key=lambda tn: _num(tn[0]) or 0.0)
+    reference = [{k: r.get(k) for k in ("fpr", "m", "theta_net", "delta_adv",
+                                        "s_available_m", "floor_cp_sim")}
+                 for r in _iv_rows("r5_floor_sensitivity.csv")]
+    alpha = inspect.signature(db.cp_tails).parameters["alpha"].default
+    return {
+        "alpha_default": alpha,
+        "delta_adv_presets": presets,
+        "net_presets": [{"theta_net_s": tn, "net_m": net,
+                         "source": "paperIV/results/e4_soundness.csv (net_tube)"}
+                        for tn, net in nets],
+        "marginals": [{"name": k, "n": int(len(x)), "max_m": float(x.max())}
+                      for k, x in zip(IV_MARGINALS, X)],
+        "marginal_summary": _iv_rows("e3_marginal_summary.csv"),
+        "reference": reference,
+        "limits": {"m_max": MAX_FLOOR_M, "cp_grid_step_m": db.STEP,
+                   "cp_grid_max_m": db.S_MAX},
+        "formula": "s = m - delta_adv - net;  floor = 1 - p(s),  "
+                   "p(s) >= Pr[gnss + fault + env > s] over every coupling",
+        "source": "paperIV/experiments/depbounds.py, paperIV/results/e3_marginals.npz, "
+                  "r1_delta_adv.csv, e4_delta_adv.csv, e4_soundness.csv, "
+                  "r5_floor_sensitivity.csv",
+    }
+
+
+def floor(req: dict) -> dict:
+    """1 - p(s) at s = m - delta_adv - net, two ways, both depbounds.py's:
+
+    union_bound     the standard (union) bound on the empirical marginals --
+                    a point estimate of the worst-case tail
+    pbar_union_cp   the same bound on simultaneous Clopper-Pearson upper tails
+                    (cp_tails) -- valid with probability >= 1 - alpha
+
+    The Rearrangement Algorithm bound (ra_bound) is not offered: it is a
+    bisection over repeated rearrangements, seconds per call, and the paper
+    itself reports the CP union bound as its finite-sample floor.
+    """
+    m = _scalar("m", req.get("m"))
+    dadv = _scalar("delta_adv", req.get("delta_adv"))
+    net = _scalar("net", req.get("net"), 0.0)
+    alpha = _scalar("alpha", req.get("alpha"), 0.05)
+    if not 0 < m <= MAX_FLOOR_M:
+        raise BadRequest(f"m must lie in (0, {MAX_FLOOR_M:g}] metres")
+    if dadv < 0 or net < 0:
+        raise BadRequest("delta_adv and net must be >= 0")
+    if not 0 < alpha < 1:
+        raise BadRequest("alpha must lie in (0, 1)")
+
+    db = _paperIV_depbounds()
+    X = _paperIV_marginals()
+    s = m - dadv - net
+    if s <= 0:
+        # No room left for any benign perturbation: the bound is 1, floor 0.
+        p_u = p_cp = 1.0
+    else:
+        p_u = float(db.union_bound(list(X), s))
+        p, mt, sz = _iv_marginals_path()
+        p_cp = float(db.pbar_union_cp(list(_iv_cp_tails(alpha, str(p), mt, sz)), s))
+    p_u, p_cp = min(1.0, max(0.0, p_u)), min(1.0, max(0.0, p_cp))
+    notes = ["union_bound is evaluated on the empirical marginals: a point "
+             "estimate of the worst-case tail, not a guarantee. pbar_union_cp "
+             "replaces each marginal tail by its simultaneous Clopper-Pearson "
+             f"upper bound, so it is a valid bound with probability >= {1 - alpha:g} "
+             "-- the finite-sample floor."]
+    if s > db.S_MAX:
+        notes.append(f"s exceeds the CP split grid (S_MAX = {db.S_MAX:g} m), so "
+                     f"pbar_union_cp is evaluated at {db.S_MAX:g} m: still valid, "
+                     "conservative.")
+    return {
+        "inputs": {"m": m, "delta_adv": dadv, "net": net, "alpha": alpha},
+        "s": s,
+        "union_bound": p_u,
+        "floor_union": 1.0 - p_u,
+        "pbar_union_cp": p_cp,
+        "floor_cp": 1.0 - p_cp,
+        "confidence": 1.0 - alpha,
+        "marginals": {k: int(len(x)) for k, x in zip(IV_MARGINALS, X)},
+        "provenance": "sim",
+        "note": " ".join(notes),
+        "formula": "s = m - delta_adv - net;  floor = 1 - p(s)",
+        "source": "paperIV/experiments/depbounds.py (union_bound, cp_tails, "
+                  "pbar_union_cp), paperIV/results/e3_marginals.npz",
+    }

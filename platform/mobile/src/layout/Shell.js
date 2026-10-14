@@ -41,6 +41,7 @@ import UploadScreen from '../screens/eval/UploadScreen';
 import PaperIScreen from '../screens/papers/PaperIScreen';
 import PaperIIScreen from '../screens/papers/PaperIIScreen';
 import PaperIIIScreen from '../screens/papers/PaperIIIScreen';
+import PaperIVScreen from '../screens/papers/PaperIVScreen';
 
 const SCREENS = {
   Milestones: MilestonesScreen,
@@ -70,10 +71,11 @@ const SCREENS = {
   MissionDist: MissionDistScreen,
   AgentStudio: AgentStudioScreen,
   Upload: UploadScreen,
-  // Papers -- the three follow-on papers.
+  // Papers -- the follow-on papers.
   PaperI: PaperIScreen,
   PaperII: PaperIIScreen,
   PaperIII: PaperIIIScreen,
+  PaperIV: PaperIVScreen,
 };
 
 /**
