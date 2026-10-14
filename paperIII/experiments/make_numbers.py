@@ -430,17 +430,29 @@ def r5_consensus(m):
         m["CnsAgreedMaxExcess"] = str(max(int(r["max_abs_dev_d_agreed"]) - int(r["f"]) for r in ag))
     full = [r for r in rows if r["mesh"] == "complete" and r["rounds_max"] not in ("", None)]
     m["CnsFullRoundsMax"] = str(max(int(r["rounds_max"]) for r in full)) if full else "--"
-    # table
+    # table: one row per (mesh, f); worst case over liar strategies per relay behaviour
     lines = []
-    for r in rows:
-        if r["f"] == "0" or r["relay"] != "forward" and r["strategy"] != "deflate":
-            continue
-        lines.append(" & ".join([r["mesh"].replace("complete", "full"), r["f"], r["strategy"], r["relay"],
-                                 f"{float(r['frac_2f1_robust']):.2f}", f"{100 * float(r['frac_agreed']):.0f}",
-                                 str(r["rounds_median"]).replace(".0", ""), r["max_abs_dev_d"],
-                                 r["violations_by_honest"]]) + r" \\")
-    head = ("\\begin{tabular}{@{}lrllrrrrr@{}}\n\\toprule\nmesh & $f$ & liar & relay & $(2f{+}1)$-rob. & "
-            "agreed [\\%] & rounds & $\\max|\\Delta d|$ & honest viol.\\\\\n\\midrule\n")
+    for mesh in ("2", "4", "6", "complete"):
+        for fv in ("1", "2"):
+            rr = [r for r in rows if r["mesh"] == mesh and r["f"] == fv]
+            if not rr:
+                continue
+            fwd = [r for r in rr if r["relay"] == "forward"]
+            drp = [r for r in rr if r["relay"] == "drop"]
+            eq = next((r for r in fwd if r["strategy"] == "equivocate"), None)
+            name = {"2": "ring + chords (sparse)", "4": "ring + chords (medium)",
+                    "6": "ring + chords (dense)", "complete": "complete"}[mesh]
+            lines.append(" & ".join([
+                name if fv == "1" else "", fv,
+                f"{float(rr[0]['robustness_median']):.0f}",
+                f"{100 * float(rr[0]['frac_2f1_robust']):.0f}",
+                f"{100 * float(eq['frac_agreed']):.0f}" if eq else "--",
+                str(max(int(r["max_abs_dev_d"]) for r in fwd)),
+                str(max(int(r["max_abs_dev_d"]) for r in drp)),
+                str(sum(int(r["violations_by_honest"]) for r in rr))]) + r" \\")
+    head = ("\\begin{tabular}{@{}lrrrrrrr@{}}\n\\toprule\nmesh & $f$ & rob. & $(2f{+}1)$-rob. [\\%] & "
+            "agreed, equiv. [\\%] & $\\max|\\Delta d|$ fwd & $\\max|\\Delta d|$ drop & honest viol.\\\\\n"
+            "\\midrule\n")
     (MS / "tab_r5.tex").write_text(head + "\n".join(lines) + "\n\\bottomrule\n\\end{tabular}\n")
 
 

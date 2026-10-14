@@ -901,8 +901,9 @@ to check the counts the mesh agrees on.
 \centering\footnotesize
 \setlength{\tabcolsep}{2.5pt}
 \caption{RQ7. Two-phase agreement with $f$ Byzantine aircraft ($N=12$, \nCnsInst\ instances
-per row). $(2f{+}1)$-rob.: fraction of sampled meshes that are $(2f{+}1)$-robust. Rows with
-dropping liars are shown for the deflating strategy; the full grid is in the artifact.}
+per liar strategy and relay behaviour). Rob.: median robustness of the sampled meshes;
+agreed, equiv.: W-MSR agreement with equivocating liars; $\max|\Delta d|$: worst error in
+the agreed deficiency over all liar strategies, when liars forward or drop relayed reports.}
 \label{tab:r5}
 \resizebox{\columnwidth}{!}{\input{tab_r5}}
 \end{table}
@@ -1026,8 +1027,10 @@ obligations O1--O2, which we show can fail.
   conservative and coverage suffers. Feasibility and the bounds are unaffected.
 \item \emph{Inherited caveats.} The parent certificate's own caveats carry over: a hover-regime
   calibration of $\gamma$, Lipschitz dynamics and estimator re-anchoring~\cite{parentpaper}.
-\item \emph{Learning budget.} The learning study reaches 96 aircraft but with a fixed budget
-  of 150--200 PPO updates on CPU cores. The guarantees hold for any policy, including a random
+\item \emph{Learning budget and churn.} The learning study reaches 96 aircraft but with a
+  fixed budget of 150--200 PPO updates on CPU cores, and at 96 aircraft the learned allocators
+  collapse through reassignment churn that the distance-blind objective of \cref{alg:proj}
+  does not discourage. The guarantees hold for any policy, including a random
   or adversarial one, so they do not depend on training scale; the comparative coverage
   figures do, and a classical auction beat every learned allocator at the budgets we ran.
 \item \emph{Simulation and traces.} Threat rates are modelling assumptions; the artifact's

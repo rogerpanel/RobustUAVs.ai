@@ -160,24 +160,37 @@ evaluation seeds $\times$ 16 fleets; CBBA is deterministic, 3 $\times$ 16). Colu
   during training at any size, and our coverage ratio was at least $\nScaleMinRatio$
   throughout. PPO-Lagrangian executed millions of violations at every size and, from
   $N=24$ on, converged to idling ($\nScaleTwentyFourLag$ certified coverage).
-\item \emph{Learning does not scale with our budget.} Certified coverage of the learned
-  policy fell from $\nScaleTwelveOurs$ at $N=12$ to $\nScaleFortyEightOurs$ at $N=48$, with
-  masking plus projection matching it at every size. It stayed above keep-or-nearest plus
-  projection, separated at $N=\nScaleBeatsHeur$ and within the confidence intervals elsewhere.
-\item \emph{The auction does.} CBBA certified $\nScaleTwelveCbba$, $\nScaleTwentyFourCbba$ and
-  $\nScaleFortyEightCbba$ of the task value at the three sizes.
+\item \emph{Learning does not scale with our budget, and the projection's objective is part
+  of the reason.} Certified coverage of the learned policy fell from $\nScaleTwelveOurs$ at
+  $N=12$ to $\nScaleFortyEightOurs$ at $N=48$ and $\nScaleNinetySixOurs$ at $N=96$, where
+  aircraft were reassigned on $\nScaleNinetySixOursSwitch\%$ of agent-epochs and rarely
+  reached a site. Two causes compound. First, a confound of ours: the actor's keep prior was a
+  fixed logit, so the initial probability of keeping a task fell as the action set grew.
+  Scaling the prior to hold the $N=12$ value changed coverage only to
+  $\nScaleFortyEightOursKbs$ at $N=48$ and $\nScaleNinetySixOursKbs$ at $N=96$. Second,
+  \cref{alg:proj} maximises cardinality, then value, and only then agreement with the
+  proposal, and none of the three terms sees travel distance. With a weak proposal on a large
+  fleet it moves aircraft between equally valued tasks, which keeps every guarantee (zero
+  violations, coverage ratio $\nScaleMinRatio$) but not the aircraft on site. A keep term
+  ($\epsilon_{\mathrm{prev}}>0$ in \cref{alg:proj}) or a distance-aware value is the obvious
+  remedy; we did not evaluate it.
+\item \emph{The auction does scale.} CBBA certified $\nScaleTwelveCbba$, $\nScaleTwentyFourCbba$,
+  $\nScaleFortyEightCbba$ and $\nScaleNinetySixCbba$ of the task value at the four sizes,
+  ahead of keep-or-nearest plus projection ($\nScaleNinetySixHeur$ at $N=96$).
 \end{itemize}
-Our budget per size was 200 updates on 4 CPU cores, below the runbook's 400--600; larger
-budgets may narrow the gap to the auction, and the artifact runs them unchanged.
+Our budget per size was 200 updates (150 at $N=96$) on 4 CPU cores, below the runbook's
+400--600; larger budgets may narrow the gap to the auction, and the artifact runs them
+unchanged.
 
 \begin{table*}[t]
 \centering\footnotesize
 \caption{RQ3, fleet size. Certified coverage (IQM, 95\% stratified-bootstrap CI) of the
-learned policy with the projection in the environment, masking with the projection at
-deployment, and two non-learned allocators; $M=\lceil2N/3\rceil$, arena and jammers scaled
-with $N$.}
+learned policy with the projection in the environment (keep prior fixed at $+3$, and scaled
+to keep the $N=12$ initial keep probability), masking with the projection at deployment, and
+two non-learned allocators; $M=\lceil2N/3\rceil$, arena and jammers scaled with $N$. Cov.\
+ratio is that of the scaled-prior policy.}
 \label{tab:scale}
-\input{tab_scale}
+\resizebox{\textwidth}{!}{\input{tab_scale}}
 \end{table*}
 
 \begin{figure}[t]
@@ -190,16 +203,17 @@ with $N$.}
   legend style={font=\scriptsize, at={(0.5,-0.32)}, anchor=north, legend columns=2, draw=none}]
 \addplot[red!70!black, thick, mark=*, mark size=1.4pt, error bars/.cd, y dir=both, y explicit]
   table[x=N, y=rcert, y error plus expr=\thisrow{hi}-\thisrow{rcert}, y error minus expr=\thisrow{rcert}-\thisrow{lo}]{figdata/scale_ours.dat};
+\addplot[red!50, thick, densely dashed, mark=o, mark size=1.4pt] table[x=N, y=rcert]{figdata/scale_ours-kbs.dat};
 \addplot[orange!80!black, thick, densely dashed, mark=square*, mark size=1.3pt] table[x=N, y=rcert]{figdata/scale_mask_proj.dat};
 \addplot[gray, thick, mark=triangle*, mark size=1.5pt] table[x=N, y=rcert]{figdata/scale_heuristic_proj.dat};
 \addplot[green!50!black, thick, mark=diamond*, mark size=1.6pt, error bars/.cd, y dir=both, y explicit]
   table[x=N, y=rcert, y error plus expr=\thisrow{hi}-\thisrow{rcert}, y error minus expr=\thisrow{rcert}-\thisrow{lo}]{figdata/scale_cbba.dat};
 \addplot[blue!70!black, thick, dotted, mark=o, mark size=1.3pt] table[x=N, y=rcert]{figdata/scale_lagrangian.dat};
-\legend{projection + PPO (ours), masking + projection, keep-or-nearest + projection, CBBA (feasible bundles), PPO-Lagrangian}
+\legend{projection + PPO (ours), ours, scaled keep prior, masking + projection, keep-or-nearest + projection, CBBA (feasible bundles), PPO-Lagrangian}
 \end{axis}
 \end{tikzpicture}
 \caption{RQ3, fleet size. Every method shown except PPO-Lagrangian executes no infeasible
-assignment; the learned allocators lose coverage as the fleet grows at a fixed training
-budget, while the auction does not.}
+assignment. At a fixed training budget the learned allocators lose coverage as the fleet
+grows, collapsing at $N=96$ through reassignment churn; the auction does not.}
 \label{fig:scale}
 \end{figure}
