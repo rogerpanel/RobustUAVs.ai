@@ -1223,6 +1223,26 @@ keeps its tasks; all methods share this prior. For PPO-Lagrangian, the dual step
 per update and the limit is $0.005$ violations per agent-epoch.
 Deviation penalty: $\lambda_{\mathrm{dev}}=0.05$. A run takes about 5 minutes on one CPU core.
 
+\section{Sensitivity of the Learning Study}
+\label{app:sens}
+\Cref{tab:r9} varies one knob at a time around the headline configuration ($N=12$, three
+training seeds per value; the default of each knob is the headline run restricted to the same
+seeds). Our layer executed no infeasible assignment during training under every setting
+(largest count \nSensOursMaxTrainViol), with a coverage ratio of at least \nSensOursMinRatio;
+its certified coverage moved only with the threat rates, from roughly 0.54 at half the
+default rates to 0.42 at twice. No PPO-Lagrangian setting avoided violations during learning
+(at least \nSensLagMinTrainViol\ per setting): a loose cost limit or a small dual step buys
+coverage with violations, and a tight one buys fewer violations with idling.
+
+\begin{table}[h]
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\caption{Sensitivity (runbook R9). IQM certified coverage with 95\% stratified-bootstrap CI,
+coverage ratio, and executed infeasible assignments over all of training.}
+\label{tab:r9}
+\resizebox{\columnwidth}{!}{\input{tab_r9}}
+\end{table}
+
 \section{Acronyms}
 \label{app:acronyms}
 {\footnotesize
