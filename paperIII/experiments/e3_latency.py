@@ -36,9 +36,14 @@ def timeit(fn, reps):
 def cpu_model():
     """CPU model string (runbook: record the CPU with every latency run)."""
     try:
-        for line in Path("/proc/cpuinfo").read_text().splitlines():
-            if line.lower().startswith(("model name", "hardware", "model\t")):
-                return line.split(":", 1)[1].strip()
+        lines = Path("/proc/cpuinfo").read_text().splitlines()
+        # x86 reports "model name"; ARM boards report "Model" (Pi) or "Hardware".
+        # The bare "model" field is a numeric family code and must not be used.
+        for key in ("model name", "Model", "Hardware"):
+            for line in lines:
+                k = line.split(":", 1)[0].strip()
+                if k == key and ":" in line:
+                    return line.split(":", 1)[1].strip()
     except OSError:
         pass
     return platform.processor() or platform.machine()

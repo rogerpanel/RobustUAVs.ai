@@ -136,6 +136,7 @@ def main():
         m["LatHunTwelve"] = f(L(12, "lexicographic_hungarian"), 3)
         m["LatHKTenK"] = f(L(10000, "hopcroft_karp"), 0)
         m["LatCPU"] = pick(lat, N=12, algorithm="gnp_fast")["cpu"].replace("_", "-")
+        m["LatThreads"] = pick(lat, N=12, algorithm="gnp_fast")["threads"]
     # E4
     la = rd("e4_lookahead.csv")
     if la:
@@ -554,7 +555,55 @@ def r9_sensitivity(m):
         m["SensLagMinTrainViol"] = tex_int(min(a["train_viol"] for a in lag))
 
 
+def r3_traces(m):
+    """R3: measured GNSS staleness traces (server run) and their use in E2/E5."""
+    sm = rd("r3_trace_summary.csv")
+    if not sm:
+        return
+    m["TrFlights"] = str(len(sm))
+    for lab, nm in (("benign", "Benign"), ("jamming", "Jam"), ("spoofing", "Spoof"), ("dos", "Dos")):
+        m[f"TrN{nm}"] = str(sum(r["label"] == lab for r in sm))
+    live = [r for r in sm if r["flight"].startswith("ace-")]
+    sim = [r for r in sm if not r["flight"].startswith("ace-")]
+    if live:
+        m["TrLiveMedLo"] = f(min(float(r["staleness_p50_s"]) for r in live), 2)
+        m["TrLiveMedHi"] = f(max(float(r["staleness_p50_s"]) for r in live), 2)
+        m["TrLiveRhoHi"] = f(KAPPA * max(float(r["staleness_p50_s"]) for r in live), 1)
+    if sim:
+        m["TrSimMax"] = f(max(float(r["staleness_max_s"]) for r in sim), 2)
+    jam = [r for r in sm if r["label"] == "jamming"]
+    if jam:
+        j = max(jam, key=lambda r: float(r["staleness_max_s"]))
+        m["TrJamMax"] = f(j["staleness_max_s"], 1)
+        m["TrJamFrac"] = f(100 * float(j["frac_epochs_stale_gt1s"]), 2)
+        m["TrJamEps"] = j["n_episodes_gt1s"]
+    m["TrAirborne"] = str(sum("airborne" in r["fused_source"] for r in sm))
+    lt = rd("e2_lift_trace.csv")
+    if lt:
+        for dep, nm in (("independent", "Ind"), ("spatial_jammers", "Sp")):
+            r0 = pick(lt, dependence=dep, event="d=0")
+            m[f"TrLift{nm}TV"] = f(r0["tv_vs_synthetic"], 3) if r0.get("tv_vs_synthetic") else "--"
+            m[f"TrLift{nm}FullPred"] = f(r0["p_iid_pred"], 3)
+            m[f"TrLift{nm}FullSim"] = f(r0["p_sim"], 3)
+        r6 = pick(lt, dependence="spatial_jammers", event="d>=6")
+        m["TrLiftSpSixPred"] = f(100 * float(r6["p_iid_pred"]), 1)
+        m["TrLiftSpSixSim"] = f(100 * float(r6["p_sim"]), 1)
+        m["TrLiftUnder"] = f(float(r6["p_sim"]) / float(r6["p_iid_pred"]), 1)
+    mt = {r["method"]: r for r in rd("e6_main_e5_marl_trace.csv")}
+    for k, nm in (("ours", "Ours"), ("mask+proj", "MaskProj"), ("cbba", "Cbba"), ("heuristic+proj", "Heur"),
+                  ("lagrangian", "Lag"), ("blind", "Blind")):
+        if k in mt:
+            m[f"TrE{nm}"] = f(mt[k]["r_cert_iqm"], 3)
+            if mt[k]["train_violations"] not in ("", None):
+                m[f"TrE{nm}TrainViol"] = tex_int(mt[k]["train_violations"])
+    if "ours" in mt:
+        m["TrEOursLo"] = f(mt["ours"]["r_cert_lo"], 3)
+        m["TrEOursHi"] = f(mt["ours"]["r_cert_hi"], 3)
+        m["TrEOursRatio"] = f(mt["ours"]["cov_ratio_iqm"], 2)
+
+
 def extended(m):
+    r3_traces(m)
     mn = rd("e6_main.csv")
     if mn:
         r2_table(m, {r["method"]: r for r in mn})

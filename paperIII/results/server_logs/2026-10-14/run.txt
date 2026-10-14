@@ -1,0 +1,12 @@
+[12:55:34] E3: latency (machine must be idle)
+[12:55:59] E3 done -> results/e3_latency.csv
+[12:55:59] R3: staging the Kaggle corpus (symlinks into the kagglehub cache; no second copy on disk)
+[12:56:01] R3: E2 part (c) with traces
+[12:56:03] R3: E5 with traces (4 methods x 3 seeds, PAR=4)
+[13:05:39] R3: staging the Kaggle corpus (symlinks into the kagglehub cache; no second copy on disk)
+[13:05:45] R3: E2 part (c) with traces
+[13:05:47] R3: E5 with traces (4 methods x 3 seeds, PAR=4)
+[13:11:45] R3: staging the Kaggle corpus (symlinks into the kagglehub cache; no second copy on disk)
+[13:11:50] R3: E2 part (c) with traces
+[13:11:52] R3: E5 with traces (4 methods x 3 seeds, PAR=4)
+[13:26:24] R3 done

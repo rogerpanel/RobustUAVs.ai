@@ -737,7 +737,8 @@ bound of \cref{prop:graded} lies on the worst case throughout.}
 \end{figure*}
 
 \subsection{RQ4: scalability}
-\Cref{fig:latency} reports wall-clock latency on a two-core cloud CPU (\nLatCPU). The
+\Cref{fig:latency} reports wall-clock latency on an otherwise idle \nLatThreads-vCPU cloud
+server (\nLatCPU). The
 closed-form monitor (deficiency and margin) takes $\nLatCFThousand$\,ms at $N=1000$ and
 $\nLatCFHundredK$\,ms at $N=10^5$. The greedy nested projection takes $\nLatGNPThousand$\,ms
 at $N=1000$ and $\nLatGNPHundredK$\,ms at $N=10^5$. The exact lexicographic projection
@@ -871,6 +872,33 @@ simulation, $N=12$, $M=8$; CIs bootstrap over 64 independent fleets. Missing poi
 The lift fails exactly where its independence obligation fails.}
 \label{fig:lift}
 \end{figure*}
+
+\paragraph{Measured traces (runbook R3).} We replaced the Poisson jamming and fault onsets
+by GNSS staleness replayed from \nTrFlights\ PX4 flight logs of a public UAV attack
+dataset~\cite{whelan2020uavattack} (\nTrNBenign\ benign, \nTrNJam\ jamming, \nTrNSpoof\
+spoofing and \nTrNDos\ link-DoS flights), measured over each flight's airborne window as the
+time since the last GNSS fix the estimator fused. The relay channel keeps its measured
+magnitudes, because the hop ledger holds one packet per run and therefore no time series.
+Three observations follow.
+\begin{itemize}[leftmargin=1.2em,itemsep=1pt,topsep=1pt]
+\item \emph{Real jamming was brief.} The live jamming flight lost its fix once for more than
+  1\,s (at most \nTrJamMax\,s, $\nTrJamFrac\%$ of airborne epochs). Staleness in the simulated
+  flights never exceeded \nTrSimMax\,s. The Poisson model of \cref{sec:design} is therefore a
+  stress test, not a description of these flights.
+\item \emph{Fix age is not negligible.} On the live hardware the median staleness was
+  \nTrLiveMedLo--\nTrLiveMedHi\,s, consistent with a 1\,Hz receiver. Through $\Lrho$ that alone
+  is up to \nTrLiveRhoHi\,m of certified error, enough to make the 2\,m tasks unholdable for
+  that receiver.
+\item \emph{The independence obligation still fails.} Without spatial jammers the traces make
+  aircraft independent by construction, and the lift is exact (\nTrLiftIndFullPred\ predicted
+  against \nTrLiftIndFullSim\ simulated). With common-cause jammers added, the independent model
+  predicts losing six or more tasks $\nTrLiftSpSixPred\%$ of the time against
+  $\nTrLiftSpSixSim\%$ simulated, $\nTrLiftUnder\times$ too low, as with synthetic onsets.
+\end{itemize}
+In the learning study on traces the ordering is unchanged: CBBA \nTrECbba, masking with
+projection \nTrEMaskProj, our layer \nTrEOurs\ [\nTrEOursLo, \nTrEOursHi] with zero training
+violations, keep-or-nearest with projection \nTrEHeur, and PPO-Lagrangian idling after
+\nTrELagTrainViol\ training violations.
 
 \subsection{RQ7: Byzantine aircraft and decentralised agreement}
 \label{sec:rq7}
@@ -1033,9 +1061,10 @@ obligations O1--O2, which we show can fail.
   does not discourage. The guarantees hold for any policy, including a random
   or adversarial one, so they do not depend on training scale; the comparative coverage
   figures do, and a classical auction beat every learned allocator at the budgets we ran.
-\item \emph{Simulation and traces.} Threat rates are modelling assumptions; the artifact's
-  measured-trace replay and software-in-the-loop flight (runbook R3, R4) are scripted but
-  their results are not part of this version.
+\item \emph{Simulation.} The learning study runs in simulation. Measured traces replace the
+  synthetic jamming onsets in one variant (R3), but software-in-the-loop flight (runbook R4)
+  is scripted and not part of this version, and the relay channel's onset rate remains an
+  assumption.
 \item \emph{Scalar certificates only.} Vector certificates lose the closed forms
   (\cref{rem:frontier}).
 \end{itemize}

@@ -1,0 +1,23 @@
+Kaggle cache: /home/deploy/.cache/kagglehub/datasets/rogernickanaedevha/uavs-network-and-navigation-end-to-end-security-data/versions/1
+staged 92 files under /home/deploy/paper3-work/data/raw
+738 unmapped files (extend MAPPING if needed):
+   UAVAttackData/Live GPS Spoofing and Jamming/Benign Flight/ace-benign-log_0_2033-8-19-16-27-30_actuator_armed_0.csv
+   UAVAttackData/Live GPS Spoofing and Jamming/Benign Flight/ace-benign-log_0_2033-8-19-16-27-30_actuator_controls_0_0.csv
+   UAVAttackData/Live GPS Spoofing and Jamming/Benign Flight/ace-benign-log_0_2033-8-19-16-27-30_actuator_outputs_0.csv
+   UAVAttackData/Live GPS Spoofing and Jamming/Benign Flight/ace-benign-log_0_2033-8-19-16-27-30_actuator_outputs_1.csv
+   UAVAttackData/Live GPS Spoofing and Jamming/Benign Flight/ace-benign-log_0_2033-8-19-16-27-30_battery_status_0.csv
+   UAVAttackData/Live GPS Spoofing and Jamming/Benign Flight/ace-benign-log_0_2033-8-19-16-27-30_commander_state_0.csv
+   UAVAttackData/Live GPS Spoofing and Jamming/Benign Flight/ace-benign-log_0_2033-8-19-16-27-30_cpuload_0.csv
+   UAVAttackData/Live GPS Spoofing and Jamming/Benign Flight/ace-benign-log_0_2033-8-19-16-27-30_ekf_gps_drift_0.csv
+   UAVAttackData/Live GPS Spoofing and Jamming/Benign Flight/ace-benign-log_0_2033-8-19-16-27-30_estimator_innovation_test_ratios_0.csv
+   UAVAttackData/Live GPS Spoofing and Jamming/Benign Flight/ace-benign-log_0_2033-8-19-16-27-30_estimator_innovation_variances_0.csv
+   UAVAttackData/Live GPS Spoofing and Jamming/Benign Flight/ace-benign-log_0_2033-8-19-16-27-30_estimator_innovations_0.csv
+   UAVAttackData/Live GPS Spoofing and Jamming/Benign Flight/ace-benign-log_0_2033-8-19-16-27-30_estimator_sensor_bias_0.csv
+   UAVAttackData/Live GPS Spoofing and Jamming/Benign Flight/ace-benign-log_0_2033-8-19-16-27-30_estimator_status_0.csv
+   UAVAttackData/Live GPS Spoofing and Jamming/Benign Flight/ace-benign-log_0_2033-8-19-16-27-30_home_position_0.csv
+   UAVAttackData/Live GPS Spoofing and Jamming/Benign Flight/ace-benign-log_0_2033-8-19-16-27-30_hover_thrust_estimate_0.csv
+   UAVAttackData/Live GPS Spoofing and Jamming/Benign Flight/ace-benign-log_0_2033-8-19-16-27-30_input_rc_0.csv
+   UAVAttackData/Live GPS Spoofing and Jamming/Benign Flight/ace-benign-log_0_2033-8-19-16-27-30_logger_status_0.csv
+   UAVAttackData/Live GPS Spoofing and Jamming/Benign Flight/ace-benign-log_0_2033-8-19-16-27-30_manual_control_setpoint_0.csv
+   UAVAttackData/Live GPS Spoofing and Jamming/Benign Flight/ace-benign-log_0_2033-8-19-16-27-30_mission_0.csv
+   UAVAttackData/Live GPS Spoofing and Jamming/Benign Flight/ace-benign-log_0_2033-8-19-16-27-30_mission_result_0.csv

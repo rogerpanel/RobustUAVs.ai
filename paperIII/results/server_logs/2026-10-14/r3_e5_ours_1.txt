@@ -1,0 +1,8 @@
+ours 1 {'update': 25, 'env_steps': 60000, 'r_cert': 0.1647, 'r_nom': 0.167, 'viol': 0.0, 'exposure': 0.0193, 'switches': 0.0918, 'cov_ratio': 0.9962, 'cum_violations': 0, 'lambda': 0.0, 'wall_s': 34.7645, 'N': 12}
+ours 1 {'update': 50, 'env_steps': 120000, 'r_cert': 0.3486, 'r_nom': 0.3526, 'viol': 0.0, 'exposure': 0.0286, 'switches': 0.0878, 'cov_ratio': 0.9521, 'cum_violations': 0, 'lambda': 0.0, 'wall_s': 69.7908, 'N': 12}
+ours 1 {'update': 75, 'env_steps': 180000, 'r_cert': 0.2726, 'r_nom': 0.2772, 'viol': 0.0, 'exposure': 0.0293, 'switches': 0.122, 'cov_ratio': 0.995, 'cum_violations': 0, 'lambda': 0.0, 'wall_s': 105.9059, 'N': 12}
+ours 1 {'update': 100, 'env_steps': 240000, 'r_cert': 0.5367, 'r_nom': 0.5461, 'viol': 0.0, 'exposure': 0.0249, 'switches': 0.1009, 'cov_ratio': 1.0, 'cum_violations': 0, 'lambda': 0.0, 'wall_s': 141.2357, 'N': 12}
+ours 1 {'update': 125, 'env_steps': 300000, 'r_cert': 0.375, 'r_nom': 0.3795, 'viol': 0.0, 'exposure': 0.022, 'switches': 0.0838, 'cov_ratio': 1.0, 'cum_violations': 0, 'lambda': 0.0, 'wall_s': 177.1335, 'N': 12}
+ours 1 {'update': 150, 'env_steps': 360000, 'r_cert': 0.5147, 'r_nom': 0.5256, 'viol': 0.0, 'exposure': 0.0271, 'switches': 0.0702, 'cov_ratio': 1.0, 'cum_violations': 0, 'lambda': 0.0, 'wall_s': 213.7246, 'N': 12}
+ours 1 {'update': 175, 'env_steps': 420000, 'r_cert': 0.4659, 'r_nom': 0.4734, 'viol': 0.0, 'exposure': 0.0226, 'switches': 0.0922, 'cov_ratio': 0.9904, 'cum_violations': 0, 'lambda': 0.0, 'wall_s': 248.4005, 'N': 12}
+ours 1 {'update': 200, 'env_steps': 480000, 'r_cert': 0.5573, 'r_nom': 0.5698, 'viol': 0.0, 'exposure': 0.0277, 'switches': 0.0889, 'cov_ratio': 1.0, 'cum_violations': 0, 'lambda': 0.0, 'wall_s': 283.3479, 'N': 12}
