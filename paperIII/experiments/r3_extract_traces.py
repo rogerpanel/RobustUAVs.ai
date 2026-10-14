@@ -32,9 +32,10 @@ import numpy as np
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from certcmdp.certificate import OUT  # noqa: E402
+import os  # noqa: E402
 
 REPO = HERE.parents[1]
-DEFAULT_ROOT = REPO / "data" / "raw" / "uav_attack_whelan"
+DEFAULT_ROOT = Path(os.environ.get("R3_ROOT") or REPO / "data" / "raw" / "uav_attack_whelan")
 DT = 0.5
 GPS_TOPICS = ("vehicle_gps_position", "sensor_gps")
 FLAG_TOPICS = ("estimator_status_flags", "estimator_status")
@@ -55,33 +56,46 @@ def _read_csv(path: Path) -> dict[str, np.ndarray]:
     return out
 
 
-def load_flight(d: Path) -> dict[str, dict[str, np.ndarray]]:
+GPS_SUFFIXES = tuple(f"_{t}_0.csv" for t in GPS_TOPICS)
+
+
+def find_flights(root: Path) -> list[tuple[str, Path, str]]:
+    """Every flight under root, whatever the staging layout. A flight is one
+    .ulg file, or one ulog2csv log prefix ("<log>_vehicle_gps_position_0.csv"
+    and its sibling topic files). fetch_kaggle.py stages files flat, so the
+    directory alone does not identify a flight."""
+    out, seen = [], set()
+    for p in sorted(root.rglob("*.ulg")):
+        out.append((str(p.relative_to(root)), p, "ulg"))
+    for suf in GPS_SUFFIXES:
+        for p in sorted(root.rglob(f"*{suf}")):
+            prefix = p.name[: -len(suf)]
+            key = (p.parent, prefix)
+            if key in seen:
+                continue
+            seen.add(key)
+            out.append((str((p.parent / prefix).relative_to(root)), p.parent / prefix, "csv"))
+    return out
+
+
+def load_flight(path: Path, kind: str) -> dict[str, dict[str, np.ndarray]]:
     topics: dict[str, dict[str, np.ndarray]] = {}
-    ulgs = sorted(d.glob("*.ulg"))
-    if ulgs:
+    if kind == "ulg":
         from pyulog import ULog
-        u = ULog(str(ulgs[0]), list(GPS_TOPICS + FLAG_TOPICS))
+        u = ULog(str(path), list(GPS_TOPICS + FLAG_TOPICS))
         for x in u.data_list:
             if x.multi_id == 0:
                 topics[x.name] = {k: np.asarray(v, float) for k, v in x.data.items()}
         return topics
     for name in GPS_TOPICS + FLAG_TOPICS:
-        hits = sorted(d.glob(f"*_{name}_0.csv"))
-        if hits:
-            topics[name] = _read_csv(hits[0])
+        f = path.parent / f"{path.name}_{name}_0.csv"
+        if f.exists():
+            topics[name] = _read_csv(f)
     return topics
 
 
-def find_flights(root: Path) -> list[Path]:
-    dirs = set()
-    for pat in ("*.ulg", "*_vehicle_gps_position_0.csv", "*_sensor_gps_0.csv"):
-        for p in root.rglob(pat):
-            dirs.add(p.parent)
-    return sorted(dirs)
-
-
-def label_of(d: Path, root: Path) -> str:
-    rel = str(d.relative_to(root)).lower()
+def label_of(name: str) -> str:
+    rel = name.lower()
     for lab in LABELS:
         if lab in rel:
             return {"jam": "jamming", "gps_spoof": "spoofing", "spoof": "spoofing"}.get(lab, lab)
@@ -122,18 +136,18 @@ def main():
     ap.add_argument("--root", type=Path, default=DEFAULT_ROOT)
     a = ap.parse_args()
     flights = find_flights(a.root) if a.root.exists() else []
+    print(f"{len(flights)} flights found under {a.root}")
     if not flights:
         print(f"SKIPPED: no flights under {a.root}. Stage with data/fetch_kaggle.py --copy.")
         return 0
     rows, summ = [], []
-    for d in flights:
-        tr = staleness_trace(load_flight(d))
-        name = str(d.relative_to(a.root))
+    for name, path, kind in flights:
+        tr = staleness_trace(load_flight(path, kind))
         if tr is None:
             print(f"  {name}: no GNSS topic, skipped")
             continue
         t, st, fx, sats, src = tr
-        lab = label_of(d, a.root)
+        lab = label_of(name)
         for i in range(t.size):
             rows.append({"flight": name, "label": lab, "t_s": round(float(t[i]), 3),
                          "staleness_s": round(float(st[i]), 4), "fix_type": int(fx[i]),
