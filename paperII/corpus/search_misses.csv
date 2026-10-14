@@ -27,8 +27,6 @@ G52,B,2022,ICLR,Policy Smoothing for Provably Robust Reinforcement Learning
 G55,B,2022,ICLR,COPA: Certifying Robust Policies for Offline RL against Poisoning Attacks
 G57,B,2021,CAV,FOSSIL: A Software Tool for the Formal Synthesis of Lyapunov Functions and Barrier Certificates using Neural Networks
 G65,A,2020,JGCD,Runtime Assurance for Autonomous Aerospace Systems
-G67,B,2018,AAAI,Safe Reinforcement Learning via Shielding
-G68,A,2019,DATE,Runtime Monitoring Neuron Activation Patterns
 G69,B,2020,ECAI,Outside the Box: Abstraction-Based Monitoring of Neural Networks
 G70,B,2020,IMBSA,SafeML: Safety Monitoring of ML Classifiers through Statistical Difference Measures
 G71,A,2020,CAV,Formal Analysis and Redesign of a Neural Network-Based Aircraft Taxiing System with VerifAI
@@ -38,5 +36,4 @@ G75,B,2017,UAI,Computing Nonvacuous Generalization Bounds for Deep (Stochastic) 
 G78,B,2019,ICML,PROVEN: Verifying Robustness of Neural Networks with a Probabilistic Approach
 G81,B,2021,AISafety@IJCAI,Assessing the Reliability of Deep Learning Classifiers Through Robustness Evaluation and Operational Profiles
 G82,A,2023,ACM TECS,Reliability Assessment and Safety Arguments for ML Components in System Assurance
-G85,A,2024,ERTS,A Study of an ACAS-Xu Exact Implementation Using ED-324/ARP6983
 G86,A,2021,SAFECOMP,Towards Certification of a Reduced Footprint ACAS-Xu System: A Hybrid ML-Based Solution

@@ -1,0 +1,86 @@
+{
+ "api_key": "<redacted>",
+ "is_grandfathered": false,
+ "rate_limit": {
+  "daily_budget_usd": 1,
+  "daily_used_usd": 0,
+  "daily_remaining_usd": 1,
+  "prepaid_balance_usd": 0,
+  "prepaid_remaining_usd": 0,
+  "prepaid_expires_at": null,
+  "resets_at": "2026-10-15T00:00:00.000Z",
+  "resets_in_seconds": 50371,
+  "endpoint_costs_usd": {
+   "singleton": 0,
+   "list": 0.0001,
+   "search": 0.001,
+   "search_rerank": 0.002,
+   "rerank_extra": 0.001,
+   "content": 0.01,
+   "semantic": 0.001,
+   "text": 0.01
+  },
+  "credits_limit": 10000,
+  "credits_used": 0,
+  "credits_remaining": 10000,
+  "onetime_credits_balance": 0,
+  "onetime_credits_remaining": 0,
+  "onetime_credits_expires_at": null,
+  "credit_costs": {
+   "singleton": 0,
+   "list": 1,
+   "search": 10,
+   "search_rerank": 20,
+   "rerank_extra": 10,
+   "content": 100,
+   "semantic": 10,
+   "text": 100
+  }
+ }
+}
+== search (2026-10-14T10:00:29Z)
+resume: 1 of 16 queries complete (1415 records kept)
+done     541  "certifiably robust" ("neural network" OR "deep learning" OR
+done    6595  "formal verification" ("neural network" OR "deep learning" O
+done    2586  "reachability analysis" ("neural network" OR "deep learning"
+done     445  "runtime assurance" ("neural network" OR "deep learning" OR 
+done     252  "simplex architecture" ("neural network" OR "deep learning" 
+done    1827  "conformal prediction" ("neural network" OR "deep learning" 
+done     241  "PAC-Bayes" ("neural network" OR "deep learning" OR "learnin
+done     424  "statistical model checking" ("neural network" OR "deep lear
+done     716  "scenario approach" ("neural network" OR "deep learning" OR 
+done    2534  "safety verification" ("neural network" OR "deep learning" O
+done    1031  "provable guarantee" ("neural network" OR "deep learning" OR
+done      23  "perception contract" ("neural network" OR "deep learning" O
+done    1673  "safety certificate" ("neural network" OR "deep learning" OR
+done    1093  "barrier certificate" ("neural network" OR "deep learning" O
+done     695  "operational profile" ("neural network" OR "deep learning" O
+== venues (2026-10-14T10:03:14Z)
+resume: 0 of 18 venues complete (0 records kept)
+S&P            3 sources     2898 papers 2017-2026     12 block-A titles
+USENIX Sec     1 sources      358 papers 2017-2026      1 block-A titles
+CCS            5 sources     2976 papers 2017-2026      7 block-A titles
+NDSS           1 sources     1195 papers 2017-2026      1 block-A titles
+CAV            1 sources        9 papers 2017-2026      1 block-A titles
+TACAS          0 sources        0 papers 2017-2026      0 block-A titles
+HSCC           3 sources      320 papers 2017-2026     23 block-A titles
+ICCPS          3 sources      401 papers 2017-2026      8 block-A titles
+EMSOFT         5 sources      142 papers 2017-2026      1 block-A titles
+NFM            1 sources        1 papers 2017-2026      0 block-A titles
+SAFECOMP       1 sources        0 papers 2017-2026      0 block-A titles
+DSN            5 sources     1390 papers 2017-2026      6 block-A titles
+NeurIPS        2 sources    18066 papers 2017-2026     79 block-A titles
+ICML          14 sources     8252 papers 2017-2026      8 block-A titles
+ICLR           1 sources      587 papers 2017-2026      2 block-A titles
+CoRL           1 sources       60 papers 2017-2026      0 block-A titles
+CDC            2 sources       20 papers 2017-2026      0 block-A titles
+DASC           2 sources     1354 papers 2017-2026      3 block-A titles
+venue sweep: 38029 papers scanned in this attempt, 152 kept; sources -> /home/deploy/paper-work/paperII/corpus/venue_sources.csv
+22243 records -> 15349 unique candidates (6894 duplicates)
+[S1] identified 22243 (search 22091, venue sweeps 152, other databases 0); duplicates 6894; 15349 records to screen; 0 queries truncated
+[S1] wrote /home/deploy/paper-work/paperII/corpus/prisma_counts.csv
+[sensitivity] tier A  31/46  = 67%
+[sensitivity] tier B  17/40  = 42%
+[sensitivity] all     48/86  = 56%
+[sensitivity] 38 misses -> /home/deploy/paper-work/paperII/corpus/search_misses.csv
+== S1 complete (2026-10-14T10:06:18Z)

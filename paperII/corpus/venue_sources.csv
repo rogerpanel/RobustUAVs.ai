@@ -1,0 +1,52 @@
+venue,phrase,id,display_name,works_count
+S&P,Symposium on Security and Privacy,https://openalex.org/S4210233669,Proceedings - IEEE Symposium on Security and Privacy/Proceedings of the ... IEEE Symposium on Security and Privacy,2602
+S&P,Symposium on Security and Privacy,https://openalex.org/S4306418620,IEEE European Symposium on Security and Privacy,646
+S&P,Symposium on Security and Privacy,https://openalex.org/S7407086460,IEEE European Symposium on Security and Privacy Workshops (EuroS&PW),669
+USENIX Sec,USENIX Security,https://openalex.org/S4306421123,USENIX Security Symposium,579
+CCS,Computer and Communications Security,https://openalex.org/S4363608815,ACM SIGSAC Conference on Computer and Communications Security (CCS),2603
+CCS,Computer and Communications Security,https://openalex.org/S4393917527,Proceedings of the ACM Conference on Computer and Communications Security,1017
+CCS,Computer and Communications Security,https://openalex.org/S4363609011,ACM Asia Conference on Computer and Communications Security (ASIA CCS),1026
+CCS,Computer and Communications Security,https://openalex.org/S4306417584,"ACM Symposium on Information, Computer and Communications Security",422
+CCS,Computer and Communications Security,https://openalex.org/S4306417956,Computer and Communications Security,79
+NDSS,Network and Distributed System Security,https://openalex.org/S4306420590,Network and Distributed System Security Symposium,1466
+CAV,Computer Aided Verification,https://openalex.org/S4306417953,Computer Aided Verification,39
+HSCC,Hybrid Systems: Computation and Control,https://openalex.org/S4306419516,International Conference on Hybrid Systems: computation and control,377
+HSCC,Hybrid Systems: Computation and Control,https://openalex.org/S7407086960,ACM International Conference on Hybrid Systems: Computation and Control (HSCC),226
+HSCC,Hybrid Systems: Computation and Control,https://openalex.org/S4306417565,ACM International Conference Hybrid Systems: Computation and Control,8
+ICCPS,Conference on Cyber-Physical Systems,https://openalex.org/S7407086865,ACM/IEEE International Conference on Cyber-Physical Systems (ICCPS),586
+ICCPS,Conference on Cyber-Physical Systems,https://openalex.org/S7407089103,"IEEE International Conference on Cyber-Physical Systems, Networks, and Applications (CPSNA)",112
+ICCPS,Conference on Cyber-Physical Systems,https://openalex.org/S4306419316,International Conference on Cyber-Physical Systems,51
+EMSOFT,Embedded Software,https://openalex.org/S7407088516,ACM International Conference on Embedded Software (EMSOFT),288
+EMSOFT,Embedded Software,https://openalex.org/S7407089308,International Conference on Embedded Software (EMSOFT),218
+EMSOFT,Embedded Software,https://openalex.org/S4306419423,International Conference on Embedded Software and Systems,346
+EMSOFT,Embedded Software,https://openalex.org/S4306418261,Embedded Software,160
+EMSOFT,Embedded Software,https://openalex.org/S4306420545,Model-based Methodologies for Pervasive and Embedded Software,0
+NFM,NASA Formal Methods,https://openalex.org/S4306420572,NASA Formal Methods Symposium,6
+SAFECOMP,"Computer Safety, Reliability, and Security",https://openalex.org/S4306419258,"International Conference on Computer Safety, Reliability, and Security",6
+DSN,Dependable Systems and Networks,https://openalex.org/S7407088029,IEEE/IFIP International Conference on Dependable Systems and Networks (DSN),1890
+DSN,Dependable Systems and Networks,https://openalex.org/S7407087663,IEEE/IFIP International Conference on Dependable Systems and Networks Workshops (DSN-W),584
+DSN,Dependable Systems and Networks,https://openalex.org/S7407086127,IEEE/IFIP International Conference on Dependable Systems and Networks - Supplemental Volume (DSN-S),327
+DSN,Dependable Systems and Networks,https://openalex.org/S4306418177,Dependable Systems and Networks,142
+DSN,Dependable Systems and Networks,https://openalex.org/S4393918442,International Conference on Dependable Systems and Networks workshops,0
+NeurIPS,Neural Information Processing Systems,https://openalex.org/S4363606243,neural information processing systems,19929
+NeurIPS,Neural Information Processing Systems,https://openalex.org/S7407089294,LatinX in AI at Neural Information Processing Systems Conference (LXAI),129
+ICML,International Conference on Machine Learning,https://openalex.org/S4306419644,International Conference on Machine Learning,2001
+ICML,International Conference on Machine Learning,https://openalex.org/S4306419646,International Conference on Machine Learning and Cybernetics,8555
+ICML,International Conference on Machine Learning,https://openalex.org/S4363607906,IEEE International Conference on Machine Learning and Applications (ICMLA),1996
+ICML,International Conference on Machine Learning,https://openalex.org/S4306419645,International Conference on Machine Learning and Applications,2264
+ICML,International Conference on Machine Learning,https://openalex.org/S7407088508,International Conference on Machine Learning and Computing (ICMLC),825
+ICML,International Conference on Machine Learning,https://openalex.org/S4363608203,"International Conference on Machine Learning, Big Data, Cloud and Parallel Computing (COM-IT-CON)",272
+ICML,International Conference on Machine Learning,https://openalex.org/S7407085934,International Conference on Machine Learning Technologies (ICMLT),437
+ICML,International Conference on Machine Learning,https://openalex.org/S7407087883,International Conference on Machine Learning and Soft Computing (ICMLSC),275
+ICML,International Conference on Machine Learning,https://openalex.org/S4363608198,"International Conference on Machine Learning, Big Data and Business Intelligence (MLBDBI)",638
+ICML,International Conference on Machine Learning,https://openalex.org/S4363608615,International Conference on Machine Learning and Intelligent Systems Engineering (MLISE),519
+ICML,International Conference on Machine Learning,https://openalex.org/S7407089141,International Conference on Machine Learning and Computer Application (ICMLCA),871
+ICML,International Conference on Machine Learning,https://openalex.org/S7407086555,IEEE International Conference on Machine Learning and Applied Network Technologies (ICMLANT),191
+ICML,International Conference on Machine Learning,https://openalex.org/S7407089142,International Conference on Machine Learning and Machine Intelligence (MLMI),103
+ICML,International Conference on Machine Learning,https://openalex.org/S7407089314,International Conference on Machine Learning and Natural Language Processing (MLNLP),230
+ICLR,International Conference on Learning Representations,https://openalex.org/S4306419637,International Conference on Learning Representations,609
+CoRL,Conference on Robot Learning,https://openalex.org/S4306506823,Conference on Robot Learning,60
+CDC,Conference on Decision and Control,https://openalex.org/S7407087860,IEEE Conference on Decision and Control including the Symposium on Adaptive Processes (CDC),1877
+CDC,Conference on Decision and Control,https://openalex.org/S4306418043,Conference on Decision and Control,215
+DASC,Digital Avionics Systems Conference,https://openalex.org/S4363608230,IEEE/AIAA Digital Avionics Systems Conference (DASC),5046
+DASC,Digital Avionics Systems Conference,https://openalex.org/S4306511130,AIAA/IEEE Digital Avionics Systems Conference (DASC),1250
