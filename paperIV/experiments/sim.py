@@ -230,6 +230,7 @@ def simulate(N, seed, *, w20=None, gnss=True, fault=True, attack="none",
     maxdev = np.zeros(N); maxdev_after = np.zeros(N)
     first_alarm = {}
 
+    sat = np.zeros(N, bool)                   # actuator saturation reached during the mission
     anchor_every = None if anchor is None else int(round(anchor / dt))
     for k in range(N_STEPS):
         t = k * dt
@@ -242,7 +243,9 @@ def simulate(N, seed, *, w20=None, gnss=True, fault=True, attack="none",
         w = gain_w * (xw @ C_w[0])
         w_air = w if (env_on and noise) else 0.0
         # ---------- controller on the estimate
-        u_cmd = np.clip(-KP * xh[:, 0] - KD * xh[:, 1], -U_MAX, U_MAX)
+        u_raw = -KP * xh[:, 0] - KD * xh[:, 1]
+        sat |= np.abs(u_raw) >= U_MAX
+        u_cmd = np.clip(u_raw, -U_MAX, U_MAX)
         u_act = u_cmd * np.where(fault & loe_on & (t >= loe_t), 1.0 - loe_mag, 1.0)
         a = u_act + C_DRAG * (w_air - v)
         v = v + a * dt
@@ -370,7 +373,7 @@ def simulate(N, seed, *, w20=None, gnss=True, fault=True, attack="none",
         maxdev_after = np.where(t >= t0, np.maximum(maxdev_after, ap), maxdev_after)
 
     return {"maxdev": maxdev, "maxdev_after": maxdev_after,
-            "S1": S1, "S2": S2, "S3": S3, "S4": S4, "SA": SA}
+            "S1": S1, "S2": S2, "S3": S3, "S4": S4, "SA": SA, "sat": sat}
 
 
 DETECTORS = ("D1", "D2", "D3", "D4")

@@ -1,0 +1,203 @@
+#!/usr/bin/env python3
+"""E4-revised -- the source-agnostic floor after the scaled test exposed three
+failed conditions (results/r1_e4_soundness.csv):
+
+  C1  superposition failed under actuator saturation (up to 14.6 m excess);
+  C3  the benign p-box carried no sampling uncertainty (pbar = 0 beyond the
+      largest of 4,000 samples, while 1-in-5,000 benign missions failed);
+  dadv  an empirical supremum over 500 calibration missions was exceeded by
+      held-out attackers on 5,000 missions (36 of 270 cells, up to 1.61x).
+
+Revisions, fixed BEFORE this evaluation and judged on fresh seeds:
+  (i)   saturation alarm D_sat: the autopilot flags any epoch at which the
+        commanded acceleration reaches U_MAX. Stealth now also requires no
+        saturation; on unsaturated missions superposition is exact (checked).
+  (ii)  delta_adv := the R8 linear-programming bound for the unsaturated loop
+        (anchor gate + D1, T_a = 5 s), which holds for EVERY stealthy attack
+        with probability >= 1 - eps over the benign noise; eps is added to the
+        bound.
+  (iii) per-source Clopper-Pearson upper tails (alpha/3 each) aggregated by the
+        union (Makarov) bound over all splits of the available budget.
+Bound tested:  Pr[fail and undetected] <= pbar_U(m - delta_LP - net) + eps.
+
+Seed blocks (fresh): 9001 benign FPR check; 9000 + h held-out CEM attackers,
+9500 + h held-out tail-TPE attackers (both optimised AGAINST the revised stack);
+90000 + 10 h + w held-out evaluation missions.
+Outputs: results/e4r_fpr.csv, e4r_heldout.csv, e4r_soundness.csv
+Usage:   python3 e4_revised.py [--quick] [--par 4]
+"""
+from __future__ import annotations
+
+import argparse
+import csv
+import json
+import time
+from multiprocessing import Pool
+
+import numpy as np
+from scipy.stats import beta, binom
+
+import run_pilot as RP
+import r1_attackers as R1
+from sim import simulate
+
+RES = RP.RES
+FAMS = R1.FAMS
+_orig_mask = RP.stealth_mask
+
+
+def stealth_rev(o, cal, stack, fpr):
+    """Detector stack + anchor gate + saturation alarm."""
+    return _orig_mask(o, cal, stack, fpr) & ~o["sat"]
+
+
+# every optimiser and evaluation below sees the revised stack
+RP.stealth_mask = stealth_rev
+R1.stealth_mask = stealth_rev
+
+
+def cp_upper(k, n, a):
+    return 1.0 if k >= n else float(beta.ppf(1 - a, k + 1, n - k))
+
+
+def pbar_union_cp(margs, s, alpha=0.05, step=0.05):
+    """min over s1 + s2 + s3 = s of sum_i CP-upper tail of source i at s_i."""
+    if s <= 0:
+        return 1.0
+    G = int(np.floor(s / step)) + 1
+    grid = np.arange(G) * step
+    a_i = alpha / len(margs)
+    U = []
+    for x in margs:
+        xs = np.sort(x); n = len(xs)
+        k = n - np.searchsorted(xs, grid, side="right")
+        U.append(np.array([cp_upper(int(kk), n, a_i) for kk in k]))
+    Ug, Uf, Ue = U
+    best = 1.0
+    for i in range(G):
+        j = np.arange(G - i)
+        tot = Ug[i] + Uf[j] + Ue[G - 1 - i - j]
+        best = min(best, float(tot.min()))
+    return min(1.0, best)
+
+
+def _held_cem(args):
+    fam, fpr, h, gens, k = args
+    cal = R1.load_cal()
+    J, u = RP.cem(fam, "ALL", fpr, cal, 9000 + h, gens=gens, K=k)
+    return "cem", fam, fpr, 9000 + h, J, u.tolist()
+
+
+def _held_tail(args):
+    fam, fpr, h, budget = args
+    R1.OBJECTIVE = "tail"
+    cal = R1.load_cal()
+    (J, u), _ = R1.run_tpe(fam, "ALL", fpr, cal, 3500 + h, budget["trials"], budget["k"])
+    return "tpe_tail", fam, fpr, 9500 + h, J, [float(x) for x in u]
+
+
+def _eval(args):
+    opt, fam, fpr, hseed, u, n, dadv, eps, pb = args
+    cal = R1.load_cal()
+    rows = []
+    for wi, (wname, (wl, wh)) in enumerate((("light", (RP.W_LO, RP.W_LO)), ("moderate", (RP.W_HI, RP.W_HI)),
+                                            ("envelope", (RP.W_LO, RP.W_HI)))):
+        o, oa, ob = RP.run_attack(fam, u, n, 90000 + 10 * (hseed % 1000) + wi + (5000 if opt != "cem" else 0),
+                                  wl=wl, wh=wh)
+        st = stealth_rev(o, cal, "ALL", fpr)
+        n_u = int(st.sum())
+        adv = float(oa["maxdev"][st].max()) if n_u else 0.0
+        ex = (o["maxdev"] - oa["maxdev"] - ob["maxdev"])[st]
+        for m in (5.0, 10.0, 20.0):
+            for tn in (0.0, 0.25):
+                s_av = m - dadv[fpr] - RP.net_tube(tn)
+                p_b = pb[(fpr, m, tn)]
+                bound = min(1.0, p_b + eps)
+                k = int(((o["maxdev"] + RP.net_tube(tn) > m) & st).sum())
+                rows.append({"optimiser": opt, "family": fam, "fpr": fpr, "heldout_seed": hseed, "wind": wname,
+                             "m": m, "theta_net": tn, "delta_adv_lp": round(dadv[fpr], 3), "eps": eps,
+                             "s_available_m": round(s_av, 3), "pbar_union_cp": round(p_b, 6),
+                             "bound": round(bound, 6), "f_cert": round(1 - bound, 6), "n": n,
+                             "n_undetected": n_u, "frac_sat_alarm": round(float(o["sat"].mean()), 4),
+                             "k_fail_undetected": k, "rate_fail_undetected": round(k / n, 6),
+                             "p_violation": float(binom.sf(k - 1, n, bound)) if k > 0 else 1.0,
+                             "heldout_adv_max": round(adv, 3), "adv_within_lp": int(adv <= dadv[fpr] + 1e-9),
+                             "superposition_max_excess_m": round(float(ex.max()) if ex.size else 0.0, 4),
+                             "provenance": "sim"})
+    return rows
+
+
+def write(name, rows):
+    if rows:
+        with open(RES / name, "w", newline="") as fh:
+            w = csv.DictWriter(fh, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
+
+
+def main():
+    ap = argparse.ArgumentParser(); ap.add_argument("--quick", action="store_true")
+    ap.add_argument("--par", type=int, default=4)
+    a = ap.parse_args()
+    n, n_fpr, seeds_cem, gens, k = 5000, 8000, 3, RP.CEM_GENS, RP.CEM_K
+    budget = dict(trials=R1.TRIALS, k=R1.K)
+    if a.quick:
+        n, n_fpr, seeds_cem, gens, k = 300, 1000, 1, 4, 8
+        budget = dict(trials=12, k=16)
+    t0 = time.time()
+    log = lambda s: print(f"[{time.time() - t0:7.0f}s] {s}", flush=True)
+    cal = R1.load_cal()
+    # benign false-alarm rate of the revised stack (envelope wind, fresh seed)
+    b = simulate(n_fpr, 9001, w20=RP.wind(n_fpr, 9001))
+    rows = []
+    for fpr in RP.OPS:
+        base = ~_orig_mask(b, cal, "ALL", fpr)
+        rev = stealth_rev(b, cal, "ALL", fpr)
+        rows.append({"fpr_target": fpr, "fpr_stack_anchor": round(1 - float(base.mean()), 4),
+                     "fpr_with_sat_alarm": round(1 - float(rev.mean()), 4),
+                     "sat_alarm_alone": round(float(b["sat"].mean()), 4), "n": n_fpr, "provenance": "sim"})
+    write("e4r_fpr.csv", rows); log(f"FPR: {rows}")
+    # delta from R8
+    r8 = [r for r in csv.DictReader((RES / "r8_analytic_bound.csv").open())
+          if r["T_anchor_s"] in ("5.0", "5") and r["constraints"].startswith("anchor gate + D1")]
+    dadv = {float(r["fpr"]): float(r["delta_lp_m"]) for r in r8}
+    eps = float(r8[0]["eps"])
+    z = np.load(RES / "e3_marginals.npz")
+    margs = [z["gnss"], z["fault"], z["env"]]
+    pb = {}
+    for fpr in RP.OPS:
+        for m in (5.0, 10.0, 20.0):
+            for tn in (0.0, 0.25):
+                pb[(fpr, m, tn)] = pbar_union_cp(margs, m - dadv[fpr] - RP.net_tube(tn))
+    log(f"delta_LP {dadv}; pbar computed")
+    with Pool(a.par) as pool:
+        jobs_c = [(f, p, h, gens, k) for h, (f, p) in
+                  enumerate([(f, p) for p in RP.OPS for f in FAMS for _ in range(seeds_cem)])]
+        jobs_t = [(f, p, h, budget) for h, (f, p) in enumerate([(f, p) for p in RP.OPS for f in FAMS])]
+        held = pool.map(_held_cem, jobs_c) + pool.map(_held_tail, jobs_t)
+        write("e4r_heldout.csv", [{"optimiser": o, "family": f, "fpr": p, "heldout_seed": s, "J_train": round(J, 4),
+                                   "params": json.dumps([round(x, 5) for x in u])} for o, f, p, s, J, u in held])
+        log(f"{len(held)} held-out attackers optimised against the revised stack")
+        rows = []
+        for rr in pool.imap_unordered(_eval, [(o, f, p, s, u, n, dadv, eps, pb) for o, f, p, s, J, u in held]):
+            rows += rr
+    rows.sort(key=lambda r: (r["fpr"], r["family"], r["optimiser"], r["heldout_seed"], r["wind"], r["m"],
+                             r["theta_net"]))
+    adj = RP.holm([r["p_violation"] for r in rows])
+    for r, x in zip(rows, adj):
+        r["p_holm"] = round(float(x), 6); r["p_violation"] = round(r["p_violation"], 6)
+        r["violation"] = int(x < 0.05)
+    write("e4r_soundness.csv", rows)
+    cells = {(r["optimiser"], r["family"], r["fpr"], r["heldout_seed"], r["wind"]): r for r in rows}
+    log(f"{len(rows)} tests, {sum(r['violation'] for r in rows)} Holm-significant violations; "
+        f"held-out attack-only deviation within delta_LP in {sum(c['adv_within_lp'] for c in cells.values())}"
+        f"/{len(cells)} cells; max superposition excess "
+        f"{max(c['superposition_max_excess_m'] for c in cells.values())} m")
+    meta = RES / "run_meta.json"
+    mm = json.loads(meta.read_text()) if meta.exists() else {}
+    mm["e4_revised"] = {"n": n, "held_cem_seeds": seeds_cem, "tail_tpe": budget, "quick": a.quick,
+                        "seed_blocks": {"fpr": 9001, "held_cem": "9000+h", "held_tail": "9500+h",
+                                        "eval": "90000+10h+w (+5000 for tail)"}}
+    meta.write_text(json.dumps(mm))
+
+
+if __name__ == "__main__":
+    main()
