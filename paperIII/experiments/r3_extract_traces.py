@@ -38,7 +38,7 @@ REPO = HERE.parents[1]
 DEFAULT_ROOT = Path(os.environ.get("R3_ROOT") or REPO / "data" / "raw" / "uav_attack_whelan")
 DT = 0.5
 GPS_TOPICS = ("vehicle_gps_position", "sensor_gps")
-FLAG_TOPICS = ("estimator_status_flags", "estimator_status")
+FLAG_TOPICS = ("estimator_status_flags", "estimator_status", "vehicle_land_detected")
 LABELS = ("benign", "jamming", "jam", "spoof", "gps_spoof", "attack")
 
 
@@ -99,12 +99,36 @@ def load_flight(path: Path, kind: str) -> dict[str, dict[str, np.ndarray]]:
     return topics
 
 
-def label_of(name: str) -> str:
-    rel = name.lower()
-    for lab in LABELS:
-        if lab in rel:
-            return {"jam": "jamming", "gps_spoof": "spoofing", "spoof": "spoofing"}.get(lab, lab)
+FOLDER_LABELS = (("benign", "benign"), ("normal", "benign"), ("jamming", "jamming"),
+                 ("spoof", "spoofing"), ("dos", "dos"))
+
+
+def label_of(name: str, origin: str = "") -> str:
+    """Label from the flight's own folder in the dataset (e.g. ".../GPS Jamming/x.ulg"),
+    falling back to the file name. Matching the whole path is wrong here: every path
+    contains "UAVAttackData", and "Live GPS Spoofing and Jamming" holds all three
+    live flights."""
+    for text in (Path(origin).parent.name if origin else "", Path(name).name):
+        t = text.lower()
+        for key, lab in FOLDER_LABELS:
+            if key in t:
+                return lab
     return "unlabelled"
+
+
+def airborne_window(topics):
+    """[first take-off, last landing] from vehicle_land_detected, or None."""
+    ld = topics.get("vehicle_land_detected")
+    if not ld or "landed" not in ld or "timestamp" not in ld:
+        return None
+    t = ld["timestamp"] * 1e-6
+    air = ld["landed"] < 0.5
+    if not air.any():
+        return None
+    i0 = int(np.argmax(air))
+    i1 = len(air) - 1 - int(np.argmax(air[::-1]))
+    t1 = t[i1 + 1] if i1 + 1 < len(t) else t[-1]
+    return float(t[i0]), float(t1)
 
 
 def staleness_trace(topics):
@@ -123,7 +147,11 @@ def staleness_trace(topics):
         bit = (f["control_mode_flags"].astype(np.int64) >> 2) & 1
         fused = np.interp(tg, f["timestamp"] * 1e-6, bit) > 0.5
         good, src = good & fused, "control_mode_flags_bit2"
-    t = np.arange(tg[0], tg[-1], DT)
+    win = airborne_window(topics)
+    lo, hi = (max(tg[0], win[0]), min(tg[-1], win[1])) if win else (tg[0], tg[-1])
+    if hi - lo < 10 * DT:                         # no usable airborne window: whole log
+        lo, hi, win = tg[0], tg[-1], None
+    t = np.arange(lo, hi, DT)
     tgood = tg[good]
     if tgood.size == 0:
         stale = t - tg[0]
@@ -133,7 +161,7 @@ def staleness_trace(topics):
         stale = t - last
     j = np.clip(np.searchsorted(tg, t, side="right") - 1, 0, tg.size - 1)
     sats = gps.get("satellites_used", np.full(tg.size, np.nan))
-    return t - t[0], stale, gps["fix_type"][j], sats[j], src
+    return t - t[0], stale, gps["fix_type"][j], sats[j], src + ("|airborne" if win else "|whole_log")
 
 
 def main():
@@ -152,7 +180,7 @@ def main():
             print(f"  {name}: no GNSS topic, skipped")
             continue
         t, st, fx, sats, src = tr
-        lab = label_of(name + " " + origin)
+        lab = label_of(name, origin)
         for i in range(t.size):
             rows.append({"flight": name, "label": lab, "t_s": round(float(t[i]), 3),
                          "staleness_s": round(float(st[i]), 4), "fix_type": int(fx[i]),
