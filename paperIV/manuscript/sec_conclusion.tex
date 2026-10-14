@@ -1,0 +1,24 @@
+% ------------------------------------------------------------- Conclusion
+A UAV's navigation stack cannot tell an attacker from the weather, and an
+attacker who knows this will dress accordingly. We turned that observation into
+a threat model, a requirement and a measurement. The threat model is
+$\varepsilon$-observational equivalence, which bounds every detector's advantage
+by a total-variation distance. The requirement is that a mission-level
+guarantee must bound undetected failure without relying on the detector to
+notice the disguise. The measurement is a cross-layer benchmark with enforced
+provenance and a cross-evaluated evasion study. In that study every disguise
+evaded every detector, and the deviation a detector admitted depended on
+whether it modelled the disguise as benign, unless a trusted re-anchoring
+alarm capped it for all of them.
+
+The unified budget meets the requirement. Its stochastic terms are aggregated
+over every coupling, including one an attacker imposes by controlling when
+jamming happens; its deterministic terms add no dependence gap; and its single
+empirical adversarial input is reported together with the case in which an
+independent attacker exceeded it. The analysis also corrects a hypothesis from
+our proposal: the union bound is not where the looseness lives. The slack lies
+in the dependence, envelope and temporal gaps. In our pilot the temporal gap
+was the largest at moderate budgets, and it is the most tractable. For the defender, re-anchoring and closing the
+terminal interval mattered more than any threshold. The next step is to
+re-establish these results in PX4 software-in-the-loop simulation and with
+measured marginals, as the released runbook specifies.

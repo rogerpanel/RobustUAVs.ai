@@ -1,0 +1,13 @@
+control,family,m,n,n_undetected,k_fail_undetected,pbar_ra,mcr_undetected,f_cert_ra,p_violation,max_stealthy_dev,p_holm,violation
+no_anchor_C2_violated,ramp,5.0,1000,907,907,1.0,0.0,0.0,1.0,47.82,1.0,0
+no_anchor_C2_violated,ramp,10.0,1000,907,907,0.09112,0.0,0.9089,0.0,47.82,0.0,1
+no_anchor_C2_violated,ramp,20.0,1000,907,907,0.0,0.0,1.0,0.0,47.82,0.0,1
+no_anchor_C2_violated,fault_mimic,5.0,1000,729,719,1.0,0.0137,0.0,1.0,308.5,1.0,0
+no_anchor_C2_violated,fault_mimic,10.0,1000,729,683,0.09112,0.0631,0.9089,0.0,308.5,0.0,1
+no_anchor_C2_violated,fault_mimic,20.0,1000,729,361,0.0,0.5048,1.0,0.0,308.5,0.0,1
+env_outside_pbox_severe,fault_mimic,5.0,1000,889,106,1.0,0.8808,0.0,1.0,96.68,1.0,0
+env_outside_pbox_severe,fault_mimic,10.0,1000,889,37,0.09112,0.9584,0.9089,1.0,96.68,1.0,0
+env_outside_pbox_severe,fault_mimic,20.0,1000,889,14,0.0,0.9843,1.0,0.0,96.68,0.0,1
+env_outside_pbox_severe,weather_mimic,5.0,1000,0,0,1.0,1.0,0.0,1.0,0,1.0,0
+env_outside_pbox_severe,weather_mimic,10.0,1000,0,0,0.09112,1.0,0.9089,1.0,0,1.0,0
+env_outside_pbox_severe,weather_mimic,20.0,1000,0,0,0.0,1.0,1.0,1.0,0,1.0,0

@@ -1,0 +1,113 @@
+% =====================================================================
+% Results figures (pgfplots). Data: figdata/*.dat from make_numbers.py
+% =====================================================================
+\pgfplotsset{
+  p4/.style={width=\columnwidth, height=4.6cm, grid=major, grid style={black!12},
+    tick label style={font=\scriptsize}, label style={font=\footnotesize},
+    legend style={font=\scriptsize, draw=none, fill=white, fill opacity=0.85, text opacity=1},
+    every axis plot/.append style={line width=0.9pt}},
+}
+
+% ---------------- Fig: detector operating curves ------------------------
+\newcommand{\figROC}{%
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[p4, width=0.56\columnwidth, height=4.3cm, xmin=0, xmax=0.3, ymin=0, ymax=1.02,
+  xlabel={FPR}, ylabel={TPR}, title={\scriptsize step offset, 5\,m},
+  legend to name=rocleg, legend columns=4]
+\addplot[cBlue] table[x=fpr,y=tpr]{figdata/roc_step_D1.dat}; \addlegendentry{D1 signature}
+\addplot[cOrange, dashed] table[x=fpr,y=tpr]{figdata/roc_step_D2.dat}; \addlegendentry{D2 $\chi^2$}
+\addplot[cGreen, dotted] table[x=fpr,y=tpr]{figdata/roc_step_D3.dat}; \addlegendentry{D3 SAVIOR-style}
+\addplot[cRed, dashdotted] table[x=fpr,y=tpr]{figdata/roc_step_D4.dat}; \addlegendentry{D4 invariant}
+\draw[black!50, densely dashed] (axis cs:0.05,0) -- (axis cs:0.05,1.02);
+\end{axis}
+\end{tikzpicture}%
+\hfill
+\begin{tikzpicture}
+\begin{axis}[p4, width=0.56\columnwidth, height=4.3cm, xmin=0, xmax=0.3, ymin=0, ymax=1.02,
+  xlabel={FPR}, yticklabels={}, title={\scriptsize ramp, 0.5\,m/s}]
+\addplot[cBlue] table[x=fpr,y=tpr]{figdata/roc_ramp_D1.dat};
+\addplot[cOrange, dashed] table[x=fpr,y=tpr]{figdata/roc_ramp_D2.dat};
+\addplot[cGreen, dotted] table[x=fpr,y=tpr]{figdata/roc_ramp_D3.dat};
+\addplot[cRed, dashdotted] table[x=fpr,y=tpr]{figdata/roc_ramp_D4.dat};
+\draw[black!50, densely dashed] (axis cs:0.05,0) -- (axis cs:0.05,1.02);
+\end{axis}
+\end{tikzpicture}\\[-1pt]
+\pgfplotslegendfromname{rocleg}
+\caption{Detector operating curves against two \emph{naive} offsets, with
+thresholds swept over \nCalMissions{} benign missions (dashed line: the 5\%
+operating point). Only D2 and D4 separate a naive 5\,m step, and only D2
+separates the ramp.}
+\label{fig:roc}
+\end{figure}}
+
+% ---------------- Fig: anchor-interval sweep ----------------------------
+\newcommand{\figAnchor}{%
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{loglogaxis}[p4, height=4.4cm, xmin=4, xmax=25, ymin=1, ymax=400,  xtick={5,10,20}, xticklabels={5,10,20},
+  xlabel={re-anchoring interval $T_a$ (s)}, ylabel={max.\ undetected contribution (m)},
+  legend pos=north west, legend cell align=left]
+\addplot[cRed, mark=square*, mark size=1.6pt, line width=1.2pt] table[x=Ta,y=maxall]{figdata/anchor_sweep_open.dat}; \addlegendentry{final interval unchecked}
+\addplot[cBlue, mark=*, mark size=1.6pt, line width=1.2pt] table[x=Ta,y=maxall]{figdata/anchor_sweep.dat}; \addlegendentry{every interval closed (C2$'$)}
+
+\end{loglogaxis}
+\end{tikzpicture}
+\caption{Stealth budget against the full stack (5\% FPR) versus the
+re-anchoring interval, pooled over 30 attackers (15 tuned per $T_a$ and the 15
+optimised against the full stack) and maximised over the five disguise
+families, on the same missions at every $T_a$. With every interval closed, the
+largest undetected contribution grows from \nAnchorMaxFive{} to
+\nAnchorMaxTwenty\,m (\nAnchorMultTwenty$\times$). With the final segment
+before mission end unchecked, it grows \nOpenMultTwenty$\times$ to
+\nOpenMaxTwenty\,m.}
+\label{fig:anchor}
+\end{figure}}
+
+% ---------------- Fig: dependence gap -----------------------------------
+\newcommand{\figGap}{%
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{semilogyaxis}[p4, height=4.8cm, xmin=2.5, xmax=8.5, ymin=1e-4, ymax=1.2,
+  xlabel={budget available to benign sources $s$ (m)}, ylabel={$\Pr[\sum_i X_i>s]$},
+  legend style={at={(0.5,-0.28)}, anchor=north, legend columns=2}]
+\addplot[cPurple, line width=1.2pt] table[x=s,y=union]{figdata/gap.dat}; \addlegendentry{union bound}
+\addplot[cPurple, dashed, line width=1.2pt] table[x=s,y=ra]{figdata/gap.dat}; \addlegendentry{RA (worst coupling)}
+\addplot[cBlue, dashdotted] table[x=s,y=indep]{figdata/gap.dat}; \addlegendentry{indep., upper envelope}
+\addplot[cGreen, densely dotted, line width=1.1pt] table[x=s,y=indepmix]{figdata/gap.dat}; \addlegendentry{indep., matched wind}
+\addplot[cOrange, mark=x, mark size=1.6pt, only marks] table[x=s,y=sumsame]{figdata/gap.dat}; \addlegendentry{sum of suprema, same mission}
+\addplot[cGray, mark=*, mark size=1pt, only marks] table[x=s,y=joint]{figdata/gap.dat}; \addlegendentry{joint simulation}
+\end{semilogyaxis}
+\end{tikzpicture}
+\caption{Where the looseness lives (tail of the benign budget). Union and RA
+nearly coincide. The steps down from RA are: to independent sums at the upper
+wind envelope (dependence gap); to independent sums at the wind actually
+flown (envelope gap); to the sum of per-source suprema on the same missions,
+which confirms that the simulated sources are independent; and to the joint
+simulation (temporal gap: sources seldom peak at the same instant).}
+\label{fig:gap}
+\end{figure}}
+
+% ---------------- Fig: floor vs MCR --------------------------------------
+\newcommand{\figFloor}{%
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[p4, height=4.6cm, xmin=4, xmax=25, ymin=0, ymax=1.03,
+  xlabel={corridor margin $m$ (m)}, ylabel={$1-\Pr[\mathrm{fail}\wedge U]$},
+  legend style={at={(0.5,-0.28)}, anchor=north, legend columns=2}]
+\addplot[cPurple, line width=1.3pt] table[x=m,y=ra]{figdata/floor_curve.dat}; \addlegendentry{$1-\pbar$, RA, $\theta_{\mathrm{net}}=0$}
+\addplot[cPurple, dashed] table[x=m,y=ranet]{figdata/floor_curve.dat}; \addlegendentry{$1-\pbar$, RA, $\theta_{\mathrm{net}}=0.25$\,s}
+\addplot[cBlue, dashdotted] table[x=m,y=indep]{figdata/floor_curve.dat}; \addlegendentry{independence (not certified)}
+\addplot[cRed, mark=*, mark size=2pt, only marks] table[x=m,y=obs]{figdata/floor_points.dat}; \addlegendentry{measured $1-\Pr[\mathrm{fail}\wedge U]$}
+\end{axis}
+\end{tikzpicture}
+\caption{Certified bound versus measurement at 5\% FPR. The measured
+points are the worst case over five held-out attackers and three wind
+conditions. The bound stays below every measurement. Including the network
+term shifts it right by $e^{LT_c}\dnet=\nNetTubeQuarter$\,m.}
+\label{fig:floor}
+\end{figure}}

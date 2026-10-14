@@ -1,0 +1,125 @@
+% ------------------------------------------------------------- Appendix
+\section{Notation and Acronyms}
+\label{app:notation}
+\begin{center}\footnotesize
+\begin{tabularx}{\columnwidth}{@{}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} \\
+\midrule
+$x,\hat x$ & true and estimated navigation state \\
+$e(t)$ & cross-track deviation from the nominal path (m) \\
+$m$ & corridor margin (m); completion iff $\sup_t|e|\le m$ \\
+$L,\ T_c$ & closed-loop Lipschitz constant; certification horizon (1\,s) \\
+$\theta,\ \theta_D$ & detector operating point; threshold of detector $D$ \\
+$\Delta(\theta),\ s,\ H$ & hidden staleness; contact-window slack; malicious hops \\
+$\gamma$ & delay-to-position rate (m/s), campaign supremum \\
+$\dnet,\dadv$ & deterministic network and adversarial-offset budgets (m) \\
+$\dgnss,\dfault,\denv$ & stochastic and bounded-unknown budget terms \\
+$X_i$ & sup-deviation of the closed loop under source $i$ alone \\
+$S_i$ & survival function of $X_i$, $S_i(t)=\Pr[X_i>t]$ \\
+$\underline F,\overline F$ & lower and upper CDFs of a p-box ($\underline F$ is stochastically largest) \\
+$\pbar,\ p_U$ & worst-case (all couplings) and union (standard) tail bounds \\
+$f(m)$ & certified floor, $1-\pbar(s_m)$ \\
+$U$ & event that the detector stack raises no alarm \\
+$T_a$ & re-anchoring interval (C2$'$) \\
+$O_{0:T}$ & defender's observations over the mission \\
+$P_a,\ P_d$ & laws of $O_{0:T}$ under attack $a$ / disguise $d$ \\
+$\Dclass_k$ & disguise family $k$ \\
+\bottomrule
+\end{tabularx}
+
+\vspace{4pt}
+\begin{tabularx}{\columnwidth}{@{}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Acronym} & \textbf{Expansion} \\
+\midrule
+CDF & cumulative distribution function \\
+CEM & cross-entropy method \\
+CMA-ES & covariance matrix adaptation evolution strategy \\
+CUSUM & cumulative sum (sequential change detection) \\
+EKF / KF & extended Kalman filter / Kalman filter \\
+FPR & false-positive rate \\
+GNSS & global navigation satellite system \\
+IDS & intrusion detection system \\
+IMU & inertial measurement unit \\
+KL / KS & Kullback--Leibler divergence / Kolmogorov--Smirnov distance \\
+LoE & loss of effectiveness (actuator) \\
+MCR & mission-completion rate \\
+NIS & normalised innovation squared \\
+PD & proportional--derivative (controller) \\
+p-box & probability box \\
+RA & Rearrangement Algorithm \\
+SITL & software in the loop \\
+TV & total-variation distance \\
+UAV & unmanned aerial vehicle \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Proof Details}
+\label{app:proofs}
+\paragraph{\Cref{prop:union}(b): sharpness for two sources.}
+For $d=2$, Makarov~\cite{makarov1981} showed that
+$\sup_C\Pr_C[X_1+X_2>s]=\min\{1,\inf_{t}(S_1(t^-)+S_2((s-t)^-))\}$,
+which equals $p_U(s)$ at every continuity point of the empirical survival
+functions. The extremal coupling makes the events $\{X_1>t^\star\}$ and
+$\{X_2>s-t^\star\}$ disjoint, by pairing the upper tail of one source with the
+body of the other~\cite{frank1987}. An attacker who controls when a stochastic
+source fires (for example, the timing of jamming-induced outages relative to
+gusts) can move the coupling towards this extremal one.
+
+\paragraph{\Cref{prop:union}(d): comonotone and independent gaps.}
+Let $X_1=\dots=X_d=X$ almost surely, with survival function $S$. Then
+$\Pr[\sum X_i>s]=S(s/d)$, while the equal split gives $d\,S(s/d)$; whenever the
+equal split is optimal, the ratio is $d$. For two independent $\mathrm{Exp}(1)$
+variables, $\Pr[X_1+X_2>s]=(1+s)e^{-s}$, while
+$\inf_t\,(e^{-t}+e^{-(s-t)})=2e^{-s/2}$. The ratio $2e^{s/2}/(1+s)$ is unbounded.
+
+\paragraph{Monotonicity in the p-box (proof of \cref{thm:floor}).}
+If $X_e'\succeq_{\mathrm{st}}X_e$, there is a coupling with $X_e'\ge X_e$ almost
+surely. For any copula of $(X_g,X_f,X_e)$, compose it with this monotone
+coupling to obtain a copula of $(X_g,X_f,X_e')$ under which the sum is
+pointwise no smaller. Hence $\pbar$ evaluated at the stochastically largest
+member of the box (CDF $\underline F_{\mathrm{env}}$; in the pilot, the 30\,kt
+marginal) dominates $\pbar$ at every $F_{\mathrm{env}}$ in the box.
+
+\section{Rearrangement Algorithm}
+\label{app:ra}
+For a confidence level $\alpha$, build an $N\times d$ matrix whose column $j$
+holds the quantiles of $X_j$ at the levels $\alpha+(1-\alpha)\,i/N$, for $i=1,\dots,N$
+in the upper discretisation and $i=0,\dots,N-1$ in the lower one. Iterate until
+the minimum row sum stabilises. In each iteration, rearrange every column so
+that it is oppositely ordered to the sum of the other columns. The resulting
+minimum row sum approximates the worst-case value-at-risk
+$\overline{\mathrm{VaR}}_\alpha(\sum X_j)$~\cite{embrechts2013var}, and the
+conservative of the two discretisations is kept. Then
+$\pbar(s)\le1-\sup\{\alpha:\overline{\mathrm{VaR}}_\alpha\le s\}$, found by
+bisection. The RA's convergence to the sharp bound is not proven in general.
+For $d=2$, our implementation (\code{depbounds.py}) reproduces $\pbar=p_U$ to
+within \nUnionRaDtwoMaxErr{} wherever $p_U>0.002$; below that level, the RA's
+$1/N$ resolution floor dominates, which is why we report the minimum of the two
+bounds.
+
+\section{Simulator Constants}
+\label{app:constants}
+\begin{center}\footnotesize
+\begin{tabularx}{\columnwidth}{@{}l l >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Constant} & \textbf{Value} & \textbf{Provenance} \\
+\midrule
+$\gamma$ & \nParentGamma\,m/s & parent, measured (674 samples) \\
+$s$ & \nParentSlack\,s & parent, measured (15{,}392 hops) \\
+$L$ & \nParentL & parent, local estimate \\
+step / GNSS rate & 20 / 10\,Hz & model \\
+PD gains $(k_p,k_d)$ & (1.2, 1.8) & model \\
+drag $c_d$ & 0.35\,s$^{-1}$ & model \\
+Dryden $h$, $V$ & 100\,ft, 8\,m/s & MIL-F-8785C \\
+$W_{20}$ envelope & 15--30\,kt & declared (C4) \\
+GNSS white / GM & 0.5\,m / 0.8\,m, 60\,s & model \\
+accel.\ noise / bias RW & 0.05\,m/s$^2$ / 0.002\,m/s$^2/\sqrt{\mathrm s}$ & model (Allan class~\cite{elsheimy2008}) \\
+anchor $\sigma$, $T_a$ & 0.3\,m, 5\,s & model (C2$'$) \\
+fault probabilities & 0.3 / 0.2 / 0.2 & model (RflyMAD categories) \\
+outage / jam & 0.3 (mean 5\,s) / 0.2 & model \\
+\bottomrule
+\end{tabularx}
+\end{center}

@@ -1,0 +1,20 @@
+% ------------------------------------------------------------- Open science
+We release, through an anonymised repository for review and a permanent DOI
+at camera-ready~\cite{artifact}:
+\begin{itemize}
+\item the schema (v0.2) and its lossless adapters;
+\item the pairing pipeline, with mandatory provenance flags;
+\item the detector-operating-curve harness and the dependence-bound library
+  (union bound, Rearrangement Algorithm, independence, comonotone);
+\item the simulator, the four detectors and the evasion harness, restricted to
+  simulator interfaces;
+\item every result file behind every number in this paper;
+\item the scripts that regenerate all macros, figures and tables from those
+  files.
+\end{itemize}
+
+Seeds are partitioned by role (calibration, optimisation, held-out attacker,
+held-out evaluation, negative controls). A CPU-only path reproduces every
+figure in about \nWallMin{} minutes on two cores. Third-party corpora are fetched from
+their origin under their own licences. We target the Available, Functional and
+Reproduced badges.
