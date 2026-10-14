@@ -40,7 +40,7 @@ from scipy.linalg import solve_discrete_lyapunov
 
 from constants import *  # noqa: F401,F403
 
-ATTACK_FAMILIES = ("none", "step", "ramp", "fault_mimic", "gnss_mimic", "weather_mimic")
+ATTACK_FAMILIES = ("none", "step", "ramp", "fault_mimic", "gnss_mimic", "weather_mimic", "mixed")
 # parameter boxes, each parameter mapped from [0,1]
 ATTACK_BOX = {
     "step":          [("amp", 0.0, 20.0), ("t0", 10.0, 40.0)],
@@ -52,6 +52,15 @@ ATTACK_BOX = {
     "weather_mimic": [("amp", 0.0, 20.0), ("lag_s", 0.0, 10.0), ("t0", 10.0, 40.0),
                       ("bias", 0.0, 10.0)],
 }
+
+
+BASE_FAMILIES = ("step", "ramp", "fault_mimic", "gnss_mimic", "weather_mimic")
+# R1 mixed-family attacker: begins as family A, hands over to family B at t_sw
+# (B starts from zero at t_sw on top of A's value held at t_sw, so the handover
+# itself is continuous). Its box is A, B (categorical, floor of a [0, 5) value),
+# the switch time, and the parameters of all five families.
+ATTACK_BOX["mixed"] = [("famA", 0.0, 4.999), ("famB", 0.0, 4.999), ("t_sw", 15.0, 50.0)] + \
+    [(f"{f}.{n}", lo, hi) for f in BASE_FAMILIES for (n, lo, hi) in ATTACK_BOX[f]]
 
 
 def decode(family, u):
@@ -79,9 +88,37 @@ def _inv_weights(n, dt_g):
     return np.linalg.pinv(X)[2]
 
 
+class _CRN:
+    """Common random numbers: every draw of size N is made at size K and tiled,
+    so rollout r sees realisation r % K. Used by the R1 optimisers to give every
+    candidate of a generation the same K missions in one vectorised call."""
+
+    def __init__(self, rng, K, N):
+        assert N % K == 0, (N, K)
+        self.g, self.K, self.reps = rng, K, N // K
+
+    def _t(self, x):
+        return np.tile(x, (self.reps,) + (1,) * (np.ndim(x) - 1))
+
+    def random(self, size):
+        return self._t(self.g.random(self.K))
+
+    def uniform(self, lo, hi, size):
+        return self._t(self.g.uniform(lo, hi, self.K))
+
+    def normal(self, loc=0.0, scale=1.0, size=None):
+        return self._t(self.g.normal(loc, scale, self.K))
+
+    def exponential(self, scale, size):
+        return self._t(self.g.exponential(scale, self.K))
+
+    def multivariate_normal(self, mean, cov, size):
+        return self._t(self.g.multivariate_normal(mean, cov, size=self.K))
+
+
 def simulate(N, seed, *, w20=None, gnss=True, fault=True, attack="none",
              aparams=None, attack_seed=None, anchor=T_ANCHOR, env_on=True,
-             w20_attacker=W20_KT["moderate"], terminal=True, noise=True):
+             w20_attacker=W20_KT["moderate"], terminal=True, noise=True, crn=None):
     """Run N rollouts. Returns a dict of per-rollout arrays.
 
     w20     : scalar or (N,) array of W20 in knots for the airframe wind
@@ -92,6 +129,8 @@ def simulate(N, seed, *, w20=None, gnss=True, fault=True, attack="none",
     anchor  : re-anchoring interval in s, or None to violate C2'.
     terminal: close the final interval with a trusted fix (C2'); False leaves
               the last segment before mission end unchecked (ablation E2c).
+    crn     : K -> common random numbers: rollout r uses realisation r % K (N must be a
+              multiple of K). None (default) leaves every random stream unchanged.
     noise   : False zeroes every *additive* benign input (wind force, GNSS
               white/Gauss-Markov/jamming noise, IMU noise and bias, anchor noise)
               while keeping the *parametric* ones (GNSS outage schedule, actuator
@@ -105,6 +144,8 @@ def simulate(N, seed, *, w20=None, gnss=True, fault=True, attack="none",
             _fh.write(f"{N}\n")
     rng = np.random.default_rng(seed)
     arng = np.random.default_rng(10_000_019 + seed if attack_seed is None else attack_seed)
+    if crn:                                   # R1: common random numbers across candidates
+        rng, arng = _CRN(rng, crn, N), _CRN(arng, crn, N)
     dt, g_every = DT, GNSS_EVERY
     dtg = dt * g_every
     aparams = aparams or {}
@@ -147,6 +188,24 @@ def simulate(N, seed, *, w20=None, gnss=True, fault=True, attack="none",
     if fam == "weather_mimic":
         lag_steps = np.round(P["lag_s"] / dt).astype(int)
         wbuf = np.zeros((N, int(10.0 / dt) + 2))
+    if fam == "mixed":
+        famA = np.floor(P["famA"]).astype(int); famB = np.floor(P["famB"]).astype(int)
+        t_sw = P["t_sw"]
+        t0 = P["t0_eff"] if "t0_eff" in P else None
+        MP = {f: {n: P[f"{f}.{n}"] for (n, _, _) in ATTACK_BOX[f]} for f in BASE_FAMILIES}
+        mstate = {}
+        for role, t_start in (("A", None), ("B", t_sw)):
+            for f in BASE_FAMILIES:
+                st = {"d": np.zeros(N), "dd": np.zeros(N), "beta": np.zeros(N), "gm": np.zeros(N),
+                      "t0": (MP[f]["t0"] if t_start is None else t_start)}
+                if f == "gnss_mimic":
+                    st["phi"] = np.exp(-dtg / np.maximum(MP[f]["tau"], 1e-3))
+                if f == "weather_mimic":
+                    st["lag"] = np.round(MP[f]["lag_s"] / dt).astype(int)
+                mstate[(role, f)] = st
+        t0 = np.minimum(np.choose(famA, [mstate[("A", f)]["t0"] for f in BASE_FAMILIES]), t_sw)
+        wbuf = np.zeros((N, int(10.0 / dt) + 2))
+        d_hold = np.zeros(N)
 
     # -- state
     p = np.zeros(N); v = np.zeros(N)
@@ -226,6 +285,36 @@ def simulate(N, seed, *, w20=None, gnss=True, fault=True, attack="none",
             wl = wbuf[np.arange(N), np.minimum(lag_steps, wbuf.shape[1] - 1)]
             d = np.where(on, P["amp"] * wl / max(sig_mod, 1e-6) + P["bias"] *
                          np.minimum((t - t0) / 10.0, 1.0), 0.0)
+        elif fam == "mixed":
+            wbuf = np.roll(wbuf, 1, axis=1); wbuf[:, 0] = w
+            outs = {}
+            for (role, f), st in mstate.items():
+                q, tq = MP[f], st["t0"]
+                onq = t >= tq
+                if f == "step":
+                    st["d"] = np.where(onq, q["amp"], 0.0)
+                elif f == "ramp":
+                    st["d"] = np.where(onq, np.minimum(q["rate"] * (t - tq), q["cap"]), 0.0)
+                elif f == "fault_mimic":
+                    st["beta"] = st["beta"] + q["sig_beta"] * np.sqrt(dt) * na1
+                    acc = np.where(onq, q["beta0"] + st["beta"], 0.0)
+                    st["dd"] = st["dd"] + acc * dt
+                    st["d"] = np.minimum(np.where(onq, st["d"] + st["dd"] * dt, 0.0), q["cap"])
+                    st["dd"] = np.where(st["d"] >= q["cap"], 0.0, st["dd"])
+                elif f == "gnss_mimic":
+                    if k % g_every == 0:
+                        st["gm"] = st["phi"] * st["gm"] + np.sqrt(1 - st["phi"] ** 2) * na1
+                    st["d"] = np.where(onq, q["amp"] * np.abs(st["gm"]) + q["slope"] * np.maximum(t - tq, 0), 0.0)
+                else:  # weather_mimic
+                    wl = wbuf[np.arange(N), np.minimum(st["lag"], wbuf.shape[1] - 1)]
+                    st["d"] = np.where(onq, q["amp"] * wl / max(sig_mod, 1e-6) + q["bias"] *
+                                       np.minimum((t - tq) / 10.0, 1.0), 0.0)
+                outs[(role, f)] = st["d"]
+            dA = np.choose(famA, [outs[("A", f)] for f in BASE_FAMILIES])
+            dB = np.choose(famB, [outs[("B", f)] for f in BASE_FAMILIES])
+            before = t < t_sw
+            d_hold = np.where(before, dA, d_hold)
+            d = np.where(before, dA, d_hold + dB)
         # ---------- GNSS epoch
         if k % g_every == 0:
             outage = gnss & out_on & (t >= out_t) & (t < out_t + out_d)

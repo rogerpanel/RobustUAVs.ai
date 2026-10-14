@@ -38,7 +38,7 @@ import sim as SIM
 from sim import simulate, alarms, decode, ATTACK_BOX, DETECTORS
 import depbounds as db
 
-RES = Path(__file__).resolve().parents[1] / "results"
+RES = Path(os.environ.get("P4_RESULTS") or Path(__file__).resolve().parents[1] / "results")
 RES.mkdir(exist_ok=True)
 W_LO, W_HI = W20_KT["light"], W20_KT["moderate"]
 W_SEV = (W20_KT["severe"], W20_KT["severe"] + 15.0)
