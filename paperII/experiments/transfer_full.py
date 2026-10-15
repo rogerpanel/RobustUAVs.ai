@@ -7,7 +7,8 @@ Rows
     members in corpus/new_class_map.csv), with states derived from the
     full-study codes by the pilot's rule: modal (scope, modality), modal
     perturbation, intrinsic obligations of every lift used by at least half of
-    the members, and the evidenced (SE/SEC) share -- here weighted by stratum;
+    the members, and the evidenced (SE/SEC) share -- here weighted by stratum
+    (evidenced_share_full, given for every class with full-study members);
   - a "<class> (field)" variant for a pilot class whose weighted modal state in
     the full study differs from its pilot state and that has at least 5 coded
     full-study members.
@@ -86,18 +87,20 @@ def main() -> int:
             rows_state.append({"class": k, "label": c["label"], "source": "pilot state", "scope": ps[0],
                                "modality": ps[1], "perturbation": p["perturbation"],
                                "intrinsic": p["intrinsic"], "evidenced_share": p["evidenced_share"],
+                               "evidenced_share_full": round(full[3], 3) if full else "",
                                "n_coded_full": len(mem), "est_papers_full": est})
             if full and full[0] != ps and len(mem) >= MIN_VARIANT:
                 pert = CLASS_PERT_OVERRIDE.get(k, (full[1],))[0]
                 rows_state.append({"class": f"{k} (field)", "label": c["label"] + " -- full-study modal state",
                                    "source": "full study (variant)", "scope": full[0][0], "modality": full[0][1],
                                    "perturbation": pert, "intrinsic": ";".join(full[2]) or "none",
-                                   "evidenced_share": round(full[3], 3), "n_coded_full": len(mem),
-                                   "est_papers_full": est})
+                                   "evidenced_share": round(full[3], 3), "evidenced_share_full": round(full[3], 3),
+                                   "n_coded_full": len(mem), "est_papers_full": est})
         else:
             rows_state.append({"class": k, "label": c["label"], "source": "full study (added)", "scope": full[0][0],
                                "modality": full[0][1], "perturbation": full[1], "intrinsic": ";".join(full[2]) or "none",
-                               "evidenced_share": round(full[3], 3), "n_coded_full": len(mem), "est_papers_full": est})
+                               "evidenced_share": round(full[3], 3), "evidenced_share_full": round(full[3], 3),
+                               "n_coded_full": len(mem), "est_papers_full": est})
     for s in rows_state:
         sm = (s["scope"], s["modality"])
         intr = [] if s["intrinsic"] in ("", "none") else s["intrinsic"].split(";")
@@ -111,7 +114,8 @@ def main() -> int:
                          "k_stat": nstat if t.verdict != "X" else "", "lifts": "+".join(t.lifts),
                          "obligations": ";".join(t.obligations), "intrinsic": ";".join(intr),
                          "deficit": len(set(t.obligations) | set(intr)) if t.verdict != "X" else "",
-                         "evidenced_share": s["evidenced_share"], "est_papers_full": s["est_papers_full"],
+                         "evidenced_share": s["evidenced_share"], "evidenced_share_full": s["evidenced_share_full"],
+                         "est_papers_full": s["est_papers_full"],
                          "n_objectives": nobj})
     for name, data in (("class_states_full.csv", rows_state), ("transfer_table_full.csv", rows),
                        ("class_state_check.csv", check)):

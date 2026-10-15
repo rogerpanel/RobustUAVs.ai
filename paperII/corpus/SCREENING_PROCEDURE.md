@@ -207,3 +207,9 @@ stop rule of the manuscript is applied to a sampled corpus).
   (`corpus/new_class_map.csv`).
 
 - 2026-10-15: amendment 5 (this section).
+- 2026-10-15: amendment 4, correction. "Retrieval gave 92/92 core" above is
+  imprecise: 92 core full texts were retrieved after 117 core records were
+  tried in sample order (25 had no open-access copy and were replaced, as
+  amendment 3 prescribes). The remainder stratum tried all 233 included
+  records and retrieved 195 (38 not retrieved). Per-record status:
+  `fulltext_status.csv`.

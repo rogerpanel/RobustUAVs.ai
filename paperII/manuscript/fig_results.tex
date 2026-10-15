@@ -1,18 +1,18 @@
 % =====================================================================
-% Fig. 3 -- Pilot corpus by component and scope (figdata/dist_*.dat)
+% Fig. 3 -- Estimated field by component and scope (figdata/dist_*.dat, full study)
 % Fig. 4 -- Per-flight-hour arithmetic (figdata/rate_*.dat)
 % =====================================================================
 \begin{figure}[t]
 \centering
 \begin{tikzpicture}
 \begin{groupplot}[group style={group size=2 by 1, horizontal sep=6mm, yticklabels at=edge left},
-  width=0.585\columnwidth, height=46mm, ybar stacked,
+  width=0.555\columnwidth, height=46mm, ybar stacked,
   symbolic x coords={perception,estimation,control,planning,end2end},
   xtick=data, x tick label style={rotate=40, anchor=east, font=\scriptsize},
-  ymin=0, ymax=46, ylabel style={font=\scriptsize}, yticklabel style={font=\scriptsize},
+  ymin=0, ymax=1500, scaled y ticks=false, ylabel style={font=\scriptsize}, yticklabel style={font=\scriptsize},
   title style={font=\scriptsize, yshift=-1ex}, enlarge x limits=0.15,
   legend style={font=\scriptsize, at={(1.0,1.0)}, anchor=north east, draw=none, fill=white, fill opacity=0.85, text opacity=1}]
-\nextgroupplot[title={(a) Tiers A and B}, ylabel={guarantees}]
+\nextgroupplot[title={(a) Tiers A and B}, ylabel={estimated papers}]
 \addplot+[fill=blue!55, draw=black!60] table[x=component, y=in] {figdata/dist_AB.dat};
 \addplot+[fill=orange!60, draw=black!60] table[x=component, y=tr] {figdata/dist_AB.dat};
 \addplot+[fill=green!50!black!45, draw=black!60] table[x=component, y=op] {figdata/dist_AB.dat};
@@ -25,11 +25,11 @@
 \legend{$\mathsf{in}$, $\mathsf{tr}$, $\mathsf{op}$, $\mathsf{pop}$}
 \end{groupplot}
 \end{tikzpicture}
-\caption{The pilot corpus by component and scope after adjudication. (a)~Across both tiers,
-perception guarantees are mostly per input and control guarantees mostly per trajectory.
-(b)~Among guarantees evaluated on vehicles (tier A), perception is dominated by closed-loop
-verification through surrogates. The pilot was seeded purposively, so these shares illustrate
-the pipeline and do not estimate the field (Sec.~\ref{sec:limits}). Provenance: \prov{pilot coding}.}
+\caption{The estimated field by component and scope: weighted full-study estimates of the
+number of eligible papers. (a)~Across both tiers, perception guarantees are mostly per input or
+per population, and control guarantees mostly per trajectory. (b)~Among guarantees evaluated on
+vehicles (tier A), perception is still mostly per input; closed-loop perception through
+surrogates, which dominated the pilot, is rare. Provenance: \prov{full study, LLM coding}.}
 \label{fig:dist}
 \end{figure}
 

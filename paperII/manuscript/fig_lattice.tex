@@ -23,17 +23,19 @@
   {\node[font=\footnotesize, anchor=east] at (-0.75, \j*\dy) {\lab};}
 \draw[black!15] (-0.65, 3.75*\dy) -- (4*\dx+0.7, 3.75*\dy);
 % states
-\node[st] (inA)   at (0*\dx, 3.2*\dy) {BP, SMT\\[-1pt]LIP, SEM};
+\node[st] (inA)   at (0*\dx, 3.2*\dy) {BP, SMT, LIP\\[-1pt]SEM, IMPL$^{+}$};
 \node[obj] (T6)   at (0*\dx, 3.2*\dy+0.62) {T6};
 \node[st] (inAc)  at (0*\dx, 2.2*\dy) {RS};
 \node[st] (inP)   at (0*\dx, 1.1*\dy) {PROB};
 \node[st] (trA)   at (1*\dx, 3.2*\dy) {CLR, PIL\\[-1pt]NCERT};
 \node[st] (trAc)  at (1*\dx, 2.2*\dy) {CRL};
-\node[st] (trP)   at (1*\dx, 1.1*\dy) {(CP)};
+\node[st] (trP)   at (1*\dx, 1.1*\dy) {LUC$^{+}$, (CP)};
 \node[obj] (opA)  at (2*\dx, 3.2*\dy) {RTA\\[-1pt]T4, T5};
 \node[st] (opP)   at (2*\dx, 1.1*\dy) {CP};
 \node[st, fill=gray!20] (opX) at (2*\dx, -1*\dy) {FALS};
-\node[obj] (pdP)  at (3*\dx, 1.1*\dy) {PACB\\[-1pt]OPREL, T2};
+\node[st, fill=gray!20] (inE) at (0*\dx, 0*\dy) {GLOB$^{+}$};
+\node[st, fill=gray!20] (opE) at (2*\dx, 0*\dy) {ALG$^{+}$};
+\node[obj] (pdP)  at (3*\dx, 1.1*\dy) {PACB, GEN$^{+}$\\[-1pt]OPREL, CP$^{\mathrm{f}}$, T2};
 \node[obj] (pdE)  at (3*\dx, 0*\dy) {DTMC, T3};
 \node[obj] (phP)  at (4*\dx, 1.1*\dy) {T1};
 \draw[black!35] (T6) -- (inA);
@@ -58,8 +60,9 @@
 \textcolor{black!75}{\rule[0.5ex]{4mm}{0.5pt}} model or proof obligation\quad
 \fcolorbox{black!60}{blue!12}{\strut} classes\quad
 \fcolorbox{black!60}{green!20}{\strut} objective types}
-\caption{The type plane. Columns are scopes, rows are modalities, and boxes place the pilot's
-guarantee classes and objective types T1--T6. Each arrow is a lift with obligations
+\caption{The type plane. Columns are scopes, rows are modalities, and boxes place the
+guarantee classes ($^{+}$ added in the full study, $^{\mathrm{f}}$ a field variant) and objective
+types T1--T6. Each arrow is a lift with obligations
 (Table~\ref{tab:lifts}). Red arrows carry a statistical obligation, and every path from a
 $\forall$ state to a $\mathbb{P}$ state crosses one (Proposition~\ref{pr:nofree}). No arrow
 points left, and none leaves $\exists$ or $\mathbb{E}$.}
