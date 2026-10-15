@@ -173,3 +173,37 @@ is reported as a limitation.
   quantity is also reported from C1's and from C2's codes alone
   (`hypotheses_full_C1.csv`, `hypotheses_full_C2.csv`), and a conclusion is
   stated only where all three agree.
+
+## Amendment 5 (2026-10-15): snowballing iterations and the new classes, disclosed
+
+Fixed before any snowballing data was retrieved, and after the full-study
+estimates of amendment 4 were seen (so it is not blind to them; it fixes how the
+stop rule of the manuscript is applied to a sampled corpus).
+
+- **Seeds**: iteration 1 starts from the 191 full-text-eligible coded papers
+  (`codes_full_final.csv`); iteration k > 1 from the eligible coded papers of
+  iteration k - 1. Backward (references) and forward (citations) snowballing
+  through OpenAlex, 2017-2026, by `search_corpus.py snowball`
+  (`run_snowball.sh`). A work already among the 25,373 candidates or an earlier
+  iteration (OpenAlex id, DOI, or normalised title) is not new.
+- **Screening**: new candidates are screened by L1/L2 as in amendment 2. If an
+  iteration yields more than 3,000 new candidates, they are ranked with the
+  frozen ranker of `screen_rank.py` (not retrained) and screened as a core of
+  ranks 1-1,500 plus a simple random sample of 500 of the rest (seed
+  20261022 + k), estimated as in amendment 3.
+- **Coding**: up to 100 included records per iteration, a stratified random
+  sample allocated as in amendment 3 (seed 20261023 + k), full text open
+  access only, coded by C1/C2 and adjudicated by ADJ exactly as in amendment 4.
+- **Stop rule** (manuscript, Sec. IV-B), applied to estimates: an iteration is
+  quiet when (a) its estimated new includes are below 2 % of the estimated
+  eligible field before it, and (b) no coded paper occupies a scope x modality
+  cell not seen before. Snowballing stops after two consecutive quiet
+  iterations, or after three iterations; if it stops at the cap without two
+  quiet iterations, the corpus is reported as not saturated.
+- **Classes**: guarantee types coded `NEW:<label>` are grouped into new classes
+  (`classes.csv`, marked as added in the full study), each with its quantifier
+  type and lifts derived from the codebook as for the pilot's 17, so the
+  transfer table covers them. The grouping is reported label by label
+  (`corpus/new_class_map.csv`).
+
+- 2026-10-15: amendment 5 (this section).

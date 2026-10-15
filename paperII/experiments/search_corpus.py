@@ -9,7 +9,7 @@ a manual venue check.
 
   python3 search_corpus.py search   --out ../corpus/search_raw.jsonl
   python3 search_corpus.py dedup    --inp ../corpus/search_raw.jsonl --out ../corpus/candidates.csv
-  python3 search_corpus.py snowball --inp ../corpus/included.csv --out ../corpus/snowball_iterN.csv
+  python3 search_corpus.py snowball [--seeds ../corpus/codes_full_final.csv] [--out ../corpus/snowball/iter1]
   python3 search_corpus.py search --dry-run      # print the queries only
 
 Stdlib only.  Every request is logged to ../corpus/search_log.jsonl with a UTC
@@ -655,23 +655,96 @@ def openalex_search_filter(flt: str):
 
 
 def cmd_snowball(a):
-    """Backward (references) and forward (citations) snowballing of included works."""
-    inc = list(csv.DictReader(open(a.inp)))
-    out = {}
-    for r in inc:
-        wid = r.get("openalex") or ""
-        if not wid:
+    """Backward and forward snowballing (Wohlin 2014) from a seed set; resumable.
+
+    Seeds: rows of --seeds with eligible == 1 (default corpus/codes_full_final.csv,
+    the full-text-eligible coded sample), resolved to OpenAlex ids through
+    candidates.csv or --pool files. Backward: each seed's referenced_works,
+    fetched in batches of 50 and kept when published 2017-2026. Forward: every
+    2017-2026 work that cites the seed. A work is new unless its OpenAlex id,
+    DOI or normalised title is already among the candidates or an earlier
+    iteration (--known). Each seed's records are appended to the raw file
+    followed by a seed_done marker, so a rerun with --resume skips finished seeds.
+
+    Out: <out>_raw.jsonl        slim records + direction, seed (one line per hit)
+         <out>_candidates.csv   candidates.csv columns + direction, seeds (new works only)
+    """
+    csv.field_size_limit(10 ** 9)
+    Path(a.out).parent.mkdir(parents=True, exist_ok=True)
+    cand = list(csv.DictReader(open(C / "candidates.csv")))
+    for k in a.known:
+        cand += list(csv.DictReader(open(k)))
+    known_ids, known_doi, known_title = set(), set(), set()
+    oa_of = {}
+    for r in cand:
+        oa_of[r["cid"]] = r.get("openalex", "")
+        for w in [r.get("openalex", "")] + (r.get("merged_openalex") or "").split(";"):
+            if w:
+                known_ids.add(w.rsplit("/", 1)[-1])
+        if r.get("doi"):
+            known_doi.add(r["doi"].lower())
+        if len(norm_title(r.get("title"))) >= 30:
+            known_title.add(norm_title(r["title"]))
+    seeds = [r["cid"] for r in csv.DictReader(open(a.seeds)) if r.get("eligible", "1") == "1"]
+    raw = Path(a.out + "_raw.jsonl")
+    done = {e["seed_done"] for e in _read_jsonl(raw) if e.get("seed_done")} if a.resume else set()
+    if not a.resume and raw.exists():
+        sys.exit(f"{raw} exists; pass --resume to continue it")
+    print(f"{len(seeds)} seeds, {len(done)} already done; {len(known_ids)} known OpenAlex ids", flush=True)
+
+    def fetch_ids(ids):
+        for i in range(0, len(ids), 50):
+            flt = "ids.openalex:" + "|".join(ids[i:i + 50])
+            yield from openalex_search_filter(flt)
+
+    with raw.open("a") as fh:
+        for k, cid in enumerate(seeds, 1):
+            if cid in done:
+                continue
+            wid = (oa_of.get(cid) or "").rsplit("/", 1)[-1]
+            if not wid:
+                fh.write(json.dumps({"seed_done": cid, "note": "no OpenAlex id"}) + "\n"); continue
+            try:
+                w = get(f"https://api.openalex.org/works/{wid}?select=id,referenced_works")
+                refs = [x.rsplit("/", 1)[-1] for x in w.get("referenced_works", [])]
+                nb = nf = 0
+                for x in fetch_ids([x for x in refs if x not in known_ids]):
+                    fh.write(json.dumps({**slim(x), "direction": "backward", "seed": cid}) + "\n"); nb += 1
+                for x in openalex_search_filter(f"cites:{wid}"):
+                    if x.get("id", "").rsplit("/", 1)[-1] in known_ids:
+                        continue
+                    fh.write(json.dumps({**slim(x), "direction": "forward", "seed": cid}) + "\n"); nf += 1
+            except BudgetExhausted:
+                print("OpenAlex daily budget exhausted -- resume after 00:00 UTC (`snowball --resume`)", flush=True)
+                sys.exit(BUDGET_EXIT)
+            fh.write(json.dumps({"seed_done": cid, "refs": len(refs), "backward_new": nb, "forward_new": nf}) + "\n")
+            fh.flush()
+            log({"snowball_seed": cid, "openalex": wid, "refs": len(refs), "backward_new": nb, "forward_new": nf})
+            print(f"[{k}/{len(seeds)}] {cid} refs={len(refs)} backward_new={nb} forward_new={nf}", flush=True)
+    # deduplicate the new works among themselves, then drop any that match a known DOI or title
+    recs = [e for e in _read_jsonl(raw) if e.get("openalex")]
+    for i, r in enumerate(recs):
+        r["_seq"] = i
+    rows = []
+    for g in dedup_groups(recs):
+        rep_ = min(g, key=_pref)
+        if (rep_.get("doi") or "").lower() in known_doi or norm_title(rep_.get("title")) in known_title:
             continue
-        w = get(f"https://api.openalex.org/works/{wid.split('/')[-1]}")
-        for ref in w.get("referenced_works", []):
-            out.setdefault(ref, {"direction": "backward", "from": wid})
-        for c in openalex_search_cites(wid):
-            out.setdefault(c["id"], {"direction": "forward", "from": wid})
-    with open(a.out, "w", newline="") as fh:
-        wtr = csv.writer(fh); wtr.writerow(["openalex", "direction", "from"])
-        for k, v in out.items():
-            wtr.writerow([k, v["direction"], v["from"]])
-    print(f"{len(out)} snowball candidates")
+        if any((x.get("doi") or "").lower() in known_doi for x in g):
+            continue
+        rows.append((rep_, g))
+    rows.sort(key=lambda t: t[0]["_seq"])
+    with open(a.out + "_candidates.csv", "w", newline="") as fh:
+        w = csv.writer(fh)
+        w.writerow(["cid", "doi", "title", "year", "venue", "type", "abstract", "openalex",
+                    "n_records", "merged_openalex", "found_by", "direction", "seeds"])
+        for r, g in rows:
+            others = sorted({x.get("openalex", "") for x in g} - {r.get("openalex", "")})
+            w.writerow([stable_id(r), r["doi"], r["title"], r["year"], r["venue"], r["type"],
+                        (r.get("abstract") or "")[:3000], r["openalex"], len(g), ";".join(others),
+                        "snowball", ";".join(sorted({x["direction"] for x in g})),
+                        ";".join(sorted({x["seed"] for x in g}))])
+    print(f"{len(recs)} snowball hits -> {len(rows)} new unique candidates -> {a.out}_candidates.csv")
 
 
 def openalex_search_cites(wid: str, max_pages=0):
@@ -716,7 +789,10 @@ if __name__ == "__main__":
     v.add_argument("--revision", type=int, default=0)
     vd = sp.add_parser("venues_dblp"); vd.add_argument("--out", default=str(C / "venue_dblp_raw.jsonl"))
     vd.add_argument("--resume", action="store_true"); vd.add_argument("--revision", type=int, default=1)
-    b = sp.add_parser("snowball"); b.add_argument("--inp", required=True); b.add_argument("--out", required=True)
+    b = sp.add_parser("snowball"); b.add_argument("--seeds", default=str(C / "codes_full_final.csv"))
+    b.add_argument("--out", default=str(C / "snowball" / "iter1"), help="output prefix")
+    b.add_argument("--known", nargs="*", default=[], help="candidate files of earlier iterations")
+    b.add_argument("--resume", action="store_true")
     a = p.parse_args()
     {"search": cmd_search, "dedup": cmd_dedup, "venues": cmd_venues, "snowball": cmd_snowball,
      "budget": cmd_budget, "venues_dblp": cmd_venues_dblp}[a.cmd](a)
