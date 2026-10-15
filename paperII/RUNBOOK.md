@@ -1,10 +1,10 @@
-# Paper II — Claude Code Runbook
+# Paper II — Runbook
 
 **Paper:** *SoK: The Quantifier Gap Between Certified Robustness and Airworthiness Assurance* (IEEE S&P, SoK track)
 **Repository:** `rogerpanel/RobustUAVs.ai`. Work on `main`, or on a new branch `paperII/full-study`. `PENDING_ON_DATA.md` marks `claude/whelan-uavcas-ingest-u00isn` as stale.
 **Folder:** `paperII/`, containing `corpus/`, `experiments/`, `results/` and `manuscript/`
 
-This runbook tells a Claude Code session how to turn the **pilot** in the manuscript into the **full study**. The drafting sandbox could not do this: it had no access to scholarly APIs (OpenAlex and Semantic Scholar were blocked) and no human coders. Every number in `manuscript/main.tex` is a macro that `experiments/make_numbers.py` writes from the CSVs in `results/`. Once the full study's codes replace the pilot codes, the paper updates itself. **Never type a number into `main.tex` by hand.**
+This runbook tells a coding-agent session how to turn the **pilot** in the manuscript into the **full study**. The drafting sandbox could not do this: it had no access to scholarly APIs (OpenAlex and Semantic Scholar were blocked) and no human coders. Every number in `manuscript/main.tex` is a macro that `experiments/make_numbers.py` writes from the CSVs in `results/`. Once the full study's codes replace the pilot codes, the paper updates itself. **Never type a number into `main.tex` by hand.**
 
 ---
 
@@ -71,7 +71,7 @@ Then add the databases that OpenAlex does not cover well:
 
 1. **Two humans** (H1, H2) screen `candidates.csv` independently against the inclusion rule in Sec. IV-A. Each writes `screen_H1.csv` / `screen_H2.csv` with columns `cid,include{0,1},reason`.
 2. **LLM third screener.**
-   - Spawn one Claude Code sub-agent per batch of 50 papers. It reads only `CODEBOOK.md` and the batch, and never the human files.
+   - Spawn one coding-agent sub-agent per batch of 50 papers. It reads only `CODEBOOK.md` and the batch, and never the human files.
    - Run it three times per batch → `screen_L3_run{1,2,3}.csv`.
    - The LLM's output may **only** add a paper to `screen_flags.csv` for human re-check. It may never remove one.
 3. Report screening κ (H1 vs H2), LLM run-to-run agreement, and the LLM-vs-human κ. Also report how many papers the LLM's flags rescued. Use:
@@ -159,11 +159,11 @@ Run `python3 tools/anonymise.py --out ../RobustUAVs-anon --init-git --zip` from 
 | Order | Step | Needs | Effort | Moves headline? |
 |---|---|---|---|---|
 | 1 | S1–S3 search, screen, snowball | internet, 2 humans | 2–3 weeks | corpus size, H1 shares |
-| 2 | S4 coding + reliability | 2 humans, Claude Code sub-agents | 3–4 weeks | **H1–H4, transfer table** |
+| 2 | S4 coding + reliability | 2 humans, coding-agent sub-agents | 3–4 weeks | **H1–H4, transfer table** |
 | 3 | S5 objective verification | EASA/JARUS PDFs | 2 days | Table IV daggers |
 | 4 | S7 sensitivity | none | 1 day | robustness of H2 trend |
 | 5 | S6/S8/S9 rebuild, pack, anonymise | none | 0.5 day | — |
 
-## Prompt to paste into Claude Code
+## Prompt to paste into the coding agent
 
-> You are working in `rogerpanel/RobustUAVs.ai` on `main` (create branch `paperII/full-study`). Read `paperII/RUNBOOK_CLAUDE_CODE.md`, `paperII/corpus/CODEBOOK.md` and `paperII/experiments/quantifier.py`. Run `bash paperII/experiments/run_all.sh` and `bash paperII/manuscript/build.sh` to confirm the pilot reproduces (0 errors, 0 undefined). Then execute S1 (search, dedup) and stop to show me `prisma_counts.csv` before screening. For screening and coding, spawn independent sub-agents as the LLM third coder exactly as S2/S4 specify; never let LLM output exclude a paper. Keep the pilot files untouched. Do not edit numbers in `main.tex` by hand. If a full-study result contradicts a sentence in the manuscript, stop and summarise the contradiction before changing prose.
+> You are working in `rogerpanel/RobustUAVs.ai` on `main` (create branch `paperII/full-study`). Read `paperII/RUNBOOK.md`, `paperII/corpus/CODEBOOK.md` and `paperII/experiments/quantifier.py`. Run `bash paperII/experiments/run_all.sh` and `bash paperII/manuscript/build.sh` to confirm the pilot reproduces (0 errors, 0 undefined). Then execute S1 (search, dedup) and stop to show me `prisma_counts.csv` before screening. For screening and coding, spawn independent sub-agents as the LLM third coder exactly as S2/S4 specify; never let LLM output exclude a paper. Keep the pilot files untouched. Do not edit numbers in `main.tex` by hand. If a full-study result contradicts a sentence in the manuscript, stop and summarise the contradiction before changing prose.

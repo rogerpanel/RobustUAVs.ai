@@ -13,7 +13,7 @@ paperII/
   results/       every CSV the paper quotes, plus evidence_pack.json
   manuscript/    main.tex (IEEEtran), fig_framework.tex (Fig. 1), fig_lattice.tex, fig_results.tex,
                  numbers.tex + tab_*_body.tex + figdata/ (generated), refs.bib, build.sh
-  RUNBOOK_CLAUDE_CODE.md   steps S1–S9 that turn the pilot into the full study
+  RUNBOOK.md     steps S1–S9 that turn the pilot into the full study
 ```
 
 ## Rebuild
