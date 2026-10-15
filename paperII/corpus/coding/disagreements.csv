@@ -27,6 +27,7 @@ O3134881993,lifts,L_conc;L_gen,L_conc
 O3183883635,perturbation,none,distribution
 O3183883635,lifts,none,L_sup
 O3183883635,assumption,S,SE
+O3206889533,class,RTA,CRL
 O3208537030,evidence,simulated,measured
 O3212063444,perturbation,none,norm
 O3213106995,assumption,S,SE
@@ -35,6 +36,10 @@ O3213615249,modality,A,E
 O3213615249,perturbation,disturbance,none
 O3213615249,evidence,modelled,proof
 O3214930062,class,NEW:GP-bounded contraction tube,NEW:GP-learned model in robust adaptive control tubes
+O3216935302,lifts,none,L_mon
+O3216935302,evidence,simulated,measured
+O4200294561,assumption,U,S
+O4205626291,lifts,L_conc,none
 O4206840646,assumption,U,S
 O4221148689,lifts,L_dyn;L_mon,L_dyn;L_hor;L_mon
 O4221153097,lifts,none,L_dyn
@@ -45,6 +50,8 @@ O4284967541,class,LIP,NEW:Lipschitz-metric robustness estimation
 O4284967541,assumption,SE,S
 O4286224460,eligible,1,0
 O4303857556,eligible,1,0
+O4308244126,eligible,1,0
+O4312433875,lifts,L_dyn;L_mon,L_mon
 O4312744983,eligible,0,1
 O4313447601,evidence,modelled,simulated
 O4315488717,eligible,1,0
@@ -59,18 +66,26 @@ O4383613691,class,NCERT,CLR
 O4383613691,lifts,none,L_dyn
 O4384521927,assumption,S,SE
 O4386875196,eligible,1,0
+O4387561115,assumption,S,SE
+O4387561115,evidence,simulated,measured
+O4388561670,lifts,L_conc;L_gen,L_gen;L_op
 O4389665627,eligible,1,0
 O4390832684,assumption,U,S
+O4391021262,class,PACB,NEW:Order-statistic expected-risk bound
+O4391021262,component,estimation,perception
+O4391021262,evidence,modelled,simulated
 O4391528845,assumption,SEC,S
 O4393160604,evidence,modelled,proof
 O4393161169,evidence,simulated,measured
 O4393954477,perturbation,norm,none
 O4393954477,assumption,U,S
+O4396600859,class,CP,RS
 O4396650433,eligible,1,0
 O4399115387,eligible,1,0
 O4399157133,class,SMT,CLR
 O4399157133,lifts,none,L_dyn
 O4400025616,eligible,1,0
+O4400647773,eligible,1,0
 O4400776977,evidence,proof,modelled
 O4400946840,class,NEW:GP-CBF chance-constrained safety filter,NCERT
 O4400946840,scope,in,tr
@@ -86,6 +101,8 @@ O4402520256,perturbation,none,norm
 O4402520256,assumption,U,S
 O4402883652,lifts,L_conc,L_conc;L_dyn
 O4403317714,lifts,L_dyn;L_mon,L_dyn;L_hor;L_mon
+O4403344774,assumption,S,SE
+O4403344774,evidence,simulated,measured
 O4403365237,scope,op,pop
 O4403853633,class,NCERT,CLR
 O4403853633,lifts,L_sup,L_dyn;L_sup
@@ -117,10 +134,15 @@ O4412514774,assumption,U,S
 O4413945503,assumption,S,SE
 O4414050564,assumption,S,SE
 O4415795436,modality,P,E
+O4415799201,evidence,proof,measured
 O4415886758,perturbation,distribution,disturbance
 O4415886758,assumption,SEC,SE
 O4415913028,evidence,simulated,measured
 O4416243460,eligible,1,0
+O4416383082,class,PACB,NEW:Stability-based generalisation bound
+O4416383082,lifts,L_gen,none
+O4416383082,evidence,modelled,measured
+O4416407150,lifts,L_dyn,none
 O4416603702,class,PROB,BP
 O4416603702,modality,P,A
 O4416603702,lifts,L_conc,none
@@ -140,6 +162,8 @@ O7134853944,lifts,none,L_dyn
 O7134853944,evidence,modelled,proof
 O7134959935,evidence,simulated,measured
 O7135102326,perturbation,disturbance,distribution
+O7138101982,class,CRL,NEW:policy-gradient convergence
+O7138101982,evidence,proof,modelled
 O7138907351,lifts,L_conc;L_op;L_rate,L_op;L_rate
 O7139111173,assumption,U,S
 O7139143999,eligible,1,0
@@ -163,19 +187,27 @@ O7161640018,class,NEW:LLM multi-agent consensus verification,RTA
 O7161640018,lifts,L_hor;L_mon,L_mon;L_rate
 O7162495747,class,CP,MON
 O7162495747,evidence,simulated,measured
+O7162760278,scope,pop,op
+O7162760278,lifts,L_conc;L_sup,L_conc;L_hor
 O7164897298,class,NEW:algorithmic-robustness generalisation bound,NEW:robustness-based generalisation bound
 O7164897298,evidence,simulated,measured
 O7166813758,lifts,L_conc;L_dyn;L_sup,L_conc;L_dyn
 O7166813758,assumption,S,SE
+O7167089804,perturbation,disturbance,none
+O7167089804,evidence,modelled,simulated
+O7167942380,eligible,1,0
+O7169620179,assumption,S,U
 O7171488556,component,perception,end2end
 O7171488556,lifts,L_conc,L_conc;L_mon
 O7172049593,eligible,1,0
 O7203720573,assumption,S,SE
+O7204119119,assumption,S,SE
 O7204467824,class,NCERT,RTA
 O7204467824,scope,tr,op
 O7212031345,scope,tr,pop
 O7214089039,component,planning,estimation
 O7214089039,lifts,L_conc,L_conc;L_hor
 O7214089039,assumption,S,SEC
+O7214748213,class,NEW:Transfer gain-prediction bound,NEW:Local transfer concentration bound
 O7220413358,eligible,1,0
 O7220723858,eligible,1,0

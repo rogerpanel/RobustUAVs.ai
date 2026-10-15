@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7128041204",1,"","CP","A","planning","pop","P","distribution","L_conc","S","simulated","Split-CP marginal coverage >=1-eps of LLM object-relevance option sets for robot messages; iid assumed, argued not tested. Tier A doubtful (Habitat household robots)."
+"O4281490538",1,"","CP","B","perception","pop","P","distribution","L_conc","SE","simulated","Asymptotic class-coverage >=1-alpha of flow-based conformal sets, robust to outlier-contaminated test data; uniform p-values checked empirically (Fashion-MNIST, CIFAR-10)."
+"O4286857124",0,"Criminal-justice fairness study; conformal sets only used for evaluation, no own guarantee, not autonomous system.","","","","","","","","","",""
+"O7167942380",1,"","CRL","B","control","tr","A","none","L_dyn","S","modelled","Discounted reach-cost Bellman operator is a contraction with unique fixed point equal to HJ reachability value; RL as sample-based solver. Experiments unseen (text truncated); tier B assumed."
+"O4405658626",0,"Empirical DRL manipulator planning-speed study; collision-check monitor claimed but no stated guarantee or analysis.","","","","","","","","","",""

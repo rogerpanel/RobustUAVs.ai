@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7127925835",0,"Empirical Neural ODE regularizer; Gronwall bound is motivational, never certified on model","","","","","","","","","",""
+"O2804542227",0,"Optimality/complexity of CIRL POMDP planning algorithm; no learned-component guarantee","","","","","","","","","",""
+"O7106162589",0,"Convergence of game-theoretic equilibrium-seeking algorithm; no learned component guaranteed","","","","","","","","","",""
+"O4401990437",0,"Concept and timing feasibility study; no stated or quantified reliability guarantee","","","","","","","","","",""
+"O3216935302",1,"","MON","A","perception","in","A","disturbance","L_mon","SE","measured","Lightweight LiDAR/plausibility monitor guarantees detection of perception position errors above dxmin per object state; doubt in vs op; mostly empirical recall."

@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4416407150",1,"","CRL","A","control","tr","A","disturbance","none","S","modelled","Claimed local asymptotic Lyapunov stability of MARL feedback-linearized closed loop under bounded delay/noise; sketch proofs only; doubt tr vs in, class fit."
+"O4312433875",1,"","RTA","A","control","op","A","disturbance","L_mon","S","simulated","Differentiable robust-CBF safety layer keeps RL agent forward-invariant under GP-estimated disturbance set; experiments absent from excerpt, tier uncertain."
+"O4391021262",1,"","NEW:Order-statistic expected-risk bound","B","perception","pop","P","distribution","L_conc","S","simulated","Permutation-invariant ambiguity-set proxy cost upper-bounds expected risk with calibrated confidence 1-delta; synthetic regression/SVM; component and class fit doubtful."
+"O7162760278",1,"","CP","B","perception","op","P","distribution","L_conc;L_hor","S","simulated","Anytime-valid false-alarm bound delta_e+delta_cal across refreshed conformal RAG deployments; LLM QA scorer; doubt op vs pop, component fit."
+"O4391988331",1,"","CP","B","perception","pop","P","distribution","L_conc","SE","measured","Standard split-conformal marginal coverage 1-epsilon for multi-view activity-recognition classifiers; MV-I intersection not strictly conformal."

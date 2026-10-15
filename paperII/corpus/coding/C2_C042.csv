@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4387561115",1,"","CP","B","perception","pop","P","distribution","L_conc","SE","measured","SAPS conformal score for image classifiers keeps finite-sample marginal coverage P(Y in C(X))>=1-alpha under exchangeability; validated on ImageNet/CIFAR test splits."
+"O4400647773",0,"Empirical shielded-RL collision rates in simulation; shield has no stated or proven safety guarantee.","","","","","","","","","",""
+"O4403344774",1,"","CP","B","perception","pop","P","distribution","L_conc","SE","measured","Structured conformal sets give marginal or PAC (epsilon,delta) coverage under iid calibration; component doubtful: ImageNet classifier plus LLM QA/code/text tasks."
+"O7167247121",0,"Negative empirical evaluation; shows conformal exchangeability assumption violated, claims no guarantee.","","","","","","","","","",""
+"O4308244126",0,"PAC abstraction of unknown deterministic dynamics; no learned component is the guarantee object.","","","","","","","","","",""
