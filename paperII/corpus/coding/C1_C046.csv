@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4378499190",0,"Soft Lagrangian constraint; violation rate only Monte Carlo estimated; no guarantee on learned policy.","","","","","","","","","",""
+"O7167089804",1,"","RTA","B","planning","op","A","disturbance","L_mon","S","modelled","Utility gate dispatches only actions with U>=theta; zero collision if camera fault isolated from encoders (V1). Doubt: scope in vs op; UR5 is not a vehicle."
+"O4408175362",0,"Chemical toxicity regression; empirical calibration only, no autonomous-system guarantee.","","","","","","","","","",""
+"O7169620179",1,"","RTA","B","control","op","A","none","L_mon","S","simulated","Deterministic safety layer clips every LLM insulin dose to IOB and rate limits; no theorem, only in-silico failure rates. Doubt: scope in vs op."
+"O7131417432",0,"LLM PLC code generation benchmark; empirical pass rates, no guarantee about a learned component.","","","","","","","","","",""

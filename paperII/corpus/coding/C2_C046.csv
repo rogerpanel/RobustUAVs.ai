@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4378499190",0,"No guarantee on learned DDPG policy; constraint violation only estimated by simulation","","","","","","","","","",""
+"O7167089804",1,"","RTA","B","planning","op","A","none","L_mon","S","simulated","Utility gate proves no LLM-proposed action with utility below threshold is ever dispatched; UR5 manipulators, not a vehicle."
+"O4408175362",0,"Chemical toxicity application; empirical calibration of conformal intervals, no own guarantee","","","","","","","","","",""
+"O7169620179",1,"","RTA","B","control","op","A","none","L_mon","U","simulated","Deterministic safety layer clips every LLM insulin dose to IOB/RoC limits; asserted, no theorem; doubt in vs op."
+"O7131417432",0,"Formal verification targets generated PLC code (non-learned); headline is empirical pass rates","","","","","","","","","",""

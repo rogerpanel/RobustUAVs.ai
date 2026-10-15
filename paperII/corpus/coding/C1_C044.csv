@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7127925835",0,"Empirical stabilization method; Grönwall bound only motivates, no guarantee for the proposed regularizer.","","","","","","","","","",""
+"O2804542227",0,"Optimality and complexity results for POMDP solvers; no guarantee about a learned component.","","","","","","","","","",""
+"O7106162589",0,"Convergence guarantee of a game-theoretic equilibrium-seeking algorithm; no learned component or vehicle.","","","","","","","","","",""
+"O4401990437",0,"Preliminary hybrid-CNN redundant-execution concept; no formal or statistical guarantee stated or evaluated.","","","","","","","","","",""
+"O3216935302","1","","MON","A","perception","in","A","disturbance","none","SE","simulated","Monitor detects object position errors above analytic dx_min (grid plus noise margin) for perception output; scope maybe op as runtime monitor, chose in."

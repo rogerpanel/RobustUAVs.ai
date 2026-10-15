@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4396783611",1,"","CP","B","estimation","pop","P","distribution","L_conc","S","measured","Split-conformal calibrated ellipsoid regions give coverage >= eta over data distribution; i.i.d./exchangeability assumed; localization datasets, not vehicle task."
+"O7138101982",1,"","CRL","B","control","pop","E","distribution","L_conc","S","proof","Minibatch SGD on domain-randomized LQR reaches eps-suboptimal expected cost w.p. 1-delta (matrix Bernstein); needs stabilizing K0 and small diam(Theta). Cart-pole only."
+"O3206889533",1,"","RTA","B","control","tr","A","disturbance","L_dyn","S","proof","NN policy via gauge-map safety filter keeps state in robust invariant polytope for all bounded disturbances; rule 6: tr chosen over op; power-system benchmark."
+"O7139119937",0,"Guarantee is Bayes-error ascent on dataset perturbations for data protection, not about a learned component.","","","","","","","","","","",""
+"O4388561670",1,"","OPREL","A","perception","pop","P","distribution","L_gen;L_conc","S","simulated","Failure probability of runway-detector ML component over the ODD estimated by Bayesian safety validation on simulation surrogate; sim-to-real validation only recommended."

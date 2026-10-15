@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4416383082",1,"","NEW:Stability-based generalisation bound","B","perception","pop","E","distribution","none","S","measured","Expected test-error bound for mixed real/synthetic training via uniform stability, U-shaped in Wasserstein gap; class doubt PACB vs NEW; evidence measured-vs-modelled doubt."
+"O4367056604",0,"Tutorial on stochastic fundamental lemma for LTI systems; no learned component guarantee.","","","","","","","","","",""
+"O7214748213",1,"","NEW:Local transfer concentration bound","B","end2end","in","P","distribution","L_conc","S","simulated","Hoeffding bound (1-delta) on skill-gain prediction error and routing regret for fixed target task; rule-6: in vs pop (fresh-task Thm 6)."
+"O4205626291",1,"","NCERT","A","control","tr","A","none","none","S","simulated","Jointly learned NN controller and CBF on black-box drone/ship; safety holds if CBF losses reach zero; only sample-checked, may be violated."
+"O7204119119",1,"","RTA","B","planning","op","A","semantic","L_mon","SE","simulated","Release-predicate invariant: LLM-derived skill sequences reach RAN only if contract, zero-trust score and gate pass; perturbation semantic vs poisoning doubtful."
