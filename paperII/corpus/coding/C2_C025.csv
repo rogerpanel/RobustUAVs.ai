@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7171834681",0,"Conformal-calibrated Bayesian optimization for antenna switching; simulation only, no stated guarantee.","","","","","","","","","",""
+"O7169592824",1,"","RTA","A","control","op","A","none","L_mon","S","modelled","Theorem HAF: if 22 contracts hold, safety-first behavior tree/action mask keeps MARL swarm safe; no evaluation, UAV SAR domain only; tier doubtful."
+"O7138945547",1,"","CP","B","perception","pop","P","distribution","L_conc","U","measured","Split conformal sets for RF landslide classifier, marginal 1-alpha coverage; exchangeability unstated despite spatial dependence; empirical coverage plotted."
+"O4417292332",1,"","CP","B","perception","pop","P","distribution","L_conc","S","simulated","CQR coverage per wavelet coefficient for image-reconstruction nets plus Hoeffding bound on CHEM estimate under i.i.d.; synthetic degradations of real images."
+"O2741041149",0,"Doctoral abstract; convergence guarantees concern non-learned PSO/MPC planner, not learned component.","","","","","","","","","",""

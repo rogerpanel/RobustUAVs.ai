@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4415886758","1","","RTA","B","control","op","A","disturbance","L_mon;L_conc","SE","simulated","Grid shield (Thm 1) makes RL strategy learned under it safe; simulation-sampled abstraction, SMC check 99% CI; doubt A vs P."
+"O7204467824","1","","RTA","A","control","op","A","none","L_mon","SE","simulated","NN-encoded viability kernel as MPC terminal constraint guarantees safe abort fallback on hexarotor; class doubt RTA vs NCERT."
+"O4416243460","0","Adaptive CBF safety filter with RLS parameter estimation; no learned ML component.","","","","","","","","","",""
+"O4285409484","0","Convergence and sample complexity of decentralized low-rank regression; no autonomy-relevant component guarantee.","","","","","","","","","",""
+"O4225423574","1","","SMT","B","perception","in","A","norm","none","SE","proof","Hybrid quantum-classical Benders MILP certificate of l-inf robustness for MNIST ReLU MLP; sound in ideal simulated setting."

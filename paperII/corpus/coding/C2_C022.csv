@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4389665627",0,"Safe RL algorithm; constraint satisfaction only empirical; reuses CPO bound, no own guarantee","","","","","","","","","",""
+"O4401414359",1,"","NEW:Distributionally robust chance-constrained planning","A","estimation","pop","P","distribution","L_sup","S","simulated","Per-step collision probability <= eps for all distributions matching predictor's estimated mean/covariance; Trajectron++ predictor. Doubt: pop vs tr (MPC horizon)."
+"O4406764499",1,"","CP","B","estimation","pop","P","distribution","L_conc","SE","simulated","CQR intervals cover PHEV fuel consumption with prob >= 0.9 under exchangeability. Doubt: tier, vehicle task but not autonomous."
+"O3101293418",1,"","PACB","B","perception","pop","P","distribution","L_conc","S","modelled","PAC-Bayes margin generalization bound on worst-case affine-shift risk of federated NN classifier; MNIST/CIFAR. Convergence theorem also headline."
+"O7136229505",0,"Empirical LLM reasoning evaluation; no formal or statistical guarantee","","","","","","","","","",""

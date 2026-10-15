@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4400946840",1,"","NEW:GP-CBF chance-constrained safety filter","A","control","in","P","distribution","L_conc","S","simulated","Per-step CBF/CLF chance constraint holding w.p. 1-delta via GP RKHS bound for switching ACC; rule 6: kept scope in, not trajectory safety."
+"O4387972489",1,"","OPREL","A","end2end","pop","P","distribution","L_conc","S","modelled","Conservative Bayesian posterior confidence that failure probability per execution is below bound b, with correlated executions; AV illustration; doubt: ML component only implicit."
+"O7135102326",1,"","CP","A","control","tr","P","disturbance","L_conc;L_hor","S","measured","Conformal belief-CBF safety filter: Pr[avoid set never entered over horizon] >= 1-delta; needs iid particle assumption; rule 6: tr not op."
+"O4415795464",0,"Backdoor poisoning attack study; its theorems guarantee attack success, not a safety guarantee.","","","","","","","","","",""
+"O4417290994",0,"Architectural survey chapter with no formal, statistical or architectural guarantee of its own.","","","","","","","","","",""

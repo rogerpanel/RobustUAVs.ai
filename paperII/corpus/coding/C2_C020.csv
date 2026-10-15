@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4385289198",0,"Bandit regret bound for black-box SMC; verified systems contain no learned component","","","","","","","","","",""
+"O7171488556",1,"","CP","B","end2end","pop","P","distribution","L_conc;L_mon","SE","simulated","Role-stratified conformal risk control bounds per-role violated-and-allowed rate of LLM tool-call fields; doubt: component end2end vs planning, perturbation distribution vs prompt-injection."
+"O4405469692",0,"Constraint removal for mp-QP/MPC; learns from solved QPs, no learned model","","","","","","","","","",""
+"O4407949559",1,"","NCERT","B","control","tr","A","none","none","S","proof","Exact LP/MILP computation of maximal admissible positively invariant sublevel set of given ReLU neural Lyapunov function; NN level estimator verified by MILP."
+"O4385453437",0,"Rule-based reachability verification of AV trajectories; no learned component identified","","","","","","","","","",""

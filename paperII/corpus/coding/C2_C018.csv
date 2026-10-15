@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4402753567",1,"","LIP","B","perception","in","A","norm","none","S","proof","Certified l2 robust accuracy of 1-Lipschitz CNNs via margin > eps*sqrt2 on CIFAR/TinyImageNet; doubt: mainly a comparison study of existing layers."
+"O7151076360",1,"","LIP","B","perception","in","A","norm","none","S","modelled","Exact Lipschitz constant of integral-kernel feature maps bounds Lip(h) for all RKHS predictors; doubt: no task, feature map not learned."
+"O4385300825",1,"","CP","A","estimation","pop","P","distribution","L_conc","SE","simulated","CQR regions contain true future trajectory of learned motion predictor w.p. 1-delta (F1Tenth); i.i.d. calibration assumed, test coverage checked."
+"O4284967541",1,"","NEW:Lipschitz-metric robustness estimation","A","perception","in","A","norm","none","S","simulated","Safe norm-ball radius s(x)/Q via Lipschitz metric (Theorem 1); doubt: Q found by black-box local search, so not sound; ACAS Xu, MNIST, ImageNet."
+"O4399157133",1,"","CLR","B","control","tr","A","none","L_dyn","S","proof","SMT predicate-abstraction CEGAR proves neural planning policy reach-avoid safe from start set; doubt tr vs op (unbounded horizon), nondeterministic transitions."
