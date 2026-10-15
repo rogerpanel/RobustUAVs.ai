@@ -16,6 +16,7 @@ Inputs   corpus/codes_full_final.csv, corpus/coding_sample.csv,
          results/screening_status.csv
 Outputs  results/corpus_estimates.csv     field, value, coded counts, share and papers with intervals
          results/type_plane_full.csv      scope x modality cells (the type plane)
+         results/distribution_full.csv    estimated papers by tier x component x scope (Fig. 3)
 Usage    python3 corpus_estimates.py
 """
 from __future__ import annotations
@@ -100,6 +101,16 @@ def main() -> int:
           for r in out if r["field"] == "scope_x_modality"]
     with (R / "type_plane_full.csv").open("w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(tp[0]), lineterminator="\n"); w.writeheader(); w.writerows(tp)
+    dist = []
+    for tier in ("A", "AB"):
+        for comp in ("perception", "estimation", "control", "planning", "end2end"):
+            for sc in ("in", "tr", "op", "pop"):
+                x = sum(N[s] / len(strata[s]) for s in strata for r in strata[s]
+                        if r["eligible"] == "1" and (tier == "AB" or r["tier"] == "A")
+                        and r["component"] == comp and r["scope"] == sc)
+                dist.append({"tier": tier, "component": comp, "scope": sc, "papers": round(x)})
+    with (R / "distribution_full.csv").open("w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(dist[0]), lineterminator="\n"); w.writeheader(); w.writerows(dist)
     print(f"strata: core N={N['core']:.0f} coded {len(strata['core'])}; remainder N={N['remainder']:.0f} "
           f"coded {len(strata['remainder'])}")
     for r in out:

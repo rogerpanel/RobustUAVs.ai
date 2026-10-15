@@ -23,7 +23,7 @@
   fb/.style={->, draw=red!60!black, line width=0.6pt, dashed}
 ]
 % ---------------- (1) inputs ------------------------------------------
-\node[inbox] (lit) {\textbf{Guarantee literature}\\ IEEE, ACM, Scopus, WoS,\\ OpenAlex/arXiv, 2017--2026};
+\node[inbox] (lit) {\textbf{Guarantee literature}\\ OpenAlex (IEEE, ACM, arXiv),\\ 18 venue sweeps, 2017--2026};
 \node[inbox, below=2.2mm of lit] (seed) {\textbf{Seed set}\\ canonical verifiers, NNCS,\\ RTA, conformal, PAC-Bayes};
 \node[inbox, below=2.2mm of seed] (reg) {\textbf{Objective corpus}\\ SORA 2.5 (Annexes A, E),\\ EASA CP Issue 02/03, MLEAP,\\ ED-324, AC 23.1309, F3269};
 \node[inbox, below=2.2mm of reg] (par) {\textbf{Parent artifact}\\ certificate engine and\\ committed result files};
@@ -32,10 +32,10 @@
 
 % ---------------- (2) protocol ------------------------------------------
 \node[pstep, right=8mm of lit, yshift=3mm] (s1) {\textbf{Identify} (PRISMA 2020)\\ block search $A\wedge B\wedge C$};
-\node[pstep, below=2mm of s1] (s2) {\textbf{Screen}: 2 humans + LLM\\ (no LLM-only exclusion)};
+\node[pstep, below=2mm of s1] (s2) {\textbf{Screen}: 2 LLM screeners, core\\ + random sample (exclude if both)};
 \node[pstep, below=2mm of s2] (s3) {\textbf{Snowball} (Wohlin)\\ stop: $<2\,\%$ new, no new cell};
 \node[pstep, below=2mm of s3] (s4) {\textbf{Code} 8 fields (Table~\ref{tab:codebook})\\ tier, component, \emph{scope}, \emph{modality},\\ perturbation, lifts, assumption, evidence};
-\node[pstep, below=2mm of s4] (s5) {\textbf{Reliability}: $\kappa$, $\alpha_K$, AC1, PABAK\\ $\rightarrow$ logged adjudication};
+\node[pstep, below=2mm of s4] (s5) {\textbf{Reliability}: $\kappa$, $\alpha_K$, AC1, PABAK\\ $\rightarrow$ logged adjudication, weighting};
 \node[lane, fit=(s1)(s5)] (L2) {};
 \node[lbl, above=0.4mm of L2] {(2) Systematization protocol (Sec.~\ref{sec:protocol})};
 
@@ -80,7 +80,7 @@
  {\textbf{(5) Demonstrator and validation loop}:\ \
   SORA Annex A evidence pack from the parent certificate, every lift listed as an open or discharged obligation (Sec.~\ref{sec:case})\ \textbullet\
   sensitivity analyses (tier, venue, period, strict coding)\ \textbullet\
-  the full dual-coder study replaces the pilot; numbers regenerate from result files};
+  every decision and code released; a human re-coding regenerates every number};
 \draw[fb] (par.south) -- (par.south |- val.north);
 \draw[fb] (L4.south |- val.north) -- (L4.south)
   node[midway, left, font=\scriptsize, text=red!60!black]{numbers regenerate};
@@ -88,8 +88,9 @@
 \caption{Methodological framework. (1)~Two corpora enter the study: guarantees about learned
 components, and assurance objectives from aviation regulation and standards, both frozen at a
 cut-off date. (2)~A registered protocol identifies, screens, snowballs and codes the
-guarantees. Two coders work independently, a language model acts as a logged third coder, and
-reliability is reported per field before adjudication. (3)~Every guarantee and objective
+guarantees. Two LLM coders work independently from a frozen codebook, reliability is reported
+per field before adjudication, and corpus-level results are weighted estimates from a stratified
+sample. (3)~Every guarantee and objective
 receives a quantifier type, and a calculus of typed lifts computes, for each pair, whether the
 guarantee discharges the objective, needs lifts whose assumptions become obligations, or is a
 category error. (4)~The coded corpus and the calculus answer H1--H4 and yield a ranked research
