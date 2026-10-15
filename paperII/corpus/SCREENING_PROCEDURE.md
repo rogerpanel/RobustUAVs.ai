@@ -135,3 +135,31 @@ therefore replaced by a sampling design; nothing already screened is changed.
   without replacement from the not-yet-sampled remainder (seed 20261018 + 1),
   so the remainder sample stays a simple random sample (now 1,250). Decided
   from the include count only, before any coding.
+
+## Amendment 4 (2026-10-15): full-text eligibility and coding by LLM coders, disclosed
+
+Fixed before any full text was coded. Retrieval (`fetch_fulltext.py`, open
+access only) gave 92/92 core and 195/208 remainder full texts: the remainder
+stratum ran out of included records (all 233 tried; 38 had no open copy), so
+287 papers are coded, and the weights in `coding_sample.csv` are recomputed
+as estimated includes / papers coded per stratum. Open-access-only retrieval
+is reported as a limitation.
+
+- **Coders C1 and C2**: independent sub-agent runs on two different models.
+  Each reads only `CODEBOOK.md` (v1.1), the inclusion rule
+  (`SCREENING_RULE.md`), `classes.csv`, and a batch of full texts (the first
+  80,000 characters of each, which covers abstract, method and evaluation for
+  most papers; truncation is recorded). Neither sees the other's codes.
+- **Fields**: full-text `eligible` (0/1) with a reason, then for eligible
+  papers `class` (one of `classes.csv`, or `NEW:<label>` for a guarantee type
+  the pilot classes do not cover) and the eight codebook fields.
+- **Adjudication**: a third, independent LLM instance (ADJ) sees the full text
+  and both codings, resolves every disagreement with a logged rationale, and
+  may not change fields on which C1 and C2 agree.
+- **Reliability**: per-field percent agreement, Cohen's kappa, Krippendorff's
+  alpha, Gwet's AC1 and PABAK between C1 and C2 (`reliability.py`), reported
+  as LLM-LLM agreement, i.e. a measure of codebook clarity, never as expert
+  agreement.
+- **Estimates**: corpus-level shares are weighted by stratum, with intervals.
+
+- 2026-10-15: amendment 4 (this section).
