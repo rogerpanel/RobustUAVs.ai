@@ -1,0 +1,3 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7214713629","1","","CP","A","control","in","P","distribution","L_conc;L_dyn","S","simulated","Conformal residual margin gives one-step ACC constraint satisfaction >=1-alpha-eps under TV-bounded dynamics shift via Lipschitz barrier; scope in vs pop doubt."
+"O4320855572","1","","CP","B","perception","pop","P","distribution","L_conc","S","measured","Conformal sets calibrated on noisy labels keep >=1-alpha clean coverage under dispersive noise; KITTI depth only online demo; label noise maybe poisoning."

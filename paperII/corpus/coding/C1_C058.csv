@@ -1,0 +1,3 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7214713629",1,"","CP","A","control","in","P","distribution","L_dyn;L_conc","S","simulated","Shifted marginal one-step conformal residual coverage 1-alpha-eps gives barrier satisfaction for ACC filter; rule 6: in vs pop, not closed-loop."
+"O4320855572",1,"","CP","B","perception","pop","P","distribution","L_conc","S","proof","Conformal sets calibrated on noisy labels cover clean labels (>=1-alpha) if noise dispersive; rule 6: label noise coded distribution; CP class loose fit."

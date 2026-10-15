@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2888409681",0,"Position paper: high-level GSN safety argument for RL, no guarantee of its own","","","","","","","","","",""
+"O4405094777",0,"Data-driven barrier certificate for unknown nonlinear plant; no learned component involved","","","","","","","","","",""
+"O4405354148",1,"","CP","B","estimation","pop","P","distribution","L_conc","SE","measured","Geo-weighted split conformal intervals cover spatial ML predictions (XGBoost, DGSI) at 1-eps under covariate shift; coverage 93.67% measured on housing data."
+"O7202270053",1,"","CP","A","estimation","pop","P","distribution","L_conc","U","measured","Conformal 95% error set for learned NN residual rover dynamics, used in CVaR planning; headline risk reduction is empirical; weak, borderline eligibility."
+"O2913563956",0,"Hand-designed swarm state-action map proven live/safe; guarantee about non-learned component","","","","","","","","","",""

@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7168509562",0,"Guarantee covers discrete coordination logic only; learned scorer and LLM explicitly outside model","","","","","","","","","",""
+"O7155091958",1,"","NEW:Statistical recovery bound for continual learning","B","estimation","pop","P","distribution","L_conc","S","modelled","W.p. 1-delta over samples, weighted/average estimation error of continual-learning predictor under replay, distillation or data-dependent weights is bounded; theory only, no experiments."
+"O4225455743",1,"","RTA","A","control","op","A","none","L_mon","S","simulated","Rule-based emergency-braking switch overrides RL throttle policy so AV avoids collision at unprotected left turn; no proof, CARLA demos only; doubt: arguably empirical."
+"O2979091979",0,"Model-checking planner; no learned component in the guaranteed system","","","","","","","","","",""
+"O4414449094",0,"Empirical adversarial defense via Jacobian regularization; no certified or formal guarantee","","","","","","","","","",""

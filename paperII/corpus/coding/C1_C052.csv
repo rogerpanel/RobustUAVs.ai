@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7130695231",0,"Bearing RUL method; conformal coverage only cited and optional, no own guarantee.","","","","","","","","","",""
+"O7163179530",1,"","CP","B","estimation","pop","P","distribution","none","S","proof","Group-conditional long-run coverage of online conformal intervals for any stream; modality P vs A doubt; score-growth assumption stated."
+"O4404569890",1,"","CP","A","perception","pop","P","distribution","L_conc","S","measured","Conformal probability >=1-eps that a similarity score yields correct retrieval; iid calibration assumed, proof cited; scope pop vs in doubt."
+"O7138473169",1,"","CRL","A","control","pop","E","distribution","L_gen;L_sup","S","simulated","Lower bound on expected return under real dynamics via KL to prior; real dynamics assumed in trust region; NE convergence is second claim."
+"O7131910089",1,"","NEW:GPR-predicted solver parameter convergence","B","estimation","in","A","none","none","S","proof","Jacobi converges iff GPR parameter error below spectral threshold; f assumed in RKHS, constant unknown; off-domain numerical analysis, eligibility doubtful."

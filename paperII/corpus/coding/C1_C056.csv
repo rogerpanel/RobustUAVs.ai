@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4394930075",0,"Edge-computing resource allocation; PRISM model plus NN surrogate; no vehicle or learned-component guarantee.","","","","","","","","","",""
+"O4382935996",1,"","NCERT","A","control","tr","A","disturbance","L_dyn","S","proof","ISS and input-to-state safety of inflated safe set for adaptive CLF/CBF control given estimator conditions; doubt: online parameter estimator as learned component, mobile-robot tier."
+"O3098796714",0,"Licentiate thesis; its papers removed; duplicates published journal versions; no own guarantee stated.","","","","","","","","","",""
+"O4407039535",0,"Overview and concept paper on Big Data safety cases; no formal or statistical guarantee proved.","","","","","","","","","",""
+"O7125487007",0,"Guarantee concerns Kalman-filter state estimation and CBF safety filter; no learned component.","","","","","","","","","",""
