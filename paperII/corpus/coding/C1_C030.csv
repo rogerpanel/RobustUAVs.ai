@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7123346317",1,"","NCERT","A","control","tr","A","none","L_sup","S","simulated","Max of compactly supported RBF learned CBFs is valid non-smooth CBF, forward-invariant union of safe sets; scope tr vs op (all-time exploration) doubt."
+"O7133204952",1,"","NEW:equivariance error lower bound","B","perception","pop","E","none","none","S","modelled","Lower bounds on expected error of invariant/equivariant nets under partial symmetry mismatch; needs known density; checked on Swiss roll, digits, toy robot."
+"O7138907351",1,"","OPREL","B","end2end","pop","P","distribution","L_op;L_rate;L_conc","S","simulated","Hierarchical imprecise-Bayes posterior envelopes on LLM reliability over n future tasks under an operational profile; i.i.d. tasks assumed."
+"O7128015350",1,"","RTA","A","control","op","A","none","L_gen;L_mon","U","simulated","Viability-based action mask on finite abstraction keeps RL hypersonic flight in feasible set (forward invariance); abstraction soundness unproven; one rollout."
+"O7171968334",0,"Narrative review of navigation methods; no own formal guarantee.","","","","","","","","","",""

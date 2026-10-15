@@ -15,6 +15,7 @@ O3092567899,lifts,L_conc,L_conc;L_dyn
 O3093796394,assumption,U,S
 O3101293418,evidence,proof,modelled
 O3112586141,class,PIL,SEM
+O3114355749,eligible,1,0
 O3134881993,lifts,L_conc;L_gen,L_conc
 O3183883635,perturbation,none,distribution
 O3183883635,lifts,none,L_sup
@@ -34,6 +35,7 @@ O4283657298,eligible,0,1
 O4284967541,class,LIP,NEW:Lipschitz-metric robustness estimation
 O4284967541,assumption,SE,S
 O4286224460,eligible,1,0
+O4303857556,eligible,1,0
 O4312744983,eligible,0,1
 O4313447601,evidence,modelled,simulated
 O4315488717,eligible,1,0
@@ -41,15 +43,18 @@ O4318621098,assumption,U,S
 O4319323110,perturbation,norm,none
 O4319323110,lifts,none,L_dyn
 O4362721716,tier,B,A
+O4366999641,eligible,1,0
 O4381542600,assumption,U,S
 O4383613691,class,NCERT,CLR
 O4383613691,lifts,none,L_dyn
+O4384521927,assumption,S,SE
 O4386875196,eligible,1,0
 O4389665627,eligible,1,0
 O4390832684,assumption,U,S
 O4391528845,assumption,SEC,S
 O4393954477,perturbation,norm,none
 O4393954477,assumption,U,S
+O4399115387,eligible,1,0
 O4399157133,class,SMT,CLR
 O4399157133,lifts,none,L_dyn
 O4400025616,eligible,1,0
@@ -67,6 +72,7 @@ O4402520256,component,control,perception
 O4402520256,perturbation,none,norm
 O4402520256,assumption,U,S
 O4403317714,lifts,L_dyn;L_mon,L_dyn;L_hor;L_mon
+O4403365237,scope,op,pop
 O4403853633,class,NCERT,CLR
 O4403853633,lifts,L_sup,L_dyn;L_sup
 O4403853633,evidence,measured,proof
@@ -77,6 +83,7 @@ O4405785676,class,OPREL,DTMC
 O4405955404,assumption,U,S
 O4406764499,tier,A,B
 O4406764499,assumption,S,SE
+O4406786055,evidence,simulated,measured
 O4407948456,class,NCERT,CLR
 O4407948456,lifts,none,L_dyn
 O4407951861,class,NEW:System-level uncertainty-measure specification,OPREL
@@ -85,10 +92,14 @@ O4409079480,class,SEM,SMT
 O4409079480,lifts,L_gen,none
 O4409364009,class,SEM,RS
 O4409364009,evidence,proof,simulated
+O4411399924,class,RTA,CRL
+O4411399924,scope,op,tr
+O4411399924,lifts,L_hor,L_dyn
 O4411552344,lifts,none,L_conc
 O4411552344,assumption,S,SE
 O4412514774,component,perception,control
 O4412514774,assumption,U,S
+O4413945503,assumption,S,SE
 O4415886758,perturbation,distribution,disturbance
 O4415886758,assumption,SEC,SE
 O4415913028,evidence,simulated,measured
@@ -99,16 +110,34 @@ O4416603702,lifts,L_conc,none
 O4416603702,assumption,SEC,S
 O4416919197,eligible,1,0
 O7118017025,modality,E,P
+O7123346317,lifts,L_sup,none
+O7128015350,lifts,L_gen;L_mon,L_mon
+O7133204952,eligible,1,0
 O7133267090,class,NEW:GD generalisation theory for two-layer nets,NEW:Learning-theoretic generalisation bound
+O7134959935,evidence,simulated,measured
 O7135102326,perturbation,disturbance,distribution
+O7138907351,lifts,L_conc;L_op;L_rate,L_op;L_rate
 O7139111173,assumption,U,S
+O7139143999,eligible,1,0
+O7155371970,component,estimation,planning
+O7157859985,lifts,L_dyn;L_sup,L_dyn;L_gen
+O7157859985,evidence,simulated,measured
 O7160958905,eligible,1,0
+O7161176011,scope,pop,op
+O7161176011,lifts,L_conc;L_mon,L_conc;L_hor
 O7161387891,component,estimation,perception
 O7161387891,assumption,S,SE
 O7161387891,evidence,simulated,measured
+O7162495747,class,CP,MON
+O7162495747,evidence,simulated,measured
 O7164897298,class,NEW:algorithmic-robustness generalisation bound,NEW:robustness-based generalisation bound
 O7164897298,evidence,simulated,measured
 O7171488556,component,perception,end2end
 O7171488556,lifts,L_conc,L_conc;L_mon
+O7203720573,assumption,S,SE
 O7204467824,class,NCERT,RTA
 O7204467824,scope,tr,op
+O7214089039,component,planning,estimation
+O7214089039,lifts,L_conc,L_conc;L_hor
+O7214089039,assumption,S,SEC
+O7220413358,eligible,1,0

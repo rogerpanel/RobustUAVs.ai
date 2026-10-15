@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4384521927","1","","RTA","A","perception","op","A","none","L_mon","SE","measured","Hypervisor-isolated Simplex-like drone architecture: heartbeat monitor switches DNN tracker to backup within 8-12 ms; no safety theorem, eligibility borderline."
+"O7140117080","0","Empirical selective-release OCR controller; explicitly no formal or statistical guarantee.","","","","","","","","","",""
+"O4320724689","1","","CRL","B","control","tr","E","disturbance","none","S","modelled","Mean-square ultimate boundedness of actor-critic critic weight error under stochastic dynamics; headline also includes counterexample (X) to prior stability claim."
+"O7168656616","0","Guarantees concern symbolic constraint sets' shortcut-freeness, not a learned component's behaviour.","","","","","","","","","",""
+"O7161176011","1","","CP","B","end2end","op","P","distribution","L_conc;L_hor","SE","simulated","Hard-negative rank-calibrated e-process bounds false-release probability on infeasible tasks by alpha; op vs pop doubt, chose op; class CP approximate."

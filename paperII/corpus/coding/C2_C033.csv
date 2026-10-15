@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4403365237","1","","CRL","B","control","pop","P","distribution","L_conc","SEC","simulated","Per-episode BTL satisfaction probability >= Pr_des during RL, via Wilson-bound policy switching, high confidence; gridworld. Doubt: op vs pop; CRL vs RTA."
+"O4303857556","0","Convergence/approximation bound of MARL training algorithm; no guarantee on learned component behaviour.","","","","","","","","","",""
+"O7160560765","0","Conceptual shielding architecture description; no stated or proven guarantee, no evaluation.","","","","","","","","","",""
+"O4413945503","1","","CP","B","estimation","pop","P","distribution","L_conc;L_mon","SE","measured","Conformal threshold on LSTM trajectory-prediction error flags OOD at 1-delta, switching to GP-dPHS predictor; oscillating-spring data."
+"O4416177651","0","PhD thesis on regret bounds for distributed online optimization; no learned-component guarantee.","","","","","","","","","",""

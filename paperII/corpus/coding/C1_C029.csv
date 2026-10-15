@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4399115387",1,"","NCERT","B","control","tr","A","none","none","S","simulated","Learned Lyapunov value function as MPC terminal cost gives stability (Lemma from [11]) given model assumption; not proved here; Pointbot only. Scope tr vs op doubt."
+"O4318685743",1,"","RTA","A","planning","op","A","disturbance","L_mon","SE","simulated","Lane-change safe if aggressiveness assessment correct (or follower always treated aggressive), via safe-evasion-trajectory check overriding NN planner; zero collisions in simulation."
+"O4406715843",0,"Heuristic decision-tree policy generalisation; paper states no guarantee on policy quality; benchmarks not autonomous-system learned components.","","","","","","","","","",""
+"O7214089039",1,"","CP","B","planning","pop","P","distribution","L_conc","S","simulated","Calibrated certified error bound gates world-model decisions: P(promoted yet non-improving) <= alpha+delta under exchangeability; tool-use and finite-world benchmarks. Scope tr doubt."
+"O7203720573",1,"","CP","B","estimation","pop","P","distribution","L_conc","S","simulated","Split conformal/CQR marginal coverage >=1-alpha for RUL intervals under exchangeability; turbofan C-MAPSS, not a vehicle task; empirical coverage 77-89%."
