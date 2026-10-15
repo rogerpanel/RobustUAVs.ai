@@ -30,6 +30,7 @@ stage() {   # stage <name> <command...>
     echo "== $name ($(date -u +%Y-%m-%dT%H:%M:%SZ))"
     "$@"; rc=$?
     [ "$rc" = 0 ] && return 0
+    [ "$rc" = 76 ] && { echo "== $name: source blocks automated access; recorded as not executed"; return 0; }
     case " $* " in *" --resume "*) ;; *) set -- "$@" --resume ;; esac
     if [ "$rc" = 75 ]; then
       days=$((days + 1)); [ "$days" -gt 7 ] && { echo "== $name: budget exhausted 7 days running; stopping"; exit 3; }
