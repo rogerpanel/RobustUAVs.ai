@@ -1,10 +1,10 @@
-# Paper III — Claude Code Runbook
+# Paper III — Runbook
 
 **Paper:** *Certificates as Constraints: Feasibility-Preserving Multi-Agent Reinforcement Learning for UAV Swarms Whose Guarantees Degrade* (target: IEEE Symposium on Security and Privacy; IEEEtran conference format, body within 13 pages)
 **Repository:** `rogerpanel/RobustUAVs.ai`, branch `claude/whelan-uavcas-ingest-u00isn`
 **Folder:** `paperIII/` (`experiments/`, `results/`, `manuscript/`)
 
-This runbook tells a Claude Code session exactly how to scale up, extend and harden the experiments that the drafting sandbox (2 CPU cores, 7 GB RAM, no GPU, no simulator) could only run in compact form. Every experiment writes a CSV to `paperIII/results/`. `make_numbers.py` turns those CSVs into LaTeX macros in `manuscript/numbers.tex` and into `manuscript/tab_main.tex`, and `export_figdata.py` writes `manuscript/figdata/*.dat`. **Never type a number into `main.tex`.** Re-run the pipeline instead.
+This runbook tells a coding-agent session exactly how to scale up, extend and harden the experiments that the drafting sandbox (2 CPU cores, 7 GB RAM, no GPU, no simulator) could only run in compact form. Every experiment writes a CSV to `paperIII/results/`. `make_numbers.py` turns those CSVs into LaTeX macros in `manuscript/numbers.tex` and into `manuscript/tab_main.tex`, and `export_figdata.py` writes `manuscript/figdata/*.dat`. **Never type a number into `main.tex`.** Re-run the pipeline instead.
 
 ---
 

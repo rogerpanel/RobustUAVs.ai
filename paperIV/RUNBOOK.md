@@ -1,10 +1,10 @@
-# Paper IV — Claude Code Runbook
+# Paper IV — Runbook
 
 **Paper:** *When the Attacker Is Indistinguishable from the Weather: A Cross-Layer Benchmark and a Unified Perturbation Budget for Certified UAV Autonomy* (target: USENIX Security)
 **Repository:** `rogerpanel/RobustUAVs.ai`, branch `claude/whelan-uavcas-ingest-u00isn` (the branch Papers I-III are developed on; `paperIV/` was started on `claude/paperIV-crosslayer` and merged here).
 **Folder:** `paperIV/` (`experiments/`, `results/`, `manuscript/`)
 
-This runbook tells a Claude Code session how to scale up, harden and extend the experiments behind Paper IV. The drafting sandbox ran a compact CPU pilot (2 cores, 7 GB RAM, no GPU, no flight simulator), and every number in the current manuscript comes from that pilot.
+This runbook tells a coding-agent session how to scale up, harden and extend the experiments behind Paper IV. The drafting sandbox ran a compact CPU pilot (2 cores, 7 GB RAM, no GPU, no flight simulator), and every number in the current manuscript comes from that pilot.
 
 Every experiment writes a CSV to `paperIV/results/`. `make_numbers.py` turns those CSVs into LaTeX macros in `manuscript/numbers.tex`, and `export_figdata.py` writes `manuscript/figdata/*.dat`. **Never type a number into `main.tex`.** Re-run the pipeline instead.
 

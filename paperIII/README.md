@@ -20,7 +20,7 @@ paperIII/
   results/                     every CSV behind every number
   manuscript/                  main.tex, fig_framework.tex (Fig. 1, TikZ), sec_results_marl.tex,
                                refs.bib, numbers.tex + tab_main.tex (generated), figdata/ (generated)
-  RUNBOOK_CLAUDE_CODE.md       scale-up and extension experiments R1–R9
+  RUNBOOK.md                   scale-up and extension experiments R1–R9
 ```
 
 ## Reproduce

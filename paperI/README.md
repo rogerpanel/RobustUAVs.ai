@@ -17,7 +17,7 @@ paperI/
   results/            CSV outputs (inputs: ../results/gamma_campaign_samples.csv,
                       ../results/hcrl_type_signatures.csv)
   manuscript/         main.tex (IEEEtran), fig_*.tex (TikZ/pgfplots), figdata/, numbers.tex, refs.bib
-  RUNBOOK_CLAUDE_CODE.md   experiments E1–E8 that need raw data, PX4 SITL or hardware
+  RUNBOOK.md          experiments E1–E8 that need raw data, PX4 SITL or hardware
 ```
 
 ## Rebuild

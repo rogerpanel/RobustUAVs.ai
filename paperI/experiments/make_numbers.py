@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Write paperI/manuscript/numbers.tex: one LaTeX macro per number quoted in
-the manuscript, read from the result CSVs. When Claude Code re-runs an
+the manuscript, read from the result CSVs. When the harness re-runs an
 experiment (e.g. replaces a literature cycle count with an STM32H7
 measurement), re-running this script updates every sentence that quotes it.
 """

@@ -20,8 +20,8 @@ paperIV/
   manuscript/         main.tex (USENIX style, single file with inputs), main_single.tex
                       (fully self-contained), fig_framework.tex (Fig. 1, TikZ),
                       fig_results.tex (pgfplots), sec_*.tex, refs.bib (reconciled, STATUS-tagged)
-  RUNBOOK_CLAUDE_CODE.md   R1-R10: stronger attackers, 6-DoF/EKF2, PX4 SITL, network coupling,
-                           measured marginals, packaging, baselines, analytic stealth bound
+  RUNBOOK.md          R1-R10: stronger attackers, 6-DoF/EKF2, PX4 SITL, network coupling,
+                      measured marginals, packaging, baselines, analytic stealth bound
 ```
 
 ## Reproduce

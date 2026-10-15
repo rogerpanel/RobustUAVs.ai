@@ -1,10 +1,10 @@
-# Paper I — Claude Code Runbook
+# Paper I — Runbook
 
 **Paper:** *What Authenticity Costs in Metres: A Certified Budget for Cryptography and Sensing in UAV Navigation*
 **Repository:** `rogerpanel/RobustUAVs.ai`, branch `claude/whelan-uavcas-ingest-u00isn`
 **Folder:** `paperI/` (experiments, results, manuscript)
 
-This runbook tells a Claude Code session exactly what to run for the experiments that could **not** be run in the drafting sandbox. They need the raw Kaggle corpus, a PX4 simulator, or real hardware. Every experiment here writes a CSV that `paperI/experiments/make_numbers.py` turns into LaTeX macros. The manuscript therefore updates itself when a result changes: never type a number into `main.tex` by hand.
+This runbook tells a coding-agent session exactly what to run for the experiments that could **not** be run in the drafting sandbox. They need the raw Kaggle corpus, a PX4 simulator, or real hardware. Every experiment here writes a CSV that `paperI/experiments/make_numbers.py` turns into LaTeX macros. The manuscript therefore updates itself when a result changes: never type a number into `main.tex` by hand.
 
 ---
 
@@ -214,6 +214,6 @@ Replay the official test vectors and FGI-JSDR / Jammertest-2023 Galileo E1 data.
 | 5 | E7 | SITL | 1 day | freshness → denial claim |
 | 6 | E2, E6, E8 | datasets / rig | 1–2 days each | strengthen only |
 
-## 4. Prompt to paste into Claude Code
+## 4. Prompt to paste into the coding agent
 
-> You are working in `rogerpanel/RobustUAVs.ai` on branch `claude/whelan-uavcas-ingest-u00isn`. Read `paperI/RUNBOOK_CLAUDE_CODE.md` and `paperI/experiments/constants.py`. Stage data with `data/fetch_kaggle.py`, then run E5 (HCRL part), then E1, following the runbook's ground rules exactly. Each output carries a provenance column. Then wire the measured values into `constants.py` with literature fallbacks, run `bash paperI/experiments/run_all.sh`, rebuild `paperI/manuscript/main.tex`, and report which macros in `numbers.tex` changed and by how much. Do not edit numbers in `main.tex` by hand. If a result contradicts the manuscript's text (not just a number), stop and summarise the contradiction before changing any prose.
+> You are working in `rogerpanel/RobustUAVs.ai` on branch `claude/whelan-uavcas-ingest-u00isn`. Read `paperI/RUNBOOK.md` and `paperI/experiments/constants.py`. Stage data with `data/fetch_kaggle.py`, then run E5 (HCRL part), then E1, following the runbook's ground rules exactly. Each output carries a provenance column. Then wire the measured values into `constants.py` with literature fallbacks, run `bash paperI/experiments/run_all.sh`, rebuild `paperI/manuscript/main.tex`, and report which macros in `numbers.tex` changed and by how much. Do not edit numbers in `main.tex` by hand. If a result contradicts the manuscript's text (not just a number), stop and summarise the contradiction before changing any prose.
