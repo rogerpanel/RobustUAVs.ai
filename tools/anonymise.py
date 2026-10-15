@@ -110,6 +110,7 @@ RULES: list[tuple[str, str]] = [
     # so they are anchored to the trailer and file-name forms.
     (r"Co-Authored-By: Claude[^\n]*\n?", ""),
     (r"Claude-Session: [^\n]*\n?", ""),
+    (r"RUNBOOK_CLAUDE_CODE\.md", "RUNBOOK.md"),
     (r"\bClaude Code\b", "the coding assistant"),
     (r"\bCLAUDE\.md\b", "docs/PROJECT_CONTEXT.md"),
     # Contact details.
@@ -160,6 +161,16 @@ def anonymise_text(text: str) -> str:
     return text
 
 
+def anon_path(rel: Path) -> Path:
+    """File names are identifiers too: RUNBOOK_CLAUDE_CODE.md -> RUNBOOK.md,
+    robustuavs-api.service -> uavplatform-api.service."""
+    def one(part: str) -> str:
+        part = re.sub(r"(?i)_?claude_code", "", part)
+        part = re.sub(r"(?i)robustuavs", "uavplatform", part)
+        return re.sub(r"(?i)robustidps", "priorplatform", part)
+    return Path(*[one(part) for part in rel.parts])
+
+
 def should_skip(rel: Path) -> bool:
     parts = set(rel.parts)
     if parts & SKIP_DIRS:
@@ -180,7 +191,7 @@ def copy_tree(src: Path, dst: Path) -> tuple[int, int, list[Path]]:
         rel = path.relative_to(src)
         if should_skip(rel):
             continue
-        out = dst / rel
+        out = dst / anon_path(rel)
 
         if path.is_symlink():
             # paper/figures -> ../results/paper_figures. Preserve the link;
@@ -265,12 +276,14 @@ def verify(dst: Path) -> list[tuple[Path, int, str]]:
         r"rogerpanel", r"rogernickanaedevha", r"Anaedevha", r"MEPhI",
         r"(?i:robustuavs)", r"(?i:robustidps)", r"10\.34740", r"Mauro Conti",
         r"Cor\\`o", r"Corò", r"SPRITZ", r"Padova", r"Padua", r"Missouri S",
-        r"CLAUDE\.md", r"Claude Code", r"Co-Authored-By", r"Claude-Session",
+        r"CLAUDE\.md", r"(?i:claude[_ ]code)", r"Co-Authored-By", r"Claude-Session",
         r"[A-Za-z0-9._%+-]+@(?!example\.org)[A-Za-z0-9.-]+\.(?:com|org|net|edu|ru|it|ai)\b",
     ]
     rx = re.compile("|".join(tokens))
     survivors: list[tuple[Path, int, str]] = []
     for path in sorted(dst.rglob("*")):
+        if rx.search(path.relative_to(dst).as_posix()):
+            survivors.append((path.relative_to(dst), 0, "(file name)"))
         if path.is_dir() or path.is_symlink():
             continue
         if path.suffix.lower() not in TEXT_SUFFIXES and path.name not in TEXT_NAMES:

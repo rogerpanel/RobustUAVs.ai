@@ -42,10 +42,12 @@ SUBSETS = {
     "II": ["paperII", "LICENSE"],
     "III": ["paperIII", "results", "data/fetch_kaggle.py", "platform/backend/app", "requirements.txt",
             "LICENSE"],
+    "IV": ["paperIV", "results/gamma_campaign_samples.csv", "requirements.txt", "LICENSE"],
 }
 # Large or irrelevant artefacts left out of the reviewer copy.
 EXCLUDE = [re.compile(p) for p in (r"\.pt$", r"/logs_r/", r"/server_logs/", r"/__pycache__/",
-                                   r"\.pyc$", r"/_smoke", r"/node_modules/", r"\.pdf$")]
+                                   r"\.pyc$", r"/_smoke", r"/node_modules/", r"\.pdf$",
+                                   r"/paperIV/results/logs/")]
 
 REVIEWERS = {
     "I": """# Artifact for Paper I (anonymised)
@@ -69,7 +71,7 @@ bash paperII/experiments/run_all.sh
 bash paperII/manuscript/build.sh
 ```
 
-The search, screening and coding protocol is in `paperII/RUNBOOK_CLAUDE_CODE.md` and
+The search, screening and coding protocol is in `paperII/RUNBOOK.md` and
 `paperII/corpus/CODEBOOK.md`; screening decisions and the LLM third-screener logs are under
 `paperII/corpus/`.
 """,
@@ -90,8 +92,30 @@ cd ../manuscript && latexmk -pdf main.tex
 
 `python3 e1_verify.py` must report 0 disagreements. Experiments that need a flight simulator,
 the public flight corpus or embedded boards (R3, R4, R8, E3 on an idle machine) are driven by
-`run_server_paperIII.sh`; see `paperIII/RUNBOOK_CLAUDE_CODE.md` for what was and was not run.
+`run_server_paperIII.sh`; see `paperIII/RUNBOOK.md` for what was and was not run.
 Every result CSV carries a `provenance` column.
+""",
+    "IV": """# Artifact for Paper IV (anonymised)
+
+```bash
+pip install numpy scipy cma optuna
+cd paperIV/experiments
+python3 run_pilot.py                 # E1-E5 pilot (~27 min on 2 cores; --quick for a smoke run)
+python3 e2y_no_anchor_gate.py        # anchor gate removed
+python3 r1_attackers.py --par 4      # R1: CMA-ES / TPE / mixed family, scaled E4 (~10 CPU-h)
+python3 r1_attackers.py --par 4 --stage optimise_tail && python3 r1_attackers.py --par 4 --stage delta \
+  && python3 r1_attackers.py --par 4 --stage e4
+python3 r1_diagnose.py               # the scaled-E4 violations, mission by mission
+python3 r8_analytic_bound.py --par 4 # R8: LP stealth budget (~1 h on 4 cores)
+python3 r5_measured_gnss.py          # R5: measured GNSS envelope (uses results/gamma_campaign_samples.csv)
+python3 e4_revised.py --par 4        # revised instantiation on fresh seeds (~30 min on 4 cores)
+python3 make_numbers.py
+cd ../manuscript && latexmk -pdf main.tex
+```
+
+Seeds are partitioned by role; `paperIV/results/run_meta.json` records every block. Every result CSV
+carries a `provenance` column (sim, physics_model, measured). `paperIV/RUNBOOK.md` states what
+was and was not run.
 """,
 }
 
@@ -118,7 +142,7 @@ def build_ok(folder: Path) -> tuple[bool, str]:
                        capture_output=True, text=True)
     log = (folder / "main.log").read_text(errors="replace") if (folder / "main.log").exists() else ""
     errs = len(re.findall(r"^! ", log, re.M))
-    undef = len(re.findall(r"undefined", log, re.I))
+    undef = len(re.findall(r"(?:Reference|Citation|control sequence).*undefined|Undefined control", log, re.I))
     pages = ""
     if (folder / "main.pdf").exists():
         info = subprocess.run(["pdfinfo", "main.pdf"], cwd=folder, capture_output=True, text=True).stdout
@@ -205,7 +229,7 @@ def reviewer(paper: str, src: Path, work: Path) -> Path:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--paper", choices=("I", "II", "III"), required=True)
+    ap.add_argument("--paper", choices=("I", "II", "III", "IV"), required=True)
     ap.add_argument("--ref", default=None, help="package a git ref instead of the working tree")
     ap.add_argument("--skip-reviewer", action="store_true")
     a = ap.parse_args()
