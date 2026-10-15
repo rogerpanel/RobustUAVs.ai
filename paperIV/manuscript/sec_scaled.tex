@@ -42,12 +42,102 @@ and neither is about disguise.
   $\pbar$ is exactly zero, and the bound claims certainty that no sample can
   justify. One benign mission in 5{,}000 fails at $m=20$\,m.
 \item \emph{(C1), which nothing enforced.} Superposition held in at least
-  \nROneSuperposMin{} of missions. Every failure of it, and every
-  violating mission, involved saturation. The pilot had stated (C1) as an
-  assumption, but no component of the stack checked it at run time.
+  \nROneSuperposMin{} of missions, and every violating mission saturated. The
+  pilot had stated (C1) as an assumption, but no component of the stack checked
+  it at run time.
 \end{itemize}
 This is a negative result about the pilot instantiation, not about
 \cref{thm:floor}. The theorem's conclusion requires its conditions, and the
 scaled test found two that the instantiation did not secure. We report the
 violation as found. The revision below fixes the instantiation before looking at
 new data and does not tune the old run until it passes.
+
+\subsection{A revised instantiation, judged on fresh data}
+\label{sec:revised}
+We changed three things, fixed them before generating any new data, and
+evaluated them on a new seed block. A smoke test of the code used a separate
+block, which we did not reuse.
+\begin{enumerate}
+\item \emph{A saturation alarm $D_{\mathrm{sat}}$.} The autopilot raises an alarm
+  at any epoch at which the commanded acceleration reaches its limit. This
+  turns (C1) from an assumption into a run-time check: on the event $U$, the
+  loop never saturated, so \cref{lem:subadd} applies exactly. The alarm costs
+  benign missions \nRevSatAlone{} in false alarms (5\% operating point, envelope
+  wind). The full stack's false-alarm rate rises from \nRevFprStack{} to
+  \nRevFprSat.
+\item \emph{A finite-sample p-box for (C3).} Each marginal tail is replaced by
+  its Clopper--Pearson upper bound, taken simultaneously over the split grid
+  (Bonferroni over $3\times\nRevGrid$ grid points, $\alpha=0.05$), and
+  aggregated by the union bound. With probability at least 0.95 over the
+  calibration samples, $\pbar$ is then a valid upper bound everywhere on the
+  grid. It never reaches zero, and with \nCalMissions{} samples per source it
+  levels off at $1-\nRFiveFloorCpTwenty$.
+\item \emph{Two stealth budgets, tested separately.} The first is the R1
+  calibration supremum, $\dadv=\nROneDadvFive$\,m. It was \emph{not} widened to
+  the \nROneAdvMax\,m that the R1 held-out attacker reached, because a constant
+  widened after looking at held-out data would make the new test circular. The
+  second is the analytic bound below, which holds for every attack.
+\end{enumerate}
+
+\paragraph{An analytic stealth budget (R8).}
+With noise removed, the linear loop maps the attack offsets $d_j$ at the GNSS
+epochs to the attack-only deviation linearly. The worst undetected deviation
+is therefore a linear programme over $d$, solved once for every time step.
+Its constraints are the detector conditions that are convex in $d$ and
+\emph{implied} by silence, with the benign contribution bounded by its
+$1-\epsilon/3$ calibration quantile ($\epsilon=0.01$).
+\begin{itemize}
+\item D1: a bounded jump between consecutive fixes.
+\item The anchor gate: a bounded innovation at each trusted fix.
+\item $D_{\mathrm{sat}}$: a bounded attack-only command.
+\end{itemize}
+D2--D4 alarm on runs of exceedances or on quadratic statistics, which are not
+convex in $d$, so we drop them. Dropping a detector only enlarges the feasible
+set, so the bound stays valid for every stack that contains the kept ones. We
+take the worst actuator effectiveness in $[0.7,1]$, and the onset of the attack
+is free. Three findings follow (\code{r8\_analytic\_bound.csv}).
+\begin{itemize}
+\item \emph{The anchor gate alone bounds nothing.} The trusted fix constrains
+  the estimate error at anchor times, not the deviation. An attacker that
+  carries the estimate along with the vehicle passes every anchor.
+\item \emph{A jump detector adds little.} With D1 the budget is finite but
+  \nREightDOneFive\,m at $T_a=5$\,s, because D1's threshold must tolerate
+  the jumps of GNSS jamming noise.
+\item \emph{The saturation alarm is what makes it physical.} With
+  $D_{\mathrm{sat}}$ the budget falls to \nREightSatFive\,m. That is still
+  \nREightSatRatio$\times$ the largest deviation any optimised attacker reached.
+\end{itemize}
+The gap is the measure of what the non-convex detectors D2--D4 contribute and
+what no one has yet proved. Using the provable budget, the floor certifies
+nothing below a margin of about \nREightSatFive\,m. Using the empirical budget, it
+certifies more, but rests on a supremum that more search has raised before.
+
+\paragraph{Result on fresh seeds.}
+\input{sec_revised_result}
+
+\subsection{RQ6: how much does a measured GNSS marginal cost?}
+\label{sec:r5}
+The pilot's GNSS marginal is simulated (99th percentile \nRFivePnnSim\,m). The
+parent artifact contains measured navigation error during real GPS jamming:
+\nRFiveSamples{} one-second samples over two episodes, a noise episode and a
+loss of fix, whose error envelope grows with staleness to \nRFiveEnvTen\,m at
+10\,s and \nRFiveEnvMax\,m at 15\,s (runbook R5; spoofing samples are excluded,
+since spoofing belongs to $\dadv$). We replaced each simulated degradation episode
+by the larger of its simulated deviation and the measured envelope at the
+episode's staleness, with the simulator's episode probabilities, and in a stress
+variant set every episode to the measured 45\,s duration. The construction is
+conservative in one respect, since it never makes a mission's GNSS deviation
+smaller. It also assumes that the measured navigation error becomes cross-track
+deviation one for one, which holds when the controller tracks its estimate
+and is not itself a measurement.
+
+At $m=10$\,m and 5\% FPR, with $\dadv=\nROneDadvFive$\,m, the floor estimated from
+the empirical marginals falls from \nRFiveFloorSim{} (simulated GNSS) to
+\nRFiveFloorMeas{} (measured envelope) and \nRFiveFloorLong{} (45\,s episodes).
+With the finite-sample band of \cref{sec:revised}, the values are
+\nRFiveFloorCpSim, \nRFiveFloorCpMeas{} and \nRFiveFloorCpLong. The bound is only
+as good as its GNSS marginal. A simulated marginal overstated the certified
+floor by a factor of two to three at this margin. The jamming-induced tail,
+not the attack, is what the corridor must absorb. At $m=20$\,m every variant
+certifies \nRFiveFloorCpTwenty, the ceiling that \nCalMissions{} calibration
+samples per source permit.

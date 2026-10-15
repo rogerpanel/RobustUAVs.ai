@@ -1,0 +1,10 @@
+fpr,T_anchor_s,constraints,theta_D1,S1_benign_q,theta_anchor,SA_benign_q,umax_benign_q,eps,delta_lp_m,worst_loe,argmax_t_s,stride_steps,delta_emp_pilot_m,delta_emp_r1_m,ratio_lp_to_emp,provenance
+0.01,5.0,anchor gate only (every stack),,7.8899,52.7115,60.0445,,0.01,inf,0.8,,10,4.371,5.463,,physics_model
+0.01,5.0,"anchor gate + D1 (stacks D1, ALL)",7.9901,7.8899,52.7115,60.0445,,0.01,319.866,1.0,3.4,10,4.371,5.463,58.551,physics_model
+0.01,5.0,anchor gate + D1 + D_sat (revised stack),7.9901,7.8899,52.7115,60.0445,4.4729,0.01,31.9,1.0,58.35,10,4.371,5.463,5.839,physics_model
+0.05,5.0,anchor gate only (every stack),,7.8899,52.7115,60.0445,,0.01,inf,1.0,,10,4.371,5.463,,physics_model
+0.05,5.0,"anchor gate + D1 (stacks D1, ALL)",7.1526,7.8899,52.7115,60.0445,,0.01,303.166,1.0,3.4,10,4.371,5.463,55.494,physics_model
+0.05,5.0,anchor gate + D1 + D_sat (revised stack),7.1526,7.8899,52.7115,60.0445,4.4729,0.01,31.832,1.0,58.35,10,4.371,5.463,5.827,physics_model
+0.1,5.0,anchor gate only (every stack),,7.8899,52.7115,60.0445,,0.01,inf,1.0,,10,4.371,5.038,,physics_model
+0.1,5.0,"anchor gate + D1 (stacks D1, ALL)",6.7592,7.8899,52.7115,60.0445,,0.01,295.322,1.0,3.4,10,4.371,5.038,58.619,physics_model
+0.1,5.0,anchor gate + D1 + D_sat (revised stack),6.7592,7.8899,52.7115,60.0445,4.4729,0.01,31.8,1.0,58.35,10,4.371,5.038,6.312,physics_model

@@ -121,6 +121,22 @@ def bound(anchor, loe, c1, ca_scale, use_d1=True, stride=5, cu=None):
         r = linprog(-P[k], A_ub=G, b_ub=h, bounds=[(None, None)] * n, method="highs")
         if r.status == 3 or (r.status == 4 and anchor is None and not use_d1):
             return float("inf")
+        if r.status in (2, 4):
+            # d = 0 is always feasible, so "infeasible" is HiGHS presolve's
+            # infeasible-OR-unbounded verdict, or a numerical failure. Re-solve
+            # inside two boxes |d| <= B: a finite optimum does not move when B
+            # grows tenfold, an unbounded one scales with B.
+            v = []
+            for B in (1e4, 1e5):
+                rb = linprog(-P[k], A_ub=G, b_ub=h, bounds=[(-B, B)] * n, method="highs")
+                if rb.status != 0:
+                    break
+                v.append(-rb.fun)
+            if len(v) == 2:
+                if v[1] > 5 * max(v[0], 1e-9):
+                    return float("inf")
+                if abs(v[1] - v[0]) <= 1e-6 * max(1.0, abs(v[0])):
+                    return v[0]
         if r.status != 0:                       # numerical failure: never silently dropped
             raise RuntimeError(f"HiGHS status {r.status} at k={k} (anchor={anchor}, loe={loe}, D1={use_d1})")
         return -r.fun
@@ -153,6 +169,8 @@ def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--quick", action="store_true")
     ap.add_argument("--eps", type=float, default=0.01)
     ap.add_argument("--par", type=int, default=4)
+    ap.add_argument("--anchors", default="5,10,20,none", help="re-anchoring intervals, 'none' = no anchor")
+    ap.add_argument("--out", default="r8_analytic_bound.csv")
     ap.add_argument("--stride", type=int, default=10, help="coarse grid in control steps, then +-stride refine")
     a = ap.parse_args()
     js = json.loads((RES / "e1_calibration.json").read_text())
@@ -171,14 +189,18 @@ def main():
     emp_r1 = {float(r["fpr"]): float(r["delta_pooled_m"]) for r in csv.DictReader(r1.open())} if r1.exists() else {}
     rows = []
     loes = (1.0, 0.7) if a.quick else (1.0, 0.9, 0.8, 0.7)
-    anchors = (5.0, None) if a.quick else (5.0, 10.0, 20.0, None)
+    anchors = (5.0, None) if a.quick else tuple(None if x.strip() == "none" else float(x)
+                                                 for x in a.anchors.split(","))
     stride = 20 if a.quick else a.stride
     LAB = {0: "anchor gate only (every stack)", 1: "anchor gate + D1 (stacks D1, ALL)",
            2: "anchor gate + D1 + D_sat (revised stack)"}
     jobs = [(fpr, Ta, cs, loe, (stack[fpr]["D1"] + q1) if cs >= 1 else None, ca_scale, stride, cu)
             for fpr in RP.OPS for Ta in anchors for cs in (0, 1, 2) for loe in loes]
     with Pool(a.par) as pool:
-        res = pool.map(_job, jobs, chunksize=1)
+        res = []
+        for r_ in pool.imap_unordered(_job, jobs):
+            res.append(r_)
+            print(f"[{len(res)}/{len(jobs)}] fpr={r_[0]} Ta={r_[1]} set={r_[2]} loe={r_[3]} -> {r_[4]:.3f}", flush=True)
     for fpr in RP.OPS:
         for Ta in anchors:
             for cs in (0, 1, 2):
@@ -203,7 +225,7 @@ def main():
                              "provenance": "physics_model"})
                 print({k: rows[-1][k] for k in ("fpr", "T_anchor_s", "constraints", "delta_lp_m", "worst_loe",
                                                 "ratio_lp_to_emp")}, flush=True)
-    with (RES / "r8_analytic_bound.csv").open("w", newline="") as fh:
+    with (RES / a.out).open("w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
 
 

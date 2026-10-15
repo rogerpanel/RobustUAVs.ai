@@ -52,6 +52,7 @@ from sim import simulate
 from depbounds import cp_tails, pbar_union_cp, G_GRID
 
 RES = RP.RES
+QOFF = 0          # --quick shifts every seed by 500 so the smoke test never touches the evaluation block
 FAMS = R1.FAMS
 _orig_mask = RP.stealth_mask
 
@@ -69,16 +70,16 @@ R1.stealth_mask = stealth_rev
 def _held_cem(args):
     fam, fpr, h, gens, k = args
     cal = R1.load_cal()
-    J, u = RP.cem(fam, "ALL", fpr, cal, 9200 + h, gens=gens, K=k)
-    return "cem", fam, fpr, 9200 + h, J, u.tolist()
+    J, u = RP.cem(fam, "ALL", fpr, cal, QOFF + 9200 + h, gens=gens, K=k)
+    return "cem", fam, fpr, QOFF + 9200 + h, J, u.tolist()
 
 
 def _held_tail(args):
     fam, fpr, h, budget = args
     R1.OBJECTIVE = "tail"
     cal = R1.load_cal()
-    (J, u), _ = R1.run_tpe(fam, "ALL", fpr, cal, 3700 + h, budget["trials"], budget["k"])
-    return "tpe_tail", fam, fpr, 9700 + h, J, [float(x) for x in u]
+    (J, u), _ = R1.run_tpe(fam, "ALL", fpr, cal, QOFF + 3700 + h, budget["trials"], budget["k"])
+    return "tpe_tail", fam, fpr, QOFF + 9700 + h, J, [float(x) for x in u]
 
 
 def _eval(args):
@@ -87,7 +88,7 @@ def _eval(args):
     rows = []
     for wi, (wname, (wl, wh)) in enumerate((("light", (RP.W_LO, RP.W_LO)), ("moderate", (RP.W_HI, RP.W_HI)),
                                             ("envelope", (RP.W_LO, RP.W_HI)))):
-        o, oa, ob = RP.run_attack(fam, u, n, 92000 + 10 * (hseed % 1000) + wi + (5000 if opt != "cem" else 0),
+        o, oa, ob = RP.run_attack(fam, u, n, QOFF * 100 + 92000 + 10 * (hseed % 1000) + wi + (5000 if opt != "cem" else 0),
                                   wl=wl, wh=wh)
         st = stealth_rev(o, cal, "ALL", fpr)
         n_u = int(st.sum())
@@ -124,19 +125,21 @@ def write(name, rows):
 
 
 def main():
+    global QOFF
     ap = argparse.ArgumentParser(); ap.add_argument("--quick", action="store_true")
     ap.add_argument("--par", type=int, default=4)
     a = ap.parse_args()
     n, n_fpr, seeds_cem, gens, k = 5000, 8000, 3, RP.CEM_GENS, RP.CEM_K
     budget = dict(trials=R1.TRIALS, k=R1.K)
     if a.quick:
+        QOFF = 500
         n, n_fpr, seeds_cem, gens, k = 300, 1000, 1, 4, 8
         budget = dict(trials=12, k=16)
     t0 = time.time()
     log = lambda s: print(f"[{time.time() - t0:7.0f}s] {s}", flush=True)
     cal = R1.load_cal()
     # benign false-alarm rate of the revised stack (envelope wind, fresh seed)
-    b = simulate(n_fpr, 9201, w20=RP.wind(n_fpr, 9201))
+    b = simulate(n_fpr, QOFF + 9201, w20=RP.wind(n_fpr, QOFF + 9201))
     rows = []
     for fpr in RP.OPS:
         quiet = _orig_mask(b, cal, "ALL", fpr)               # no alarm from the stack + anchor gate
