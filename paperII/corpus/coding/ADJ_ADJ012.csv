@@ -1,0 +1,9 @@
+cid,field,value,rationale
+O4381542600,assumption,S,"lifts=none so code main modelling assumption: precondition phi and linear-predicate theory are explicitly stated (Sec. 4, 6.1); no evidence needed, so S not U."
+O4382935996,class,NEW:Adaptive ISSf-CBF with online-learned parameters,"CLF/CBF are hand-designed, not neural, so NCERT does not fit; learned part is online parameter estimator, no existing class covers it."
+O4382935996,component,estimation,"Learned part is the online parameter estimator theta-hat (RLS/concurrent learning), not a state-to-action map; codebook component rule gives estimation."
+O4382935996,lifts,L_dyn,"Theorem 2 carries bounded estimation error through plant model via ISSf barrier and Nagumo to trajectory-level forward invariance: Lyapunov/barrier argument through dynamics."
+O4383613691,class,CLR,"Quadratic Lyapunov LMI with IQC gives ROA of NN-controlled plant (extends Yin et al.); certificate not learned, so CLR not NCERT."
+O4383613691,lifts,L_dyn,"Local sector bounds on NN activations are carried through plant model via quadratic Lyapunov function to ellipsoidal ROA over trajectories (L_dyn)."
+O4384521927,assumption,SE,"Monitor-detection assumption stated (fault reaction 8-12 ms) and evidenced by fault-injection test (~10 ms) and measured delays; no confidence level, so SE."
+O4386875196,eligible,0,"Guarantee covers reach set of non-learned dynamics (four-squares map, Duffing oscillator); Christoffel polynomial is analysis tool, not system component; excluded as non-learned."

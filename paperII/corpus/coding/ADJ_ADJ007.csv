@@ -1,0 +1,10 @@
+cid,field,value,rationale
+O3213615249,class,"LIP","Guarantee is stability by operator-norm (Lipschitz) constraints on network weights via contraction; no learned Lyapunov or barrier function, so not NCERT."
+O3213615249,modality,"E","Mean-square stability (Definition 2) concerns convergence of first and second moments E(x_t), E(x x^T): a bound on expectations."
+O3213615249,perturbation,"none","Gaussian transition noise is the model's own unbounded stochasticity, not a bounded additive disturbance the guarantee is robust to (codebook disturbance definition, CLR-1)."
+O3213615249,evidence,"proof","Theorem 3/Corollary 5 sufficient conditions enforced by construction (PF/SVD/GD weights) on the actual DMM networks; 2D demos only illustrate."
+O3214930062,class,"NEW:GP-bounded contraction tube","No classes.csv class fits GP uniform error bounds inside contraction L1-adaptive tube control; keep concise C1 label naming the mechanism."
+O3216935302,lifts,"none","L_mon requires switching to a fallback; paper states focus is detection, not mitigation; RSS coupling only envisioned."
+O3216935302,evidence,"measured","Position-error sensor checks were also tested on real NuScenes LiDAR with comparable recall; strongest evidence class is real-world data."
+O4200294561,assumption,"S","lifts=none; main modelling assumption (input regions defining obstacle near, 0.24/0.35 thresholds) is stated explicitly, without supplied validation evidence."
+O4205626291,lifts,"none","Paper uses no concentration/PAC argument of its own; it explicitly gives no generalization bound, only cites [17]. Rule 3 not triggered."

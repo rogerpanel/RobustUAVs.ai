@@ -1,0 +1,8 @@
+cid,field,value,rationale
+O2998709064,assumption,S,"lifts=none, so code main modelling assumption: the lp-ball perturbation set B_p(x0,eps) and network model are explicitly stated; no evidence for the threat model is supplied."
+O3029730229,assumption,S,"lifts=none; main assumptions (l2-ball threat model, bounded Hessian eigenvalues, differentiable activations) are stated in Theorems 1-4; no separate evidence for the threat model."
+O3035780950,class,NEW:PAC-RL sample complexity,"Headline is a sample-complexity (PAC) bound for eps-Nash self-play; 'certified policy' is not robustness certification, so neither CRL nor PACB fits."
+O3035780950,perturbation,distribution,"Guarantee holds w.p. 1-p over stochastic transitions/sampled episodes (Azuma-Hoeffding); no norm or disturbance model, so natural sampling variation = distribution."
+O3035782912,lifts,L_sup,"Proof assumes neuron values stay in training-data polyhedron (ODD containment). Runtime monitor only 'raises a warning', no fallback switching, so L_mon definition not met."
+O3037629243,class,CLR,"Guarantee is bounded-CTL reachability of a closed loop (ReLU agent + PWL environment, VerticalCAS) over trajectories; MILP is the engine, not a standalone-network check."
+O3037629243,lifts,L_dyn,"Per-step network encoding is carried to multi-step trajectory scope by composing with the environment transition (plant) model: reachability through a plant model = L_dyn."

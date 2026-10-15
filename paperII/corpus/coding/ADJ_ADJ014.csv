@@ -1,0 +1,8 @@
+cid,field,value,rationale
+O4390832684,assumption,"S","lifts=none, so code main modelling assumption: Sec 2.1 explicitly states the L-inf interval adversarial region S_I; no evidence for it supplied."
+O4391021262,class,"NEW:Order-statistic expected-risk bound","Not PAC-Bayes: distribution-free order-statistic/DRO high-confidence expected-risk bound (Thm III.3); no classes.csv code fits."
+O4391021262,component,"estimation","Learned predictors are lasso regression and newsvendor decision, not image perception; regression best fits estimation. Closest-fit choice, flag in note."
+O4391021262,evidence,"simulated","Bound illustrated on synthetic samples (Beta, uniform, Gaussian data); not real-world data, not a sound certificate, beyond analytical model only."
+O4391528845,assumption,"SEC","Thm 2.1 premise (lower bound on pA) stated, evidenced by Monte Carlo CERTIFY N=100000, alpha=0.001 confidence entering certified radii."
+O4393160604,evidence,"proof","Theorem 1 proves mask enforces PPLTL safety on the actual learning agent by construction; proof is strongest evidence, gridworlds only illustrate."
+O4393161169,evidence,"measured","Coverage evaluated on real recorded datasets (CIFAR, MNIST, Tiny ImageNet, UCI Boston Housing etc.), not simulator output."

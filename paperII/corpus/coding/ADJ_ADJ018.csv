@@ -1,0 +1,9 @@
+cid,field,value,rationale
+O4403365237,scope,op,"Thm 3: each episode (one complete BTL mission) satisfied w.p. >= Pr_des; op/pop doubt resolved to smaller scope per Rule 6."
+O4403853633,class,CLR,"Quadratic (non-neural) Lyapunov LMI certifies NN-in-loop closed loop converges to invariant ellipsoid; reach/invariant-set analysis of NN control system, not neural certificate."
+O4403853633,lifts,L_dyn;L_sup,"ISS Lyapunov through LTI plant model carries residual bound eps to trajectories (L_dyn); assumes v-h_n(y) stays in training set (L_sup)."
+O4403853633,evidence,proof,"Headline is LMI/SDP certificate (psi*eps^2/phi=3.1e-4) computed on the identified model; proof is strongest class, eps evidence captured by assumption."
+O4404305051,class,NEW:PAC off-policy evaluation bound,"W.p. 1-delta OPE error O(N^-1/2); no classes.csv code fits (not PAC-Bayes), so NEW."
+O4404305051,component,estimation,"Guarantee bounds error of learned spectral-representation value estimator for a fixed given target policy; no controller is learned or certified."
+O4404689764,evidence,simulated,"Sec. 5 evaluates bound on synthetic data sampled from generator LTI system via MCMC simulation (Fig. 1), beyond analytical model alone."
+O4405354148,assumption,SE,"Weighted-exchangeability/geo-weight assumption stated (Appendix C); evidenced by simulation study and held-out housing test coverage 93.6% at 90% level."

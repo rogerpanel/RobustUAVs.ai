@@ -8,7 +8,8 @@ scored per lift as a binary presence variable, plus mean Jaccard similarity.
 
 Inputs : ../corpus/codes_<A>.csv, ../corpus/codes_<B>.csv  (same gid set)
 Output : ../results/reliability_<A>_<B>.csv
-Usage  : python3 reliability.py C1 C2       (default)
+Usage  : python3 reliability.py C1 C2       (default; pilot)
+         python3 reliability.py full_C1 full_C2   (full study, amendment 4)
 Stdlib only.  Includes self-tests against hand-computed values (run with --test).
 """
 from __future__ import annotations
@@ -93,7 +94,12 @@ def bootstrap(a, b, fn, B=2000, seed=7):
 
 
 def load(coder):
-    return {r["gid"]: r for r in csv.DictReader(open(CORPUS / f"codes_{coder}.csv"))}
+    """Pilot files are keyed by gid; full-study files (codes_full_<C>.csv) by cid
+    and carry an `eligible` column."""
+    csv.field_size_limit(10 ** 9)
+    rows = list(csv.DictReader(open(CORPUS / f"codes_{coder}.csv")))
+    key = "gid" if rows and "gid" in rows[0] else "cid"
+    return {r[key]: r for r in rows}
 
 
 def lifts_of(r):
@@ -105,7 +111,21 @@ def run(c1="C1", c2="C2"):
     A, Bc = load(c1), load(c2)
     gids = sorted(set(A) & set(Bc))
     rows = []
-    for f in FIELDS + ["scope_x_modality"]:
+    fields = FIELDS + ["scope_x_modality"]
+    full = "eligible" in next(iter(A.values()))
+    if full:
+        # full study: eligibility over every coded paper; the coded fields (and
+        # the open-vocabulary class) over papers both coders found eligible
+        a = [A[g]["eligible"] for g in gids]; b = [Bc[g]["eligible"] for g in gids]
+        row = {"field": "eligible", "n": len(gids)}
+        for name, fn in STATS.items():
+            row[name] = round(fn(a, b), 4)
+            lo, hi = bootstrap(a, b, fn)
+            row[name + "_lo"], row[name + "_hi"] = round(lo, 4), round(hi, 4)
+        rows.append(row)
+        gids = [g for g in gids if A[g]["eligible"] == Bc[g]["eligible"] == "1"]
+        fields = ["class"] + fields
+    for f in fields:
         if f == "scope_x_modality":
             a = [A[g]["scope"] + "/" + A[g]["modality"] for g in gids]
             b = [Bc[g]["scope"] + "/" + Bc[g]["modality"] for g in gids]

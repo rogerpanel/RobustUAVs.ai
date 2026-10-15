@@ -1,0 +1,11 @@
+cid,field,value,rationale
+O4400025616,eligible,"0","Exclude: guarantees about non-learned components. Stability certified for known autonomous dynamics without control; final certificate is symbolic, no learned component in the system."
+O4400647773,eligible,"0","No guarantee stated: rule-based shield heuristic with no safety theorem or bound; only empirical simulated collision rates (nonzero), which the inclusion rule does not cover."
+O4400776977,evidence,"modelled","Proof requires a sound certificate on the actual model; SMT check runs on a sampled piecewise-linear surrogate with no error bound, so it is analytical-model evidence."
+O4400946840,class,"NEW:GP-CBF chance-constrained safety filter","Certificate is hand-designed, not learned (not NCERT); learned part is GP residual inside the CBF-CLF SOCP filter; no listed class fits."
+O4400946840,scope,"in","Guarantee is a per-step CBF/CLF chance constraint (Lemma 1, eqs. 21-23); per-step action certificates are 'in'; rule 6 picks smaller scope over tr."
+O4400946840,perturbation,"disturbance","Robust to unknown additive model residual in the switching dynamics with stated RKHS-norm bound (Assumption 3), not sampling variation or distribution shift."
+O4401414359,class,"NEW:Distributionally robust chance-constrained MPC","No classes.csv code covers moment-ambiguity DR chance constraints; label follows the paper's own DRCC-MPC formulation (Problem 1)."
+O4401414359,scope,"tr","Chance constraints (12d) hold at each step of the K-step MPC horizon under stochastic human motion; tr-vs-pop doubt resolved to smaller scope by rule 6."
+O4401414359,lifts,"L_sup","Guarantee carried to true human motion by assuming P* lies in the moment ambiguity set built from forecaster samples: a support/containment argument."
+O4401414359,evidence,"simulated","Headline collision rates come from 300 simulated runs on ETH replay; analytical bound uses estimated moments and CEM may return infeasible plans, so not proof."

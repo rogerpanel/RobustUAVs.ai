@@ -1,0 +1,11 @@
+cid,field,value,rationale
+O4415913028,evidence,simulated,"Calibration set, distribution F_C and guarantee demo are Carla-simulated plans; real-robot runs only showcase refined planners, labels come from model checker."
+O4416243460,eligible,0,"Exclusion: guarantee about non-learned components. Classical adaptive DT-CBF with RLS/set-membership parameter estimation; nominal MPC/PID; learned policies explicitly out of scope."
+O4416383082,class,NEW:Stability-based generalisation bound,"Bound derived via uniform algorithmic stability (Bousquet-Elisseeff), not PAC-Bayes; paper lists PAC-Bayes only as future work, so PACB does not fit."
+O4416383082,lifts,none,"No lift argument: synthetic data is a training regulariser, not a generative surrogate standing in for the sensor to carry the guarantee (L_gen definition)."
+O4416383082,evidence,measured,"Predicted U-shaped test error is validated on real clinical NO.MS brain MRI data; strongest evidence class behind the claim is real-world data."
+O4416407150,lifts,none,"Lyapunov argument on the feedback-linearized model directly yields the tr-scope claim; no smaller-scope guarantee is carried to a larger scope, so no lift."
+O4416603702,class,BP,"Under-approximation computed with LiRPA/beta-CROWN linear bound propagation plus branching; patch is the perturbation field, method family is bound propagation."
+O4416603702,modality,A,"Under-approximation is sound and deterministic: every input in the certified region satisfies the spec; paper states exact, not statistical, guarantees."
+O4416603702,lifts,none,"Rule 3 not triggered: sampling only estimates coverage volume and guides optimisation; soundness of the certified region does not rely on samples."
+O4416603702,assumption,S,"With lifts=none, code main modelling assumption: the stated input domain I (patch box) and output polytope; no evidence-carrying confidence enters the guarantee."

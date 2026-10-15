@@ -1,0 +1,13 @@
+cid,field,value,rationale
+O7164897298,class,"NEW:robustness-based generalisation bound","Algorithmic-robustness (Xu-Mannor/Kawaguchi) bound with stable/unstable cluster terms; not PAC-Bayes, so PACB does not fit; paper's own term."
+O7164897298,evidence,"measured","Bound computed on real ImageNet photographs with pretrained models; no simulator or environment involved; codebook: measured means real-world data."
+O7166701031,class,"NEW:Training-distribution bound on dangerous predictors","Thm 5.26 bounds training-process mass of dangerous Predictors (Cbad*Rshell); no existing class covers this; shorter of two equivalent labels."
+O7166701031,lifts,"none","Thm 5.26 is a direct algebraic bound over the training distribution; guardrail only defines dangerousness, no monitor-switching argument carries the guarantee; scaffolds out of scope."
+O7166813758,lifts,"L_conc;L_dyn","Conformal calibration (L_conc) plus Lipschitz error propagation (L_dyn). Invariant-measure sampling is the exchangeability premise of conformal, not support/ODD containment."
+O7166813758,assumption,"SE","Assumptions 1-2 stated; invariant measure numerically approximated (Fig. 7) and coverage validated on held-out trajectories (Figs. 2,5), but no confidence enters guarantee."
+O7166859555,class,"RTA","Guardian masks every executed action into data-supported safe set: a shield; contraction theorem concerns convergence, not certified policy robustness."
+O7166859555,scope,"op","Codebook scope op includes runtime property enforced on every execution (shields); Guardian filters every executed action; no doubt invoking rule 6."
+O7166859555,lifts,"L_mon","Safety carried by runtime Guardian that rejects unsafe actions and substitutes safe ones (monitor with fallback); rule 5 lists L_mon for runtime assurance."
+O7166859555,evidence,"simulated","Safety and performance numbers (TTFV, Atari-100k 3.02) come from Atari benchmark environments; no proof computed on the network."
+O7167089804,perturbation,"disturbance","Headline physical certificate (Thm 8, Thm 10 zero collision) holds under OU sensor drift bounded by sigma_fault: additive sensor disturbance."
+O7167089804,evidence,"simulated","Headline numbers (99.6% detection, zero collisions) come from 10,000 Monte Carlo episodes of simulated UR5 cell, not analytical model only."

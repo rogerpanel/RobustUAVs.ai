@@ -1,0 +1,7 @@
+cid,field,value,rationale
+O7135162928,assumption,SE,"Exchangeability assumption of the L_conc lift is stated; empirical joint coverage on held-out real datasets (Table 6.2) supplies validation evidence; no confidence enters the final guarantee."
+O7138101982,class,NEW:policy-gradient convergence,"Guarantee is SGD convergence to an eps-suboptimal DR-LQR gain, an optimisation result; CRL (certified RL robustness) does not fit, no classes.csv code applies."
+O7138101982,evidence,modelled,"Theorem 2 is analytical; experiments tune M, N, eta empirically and do not instantiate it. No sound certificate computed on the actual model, so not proof."
+O7138907351,lifts,L_op;L_rate,"Lifts are OP weighting and per-task probability to n-task failure-free reliability; inference is hierarchical Bayesian posterior, not concentration/PAC/conformal/scenario, so no L_conc."
+O7139111173,assumption,S,"lifts=none, so code main modelling assumption: input domain X as a stated box product of [l_i,u_i]; stated explicitly, no evidence supplied for it."
+O7139143999,eligible,0,"Guarantee concerns a classical data-driven linear robust MPC with interval-matrix set-membership model; no learned (ML) component. Excluded: guarantee about non-learned components."
