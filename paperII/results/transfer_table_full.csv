@@ -1,0 +1,145 @@
+class,source,type,type_label,verdict,k,k_stat,lifts,obligations,intrinsic,deficit,evidenced_share,est_papers_full,n_objectives
+RS,pilot state,T1,per flight hour,L,4,2,L_alpha+L_op+L_rate,O_alpha;O_prof;O_dep;O_thr,,4,0.0,41,7
+RS,pilot state,T2,ODD generalisation,L,3,1,L_alpha+L_op,O_alpha;O_prof;O_thr,,3,0.0,41,4
+RS,pilot state,T3,average error,L,3,1,L_alpha+L_op,O_alpha;O_prof;O_thr,,3,0.0,41,1
+RS,pilot state,T4,per operation,L,4,0,L_alpha+L_dyn+L_hor,O_alpha;O_lip;O_hor;O_thr,,4,0.0,41,6
+RS,pilot state,T5,security threat,L,3,0,L_alpha+L_dyn+L_hor,O_alpha;O_lip;O_hor,,3,0.0,41,1
+RS,pilot state,T6,local robustness,L,2,0,L_alpha,O_alpha;O_thr,,2,0.0,41,3
+BP,pilot state,T1,per flight hour,L,3,2,L_op+L_rate,O_prof;O_dep;O_thr,,3,0.0,347,7
+BP,pilot state,T2,ODD generalisation,L,2,1,L_op,O_prof;O_thr,,2,0.0,347,4
+BP,pilot state,T3,average error,L,2,1,L_op,O_prof;O_thr,,2,0.0,347,1
+BP,pilot state,T4,per operation,L,3,0,L_dyn+L_hor,O_lip;O_hor;O_thr,,3,0.0,347,6
+BP,pilot state,T5,security threat,L,2,0,L_dyn+L_hor,O_lip;O_hor,,2,0.0,347,1
+BP,pilot state,T6,local robustness,L,1,0,,O_thr,,1,0.0,347,3
+SMT,pilot state,T1,per flight hour,L,3,2,L_op+L_rate,O_prof;O_dep;O_thr,,3,0.0,329,7
+SMT,pilot state,T2,ODD generalisation,L,2,1,L_op,O_prof;O_thr,,2,0.0,329,4
+SMT,pilot state,T3,average error,L,2,1,L_op,O_prof;O_thr,,2,0.0,329,1
+SMT,pilot state,T4,per operation,L,3,0,L_dyn+L_hor,O_lip;O_hor;O_thr,,3,0.0,329,6
+SMT,pilot state,T5,security threat,L,3,0,L_dyn+L_hor,O_lip;O_hor;O_thr,,3,0.0,329,1
+SMT,pilot state,T6,local robustness,L,1,0,,O_thr,,1,0.0,329,3
+LIP,pilot state,T1,per flight hour,L,3,2,L_op+L_rate,O_prof;O_dep;O_thr,,3,0.0,81,7
+LIP,pilot state,T2,ODD generalisation,L,2,1,L_op,O_prof;O_thr,,2,0.0,81,4
+LIP,pilot state,T3,average error,L,2,1,L_op,O_prof;O_thr,,2,0.0,81,1
+LIP,pilot state,T4,per operation,L,3,0,L_dyn+L_hor,O_lip;O_hor;O_thr,,3,0.0,81,6
+LIP,pilot state,T5,security threat,L,2,0,L_dyn+L_hor,O_lip;O_hor,,2,0.0,81,1
+LIP,pilot state,T6,local robustness,L,1,0,,O_thr,,1,0.0,81,3
+SEM,pilot state,T1,per flight hour,L,3,2,L_op+L_rate,O_prof;O_dep;O_thr,,3,0.0,123,7
+SEM,pilot state,T2,ODD generalisation,L,2,1,L_op,O_prof;O_thr,,2,0.0,123,4
+SEM,pilot state,T3,average error,L,2,1,L_op,O_prof;O_thr,,2,0.0,123,1
+SEM,pilot state,T4,per operation,L,3,0,L_dyn+L_hor,O_lip;O_hor;O_thr,,3,0.0,123,6
+SEM,pilot state,T5,security threat,L,2,0,L_dyn+L_hor,O_lip;O_hor,,2,0.0,123,1
+SEM,pilot state,T6,local robustness,L,1,0,,O_thr,,1,0.0,123,3
+PIL,pilot state,T1,per flight hour,L,3,2,L_hor+L_sup+L_rate,O_hor;O_odd;O_dep,O_lip;O_cov,5,0.625,22,7
+PIL,pilot state,T2,ODD generalisation,L,2,1,L_hor+L_sup,O_hor;O_odd,O_lip;O_cov,4,0.625,22,4
+PIL,pilot state,T3,average error,L,2,1,L_hor+L_sup,O_hor;O_odd,O_lip;O_cov,4,0.625,22,1
+PIL,pilot state,T4,per operation,L,1,0,L_hor,O_hor,O_lip;O_cov,3,0.625,22,6
+PIL,pilot state,T5,security threat,L,2,0,L_hor,O_hor;O_thr,O_lip;O_cov,4,0.625,22,1
+PIL,pilot state,T6,local robustness,X,,,,,O_lip;O_cov,,0.625,22,3
+DTMC,pilot state,T1,per flight hour,X,,,,,O_lip;O_iid,,1.0,42,7
+DTMC,pilot state,T2,ODD generalisation,X,,,,,O_lip;O_iid,,1.0,42,4
+DTMC,pilot state,T3,average error,D,0,0,,,O_lip;O_iid,2,1.0,42,1
+DTMC,pilot state,T4,per operation,X,,,,,O_lip;O_iid,,1.0,42,6
+DTMC,pilot state,T5,security threat,X,,,,,O_lip;O_iid,,1.0,42,1
+DTMC,pilot state,T6,local robustness,X,,,,,O_lip;O_iid,,1.0,42,3
+CLR,pilot state,T1,per flight hour,L,4,2,L_hor+L_sup+L_rate,O_hor;O_odd;O_dep;O_thr,O_lip,5,0.0,203,7
+CLR,pilot state,T2,ODD generalisation,L,3,1,L_hor+L_sup,O_hor;O_odd;O_thr,O_lip,4,0.0,203,4
+CLR,pilot state,T3,average error,L,3,1,L_hor+L_sup,O_hor;O_odd;O_thr,O_lip,4,0.0,203,1
+CLR,pilot state,T4,per operation,L,2,0,L_hor,O_hor;O_thr,O_lip,3,0.0,203,6
+CLR,pilot state,T5,security threat,L,2,0,L_hor,O_hor;O_thr,O_lip,3,0.0,203,1
+CLR,pilot state,T6,local robustness,X,,,,,O_lip,,0.0,203,3
+CRL,pilot state,T1,per flight hour,L,5,2,L_alpha+L_hor+L_sup+L_rate,O_alpha;O_hor;O_odd;O_dep;O_thr,O_hor,5,0.0,193,7
+CRL,pilot state,T2,ODD generalisation,L,4,1,L_alpha+L_hor+L_sup,O_alpha;O_hor;O_odd;O_thr,O_hor,4,0.0,193,4
+CRL,pilot state,T3,average error,L,4,1,L_alpha+L_hor+L_sup,O_alpha;O_hor;O_odd;O_thr,O_hor,4,0.0,193,1
+CRL,pilot state,T4,per operation,L,3,0,L_alpha+L_hor,O_alpha;O_hor;O_thr,O_hor,3,0.0,193,6
+CRL,pilot state,T5,security threat,L,2,0,L_alpha+L_hor,O_alpha;O_hor,O_hor,2,0.0,193,1
+CRL,pilot state,T6,local robustness,X,,,,,O_hor,,0.0,193,3
+CRL (field),full study (variant),T1,per flight hour,L,3,2,L_hor+L_sup+L_rate,O_hor;O_odd;O_dep,,3,0.217,193,7
+CRL (field),full study (variant),T2,ODD generalisation,L,2,1,L_hor+L_sup,O_hor;O_odd,,2,0.217,193,4
+CRL (field),full study (variant),T3,average error,L,2,1,L_hor+L_sup,O_hor;O_odd,,2,0.217,193,1
+CRL (field),full study (variant),T4,per operation,L,1,0,L_hor,O_hor,,1,0.217,193,6
+CRL (field),full study (variant),T5,security threat,L,2,0,L_hor,O_hor;O_thr,,2,0.217,193,1
+CRL (field),full study (variant),T6,local robustness,X,,,,,,,0.217,193,3
+NCERT,pilot state,T1,per flight hour,L,4,2,L_hor+L_sup+L_rate,O_hor;O_odd;O_dep;O_thr,O_lip,5,0.0,212,7
+NCERT,pilot state,T2,ODD generalisation,L,3,1,L_hor+L_sup,O_hor;O_odd;O_thr,O_lip,4,0.0,212,4
+NCERT,pilot state,T3,average error,L,3,1,L_hor+L_sup,O_hor;O_odd;O_thr,O_lip,4,0.0,212,1
+NCERT,pilot state,T4,per operation,L,2,0,L_hor,O_hor;O_thr,O_lip,3,0.0,212,6
+NCERT,pilot state,T5,security threat,L,2,0,L_hor,O_hor;O_thr,O_lip,3,0.0,212,1
+NCERT,pilot state,T6,local robustness,X,,,,,O_lip,,0.0,212,3
+CP,pilot state,T1,per flight hour,L,1,1,L_rate,O_dep,O_iid,2,0.0,1034,7
+CP,pilot state,T2,ODD generalisation,D,0,0,,,O_iid,1,0.0,1034,4
+CP,pilot state,T3,average error,D,0,0,,,O_iid,1,0.0,1034,1
+CP,pilot state,T4,per operation,X,,,,,O_iid,,0.0,1034,6
+CP,pilot state,T5,security threat,X,,,,,O_iid,,0.0,1034,1
+CP,pilot state,T6,local robustness,X,,,,,O_iid,,0.0,1034,3
+CP (field),full study (variant),T1,per flight hour,L,1,1,L_rate,O_dep,O_iid,2,0.354,1034,7
+CP (field),full study (variant),T2,ODD generalisation,D,0,0,,,O_iid,1,0.354,1034,4
+CP (field),full study (variant),T3,average error,D,0,0,,,O_iid,1,0.354,1034,1
+CP (field),full study (variant),T4,per operation,X,,,,,O_iid,,0.354,1034,6
+CP (field),full study (variant),T5,security threat,X,,,,,O_iid,,0.354,1034,1
+CP (field),full study (variant),T6,local robustness,X,,,,,O_iid,,0.354,1034,3
+RTA,pilot state,T1,per flight hour,L,2,2,L_sup+L_rate,O_odd;O_dep,O_mcov;O_lat;O_rec;O_ind,6,0.0,452,7
+RTA,pilot state,T2,ODD generalisation,L,1,1,L_sup,O_odd,O_mcov;O_lat;O_rec;O_ind,5,0.0,452,4
+RTA,pilot state,T3,average error,L,1,1,L_sup,O_odd,O_mcov;O_lat;O_rec;O_ind,5,0.0,452,1
+RTA,pilot state,T4,per operation,D,0,0,,,O_mcov;O_lat;O_rec;O_ind,4,0.0,452,6
+RTA,pilot state,T5,security threat,L,1,0,,O_thr,O_mcov;O_lat;O_rec;O_ind,5,0.0,452,1
+RTA,pilot state,T6,local robustness,X,,,,,O_mcov;O_lat;O_rec;O_ind,,0.0,452,3
+MON,pilot state,T1,per flight hour,L,2,2,L_op+L_rate,O_prof;O_dep,O_mcov;O_lat;O_rec;O_ind,6,0.0,43,7
+MON,pilot state,T2,ODD generalisation,L,1,1,L_op,O_prof,O_mcov;O_lat;O_rec;O_ind,5,0.0,43,4
+MON,pilot state,T3,average error,L,1,1,L_op,O_prof,O_mcov;O_lat;O_rec;O_ind,5,0.0,43,1
+MON,pilot state,T4,per operation,L,2,0,L_dyn+L_hor,O_lip;O_hor,O_mcov;O_lat;O_rec;O_ind,6,0.0,43,6
+MON,pilot state,T5,security threat,L,3,0,L_dyn+L_hor,O_lip;O_hor;O_thr,O_mcov;O_lat;O_rec;O_ind,7,0.0,43,1
+MON,pilot state,T6,local robustness,L,1,0,,O_thr,O_mcov;O_lat;O_rec;O_ind,5,0.0,43,3
+FALS,pilot state,T1,per flight hour,X,,,,,,,0.0,0,7
+FALS,pilot state,T2,ODD generalisation,X,,,,,,,0.0,0,4
+FALS,pilot state,T3,average error,X,,,,,,,0.0,0,1
+FALS,pilot state,T4,per operation,X,,,,,,,0.0,0,6
+FALS,pilot state,T5,security threat,X,,,,,,,0.0,0,1
+FALS,pilot state,T6,local robustness,X,,,,,,,0.0,0,3
+PACB,pilot state,T1,per flight hour,L,1,1,L_rate,O_dep,O_iid,2,0.0,206,7
+PACB,pilot state,T2,ODD generalisation,D,0,0,,,O_iid,1,0.0,206,4
+PACB,pilot state,T3,average error,D,0,0,,,O_iid,1,0.0,206,1
+PACB,pilot state,T4,per operation,X,,,,,O_iid,,0.0,206,6
+PACB,pilot state,T5,security threat,X,,,,,O_iid,,0.0,206,1
+PACB,pilot state,T6,local robustness,X,,,,,O_iid,,0.0,206,3
+PROB,pilot state,T1,per flight hour,L,3,2,L_op+L_rate,O_prof;O_dep;O_thr,O_iid,4,0.333,20,7
+PROB,pilot state,T2,ODD generalisation,L,2,1,L_op,O_prof;O_thr,O_iid,3,0.333,20,4
+PROB,pilot state,T3,average error,L,2,1,L_op,O_prof;O_thr,O_iid,3,0.333,20,1
+PROB,pilot state,T4,per operation,X,,,,,O_iid,,0.333,20,6
+PROB,pilot state,T5,security threat,X,,,,,O_iid,,0.333,20,1
+PROB,pilot state,T6,local robustness,X,,,,,O_iid,,0.333,20,3
+OPREL,pilot state,T1,per flight hour,L,1,1,L_rate,O_dep,O_iid;O_prof;O_dep,3,0.4,127,7
+OPREL,pilot state,T2,ODD generalisation,D,0,0,,,O_iid;O_prof;O_dep,3,0.4,127,4
+OPREL,pilot state,T3,average error,D,0,0,,,O_iid;O_prof;O_dep,3,0.4,127,1
+OPREL,pilot state,T4,per operation,X,,,,,O_iid;O_prof;O_dep,,0.4,127,6
+OPREL,pilot state,T5,security threat,X,,,,,O_iid;O_prof;O_dep,,0.4,127,1
+OPREL,pilot state,T6,local robustness,X,,,,,O_iid;O_prof;O_dep,,0.4,127,3
+GEN,full study (added),T1,per flight hour,L,1,1,L_rate,O_dep,O_iid,2,0.0,300,7
+GEN,full study (added),T2,ODD generalisation,D,0,0,,,O_iid,1,0.0,300,4
+GEN,full study (added),T3,average error,D,0,0,,,O_iid,1,0.0,300,1
+GEN,full study (added),T4,per operation,X,,,,,O_iid,,0.0,300,6
+GEN,full study (added),T5,security threat,X,,,,,O_iid,,0.0,300,1
+GEN,full study (added),T6,local robustness,X,,,,,O_iid,,0.0,300,3
+LUC,full study (added),T1,per flight hour,L,2,1,L_hor+L_rate,O_hor;O_dep,,2,0.0,128,7
+LUC,full study (added),T2,ODD generalisation,L,1,0,L_hor,O_hor,,1,0.0,128,4
+LUC,full study (added),T3,average error,L,1,0,L_hor,O_hor,,1,0.0,128,1
+LUC,full study (added),T4,per operation,X,,,,,,,0.0,128,6
+LUC,full study (added),T5,security threat,X,,,,,,,0.0,128,1
+LUC,full study (added),T6,local robustness,X,,,,,,,0.0,128,3
+ALG,full study (added),T1,per flight hour,X,,,,,,,0.333,65,7
+ALG,full study (added),T2,ODD generalisation,X,,,,,,,0.333,65,4
+ALG,full study (added),T3,average error,X,,,,,,,0.333,65,1
+ALG,full study (added),T4,per operation,X,,,,,,,0.333,65,6
+ALG,full study (added),T5,security threat,X,,,,,,,0.333,65,1
+ALG,full study (added),T6,local robustness,X,,,,,,,0.333,65,3
+GLOB,full study (added),T1,per flight hour,X,,,,,,,0.5,41,7
+GLOB,full study (added),T2,ODD generalisation,X,,,,,,,0.5,41,4
+GLOB,full study (added),T3,average error,X,,,,,,,0.5,41,1
+GLOB,full study (added),T4,per operation,X,,,,,,,0.5,41,6
+GLOB,full study (added),T5,security threat,X,,,,,,,0.5,41,1
+GLOB,full study (added),T6,local robustness,X,,,,,,,0.5,41,3
+IMPL,full study (added),T1,per flight hour,L,3,2,L_op+L_rate,O_prof;O_dep;O_thr,,3,0.0,20,7
+IMPL,full study (added),T2,ODD generalisation,L,2,1,L_op,O_prof;O_thr,,2,0.0,20,4
+IMPL,full study (added),T3,average error,L,2,1,L_op,O_prof;O_thr,,2,0.0,20,1
+IMPL,full study (added),T4,per operation,L,3,0,L_dyn+L_hor,O_lip;O_hor;O_thr,,3,0.0,20,6
+IMPL,full study (added),T5,security threat,L,3,0,L_dyn+L_hor,O_lip;O_hor;O_thr,,3,0.0,20,1
+IMPL,full study (added),T6,local robustness,L,1,0,,O_thr,,1,0.0,20,3

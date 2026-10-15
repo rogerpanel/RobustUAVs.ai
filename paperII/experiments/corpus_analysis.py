@@ -56,7 +56,8 @@ def main():
     codes = {r["gid"]: r for r in csv.DictReader(open(C / "codes_ADJ.csv"))}
     for g, r in codes.items():
         r["year"] = int(idx[g]["year"])
-    classes = list(csv.DictReader(open(C / "classes.csv")))
+    # pilot analysis: the classes added in the full study have no pilot members (transfer_full.py)
+    classes = [c for c in csv.DictReader(open(C / "classes.csv")) if not c.get("added")]
     g2c = {g: c["class"] for c in classes for g in c["gids"].split(";")}
     objs = list(csv.DictReader(open(C / "objectives.csv")))
 
