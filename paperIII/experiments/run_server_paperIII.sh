@@ -82,11 +82,15 @@ stage_r4() {
   docker pull -q "$IMG" > /dev/null
   # build once (SIH: physics inside PX4, no Gazebo, runs headless)
   # the container runs as root on a checkout owned by the host user: allow git to read it
-  # (otherwise git stops with "dubious ownership" and PX4's version step fails)
+  # (otherwise git stops with "dubious ownership" and PX4's version step fails).
+  # PX4 v1.14's message generators need empy 3.x; empy 4 breaks the uORB header step.
   if ! docker run --rm -v "$PX4":/src -w /src "$IMG" bash -lc \
-    "git config --global --add safe.directory '*' && make px4_sitl_default > /src/build_r4.log 2>&1"; then
+    "git config --global --add safe.directory '*' && \
+     { pip3 install -q 'empy==3.3.4' > /src/pip_r4.log 2>&1 || true; } && \
+     make px4_sitl_default > /src/build_r4.log 2>&1"; then
     say "R4: PX4 build failed, see $PX4/build_r4.log; its last lines:"
-    tail -n 25 "$PX4/build_r4.log" | sed 's/^/    /' | tee -a "$LOG/r4_build_tail.txt"
+    { grep -n -A12 "FAILED" "$PX4/build_r4.log" | head -40 || true; tail -n 10 "$PX4/build_r4.log"; } \
+      | sed 's/^/    /' | tee -a "$LOG/r4_build_tail.txt"
     return 0
   fi
   # launch N SIH quadrotors; instance i listens on UDP 14540+i for offboard
