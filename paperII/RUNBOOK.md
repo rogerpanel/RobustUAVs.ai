@@ -69,6 +69,8 @@ Then add the databases that OpenAlex does not cover well:
 
 ## S2 — Screening (title/abstract)
 
+> **Amendment 1 (2026-10-15):** with 25,373 candidates, humans screen in prioritised order under the pre-registered stopping rule in `corpus/SCREENING_PROCEDURE.md`. The steps below still apply to every record that is screened.
+
 1. **Two humans** (H1, H2) screen `candidates.csv` independently against the inclusion rule in Sec. IV-A. Each writes `screen_H1.csv` / `screen_H2.csv` with columns `cid,include{0,1},reason`.
 2. **LLM third screener.**
    - Spawn one coding-agent sub-agent per batch of 50 papers. It reads only `CODEBOOK.md` and the batch, and never the human files.
