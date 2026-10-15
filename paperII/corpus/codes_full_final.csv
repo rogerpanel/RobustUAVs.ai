@@ -1,0 +1,288 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,resolved_by
+O2741041149,0,Doctoral summary of MPC/PSO plan synthesis; optimizer is not a learned component.,,,,,,,,,,C1=C2
+O2793067802,0,Moment-based grid topology estimation; no learned component of an autonomous system.,,,,,,,,,,C1=C2
+O2796576875,1,,NCERT,A,control,tr,A,none,L_dyn,S,proof,ADJ
+O2801079363,1,,SMT,A,control,in,A,none,none,S,proof,ADJ
+O2804542227,0,Optimality and complexity results for POMDP solvers; no guarantee about a learned component.,,,,,,,,,,C1=C2
+O2888409681,0,Position paper with high-level safety argument; no formal or statistical guarantee proved.,,,,,,,,,,C1=C2
+O2890660842,1,,BP,A,end2end,in,A,norm,none,S,proof,ADJ
+O2913563956,0,Hand-designed stochastic swarm policy verified formally; no learned component.,,,,,,,,,,C1=C2
+O2921112343,1,,NEW:Learned stochastic forward reachable sets,A,estimation,tr,P,distribution,L_dyn,S,simulated,ADJ
+O2948254043,1,,OPREL,A,perception,pop,E,distribution,L_conc,SE,measured,ADJ
+O2955566917,1,,NEW:Lipschitz global-optimisation verification,B,perception,in,E,norm,none,S,proof,ADJ
+O2962295100,1,,RTA,B,control,op,E,distribution,L_gen;L_mon,S,simulated,ADJ
+O2963160885,1,,PROB,B,perception,in,P,norm,none,S,proof,C1=C2
+O2964079458,1,,CLR,A,control,tr,A,none,L_dyn,S,proof,C1=C2
+O2964359568,1,,SMT,B,perception,in,A,none,none,S,proof,ADJ
+O2970900401,0,"SMC validates a POMDP planner and Bayesian occupancy grid (CMCDOT); no learned component, so excluded as non-learned guarantee.",,,,,,,,,,ADJ
+O2972713160,1,,SMT,A,control,in,A,none,none,S,proof,ADJ
+O2979091979,0,Model-checking guarantees concern a symbolic planner model; no learned component involved.,,,,,,,,,,C1=C2
+O2992136447,1,,SMT,B,perception,in,A,norm,none,S,proof,C1=C2
+O2997425368,1,,BP,B,perception,in,A,norm,none,S,proof,C1=C2
+O2998709064,1,,BP,B,perception,in,A,norm,none,S,proof,ADJ
+O3010516233,0,"Learnability analysis of smoothing accuracy loss; no robustness guarantee of its own, empirical evaluation.",,,,,,,,,,C1=C2
+O3016425199,0,Lyapunov synthesis for ODE models via SMT; no learned component involved,,,,,,,,,,C1=C2
+O3029730229,1,,LIP,B,perception,in,A,norm,none,S,proof,ADJ
+O3035105259,1,,PACB,B,perception,pop,P,distribution,L_conc,S,modelled,C1=C2
+O3035780950,1,,NEW:PAC-RL sample complexity,B,control,pop,P,distribution,L_conc,S,modelled,ADJ
+O3035782912,1,,SMT,A,perception,in,A,semantic,L_sup,S,proof,ADJ
+O3037629243,1,,CLR,A,control,tr,A,disturbance,L_dyn,S,proof,ADJ
+O3037655992,1,,NEW:dynamics-shift transfer bound,B,control,pop,E,distribution,none,S,modelled,ADJ
+O3087456546,1,,CRL,A,planning,op,A,none,none,S,modelled,ADJ
+O3089014878,0,Coq proof of value/policy iteration convergence for known finite MDPs (dynamic programming); no learned component; rule excludes guarantees about non-learned components.,,,,,,,,,,ADJ
+O3092184188,1,,SMT,A,control,in,A,norm,none,S,proof,ADJ
+O3092567899,1,,PACB,B,perception,pop,P,distribution,L_conc;L_dyn,S,modelled,ADJ
+O3093179871,0,Safety probability estimator uses learned kernel model of dynamics; controller and system are not learned components.,,,,,,,,,,C1=C2
+O3093796394,1,,BP,B,perception,in,A,norm,none,S,proof,ADJ
+O3095839831,1,,PACB,A,control,pop,P,distribution,L_conc;L_mon,SE,simulated,C1=C2
+O3098796714,0,Licentiate thesis; its papers removed; duplicates published journal versions; no own guarantee stated.,,,,,,,,,,C1=C2
+O3101293418,1,,PACB,B,perception,pop,P,distribution,L_conc,S,modelled,ADJ
+O3112586141,1,,SEM,A,perception,in,A,semantic,L_gen,SE,proof,ADJ
+O3114355749,0,"Guarantee is backward-reachability safety supervisor on a linear vehicle model; nominal ADS is generic, no learned component identified; excluded as non-learned guarantee.",,,,,,,,,,ADJ
+O3132132679,1,,CLR,A,control,tr,A,none,L_dyn,S,proof,C1=C2
+O3134881993,1,,OPREL,A,control,pop,P,distribution,L_conc,S,simulated,ADJ
+O3139113494,1,,CLR,A,control,tr,A,disturbance,L_dyn,S,proof,C1=C2
+O3183883635,1,,BP,A,perception,in,A,distribution,L_sup,SE,proof,ADJ
+O3206889533,1,,CRL,B,control,tr,A,disturbance,L_dyn,S,proof,ADJ
+O3208537030,1,,PACB,B,perception,pop,P,distribution,L_conc,S,measured,ADJ
+O3209289000,1,,CP,A,estimation,pop,P,distribution,L_conc,SE,measured,C1=C2
+O3211668688,1,,SMT,B,control,in,A,none,none,S,proof,C1=C2
+O3212063444,1,,NCERT,B,control,tr,A,norm,L_sup,S,proof,ADJ
+O3213106995,1,,PACB,A,end2end,pop,P,distribution,L_conc,SE,simulated,ADJ
+O3213615249,1,,LIP,B,estimation,tr,E,none,L_dyn,S,proof,ADJ
+O3214811133,0,Empirical safe-RL method; paper states it loses hard guarantees; no proven or statistical guarantee.,,,,,,,,,,C1=C2
+O3214930062,1,,NEW:GP-bounded contraction tube,A,estimation,tr,P,disturbance,L_conc;L_dyn,S,simulated,ADJ
+O3216935302,1,,MON,A,perception,in,A,disturbance,none,SE,measured,ADJ
+O4200294561,1,,BP,A,control,in,A,none,none,S,proof,ADJ
+O4205626291,1,,NCERT,A,control,tr,A,none,none,S,simulated,ADJ
+O4206840646,1,,BP,A,perception,in,A,norm,none,S,proof,ADJ
+O4221148689,1,,RTA,A,control,op,A,disturbance,L_dyn;L_hor;L_mon,S,simulated,ADJ
+O4221153097,1,,NCERT,B,control,tr,A,none,L_dyn,S,proof,ADJ
+O4225423574,1,,SMT,B,perception,in,A,norm,none,S,proof,ADJ
+O4225455743,1,,RTA,A,control,op,A,none,L_mon,S,simulated,C1=C2
+O4281490538,1,,CP,B,perception,pop,P,distribution,L_conc,SE,simulated,C1=C2
+O4283326543,0,Verification platform/tool description; no own guarantee proved or certified.,,,,,,,,,,C1=C2
+O4283657298,1,,NEW:WCET/implementation timing bound,A,control,in,A,none,none,S,proof,ADJ
+O4284967541,1,,NEW:Lipschitz-metric robustness estimation,A,perception,in,A,norm,none,SE,simulated,ADJ
+O4285409484,0,Generic low-rank multi-task learning convergence/sample-complexity theory; no guarantee about a deployed learned component or autonomy.,,,,,,,,,,C1=C2
+O4286224460,1,,PACB,B,perception,pop,P,distribution,L_conc,SE,simulated,ADJ
+O4286750481,1,,SMT,A,control,in,A,none,none,S,proof,C1=C2
+O4286857124,0,"Criminal-justice fairness study; conformal sets only used for evaluation, no own guarantee, not autonomous system.",,,,,,,,,,C1=C2
+O4288481534,0,"Scalar Gaussian binary-classifier accuracy-sensitivity tradeoff; no guarantee on a learned component, no vehicle.",,,,,,,,,,C1=C2
+O4303857556,0,"Theorem 4 is a local convergence bound of the SAC training algorithm to an approximate stationary point, not a guarantee on the learned policy's behaviour.",,,,,,,,,,ADJ
+O4308244126,0,Guarantee concerns behavioural inclusion of an unknown non-learned deterministic plant in a data-driven abstraction; no learned component or system containing one.,,,,,,,,,,ADJ
+O4310631281,1,,NCERT,B,control,tr,P,disturbance,L_conc;L_dyn;L_mon,S,simulated,ADJ
+O4312433875,1,,RTA,A,control,op,A,disturbance,L_dyn;L_mon,S,simulated,ADJ
+O4312475894,1,,CLR,B,control,tr,A,none,L_dyn,S,proof,C1=C2
+O4312564465,0,Theoretical impossibility result on reward translation for Rabin automata; no guarantee about a learned component.,,,,,,,,,,C1=C2
+O4312744983,0,"Guarantee is safety probability of non-learned stochastic plants (population model, polynomial system, constant-steering Dubins car); NN is only the certificate. Excluded: non-learned component.",,,,,,,,,,ADJ
+O4313121846,0,Empirical study of existing Lipschitz bounds on MNIST/CIFAR; no new guarantee of its own.,,,,,,,,,,C1=C2
+O4313447601,1,,PACB,B,estimation,pop,P,distribution,L_conc,S,simulated,ADJ
+O4315488717,0,"Lyapunov certificate for non-learned dynamics (Van der Pol, gLV microbiome); learned Koopman eigenfunctions only build the certificate. Excluded: guarantee about non-learned component.",,,,,,,,,,ADJ
+O4318621098,1,,SMT,B,estimation,in,A,norm,none,S,proof,ADJ
+O4318685743,1,,RTA,A,planning,op,A,disturbance,L_mon,SE,simulated,C1=C2
+O4319323110,1,,BP,B,estimation,in,A,norm,none,S,proof,ADJ
+O4320724689,1,,CRL,B,control,tr,E,disturbance,none,S,modelled,C1=C2
+O4320855572,1,,CP,B,perception,pop,P,distribution,L_conc,S,measured,ADJ
+O4321392741,0,"Theorem 1 bounds training-time worst-class empirical loss under assumed mistake bound; no guarantee on the learned model's robustness, which is only PGD/AutoAttack-evaluated.",,,,,,,,,,ADJ
+O4362721716,1,,SEM,A,perception,in,A,patch,none,S,proof,ADJ
+O4366999641,0,"Reach-avoid certificate (Theorem 1) covers polynomial dynamics and a non-learned sampling controller; the SVM safe set is used as given, its correctness never guaranteed.",,,,,,,,,,ADJ
+O4367056604,0,"Tutorial on stochastic fundamental lemma for linear systems; no learned component, no learned-component guarantee.",,,,,,,,,,C1=C2
+O4378499190,0,Soft Lagrangian constraint; violation rate only Monte Carlo estimated; no guarantee on learned policy.,,,,,,,,,,C1=C2
+O4378977211,1,,SEM,B,perception,in,A,semantic,L_gen,S,proof,C1=C2
+O4381542600,1,,SMT,B,perception,in,A,norm,none,S,proof,ADJ
+O4382318418,1,,BP,B,perception,in,A,norm,none,S,proof,C1=C2
+O4382935996,1,,NEW:Adaptive ISSf-CBF with online-learned parameters,A,estimation,tr,A,disturbance,L_dyn,S,proof,ADJ
+O4383613691,1,,CLR,B,control,tr,A,disturbance,L_dyn,S,proof,ADJ
+O4384521927,1,,RTA,A,perception,op,A,none,L_mon,SE,measured,ADJ
+O4385289198,0,Regret bound for black-box verification search; verified systems are not learned components.,,,,,,,,,,C1=C2
+O4385300825,1,,CP,A,estimation,pop,P,distribution,L_conc,SE,simulated,C1=C2
+O4385453437,0,Rule-based reachability safety verifier for planned trajectories; no learned component involved.,,,,,,,,,,C1=C2
+O4386875196,0,"Guarantee covers reach set of non-learned dynamics (four-squares map, Duffing oscillator); Christoffel polynomial is analysis tool, not system component; excluded as non-learned.",,,,,,,,,,ADJ
+O4387334532,0,Computational complexity of NN reachability; no guarantee about a learned component's behaviour.,,,,,,,,,,C1=C2
+O4387561115,1,,CP,B,perception,pop,P,distribution,L_conc,S,measured,ADJ
+O4387972489,1,,OPREL,A,end2end,pop,P,distribution,L_conc,S,modelled,C1=C2
+O4388561670,1,,OPREL,A,perception,pop,P,distribution,L_gen;L_op,S,simulated,ADJ
+O4389665627,0,No guarantee of its own: reuses CPO Theorem 3.1; the ESB constraint satisfaction is argued informally and shown only empirically.,,,,,,,,,,ADJ
+O4390092008,1,,NCERT,A,control,tr,P,disturbance,none,SE,simulated,ADJ
+O4390349808,0,"Only formal guarantee comes from non-learned BRS; LSTM collision-probability estimate is empirically evaluated, no guarantee.",,,,,,,,,,C1=C2
+O4390576807,1,,CRL,A,control,tr,A,disturbance,L_dyn,S,modelled,ADJ
+O4390832684,1,,BP,B,perception,in,A,norm,none,S,proof,ADJ
+O4391021262,1,,NEW:Order-statistic expected-risk bound,B,estimation,pop,P,distribution,L_conc,S,simulated,ADJ
+O4391188106,0,Specification logic and offline monitoring complexity; no guarantee about a learned component,,,,,,,,,,C1=C2
+O4391528845,1,,RS,B,perception,in,Ac,norm,none,SEC,proof,ADJ
+O4391988331,1,,CP,B,perception,pop,P,distribution,L_conc,SE,measured,C1=C2
+O4393160604,1,,RTA,B,control,op,A,none,L_mon,S,proof,ADJ
+O4393161169,1,,CP,B,perception,pop,P,distribution,L_conc,U,measured,ADJ
+O4393871000,0,"Synthesized control envelopes for hybrid systems; no learned component, guarantee about non-learned controller.",,,,,,,,,,C1=C2
+O4393954477,1,,BP,A,control,in,A,none,none,S,proof,ADJ
+O4394930075,0,Edge-computing resource allocation; PRISM model plus NN surrogate; no vehicle or learned-component guarantee.,,,,,,,,,,C1=C2
+O4396600859,1,,CP,B,perception,pop,P,norm,L_conc,S,proof,ADJ
+O4396650433,0,"Theorem 4.1 covers only idealised exact update (4.4) under realizability; trained LLMs use surrogate (4.6), evaluated empirically. Training-convergence result, no guarantee on learned component.",,,,,,,,,,ADJ
+O4396783611,1,,CP,B,estimation,pop,P,distribution,L_conc,S,measured,C1=C2
+O4399115387,0,"Stability only paraphrased from cited Lemma of [11]; learned Lyapunov network never verified, no theorem or certificate in paper; all results empirical Pointbot simulations.",,,,,,,,,,ADJ
+O4399157133,1,,CLR,B,control,tr,A,none,L_dyn,S,proof,ADJ
+O4400025616,0,"Exclude: guarantees about non-learned components. Stability certified for known autonomous dynamics without control; final certificate is symbolic, no learned component in the system.",,,,,,,,,,ADJ
+O4400647773,0,"No guarantee stated: rule-based shield heuristic with no safety theorem or bound; only empirical simulated collision rates (nonzero), which the inclusion rule does not cover.",,,,,,,,,,ADJ
+O4400776977,1,,SMT,B,perception,in,A,norm,L_gen,U,modelled,ADJ
+O4400946840,1,,NEW:GP-CBF chance-constrained safety filter,A,control,in,P,disturbance,L_conc,S,simulated,ADJ
+O4401024639,0,Certificates for MDP policies in gridworld swarms; no learned component involved.,,,,,,,,,,C1=C2
+O4401414359,1,,NEW:Distributionally robust chance-constrained MPC,A,estimation,tr,P,distribution,L_sup,S,simulated,ADJ
+O4401416547,0,"Planning method with zonotope collision constraints; no stated guarantee, only simulated crash rates.",,,,,,,,,,C1=C2
+O4401990437,0,Preliminary hybrid-CNN redundant-execution concept; no formal or statistical guarantee stated or evaluated.,,,,,,,,,,C1=C2
+O4402354142,0,"Excluded: shield is a learned, unverified RA network; RA-set property holds only for exact value; paper reports empirical collision rates, no guarantee stated.",,,,,,,,,,ADJ
+O4402520256,1,,BP,A,control,in,A,none,none,S,proof,ADJ
+O4402753567,1,,LIP,B,perception,in,A,norm,none,S,proof,C1=C2
+O4402883652,1,,NCERT,A,control,tr,A,none,L_conc;L_dyn,S,simulated,ADJ
+O4403317714,1,,RTA,A,control,op,A,none,L_dyn;L_hor;L_mon,S,simulated,ADJ
+O4403344774,1,,CP,B,perception,pop,P,distribution,L_conc,SE,measured,ADJ
+O4403365237,1,,CRL,B,control,op,P,distribution,L_conc,SEC,simulated,ADJ
+O4403593963,0,"Empirical RL architecture study; no formal, statistical or architectural guarantee stated or proved.",,,,,,,,,,C1=C2
+O4403853633,1,,CLR,B,control,tr,A,disturbance,L_dyn;L_sup,SE,proof,ADJ
+O4404305051,1,,NEW:PAC off-policy evaluation bound,B,estimation,pop,P,distribution,L_conc,S,modelled,ADJ
+O4404314050,1,,RS,B,perception,in,Ac,norm,none,S,proof,C1=C2
+O4404569890,1,,CP,A,perception,pop,P,distribution,L_conc,S,measured,C1=C2
+O4404689764,1,,PACB,B,estimation,pop,P,distribution,L_conc,S,simulated,ADJ
+O4404986723,1,,PACB,B,control,pop,P,distribution,L_conc,SEC,simulated,C1=C2
+O4405094777,0,Data-driven barrier certificate for unknown non-learned plants; no learned component involved.,,,,,,,,,,C1=C2
+O4405354148,1,,CP,B,estimation,pop,P,distribution,L_conc,SE,measured,ADJ
+O4405469692,0,Guarantees concern QP constraint removal in non-learned MPC; no learned component.,,,,,,,,,,C1=C2
+O4405658626,0,Empirical DRL manipulator planning-speed study; collision-check monitor claimed but no stated guarantee or analysis.,,,,,,,,,,C1=C2
+O4405785676,1,,DTMC,A,perception,pop,P,distribution,L_gen,S,simulated,ADJ
+O4405955404,1,,BP,A,perception,in,A,norm,none,S,proof,ADJ
+O4406715843,0,Heuristic decision-tree policy generalisation; paper states no guarantee on policy quality; benchmarks not autonomous-system learned components.,,,,,,,,,,C1=C2
+O4406764499,1,,CP,B,estimation,pop,P,distribution,L_conc,SE,simulated,ADJ
+O4406786055,1,,CP,B,estimation,pop,P,distribution,L_conc,S,measured,ADJ
+O4407039535,0,Overview and concept paper on Big Data safety cases; no formal or statistical guarantee proved.,,,,,,,,,,C1=C2
+O4407231265,1,,BP,A,perception,in,A,norm,none,S,proof,C1=C2
+O4407948456,1,,CLR,A,control,tr,A,none,L_dyn,S,proof,ADJ
+O4407949559,1,,NCERT,B,control,tr,A,none,none,S,proof,C1=C2
+O4407950306,1,,RTA,A,control,tr,A,none,none,S,simulated,ADJ
+O4407951861,1,,OPREL,A,estimation,pop,P,distribution,L_op,S,measured,ADJ
+O4408175362,0,"Chemical toxicity regression; empirical calibration only, no autonomous-system guarantee.",,,,,,,,,,C1=C2
+O4408666991,1,,NEW:Bayesian posterior harm-probability bound,B,estimation,in,P,distribution,L_conc,S,simulated,ADJ
+O4409079480,1,,SEM,B,perception,in,A,semantic,L_gen,SE,proof,ADJ
+O4409364009,1,,SEM,A,perception,in,Ac,semantic,none,SE,proof,ADJ
+O4411399924,1,,CRL,B,control,tr,P,distribution,L_dyn,S,proof,ADJ
+O4411552344,1,,SMT,A,control,in,A,none,L_conc,SE,proof,ADJ
+O4412514774,1,,SMT,A,control,in,A,norm,none,U,proof,ADJ
+O4413945503,1,,CP,B,estimation,pop,P,distribution,L_conc;L_mon,S,measured,ADJ
+O4414050564,1,,CP,B,end2end,pop,P,distribution,L_conc,S,measured,ADJ
+O4414449094,0,Empirical Jacobian-regularised MARL defense with simulation results; no formal or statistical guarantee.,,,,,,,,,,C1=C2
+O4414806824,1,,CP,A,perception,pop,P,distribution,L_conc,S,simulated,C1=C2
+O4414811182,1,,NEW:statistical generalisation bound,B,estimation,pop,P,distribution,L_conc,S,modelled,ADJ
+O4415042174,0,Assurance-case/SPI methodology with expert-opinion Dempster-Shafer; no guarantee about a learned component.,,,,,,,,,,C1=C2
+O4415179585,0,Convergence claim imported from GTD literature; no own guarantee; simulation-only evaluation.,,,,,,,,,,C1=C2
+O4415197707,1,,CP,B,perception,pop,P,distribution,L_conc,SE,measured,ADJ
+O4415795436,1,,CP,B,perception,pop,E,distribution,L_conc,S,simulated,ADJ
+O4415795464,0,"Backdoor poisoning attack study; its theorems guarantee attack success, not a safety guarantee.",,,,,,,,,,C1=C2
+O4415799201,1,,CP,B,perception,pop,E,distribution,L_conc,S,measured,ADJ
+O4415886758,1,,RTA,B,control,op,A,disturbance,L_conc;L_mon,SE,simulated,ADJ
+O4415913028,1,,CP,A,planning,pop,P,distribution,L_conc,S,simulated,ADJ
+O4415986067,0,"Guarantee is cryptographic protocol security (ProVerif), not about a learned component.",,,,,,,,,,C1=C2
+O4416177651,0,Thesis on regret bounds for online distributed optimization; no learned component of an autonomous system.,,,,,,,,,,C1=C2
+O4416190460,1,,CP,A,estimation,pop,P,distribution,L_conc,U,measured,C1=C2
+O4416243460,0,Exclusion: guarantee about non-learned components. Classical adaptive DT-CBF with RLS/set-membership parameter estimation; nominal MPC/PID; learned policies explicitly out of scope.,,,,,,,,,,ADJ
+O4416383082,1,,NEW:Stability-based generalisation bound,B,perception,pop,E,distribution,none,S,measured,ADJ
+O4416407150,1,,CRL,A,control,tr,A,disturbance,none,S,modelled,ADJ
+O4416603702,1,,BP,A,perception,in,A,patch,none,S,proof,ADJ
+O4416904409,1,,NEW:Stability/Rademacher generalisation bound,B,estimation,pop,P,distribution,L_conc,S,modelled,ADJ
+O4416919197,0,Recovery bounds for a hypothetical latent low-rank matrix under a postulated noise model; no guarantee on the network's behaviour over identifiable inputs; no evaluation.,,,,,,,,,,ADJ
+O4416999542,1,,NEW:LLM-verifier loop convergence,B,end2end,op,E,none,none,S,modelled,ADJ
+O4417137914,1,,CP,B,perception,pop,E,distribution,L_conc,S,measured,C1=C2
+O4417290994,0,"Architectural survey chapter with no formal, statistical or architectural guarantee of its own.",,,,,,,,,,C1=C2
+O4417292332,1,,CP,B,perception,pop,P,distribution,L_conc,S,simulated,C1=C2
+O4417439619,0,"Guarantees concern segmentation/clustering correctness of an identification algorithm, not a learned component's behaviour; generic hybrid benchmarks.",,,,,,,,,,C1=C2
+O7106162589,0,Convergence guarantee of a game-theoretic equilibrium-seeking algorithm; no learned component or vehicle.,,,,,,,,,,C1=C2
+O7106228543,1,,CP,B,estimation,pop,P,distribution,L_conc,S,modelled,ADJ
+O7118017025,1,,CP,B,estimation,pop,P,distribution,L_conc,S,measured,ADJ
+O7123346317,1,,NCERT,A,control,tr,A,none,L_sup,S,simulated,ADJ
+O7125487007,0,Guarantee concerns Kalman-filter state estimation and CBF safety filter; no learned component.,,,,,,,,,,C1=C2
+O7125517238,0,Model-checks finite-automata IDS abstractions; no learned component or autonomous system identified.,,,,,,,,,,C1=C2
+O7127925835,0,"Empirical stabilization method; Grönwall bound only motivates, no guarantee for the proposed regularizer.",,,,,,,,,,C1=C2
+O7128015350,1,,RTA,A,control,op,A,none,L_mon,U,simulated,ADJ
+O7128041204,1,,CP,A,planning,pop,P,distribution,L_conc,S,simulated,C1=C2
+O7128825065,1,,CP,A,estimation,tr,P,distribution,L_conc;L_dyn;L_hor,SE,simulated,ADJ
+O7129017294,0,"Verifies 1-safeness/deadlock-freedom of a Petri net model of a BNN, not learned behaviour; XOR toy.",,,,,,,,,,C1=C2
+O7130695231,0,"Headline claims are empirical RMSE/PHM accuracy; split-conformal is optional and only cited ([70,71]), not a guarantee the paper proves, certifies or estimates.",,,,,,,,,,ADJ
+O7131319644,0,"Short empirical conformal case study on EEG; theory only cited, not stated or proved here",,,,,,,,,,C1=C2
+O7131417432,0,"LLM PLC code generation benchmark; empirical pass rates, no guarantee about a learned component.",,,,,,,,,,C1=C2
+O7131910089,1,,NEW:GP regression error bound,B,estimation,in,A,none,none,S,modelled,ADJ
+O7133204952,0,"Proves approximation-error lower bounds for equivariant model classes to guide model selection; certifies nothing about a component, so no guarantee per inclusion rule.",,,,,,,,,,ADJ
+O7133238252,0,Online convex optimization regret bounds; no learned component of an autonomous system.,,,,,,,,,,C1=C2
+O7133267090,1,,NEW:Learning-theoretic generalisation bound,B,perception,pop,P,distribution,L_conc,S,modelled,ADJ
+O7134853944,1,,DTMC,B,control,tr,P,distribution,L_dyn,S,proof,ADJ
+O7134959935,1,,CP,B,perception,pop,P,distribution,L_conc,S,measured,ADJ
+O7135102326,1,,CP,A,control,tr,P,distribution,L_conc;L_hor,S,measured,ADJ
+O7135162928,1,,CP,A,estimation,pop,P,distribution,L_conc,SE,measured,ADJ
+O7136229505,0,"Empirical LLM accuracy study on puzzles; no formal guarantee, no autonomous system.",,,,,,,,,,C1=C2
+O7138101982,1,,NEW:policy-gradient convergence,B,control,pop,E,distribution,L_conc,S,modelled,ADJ
+O7138277436,1,,BP,B,perception,in,A,norm,none,S,proof,C1=C2
+O7138473169,1,,CRL,A,control,pop,E,distribution,L_gen;L_sup,S,simulated,C1=C2
+O7138907351,1,,OPREL,B,end2end,pop,P,distribution,L_op;L_rate,S,simulated,ADJ
+O7138945547,1,,CP,B,perception,pop,P,distribution,L_conc,U,measured,C1=C2
+O7139111173,1,,SMT,B,perception,in,A,norm,none,S,proof,ADJ
+O7139119937,0,"Guarantee is Bayes-error ascent on dataset perturbations for data protection, not about a learned component.",,,,,,,,,,C1=C2
+O7139143999,0,Guarantee concerns a classical data-driven linear robust MPC with interval-matrix set-membership model; no learned (ML) component. Excluded: guarantee about non-learned components.,,,,,,,,,,ADJ
+O7140091238,0,Benchmark of RAG uncertainty; uses standard conformal coverage but proves no guarantee of its own.,,,,,,,,,,C1=C2
+O7140117080,0,Empirical selective-release controller for VLM OCR; no formal or statistical guarantee stated.,,,,,,,,,,C1=C2
+O7140324240,1,,NEW:sample efficiency of learned predictors,B,estimation,pop,E,distribution,none,S,modelled,ADJ
+O7144391708,0,"Zero-knowledge proof security covers commitments and protocol, not learned model behaviour; non-learned guarantees only",,,,,,,,,,C1=C2
+O7147556692,1,,MON,B,control,op,P,distribution,L_conc,S,simulated,ADJ
+O7151076360,1,,LIP,B,perception,in,A,norm,none,S,modelled,C1=C2
+O7152649819,1,,NEW:online bandit regret and approximation ratio,B,planning,tr,E,disturbance,none,SE,modelled,ADJ
+O7154959401,0,"Deterministic admission protocol for agent actions; no learned component guarantee, no ML in decision path.",,,,,,,,,,C1=C2
+O7155091958,1,,NEW:continual-learning estimation-error bounds,B,estimation,pop,P,distribution,L_conc,S,modelled,ADJ
+O7155371970,1,,CP,B,planning,pop,P,distribution,L_conc,S,simulated,ADJ
+O7157859985,1,,PIL,A,perception,tr,A,distribution,L_dyn;L_gen,SE,measured,ADJ
+O7160305831,0,"No own guarantee: BCBF learned from data and unverified, theory deferred to [11], filter disabled when deviation exceeds beta; only empirical safe-rate results.",,,,,,,,,,ADJ
+O7160560765,0,"Conceptual architecture description; no formal, statistical or architectural guarantee stated or proved.",,,,,,,,,,C1=C2
+O7160879966,1,,CP,A,perception,pop,P,distribution,L_conc,SE,measured,ADJ
+O7160958905,0,"Enterprise LLM-agent governance; architectural claims asserted, not formalized (formal verification left as future work); only production metrics, 0.5% unreviewed-risk errors.",,,,,,,,,,ADJ
+O7161176011,1,,CP,B,end2end,op,P,distribution,L_conc;L_hor,SE,simulated,ADJ
+O7161263437,0,"Guarantees cover deterministic workflow semantics; AI steps are assumptions, not learned components; verified core unevaluated.",,,,,,,,,,C1=C2
+O7161387891,1,,CP,B,estimation,pop,P,distribution,L_conc,S,simulated,ADJ
+O7161640018,1,,RTA,B,planning,op,P,distribution,L_mon;L_rate,SE,modelled,ADJ
+O7161737938,0,Certificates for unknown monotone plant from trajectories; no learned component; guarantee about non-learned dynamics.,,,,,,,,,,C1=C2
+O7161742013,0,"Benchmark generator for verifiers; proofs concern synthetic constructed instances, not a learned component.",,,,,,,,,,C1=C2
+O7162495747,1,,CP,B,perception,pop,E,distribution,L_conc,S,measured,ADJ
+O7162760278,1,,CP,B,perception,op,P,distribution,L_conc;L_hor,S,simulated,ADJ
+O7162988865,0,Empirical detection rates in simulation; no formal or statistical guarantee stated.,,,,,,,,,,C1=C2
+O7163179530,1,,CP,B,estimation,pop,E,distribution,none,S,proof,ADJ
+O7164836213,1,,CP,B,estimation,pop,P,distribution,L_conc,U,measured,C1=C2
+O7164897298,1,,NEW:robustness-based generalisation bound,B,perception,pop,P,distribution,L_conc,S,measured,ADJ
+O7166701031,1,,NEW:Training-distribution bound on dangerous predictors,B,estimation,pop,P,none,none,S,modelled,ADJ
+O7166813758,1,,CP,B,estimation,tr,P,distribution,L_conc;L_dyn,SE,simulated,ADJ
+O7166859555,1,,RTA,B,control,op,A,none,L_mon,S,simulated,ADJ
+O7167089804,1,,RTA,B,planning,op,A,disturbance,L_mon,S,simulated,ADJ
+O7167247121,0,Empirical negative evaluation of a conformal detector; no guarantee claimed or established.,,,,,,,,,,C1=C2
+O7167735818,1,,BP,A,perception,in,A,norm,none,S,proof,C1=C2
+O7167942380,0,"Theorems (contraction, fixed point, HJ equivalence) concern the exact Bellman operator/value function; learned RL approximation only interpreted and checked numerically: non-learned guarantee, excluded.",,,,,,,,,,ADJ
+O7168241292,0,"Conceptual position paper; no formal, statistical or architectural guarantee stated or evaluated.",,,,,,,,,,C1=C2
+O7168509562,0,Guarantees cover discrete coordination logic only; paper states learned parts are outside the model.,,,,,,,,,,C1=C2
+O7168656616,0,"Guarantees concern symbolic constraint-set CSP solutions and complexity, not a learned component's behaviour.",,,,,,,,,,C1=C2
+O7169592824,1,,RTA,A,control,op,A,none,L_mon,S,modelled,C1=C2
+O7169620179,1,,RTA,B,control,op,A,none,L_mon,U,simulated,ADJ
+O7169762495,1,,NCERT,A,control,tr,P,disturbance,L_conc,S,simulated,C1=C2
+O7169876191,1,,SEM,B,perception,in,A,semantic,none,S,proof,C1=C2
+O7171287931,0,Empirical RL driving performance study; barrier shield has no stated formal or statistical guarantee.,,,,,,,,,,C1=C2
+O7171488556,1,,CP,B,end2end,pop,P,distribution,L_conc;L_mon,SE,simulated,ADJ
+O7171834681,0,"Conformal calibration only heuristically used inside Bayesian optimization; no stated guarantee, simulation comparison only.",,,,,,,,,,C1=C2
+O7171968334,0,Narrative review of navigation methods; no own formal guarantee.,,,,,,,,,,C1=C2
+O7172049593,1,,RTA,B,planning,op,A,none,L_mon,S,proof,ADJ
+O7201906978,1,,CP,B,estimation,pop,P,distribution,L_conc,S,simulated,C1=C2
+O7202270053,1,,CP,A,estimation,pop,P,distribution,L_conc,U,measured,ADJ
+O7203720573,1,,CP,B,estimation,pop,P,distribution,L_conc,SE,simulated,ADJ
+O7204119119,1,,RTA,B,planning,op,A,semantic,L_mon,SE,simulated,ADJ
+O7204467824,1,,RTA,A,control,op,A,none,L_mon,SE,simulated,ADJ
+O7204803478,0,"Privacy-preserving emotion recognition; DP only asserted via accountant, no proved behavioural guarantee, no autonomous system.",,,,,,,,,,C1=C2
+O7212031345,1,,CP,B,estimation,pop,P,distribution,L_conc,SE,simulated,ADJ
+O7213414119,1,,CLR,A,control,tr,A,disturbance,L_dyn,S,proof,C1=C2
+O7214089039,1,,CP,B,estimation,pop,P,distribution,L_conc;L_hor,SE,simulated,ADJ
+O7214657561,1,,RTA,B,planning,op,A,none,L_mon,S,simulated,C1=C2
+O7214713629,1,,CP,A,control,in,P,distribution,L_conc;L_dyn,S,simulated,C1=C2
+O7214748213,1,,NEW:Local gain-prediction concentration bound,B,end2end,in,P,distribution,L_conc,S,simulated,ADJ
+O7220413358,0,"Only guarantee is V(h)<=1-Rclass(h), a relation between two defined metrics, not certified/estimated for a model; rest is empirical attack/defense; thesis duplicates published articles [9-15].",,,,,,,,,,ADJ
+O7220423872,1,,SMT,B,perception,in,A,norm,none,S,proof,C1=C2
+O7220695213,1,,CRL,A,control,tr,P,disturbance,L_conc,SEC,simulated,C1=C2
+O7220723858,1,,RTA,B,end2end,op,A,none,L_mon,SE,simulated,ADJ

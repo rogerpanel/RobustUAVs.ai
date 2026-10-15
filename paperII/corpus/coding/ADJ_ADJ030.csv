@@ -1,0 +1,12 @@
+cid,field,value,rationale
+"O7161387891","component","estimation","GNN regresses crystal properties (formation energy); not an image classifier/detector/segmenter, so perception does not apply; quantity regression is estimation."
+"O7161387891","assumption","S","Exchangeability is stated for split-conformal coverage, but no evidence for it is given; SOAP-LOCO OOD split actually departs from exchangeability."
+"O7161387891","evidence","simulated","89.1% coverage measured on Materials Project DFT-computed structures and labels: simulated data, not real-world measurements."
+"O7161640018","class","RTA","Theorem 3 rests on CAVM runtime detection plus REFINE/REGENERATE/DELEGATE recovery: a monitor with fallback, fits runtime assurance class; no NEW needed."
+"O7161640018","lifts","L_mon;L_rate","Per-step failure probability eps(1-d)^R from monitor+recovery (L_mon) multiplied over n steps into per-task success probability: per-demand to per-operation (L_rate)."
+"O7162495747","class","CP","Guarantee mechanism is conformal p-values/q-values giving finite-sample FDR control; CP class covers conformal guarantees, MON lacks conformal calibration."
+"O7162495747","evidence","measured","Strongest evidence: real CICIDS2017 network traffic data experiments (Sec. 6) beyond simulations; real-world data is measured."
+"O7162760278","scope","op","Theorem 4.2 bounds false-alarm probability sup over whole deployment trajectory: a runtime property over one operation; rule 6 picks smaller scope."
+"O7162760278","lifts","L_conc;L_hor","Exact order-statistic conformal certificates (L_conc) re-anchored per epoch with fresh calibration and composed across the entire deployment via never-reset wealth (L_hor)."
+"O7163179530","modality","E","Theorem 4.1 bounds time-averaged group miscoverage over arbitrary streams; no data distribution, so not P; codebook E covers bounds on an average."
+"O7163179530","lifts","none","Guarantee is a direct deterministic online-regret (universal portfolio) bound on the stream; no sampling/concentration argument nor carrying to larger scope."
