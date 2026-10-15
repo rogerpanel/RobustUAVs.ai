@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3037629243",1,"","SMT","A","control","tr","A","disturbance","none","S","proof","Sound and complete MILP verification of bounded-CTL specs for ReLU agent in nondeterministic environment (VerticalCAS); undecidable unbounded. Class could also be CLR."
+"O3139113494",1,"","CLR","A","control","tr","A","disturbance","L_dyn","S","proof","Interval-observer run-time monitor gives guaranteed lower/upper state bounds for NN-controlled ACC under bounded inputs; no fallback switching, so not RTA."
+"O4313447601",1,"","PACB","B","estimation","pop","P","distribution","L_conc","S","modelled","PAC-Bayesian-like generalisation bound for learned stochastic LTI predictors; only toy numerical example; assumes Gaussian stationary data."
+"O4318621098",1,"","SMT","B","estimation","in","A","norm","none","U","proof","MILP-certified largest L-inf ball on which a ReLU network (dynamics surrogate) is invertible; perturbation code norm is doubtful as no threat model."
+"O2998709064",1,"","BP","B","perception","in","A","norm","none","U","proof","FROWN tightens CROWN linear-bound certified lp-ball robustness radii for ReLU/sigmoid/tanh classifiers; evaluated on MNIST, CIFAR10, drive diagnosis."

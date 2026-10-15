@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7220695213",1,"","CRL","A","control","tr","P","disturbance","L_conc","SEC","simulated","Barrier plus conformal certificate: paired return loss <= alpha w.p. >= rho under declared sparse action-attack law, confidence 1-beta. Rule-6 doubt: tr vs pop."
+"O4283326543",0,"Verification platform/tool description; no own guarantee proved or certified.","","","","","","","","","",""
+"O4407231265",1,"","BP","A","perception","in","A","norm","none","S","proof","IBP bounds propagated through NeSy arithmetic circuit give sound robustness of probabilistic output in an eps-ball; ROAD-R dashcam. Rule-6 doubt: none."
+"O4383613691",1,"","NCERT","B","control","tr","A","disturbance","none","S","proof","LMI/quadratic-constraint Lyapunov conditions give stability and ellipsoidal region-of-attraction estimate for NN-controlled plant with IQC perturbation; inverted pendulum only."
+"O7161742013",0,"Benchmark generator for verifiers; proofs concern synthetic constructed instances, not a learned component.","","","","","","","","","",""

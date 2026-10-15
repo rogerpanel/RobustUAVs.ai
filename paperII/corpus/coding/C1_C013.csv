@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4393954477",1,"","BP","A","control","in","A","norm","none","U","proof","Sound LiRPA polytope under-approximation of NN preimage; exact volume verifies input proportion. Tier A via VCAS; component mixed."
+"O7169762495",1,"","NCERT","A","control","tr","P","disturbance","L_conc","S","simulated","Kernel CME barrier gives finite-horizon safety prob >= 1-(eta+cT) w.p. 1-rho over data; Dubins overtaking NN controller. RKHS radius assumption stated, not evidenced."
+"O2992136447",1,"","SMT","B","perception","in","A","norm","none","S","proof","Model checking (nuXmv) shows no misclassification within +-11% relative input noise for Leukemia NN; integer-noise assumption; boundary doubt on completeness."
+"O4390832684",1,"","BP","B","perception","in","A","norm","none","U","proof","DeepPoly-extended L-inf robustness certificate for scene text recognition (CTC, attention, ViTSTR) on text benchmarks; not vehicle task."
+"O4405955404",1,"","BP","A","perception","in","A","norm","none","U","proof","Competition report; inherits local-robustness (in) scope of benchmarks, winner alpha-beta-CROWN; benchmarks mixed (ACAS Xu, image classifiers); component and class doubtful."

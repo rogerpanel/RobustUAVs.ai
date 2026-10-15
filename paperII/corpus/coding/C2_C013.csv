@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4393954477",1,"","BP","A","control","in","A","none","none","S","proof","Sound LiRPA preimage under-approximation verifies proportion p of an input box mapped to output set (VCAS 90.8%); MNIST L-inf/patch also evaluated."
+"O7169762495",1,"","NCERT","A","control","tr","P","disturbance","L_conc","S","simulated","Data-driven kernel barrier: finite-horizon safety prob >=1-(eta+cT) with confidence 1-rho for NN-controlled stochastic system; text truncated, tier from vehicle example."
+"O2992136447",1,"","SMT","B","perception","in","A","norm","none","S","proof","nuXmv model checking shows no misclassification under relative input noise up to +-11% per test input; noise assumed integer-percent valued."
+"O4390832684",1,"","BP","B","perception","in","A","norm","none","S","proof","DeepPoly-based certification that scene-text predictions are invariant under L-inf perturbations for CTC, attention-decoder and ViTSTR models."
+"O4405955404",1,"","BP","A","perception","in","A","norm","none","S","proof","VNN-COMP 2024 report (rule 4): per-instance local/input-region properties; winner alpha-beta-CROWN; mixed benchmarks incl. ACAS Xu, TaxiNet; component doubt."

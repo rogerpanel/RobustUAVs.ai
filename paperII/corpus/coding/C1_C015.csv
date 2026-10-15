@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2964079458","1","","CLR","A","control","tr","A","none","L_dyn","S","proof","NNV reachability shows ACC NN controller keeps safe distance 5 s from initial set; benchmark paper, doubt whether demo is headline."
+"O4286750481","1","","SMT","A","control","in","A","none","none","S","proof","Imandra proves ACAS Xu input-output property phi_1 on quantised, pruned networks; proof relies on compressed stand-in networks."
+"O4417137914","1","","CP","B","perception","pop","E","distribution","L_conc","S","measured","SeqCRC bounds expected localization/classification loss of object detector by alpha, finite-sample, iid; E versus P doubt (expectation bound)."
+"O4409364009","1","","SEM","A","perception","in","Ac","semantic","none","SE","proof","Smoothed camera-LiDAR fusion detector certified for rotation/shift ranges (95% MC confidence); RS vs SEM class doubt; fine-partition assumption checked."
+"O7118017025","1","","CP","B","estimation","pop","E","distribution","L_conc","S","measured","Non-asymptotic excess-risk bound for density-weighted pinball quantile network improving conditional coverage; tabular regression benchmarks only, E versus P doubt."
