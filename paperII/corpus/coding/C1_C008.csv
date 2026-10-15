@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4400025616",1,"","NCERT","A","control","tr","A","none","none","S","proof","Analytical Lyapunov function distilled from neural one, SMT-validated on domain; plant known; learned part is certificate. Tier A via path-following robot (doubt)."
+"O4319323110",1,"","BP","B","estimation","in","A","norm","none","S","proof","Sound reachability verification of input-output spec under changing inputs or weights, accelerated by reuse; assumes bounded step change."
+"O7220423872",1,"","SMT","B","perception","in","A","norm","none","S","proof","Exact SMT proof that an edit removes one skill and preserves another over an embedding ball; CROWN extension. Toy models; component forced."
+"O7133267090",1,"","NEW:GD generalisation theory for two-layer nets","B","perception","pop","P","distribution","L_conc","S","modelled","With probability 1-delta, GD-trained two-layer net has test error bounded by gradient-feature optimum plus terms; theory only."
+"O2801079363",1,"","SMT","A","control","in","A","norm","none","S","proof","Branch-and-bound complete verification of piecewise-linear NN properties over input box; ACAS Xu benchmark; unsat means no counterexample."

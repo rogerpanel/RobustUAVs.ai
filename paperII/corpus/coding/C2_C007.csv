@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4407948456","1","","CLR","A","control","tr","A","none","L_dyn","S","proof","Data-driven SDP certifies local asymptotic stability and ellipsoidal ROA of NN-controlled unknown LTI vehicle lateral dynamics; quadratic (non-neural) Lyapunov, so CLR over NCERT."
+"O2997425368","1","","BP","B","perception","in","A","norm","none","S","proof","Abstract interpretation (silva) soundly, and completely for univariate splits, verifies L-inf stability of tree-ensemble classifiers on MNIST/Sensorless."
+"O3093796394","1","","BP","B","perception","in","A","norm","none","S","proof","First-order dual SDP relaxation gives sound L-inf robustness certificates for verification-agnostic MNIST/CIFAR-10 CNNs and VAE decoder latent-perturbation specification."
+"O3208537030","1","","PACB","B","perception","pop","P","distribution","L_conc","S","measured","PAC-Bayes plus uniform-stability bound on expected meta-test loss over new tasks, w.p. 1-delta; bound is on an expectation (P vs E doubt); text/toy classifiers."
+"O3183883635","1","","BP","A","perception","in","A","distribution","L_sup","SE","proof","Sufficient conditions reuse state abstractions/Lipschitz to prove safety over enlarged data-derived input box after fine-tuning; 1/10 vehicle waypoint DNN."

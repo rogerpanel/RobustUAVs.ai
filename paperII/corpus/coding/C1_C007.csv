@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4407948456",1,"","NCERT","A","control","tr","A","none","none","S","proof","SDP stability condition and ROA inner-approximation for NN-controlled unknown LTI plant, from data; vehicle lateral control. Rule-6 doubt: CLR vs NCERT class."
+"O2997425368",1,"","BP","B","perception","in","A","norm","none","S","proof","Sound and, under domain completeness, complete abstract-interpretation stability check of tree-ensemble classifiers against L-inf perturbations on MNIST."
+"O3093796394",1,"","BP","B","perception","in","A","norm","none","U","proof","First-order dual SDP bound certifying L-inf robustness of verification-agnostic CNNs on MNIST and CIFAR-10; also a VAE decoder."
+"O3208537030",1,"","PACB","B","perception","pop","P","distribution","L_conc","S","simulated","PAC-Bayes plus uniform-stability bound on expected loss of meta-learned classifier on new tasks, holding with probability 1-delta; toy and text benchmarks."
+"O3183883635",1,"","BP","A","perception","in","A","none","none","S","proof","Sufficient conditions reusing state abstractions, Lipschitz constants and network abstractions to carry DNN safety proof to enlarged input domain or fine-tuned network; 1/10 vehicle."

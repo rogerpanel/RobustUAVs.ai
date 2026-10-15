@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4416919197",1,"","NEW:low-rank compression recovery bound","B","perception","in","P","distribution","L_conc","S","modelled","High-probability bound on MSE of low-rank layer recovery from noisy pre-activations; scope in vs pop doubtful, chose smaller."
+"O3214811133",0,"Empirical safe-RL method; paper states it loses hard guarantees; no proven or statistical guarantee.","","","","","","","","","",""
+"O4400776977",1,"","SMT","B","perception","in","A","norm","L_gen","U","proof","SMT/Lukasiewicz-logic check of L-inf robustness on piecewise-linear surrogate of XOR net; no surrogate error bound (rule-6 doubt on soundness)."
+"O7164897298",1,"","NEW:algorithmic-robustness generalisation bound","B","perception","pop","P","distribution","L_conc","S","simulated","Probability 1-delta upper bound on true error from empirical risk plus stable/unstable local robustness terms; evaluated on ImageNet models."
+"O4403317714",1,"","RTA","A","control","op","A","none","L_dyn;L_mon","S","simulated","POLAR-Express reachable-set check switches NN controller to fallback near obstacles; safety assumes fallback safe; no formal theorem (rule-5 doubt)."

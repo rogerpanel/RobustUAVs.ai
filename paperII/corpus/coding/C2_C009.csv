@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4381542600",1,"","SMT","B","perception","in","A","norm","none","S","proof","Exact ADD-based pre/post-condition verification of random forest over input box (Iris); complete. Tabular classifier coded perception by closest vocabulary."
+"O3092567899",1,"","PACB","B","perception","pop","P","distribution","L_conc;L_dyn","S","modelled","PAC sample complexity: RichID learns epsilon-optimal LQR policy from rich observations with learned decoder. PAC not PAC-Bayes; P vs E doubt; pop vs tr."
+"O3035782912",1,"","SMT","A","perception","in","A","semantic","L_sup;L_mon","S","proof","MILP proves Audi direct-perception net never steers far left on right-bending road, assuming perfect characterizer and monitored neuron-bound polyhedron."
+"O3132132679",1,"","CLR","A","control","tr","A","none","L_dyn","S","proof","Projected training yields ReLU NN controller provably satisfying reach-avoid from Xinit via finite-state reachability abstraction of plant model. Full text truncated."
+"O4404986723",1,"","PACB","B","control","pop","P","distribution","L_conc","SEC","simulated","Learned optimizer hyperparameters: validation-set sample bound gives high-probability performance quantiles over parameter distribution. Not PAC-Bayes; class doubt; control component uncertain."
