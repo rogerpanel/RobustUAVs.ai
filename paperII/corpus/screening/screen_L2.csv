@@ -3749,3 +3749,253 @@ O4400462817,0,First-order logic textbook chapter; off-topic,S008
 O7166701031,1,Proves bound on probability training yields harmful AI predictor,S008
 O7171332707,0,Fuzzy criticality index; no learned guarantee,S008
 O7131191285,0,Legal framework for AI culpability; off-topic,S008
+O4416222827,0,"Empirical IoMT intrusion detection; DP mention is privacy, off-topic for autonomy guarantees",S009
+O4393904416,0,Empirical LLM poisoning defense; no formal or statistical guarantee,S009
+O4385768198,0,Metamorphic testing finds violations; no guarantee stated,S009
+O4399437882,0,Data-driven behavior prediction; no guarantee stated,S009
+O7220355221,0,Off-topic: GDPR consent architecture,S009
+O7117316128,0,Off-topic: land-use ecology,S009
+O7220398087,0,Off-topic concrete-strength application; no guarantee method for learned autonomy,S009
+O3183514509,0,Survey of 6G security; no own guarantee,S009
+O4221153097,1,Differentiable CBF-QP layer in learned controller with forward invariance guarantees,S009
+O4416688383,0,Off-topic: AI in medical education,S009
+O4283653915,0,Off-topic review: digital twins in smart cities,S009
+O4285774095,0,Off-topic: journal index,S009
+O4376645269,0,Off-topic: CO2 power generation,S009
+O4391556972,0,Discussion of blockchain and AI in transport; no guarantee,S009
+O4388903123,0,Reach-avoid path switching for non-learned manipulator control,S009
+O4403863258,0,Game-theoretic MPC planner; no learned component guaranteed,S009
+O4400321596,0,Off-topic: business AI and blockchain,S009
+O7128018888,0,Survey of DL path planning; no own guarantee,S009
+O7114997238,0,Review of predictive maintenance; no guarantee,S009
+O7131811202,0,Empirical explainable liveness detection; no guarantee,S009
+O4404312780,0,Conceptual assistive AI framework; no guarantee,S009
+O2979091979,1,"No abstract; model-checking guarantees for autonomous planning, learned part possible",S009
+O7160538535,0,Off-topic: underground gas storage review,S009
+O4416750701,0,"Robust aggregation of LLM trajectories; empirical, no guarantee",S009
+O7168183485,0,Empirical efficient vehicle detection; no guarantee,S009
+O7155383846,0,Empirical DRL power control; no guarantee,S009
+O4367056604,0,Stochastic behavioral systems theory; no learned ML component,S009
+O7125397910,0,Off-topic: smart-contract law,S009
+O4392296230,0,Off-topic: asynchronous circuit testing thesis,S009
+O3216935302,1,Architectural runtime monitor protecting ML-based perception in automated driving,S009
+O4392411390,0,Off-topic: student works collection,S009
+O4386392580,0,Oil-spill detection overview; no guarantee,S009
+O4390576807,1,"Safe RL with proven convergence, stability, robustness; intelligent vehicle experiments",S009
+O4399167806,0,Review of uncertainty in pollutant modeling; no guarantee,S009
+O3111350748,0,Off-topic: blockchain factoring thesis,S009
+O7166815051,0,Empirical LLM spatial reasoning; no guarantee,S009
+O7204311703,0,"ML-enhanced compiler; empirical accuracy, no guarantee on learned part",S009
+O7211904013,0,"No abstract; drug delivery ethics, off-topic",S009
+O2898423741,0,Off-topic: occupational health regulation,S009
+O7118080670,0,Off-topic clinical application of standard conformal intervals,S009
+O4407919997,0,Conceptual adversarial maintenance paradigm; no guarantee,S009
+O7214657561,1,"Conditional soundness properties for LLM-agent execution assurance architecture, robotic domains",S009
+O4386841381,0,Deterministic inference for deep SSMs; no guarantee stated,S009
+O4226407543,0,Off-topic: 5G security metrics thesis,S009
+O4390763405,0,Hybrid-system logic embedding; no learned component,S009
+O4294266558,0,Research group overview; no guarantee,S009
+O4327945725,0,Survey of PLC security; no guarantee,S009
+O4401253198,0,Set-based safe planning without learned component,S009
+O2887143169,0,Editorial; no guarantee,S009
+O4410035436,0,Off-topic: ship retrofit,S009
+O4400243207,0,Smart-home safety monitoring review; no learned component guarantee,S009
+O7140137971,0,Off-topic: building retrofit optimization,S009
+O7130237207,0,Optimization relaxation tightness; not about a learned component,S009
+O7204182793,0,Off-topic: RISC-V processor design,S009
+O4221163312,0,MDP strategy complexity; no learned component,S009
+O7117363629,0,Off-topic: economic decision systems,S009
+O7160560765,1,Safety shield enforcing formal constraints on neural planner for urban driving,S009
+O7215030011,0,LLM-guided ADS scenario testing; no guarantee,S009
+O4380357683,0,Formally verified security protocol; non-learned component,S009
+O2583444773,0,MPC for HVAC thesis; no learned component,S009
+O7204051026,0,Conceptual data-platform chapter; no guarantee,S009
+O7202255126,0,Empirical RUL prediction; no guarantee,S009
+O4416775605,0,Review of AD detection and planning; no guarantee,S009
+O2912687289,0,Mapping study of robot safety; no own guarantee,S009
+O4385774833,0,LLM trustworthiness survey and measurements; no guarantee,S009
+O7154682801,0,Empirical GNN-PPO grid control; no guarantee,S009
+O4385250056,0,Peer-review comment; empirical soil-moisture ML,S009
+O2981025102,0,Empirical battery RUL prediction; no guarantee,S009
+O4417172979,0,LLM benchmark for spec generation; no guarantee,S009
+O4406858967,0,Off-topic: tenant risk profiling sociology,S009
+O3209462909,0,Survey of cyber situation awareness; no guarantee,S009
+O7215781247,0,Empirical LSTM SCADA anomaly detection; no guarantee,S009
+O2898837242,0,No abstract; statistical model checking of non-learned models,S009
+O4399554831,0,Review of multimodal architectures; no guarantee,S009
+O4414816506,0,Empirical uncertainty-based help triggers for VLA; no guarantee,S009
+O7165505527,0,Off-topic 5G scheduling with online conformal prediction,S009
+O4406764499,1,Conformalized quantile regression coverage intervals for PHEV vehicle energy prediction,S009
+O4402354142,1,"Learned collision-free legged locomotion with safety shield; abstract garbled, check full text",S009
+O3036671498,0,Software runtime monitoring; no learned component,S009
+O4402566772,0,Review of PHM ML approaches; no guarantee,S009
+O4380685388,0,SoK on explanation methods; no guarantee,S009
+O3055088020,0,GP-based manipulator tracking; no guarantee stated,S009
+O4388983771,0,"Off-topic: medical segmentation, empirical",S009
+O4403192551,0,Risk identification method; no formal or statistical guarantee,S009
+O7165634166,1,Lyapunov stability and barrier certificate keeping NN inputs in compact set,S009
+O7125487007,0,Stochastic CBF safety probability bound; no learned component,S009
+O3159128357,0,Off-topic: blockchain health identity review,S009
+O4396937861,1,"Barrier-function state-wise safety constraints in RL driving policy, CARLA",S009
+O4390443030,0,Off-topic: food crisis review,S009
+O4410906660,0,Off-topic: cardiopulmonary bypass review,S009
+O4392388477,0,Off-topic: XAI user study in medicine,S009
+O3186455603,0,Empirical PPO converter control; no guarantee,S009
+O7127407141,0,"Neural ensemble NMPC auditability; empirical, no guarantee stated",S009
+O2982316166,1,"Learned RL controller verified via synthesized Lyapunov barrier function, ABS braking",S009
+O4405258936,0,Off-topic: medical conference fragment,S009
+O4406786055,1,Wasserstein bound on conformal coverage gap with finite-sample error bound,S009
+O4410329288,0,Off-topic: ecological monitoring review,S009
+O3216578859,0,Survey of ADS scenario testing; no own guarantee,S009
+O7138825943,1,"Set-based estimator from learned models with high-probability containment guarantee, robot dressing",S009
+O7165666295,0,Attack analysis of LLM agents; no guarantee,S009
+O4400513369,0,Off-topic: computer science methodology,S009
+O4386136249,0,Off-topic: ship engines editorial,S009
+O4414955621,0,Withdrawn record; no content,S009
+O4414539290,1,Conformal prediction confidence-guaranteed sub-goal policy for autonomous RFID robot,S009
+O7115595702,0,Interview study on social navigation; no guarantee,S009
+O4306657335,0,Off-topic: infrastructure security review,S009
+O2926603448,1,Toolchain for verification and safety cases of learning-enabled CPS components,S009
+O7138473169,1,Min-max adversarial training with certified performance lower bound for driving policies,S009
+O4410402888,0,Off-topic: human-LLM problem finding,S009
+O7154551018,0,Empirical federated continual learning for spacecraft PHM; no guarantee,S009
+O4403746568,0,Empirical object ReID localization; no guarantee,S009
+O7217365230,0,Off-topic: tokamak design thesis,S009
+O4404569890,1,"Conformal calibration of cross-modal retrieval similarities, KITTI autonomous agents",S009
+O4411278705,0,Off-topic: blockchain lending,S009
+O4366999641,1,"Provable reach-avoid controller using SVM-learned safe set, Dubins car",S009
+O4414359231,0,Faster testing of ML models; no guarantee,S009
+O4413984090,0,"Off-topic: neural gas spectroscopy, empirical",S009
+O7213514471,0,LLM cultural value benchmark; no guarantee,S009
+O4386391117,0,Off-topic: LNG cargo storage,S009
+O7168053860,0,"Federated learning convergence bounds for IoT; off-topic, no component guarantee",S009
+O4414980978,0,Tutorial chapter on uncertainty quantification; no own guarantee,S009
+O4409856241,0,Off-topic: photocatalysis review,S009
+O7169868284,0,Off-topic: philosophical decision-theory essay,S009
+O7213206708,0,"No abstract; survey of agentic RAG, no own guarantee",S009
+O4388041008,0,Off-topic: serverless computing system,S009
+O7201951080,0,Off-topic: bibliometric study of proxy means tests,S010
+O3015584356,0,"Guarantee is hardware TEE isolation, a non-learned component",S010
+O4393315751,0,Off-topic: blockchain timber traceability,S010
+O4412532884,0,Liveness model checking of non-learned infinite-state systems,S010
+O4404694282,0,Uncertainty-aware operator network; no formal or statistical guarantee stated,S010
+O4417293130,0,Empirical AIOps evaluation; guardrails not stated as a guarantee,S010
+O4391690984,0,Conceptual essay on trust; no guarantee,S010
+O3205263727,0,Robust control without a learned component,S010
+O7110962066,1,Formal verification procedures for reasoning shortcuts in learned neuro-symbolic models,S010
+O2948283954,0,Evaluation metric for chatbot classifiers; no guarantee,S010
+O4405268905,0,Empirical uncertainty calibration for autoencoders; no stated guarantee,S010
+O4395449858,0,Survey without its own guarantee,S010
+O7170159344,0,"Off-topic ECAD benchmark, no abstract",S010
+O7140117080,1,Risk-control layer gating VLM outputs with coverage control; guarantee type to check,S010
+O4392587999,0,Trajectory accuracy guarantee for non-learned robot planner,S010
+O7220337054,0,Trajectory prediction framework; no guarantee stated,S010
+O4285409484,1,Provable recovery guarantee for decentralized learned low-rank representation,S010
+O4401414359,1,Distributionally robust chance constraint on collision with learned human-motion predictions,S010
+O4416999542,1,Proved almost-sure termination and 4/delta latency bound for LLM-verifier pipeline,S010
+O7126072024,0,Review without its own guarantee,S010
+O3126961456,0,FTA/FMEA reliability of drone hardware; non-learned components,S010
+O4392347676,0,Off-topic: MCDM ranking of microprocessors,S010
+O4414799483,0,Survey of hallucination mitigation; no own guarantee,S010
+O2958445650,0,Platooning via edge computing; no learned-component guarantee,S010
+O7165527305,0,Off-topic: business forecasting,S010
+O3181570170,0,Empirical MLP attack detection with blockchain; no guarantee,S010
+O4386621160,0,Paratext table of contents; off-topic,S010
+O4384933651,0,"Queueing analysis of services; off-topic, no learned component",S010
+O4312717216,1,Supervisory control synthesis gives safety certificate for DRL-computed controller,S010
+O7214713629,1,Conformal residual margins for ACC policy filter; coverage linked to constraint satisfaction,S010
+O4399206598,0,"Verification targets generated netlist, not learned component; empirical security",S010
+O7133238252,1,Dynamic and adaptive regret bounds for online learners,S010
+O4288372814,0,IIoT security survey; no guarantee,S010
+O4412375037,1,Neural barrier certificate trained under LaSalle invariance for stability assessment,S010
+O4414364809,0,Scoping review; no guarantee,S010
+O4404688214,0,Systematic literature review; no guarantee,S010
+O4410237312,0,LTL explanations of playtraces; no guarantee about learned component,S010
+O3128577483,0,GP surrogate experiment design; no guarantee stated,S010
+O4386292799,0,Empirical review-helpfulness classifier; no guarantee,S010
+O3034251282,0,Survey of domain adaptation bounds without its own guarantee,S010
+O4415100134,0,Survey without its own guarantee,S010
+O4399775632,0,"Proceedings volume, no abstract; no identifiable guarantee",S010
+O4404304600,0,Conceptual legal-informatics essay; no guarantee,S010
+O2888409681,1,Title only: acceptable safety criteria for RL may state assurance argument,S010
+O7172105183,0,Blockchain testing; off-topic,S010
+O4206032160,0,Self-adaptive runtime environment; no learned-component guarantee,S010
+O4401633153,0,Hardware SAT solver; non-learned,S010
+O4386434090,0,Market mechanism properties for non-learned allocation,S010
+O2927190766,0,Systematic literature review; no guarantee,S010
+O4387424578,0,Empirical ML digital twin accuracy; no guarantee,S010
+O4205203026,0,Journal index; off-topic,S010
+O3136337476,0,AI regulation discussion; no guarantee,S010
+O4414806824,1,Conformal calibration of PICNN uncertainty sets feeding robust navigation planner,S010
+O4385453437,1,Formal reachability verification of AV decisions with backup safe trajectory,S010
+O4416092946,0,Pharma AI application review; no guarantee,S010
+O7133818764,0,"Survey, no abstract; no own guarantee",S010
+O4285601900,0,Search-based testing of RL; no guarantee,S010
+O4385965848,0,LPV control guarantees for non-learned controller,S010
+O4409920357,0,Data race verification of C programs; non-learned,S010
+O4382765906,0,Empirical study of RNN hidden-state clustering; no guarantee,S010
+O4417290994,0,"Book chapter, no abstract; no identifiable guarantee",S010
+O3087889643,0,Power system modeling review; off-topic,S010
+O3006782408,0,Thesis on submodular power control; no learned component,S010
+O4378100316,0,Static protocol analysis; non-learned,S010
+O4306385893,0,Theme section editorial; no guarantee,S010
+O4282030116,0,Fuzzy temporal logics; no learned component,S010
+O7204119119,1,Verifiable intent contracts and admission gate constraining LLM-driven RAN control,S010
+O4399144145,0,Autoformalization benchmark of LLM capability; no guarantee on learned component,S010
+O7163810072,0,Conceptual workplace paper; off-topic,S010
+O7169637607,0,Empirical self-supervised lidar thesis; no guarantee,S010
+O4390061930,0,Vehicle routing review; no guarantee,S010
+O4283704211,0,Empirical adversarial training experiments; no formal guarantee,S010
+O7136229505,1,Title only: architectural approach to AI reliability may state guarantee,S010
+O4413032067,0,Digital twin sustainability review; off-topic,S010
+O7214089039,1,Certified world-model error bound guaranteeing non-decreasing return; confidence sequences,S010
+O7145865399,0,"Formal methods thesis, no learned component evident",S010
+O7134853944,1,Probabilistic model checking of learned RL policy safety-violation probability,S010
+O7218044270,0,AI battery management; no guarantee stated,S010
+O4360613823,0,OOD detector timing benchmark; empirical,S010
+O4409606295,0,Empirical DRL obstacle avoidance; no guarantee,S010
+O3036155593,0,Provable constraint satisfaction for non-learned aggregator feedback,S010
+O4412037411,0,Empirical transformer fault detection; no guarantee,S010
+O4413191024,0,Logic-based certification tool; non-learned,S010
+O7214591659,0,"Neural operators for mechanics, no abstract; no guarantee indicated",S010
+O7168136120,0,Survey of formal methods and AI; no own guarantee,S010
+O7128015350,1,Reachability-based action shield guarantees RL never selects unsafe actions,S010
+O4385756627,0,LTL/reachability guarantees for non-learned legged planner,S010
+O4409887630,0,Self-confidence competency indicators; no guarantee stated,S010
+O4379382592,0,Physics-based data filter; no guarantee about learned component,S010
+O4401990437,1,Redundant-execution reliability guarantee for CNN inference,S010
+O7204658748,0,Transportation AI review; no guarantee,S010
+O7208835805,0,Empirical continual learning for self-driving; no guarantee,S010
+O7212032514,0,Opinion piece on AI scaling; off-topic,S010
+O3165033489,0,Conceptual digital twin paper; no guarantee,S010
+O3024592531,0,Memory-safe Python enclave; non-learned,S010
+O4319866978,0,"Book introduction, no abstract; no guarantee",S010
+O7172049593,1,MPST-guided LLM synthesis claims deadlock-freedom of generated refinements,S010
+O7155371970,1,Conformal prediction statistically labels LLM agent step success,S010
+O4415247700,0,Systematic review of railway ontologies; no guarantee,S010
+O4285155119,0,SPIN verification of game levels; non-learned,S010
+O7163644559,0,5G security survey; no guarantee,S010
+O4392347567,0,CBF-MPC safety guarantee without learned component,S010
+O4392707940,0,Radiative transfer library; off-topic,S010
+O4401568150,0,SPARK verification of GPU kernels; non-learned,S010
+O4225455743,1,Rule-based switching to safety controller overrides learned AV policy,S010
+O7212220037,0,Recursive self-improvement roadmap; no guarantee,S010
+O7152649819,1,Provable approximation bound for distributed bandit learning under delays,S010
+O2949810513,0,Data space randomization security; no learned component,S010
+O7165669975,1,Formal logic checks verify LLM-generated planning explanations against constraints,S010
+O7216915983,0,Empirical leaf classifier; off-topic,S010
+O4407949731,0,SOS-verified CLF/CBF compatibility for non-learned controllers,S010
+O4410243977,0,Edge resource management; no guarantee stated,S010
+O7172453402,0,Embodied intelligence review; no guarantee,S010
+O4321648891,0,Trajectory bounds for non-learned companion systems,S010
+O4379931844,0,Surgical robot simulator; no guarantee,S010
+O7217168285,0,Microgrid behaviour analysis; no guarantee,S010
+O4412505641,0,Workshop report on hardware mechanisms; no guarantee on learned component,S010
+O7166813758,1,Invariant-measure conformal coverage and horizon bounds for learned dynamics,S010
+O3175984392,0,"Survey on CAV attacks, no abstract; no own guarantee",S010
+O2793067802,1,Proved exact recovery and sample complexity for topology learning algorithms,S010
+O2793917733,0,"Thesis on lane centering, no abstract; no guarantee",S010
+O4394591918,0,Conceptual analysis of human oversight; no guarantee,S010
+O4415042174,1,Assurance-case uncertainty with safety performance monitoring for automated driving,S010
+O4406460297,0,Empirical attack study on randomized defenses; no guarantee,S010
+O3043160503,0,ML security experience report; no guarantee,S010
