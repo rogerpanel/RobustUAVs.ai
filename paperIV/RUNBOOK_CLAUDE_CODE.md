@@ -76,6 +76,19 @@ pip install numpy scipy pandas cma optuna pyulog rliable
 
 The pilot peaks below 1.5 GB. SITL (R3) needs about 2 GB per headless instance, so run `nproc/2` instances in parallel.
 
+
+## Status of the follow-up runs (2026-10-15)
+
+| Item | Script → output | Result | Departure from the plan |
+|---|---|---|---|
+| R1 | `r1_attackers.py` → `r1_attackers*.csv`, `r1_delta_adv.csv`, `r1_heldout.csv`, `r1_e4_soundness.csv` | 126 attackers (CMA-ES, TPE, tail-objective TPE; K = 128, CRN; mixed family). δ_adv 4.371 → 5.463 m (1.25×, at the acceptance limit), attained only by the tail objective. Scaled E4 (n = 5,000, 5 held-out seeds): **5 of 1,620 Holm-significant violations**; held-out attackers exceeded δ_adv in 12/270 cells (max 7.04 m, mixed family) | Step 3 (white-box JAX gradient attacker) **not run** |
+| diagnosis | `r1_diagnose.py` → `r1_violation_diagnosis.csv` | All violations come from 3 benign-tail missions (benign-only 19–35 m, attack ≤ 2.3 m), all saturating. Failed conditions: C3 (empirical marginal has finite support, p̄ = 0) and C1 (saturation never checked at run time) | — |
+| R8 | `r8_analytic_bound.py` → `r8_analytic_bound.csv` | LP over attack offsets with the convex, silence-implied constraints. T_a = 5 s: anchor gate alone unbounded; + D1 295–320 m; + saturation alarm 31.8–31.9 m (5.8× δ_adv) | LP over D1/anchor/D_sat instead of the ellipsoidal SDP: D2–D4 alarm on runs of exceedances and do not give convex constraints. Criterion "< 2× empirical" **not met**, so the certificate keeps the empirical term |
+| R5 | `r5_measured_gnss.py` → `r5_gnss_envelope.csv`, `r5_floor_sensitivity.csv` | Measured gps_jamming envelope (496 samples, ≤ 7.0 m). Floor at m = 10 m, 5 % FPR: 0.689 (sim) → 0.343 (measured) → 0.315 (45 s episodes); CP-band 0.54 → 0.21 → 0.19 | Only the GNSS marginal; RflyMAD/ALFA fault marginals **not run** (adapters not written) |
+| revision | `e4_revised.py` → `e4r_fpr.csv`, `e4r_heldout.csv`, `e4r_soundness.csv` | Saturation alarm D_sat in the stack (benign cost 1.07 %); simultaneous Clopper–Pearson p-box; δ = R1 calibration value (not widened) and δ = R8 LP, separate Holm families; 72 new held-out attackers, fresh seed block 92xxx | **0 / 1,296 Holm-significant violations under each budget** (510,848 undetected-attack missions); superposition exact on every undetected mission; empirical δ exceeded in 6/216 cells (max 6.25 m, weather mimic, CEM), LP δ never; floor (R1 δ, 5 % FPR) 0.541 at m = 10 m, 0.992 at m = 20 m; LP δ certifies nothing at m ≤ 20 m. No undetected failure at any of the 648 informative points: not refuted, not stressed |
+
+Ground rule kept: the R1 held-out maximum (7.04 m) was **not** used to widen δ_adv; the revision is judged only on seeds never used before.
+
 ---
 
 ## R1 — Stronger attackers; stabilise δ_adv (RQ1, RQ2) **[load-bearing]**
@@ -189,9 +202,9 @@ Register for TEXBAT and OAKBAT. Run GNSS-SDR with the power-distortion monitor, 
 
 ## Acceptance checklist before submission
 
-- [ ] R1 run; δ_adv stable within 1.25× or the floors regenerated
+- [x] R1 run; δ_adv within 1.25× (exactly 1.25×) and the floors regenerated with it
 - [ ] R3 SITL: zero Holm-significant violations; disguise ranking reported
-- [ ] R5 measured-marginal variant in the paper
+- [x] R5 measured-marginal variant in the paper (GNSS only; fault marginals still simulated)
 - [ ] Every `% VERIFY`/[PRE] entry in `manuscript/refs.bib` re-checked
 - [ ] Anonymised artifact URL inserted; `tools/anonymise.py` passes
 - [ ] Ethics considerations and Open science sections immediately before the references

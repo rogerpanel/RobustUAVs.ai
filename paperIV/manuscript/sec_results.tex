@@ -167,7 +167,7 @@ $\Pr[\text{fail}\wedge U]$ and the largest observed frequency of that event over
 five held-out attackers and three wind conditions. Across \nSoundPoints{}
 distinct operating points and \nUndetectedTotal{} undetected-attack missions,
 \textbf{no point shows a Holm-significant violation} (\nSoundViol{} of
-\nSoundPoints). Wherever the bound is informative ($\pbar<1$), the observed
+\nSoundPoints). The scaled test of \cref{sec:scaled} overturns this. Wherever the bound is informative ($\pbar<1$), the observed
 frequency of undetected failure was zero. The bound is therefore conservative,
 and the zero violations by themselves carry little evidence: the negative
 controls below are what show that the test can fail.
@@ -178,8 +178,8 @@ Three further checks belong with the result.
   exceeded $\dadv$ in \nSupExceed{} of \nSupChecks{} (family $\times$ FPR $\times$
   wind) cells, reaching \nHeldoutAdvMax\,m with the \nHeldoutAdvFam{} at
   \nHeldoutAdvFpr{} FPR (\nHeldoutAdvRatio$\times$). The bound absorbed it, but
-  this is why runbook items R1 (stronger optimisers) and R8 (an analytic
-  stealthy-reachable-set bound) are load-bearing. In \nZeroUndet{} cells, the
+  this is why we strengthened the optimisers and derived an analytic budget
+  (\cref{sec:scaled,sec:revised}). In \nZeroUndet{} cells, the
   held-out optimiser found no evading attack at all.
 \item \emph{\Cref{lem:subadd} holds where (C1) holds.} Attack/benign
   superposition held in at least \nSuperposMin{} of missions at every point. A
@@ -254,6 +254,8 @@ of $\pbar$; dev.\ = largest undetected deviation (m).}
 \end{tabular}
 \end{table}
 
+\input{sec_scaled}
+
 \subsection{Summary}
 \textbf{RQ1:} every disguise family evades every detector; what differs is the
 damage. With the anchor gate armed, frequent evasions stay within
@@ -261,10 +263,15 @@ damage. With the anchor gate armed, frequent evasions stay within
 detector. Without the gate, the damage depends on whether the detector models
 the disguise, from \nNgCapDTwo\,m (D2) to \nNgMax\,m (D1, D3, D4 against the
 fault mimic).
-\textbf{RQ2:} the source-agnostic bound held for every undetected-attack
-population we tested. \textbf{RQ3:} under unknown dependence the union bound is
-nearly sharp; the slack lies in the dependence, envelope and, above all,
-temporal gaps (the last largest at $s=\nGapS$\,m). \textbf{RQ4:} we found no Holm-significant violation at
-\nSoundPoints{} held-out points, but the bound is conservative, and the
-evidence for the test's power comes from the negative controls, which it
-detected.
+\textbf{RQ2 and RQ4:} in the pilot, the bound held at all \nSoundPoints{}
+held-out points, and the negative controls showed that the test can fail.
+\textbf{RQ3:} under unknown dependence the union bound is nearly sharp; the
+slack lies in the dependence, envelope and, above all, temporal gaps.
+\textbf{RQ5:} at scale, the pilot instantiation was unsound
+(\nROneViol{} violations). The cause was not disguise but two conditions it
+assumed without securing: a finite-sample marginal and an unchecked actuator
+limit. Once both were secured, the bound survived \nRevAttackers{} fresh
+attackers with \nRevEmpViol{} violations, although the empirical $\dadv$ was
+exceeded again. The provable budget is \nREightSatRatio$\times$ larger.
+\textbf{RQ6:} measured jamming data halves the certified floor at
+$m=10$\,m: a simulated GNSS marginal overstates the floor by a factor of two.

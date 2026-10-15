@@ -1,6 +1,6 @@
 % ------------------------------------------------------------- Discussion
 \paragraph{What a defender should take away.}
-Four design rules follow from the measurements, and each is a mitigation of
+Five design rules follow from the measurements, and each is a mitigation of
 the attack the paper describes.
 \begin{enumerate}
 \item \emph{Re-anchor, and size the interval rather than the threshold.} With a
@@ -28,6 +28,11 @@ the attack the paper describes.
   contribution stays within $\dadv$, without relying on the detector catching
   any particular disguise. A floor computed from benign marginals alone and
   gated on silence has no such property (\cref{prop:gated}).
+\item \emph{Alarm on what the certificate assumes.} The pilot assumed an
+  unsaturated loop, and the scaled test failed exactly where the loop saturated.
+  A saturation alarm turns the assumption into a run-time check, at a cost of
+  \nRevSatAlone{} benign false alarms. Every condition of a deployed certificate
+  should be either proved or monitored.
 \end{enumerate}
 
 \paragraph{On the separability counter-claim.}
@@ -48,18 +53,30 @@ only that none of ours does.
   a linear KF. PX4's EKF2 has more states, different gating and nonlinear
   coupling. The disguise matrix and soundness must be re-established in SITL
   (runbook R3) before they are claimed for a deployed autopilot.
-\item \emph{Empirical adversarial term.} $\dadv$ is a pooled supremum over
-  \nPooledAttackers{} CEM attackers, not a proof. The held-out attacker exceeded
-  it in \nSupExceed{} of \nSupChecks{} cells by up to \nHeldoutAdvRatio$\times$.
-  Stronger optimisers (R1) and an analytic stealthy-reachable-set
-  bound~\cite{mo2016,murguia2020} (R8) are needed.
-\item \emph{Conservative bound, limited power.} The observed frequency of
-  undetected failure was zero wherever the bound was informative, so
-  soundness was tested mainly through negative controls. Closing the temporal
-  gap would make the bound tight enough to be stressed directly.
-\item \emph{Simulated marginals.} The benign marginals come from the
-  simulator; the runbook replaces them with the Whelan campaign and the RflyMAD
-  and ALFA flights (R5).
+\item \emph{Empirical adversarial term.} The usable $\dadv$ is a pooled supremum
+  over optimised attackers. Stronger optimisers raised it by
+  \nROneDadvRatioFive$\times$, and a held-out mixed-family attacker then
+  exceeded it, reaching \nROneAdvMax\,m. The provable LP budget
+  (\cref{sec:revised}) is \nREightSatRatio$\times$ larger because it drops
+  every non-convex detector. Tightening it requires reachable-set bounds for
+  detectors that alarm on runs of exceedances, for example by mixed-integer
+  programming, or detectors redesigned so that silence implies a convex
+  constraint. We have done neither. A white-box gradient attacker through a
+  differentiable simulator (runbook R1, step 3) was not run.
+\item \emph{Finite calibration.} With \nCalMissions{} samples per source, the
+  simultaneous band certifies at most $\nRFiveFloorCpTwenty$. Certifying a
+  floor of $1-10^{-k}$ needs several times $10^{k+1}$ calibration missions
+  per source, which only simulation or fleet logs can supply.
+\item \emph{Limited power.} At every point where the revised bound is
+  informative, the observed frequency of undetected failure was zero. The test
+  has shown that it can fail (the negative controls and \cref{sec:scaled}), but
+  the revised bound has not been stressed near its value. Closing the temporal
+  gap would make it tight enough to be stressed directly.
+\item \emph{GNSS marginal.} Replacing the simulated GNSS marginal by the
+  measured jamming envelope (\cref{sec:r5}) halved the floor at $m=10$\,m. The
+  fault marginal is still simulated: the RflyMAD and ALFA adapters of runbook
+  R5 were not run, and the measured envelope comes from one campaign on one
+  airframe.
 \item \emph{Network term not simulated.} $\dnet$ enters as the parent's
   certified tube; R4 injects measured relay staleness into SITL.
 \item \emph{Covert attackers only.} The bound covers undetected failure. An

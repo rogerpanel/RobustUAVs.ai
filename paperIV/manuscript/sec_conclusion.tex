@@ -19,6 +19,15 @@ independent attacker exceeded it. The analysis also corrects a hypothesis from
 our proposal: the union bound is not where the looseness lives. The slack lies
 in the dependence, envelope and temporal gaps. In our pilot the temporal gap
 was the largest at moderate budgets, and it is the most tractable. For the defender, re-anchoring and closing the
-terminal interval mattered more than any threshold. The next step is to
-re-establish these results in PX4 software-in-the-loop simulation and with
-measured marginals, as the released runbook specifies.
+terminal interval mattered more than any threshold.
+
+The scaled test is the paper's other lesson. The pilot's clean result did not
+survive a larger test, and the violations it found came from benign
+missions, not attacks: from an assumption nobody monitored and from a sample
+asked to certify more than it could. Secured, the bound held again on fresh
+data, but its adversarial term is still measured, not proved. The provable
+alternative is \nREightSatRatio$\times$ looser, because the detectors that
+actually constrain the attacker alarm on patterns that no convex bound
+captures. Closing that gap, re-establishing the results in PX4
+software-in-the-loop simulation, and calibrating every marginal on measured
+flights are the next steps, as the released runbook specifies.

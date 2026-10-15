@@ -101,10 +101,17 @@ every one of five disguise families evades each of four detectors in at least
 \nCrossEvMin{} of missions. A trusted re-anchoring alarm keeps the frequent
 evasions within a few metres whatever the detector. Without it, the detectors
 differ sharply in the undetected deviation they admit, from \nNgCapDTwo\,m to
-\nNgMax\,m, depending on whether they model the disguise as benign. The bound held at all \nSoundPoints{}
-held-out operating points (\nSoundViol{} Holm-significant violations), but it
-is conservative. The test detected unsoundness when we deliberately broke the
-re-anchoring or the environmental-envelope condition.
+\nNgMax\,m, depending on whether they model the disguise as benign. The bound
+held at all \nSoundPoints{} pilot operating points. A test scaled to
+\nROneTests{} points with stronger optimisers then found \nROneViol{}
+Holm-significant violations. None came from disguise: an unchecked actuator
+limit and a calibration sample too small to support a zero tail probability
+had broken two of the theorem's conditions. With a run-time saturation alarm
+and a finite-sample p-box, the bound held on fresh seeds (\nRevEmpViol{}
+violations in \nRevEmpTests{} tests). The empirical stealth budget, however,
+was again exceeded, and a provable budget is \nREightSatRatio$\times$ larger.
+Replacing simulated GNSS errors with measured jamming data halves the certified
+floor at a 10\,m margin.
 \end{abstract}
 
 % =====================================================================
@@ -206,6 +213,15 @@ perturbation, and whatever their mutual dependence.
   tightness. Finally, we test whether the bound holds on held-out attackers
   under Holm-corrected tests, with negative controls that demonstrate the
   test's power.
+\item \textbf{A negative result and its repair (\cref{sec:scaled,sec:revised}).}
+  Stronger optimisers and a test scaled to \nROneTests{} points found the
+  pilot instantiation unsound: \nROneViol{} Holm-significant violations,
+  traced to two conditions that it assumed but did not secure. Neither
+  concerns disguise. We repair both with a run-time saturation alarm and a
+  finite-sample p-box, and judge the repair on fresh seeds. A linear-programming
+  bound on the stealth budget, valid for every attack, exists only once the
+  saturation alarm is armed, and it is \nREightSatRatio$\times$ the empirical
+  one.
 \end{itemize}
 
 \paragraph{Scope.}
@@ -213,9 +229,11 @@ The pilot evaluation in this paper uses a reduced-order lateral model of a
 multirotor with a Kalman filter (KF) rather than PX4's EKF2 on a full airframe.
 \Cref{sec:discussion} and the released runbook state precisely which results
 must be re-established in software-in-the-loop (SITL) simulation before they
-are claimed for a deployed autopilot. The adversarial term is an empirical
-supremum over optimised attackers, not a proof. We test it against an
-independently seeded attacker and report every exceedance.
+are claimed for a deployed autopilot. The adversarial term we can use is an
+empirical supremum over optimised attackers, not a proof. The provable bound
+we derive is too loose to certify useful margins. We test the empirical term
+against independently seeded attackers and report every exceedance and every
+violation.
 
 % =====================================================================
 \section{Preliminaries and Problem Statement}
@@ -303,14 +321,17 @@ sources, we seek:
   explicit, and an evasion study that measures which disguise defeats which
   detector.
 \end{description}
-\noindent These define four research questions. RQ1: can an attacker mimic a
+\noindent These define six research questions. RQ1: can an attacker mimic a
 fault, a GNSS drift or a gust well enough to evade a detector while still
 producing a large deviation, and which disguise does each detector miss? RQ2:
 does the source-agnostic floor bound the outcome of missions whose attack went
 undetected? RQ3: how loose are the union bound and the dependence-sharp bound in
 practice, and is the looseness due to dependence or to time? RQ4: is the floor
 sound at every held-out operating point under Holm-corrected tests, and does the
-test detect unsoundness when a condition is deliberately broken?
+test detect unsoundness when a condition is deliberately broken? RQ5: does the
+answer to RQ4 survive stronger attackers and a larger test, and if not, which
+condition fails? RQ6: how much does the floor change when the simulated GNSS
+marginal is replaced by measured jamming data?
 
 \Cref{fig:framework} summarises the methodology through which the paper answers
 these questions.
