@@ -101,3 +101,31 @@ LLM screeners**, reported as such everywhere (never as human screeners):
   per-batch cost log.
 
 - 2026-10-15: amendment 2 (this section).
+
+## Amendment 3 (2026-10-15): core plus probability sample
+
+Fixed before the sample below was drawn. After Phase A (ranks 1-2,750 of
+`rank_v1.csv`), the consensus include rate had levelled off near 0.55 from
+rank 1,500 onwards (`results/screening_status.csv`), so the 250-run stopping
+condition is out of reach and exhaustive screening would send about 10,000
+records to full text. The stopping rule (Phases B and C of amendments 1-2) is
+therefore replaced by a sampling design; nothing already screened is changed.
+
+- **Core stratum**: ranks 1-2,750, screened in full by L1/L2 (done).
+- **Remainder stratum**: the other 22,623 candidates. A simple random sample
+  of 1,000 (seed 20261018) is screened by L1/L2 exactly as the core. The number
+  of includes in the remainder is estimated as N_rem x p_hat with a two-sided
+  95% Clopper-Pearson interval.
+- **Full-text and coding sample**: 300 included records, a stratified random
+  sample (seed 20261019) allocated in proportion to the estimated number of
+  includes in each stratum, at least 75 per stratum. Records whose full text
+  cannot be retrieved are reported as "not retrieved" (PRISMA) and replaced
+  from the same stratum in sample order. Corpus-level results are reported as
+  weighted estimates with intervals, never as counts of the whole field.
+- **Coverage**: snowballing from the coded sample continues until the type
+  plane saturates (the manuscript's snowballing stop rule), so the sample can
+  miss papers but should not miss a kind of guarantee.
+- **Reporting**: PRISMA shows records screened (core + sample), records not
+  screened (by design), and the estimated includes among them.
+
+- 2026-10-15: amendment 3 (this section).
