@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4399115387",0,"Course project; stability only asserted via cited lemma, Lyapunov network never verified; empirical results","","","","","","","","","",""
+"O4318685743",1,"","RTA","A","planning","op","A","disturbance","L_mon","SE","simulated","NN lane-change planner gated by safe-evasion-trajectory check; collision-free if aggressiveness assessment correct (error rate measured). Doubt: disturbance vs none for bounded vehicle accelerations."
+"O4406715843",0,"Heuristic decision-tree policy generalisation; performance empirical, authors state no guarantee of near-optimality","","","","","","","","","",""
+"O7214089039",1,"","CP","B","estimation","pop","P","distribution","L_conc;L_hor","SEC","simulated","Promoted world-model-guided decisions harmful with probability <= alpha+delta via conformal/TV-audit bounds and Bellman telescope. Doubt: P vs E, pop vs op."
+"O7203720573",1,"","CP","B","estimation","pop","P","distribution","L_conc","SE","simulated","Split conformal/CQR RUL intervals on C-MAPSS turbofan with marginal 90% coverage under exchangeability; empirically 89.3% validation, 77% test."

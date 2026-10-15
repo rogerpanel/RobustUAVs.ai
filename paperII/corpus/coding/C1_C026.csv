@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7220413358",1,"","PROB","B","perception","in","E","norm","none","S","modelled","LLM thesis: V(h) <= 1 - R_class(h) for decision operator under localized epsilon-perturbations; rest is attacks. Scope in vs pop doubtful."
+"O4288481534",0,"Scalar Gaussian binary-classifier accuracy-sensitivity tradeoff; no guarantee on a learned component, no vehicle.","","","","","","","","","",""
+"O4366999641",1,"","NCERT","A","perception","tr","A","none","L_sup","S","proof","SOS/SDP inner-approximation of controlled reach-avoid set gives deterministic reach-avoid guarantee for Dubins car; SVM-learned safe set assumed correct. Class NCERT vs CLR doubtful."
+"O7171287931",0,"Empirical RL driving performance study; barrier shield has no stated formal or statistical guarantee.","","","","","","","","","",""
+"O3209289000",1,"","CP","A","estimation","pop","P","distribution","L_conc","SE","measured","Post-bloating (random convex program) bound on false-negative rate of learned trajectory predictor, confidence 99%, i.i.d. NGSIM data; checked on held-out set."

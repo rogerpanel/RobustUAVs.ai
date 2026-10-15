@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7134959935",1,"","CP","B","perception","pop","P","distribution","L_conc","S","simulated","Finite-sample bound: unsafe cache-hit rate of intent classifier <= alpha w.p. 1-delta (LTT/betting); i.i.d. calibration assumed; text intent benchmarks, component=perception is doubtful."
+"O4403593963",0,"Empirical RL architecture study; no formal, statistical or architectural guarantee stated or proved.","","","","","","","","","",""
+"O4417439619",0,"Guarantees concern segmentation/clustering correctness of an identification algorithm, not a learned component's behaviour; generic hybrid benchmarks.","","","","","","","","","",""
+"O4390349808",0,"Only formal guarantee comes from non-learned BRS; LSTM collision-probability estimate is empirically evaluated, no guarantee.","","","","","","","","","",""
+"O7157859985",1,"","PIL","A","perception","tr","A","distribution","L_dyn;L_sup","SE","simulated","Robust constraint satisfaction of output-feedback SLS tubes given data-calibrated state-dependent error bound on learned visual observation; calibration confidence unseen (text truncated), scope tr vs op doubt."

@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7162495747",1,"","CP","B","perception","pop","E","distribution","L_conc","S","simulated","Finite-sample FDR control for conformal OOD testing under pairwise exchangeability; FDR is an expectation (E vs P doubt); CP vs MON class doubt."
+"O4415986067",0,"Guarantee is cryptographic protocol security (ProVerif), not about a learned component.","","","","","","","","","",""
+"O7162988865",0,"Empirical detection rates in simulation; no formal or statistical guarantee stated.","","","","","","","","","",""
+"O4406786055",1,"","CP","B","estimation","pop","P","distribution","L_conc","S","simulated","Wasserstein upper bound on conformal coverage gap under joint covariate/concept shift, with finite-sample empirical bound; tested on traffic and epidemic data."
+"O4393871000",0,"Synthesized control envelopes for hybrid systems; no learned component, guarantee about non-learned controller.","","","","","","","","","",""

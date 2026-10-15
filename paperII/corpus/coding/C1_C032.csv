@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4411399924",1,"","RTA","B","control","op","P","distribution","L_hor","S","proof","Policy masking keeps unsafe-state probability <= eps for every parameter theta; known model required. Rule-6 doubt: op vs pop."
+"O7139143999",1,"","NEW:data-driven robust MPC","B","control","tr","A","disturbance","L_dyn","S","proof","Data-driven interval-matrix tube MPC: robust constraint satisfaction, recursive feasibility, convergence to a set under bounded disturbance. Doubt: learned-component status."
+"O7155371970",1,"","CP","B","estimation","pop","P","distribution","L_conc","S","simulated","Conformal labeling of LLM-agent step rewards bounds false-negative/positive labeling rates by epsilon (exchangeability). Doubt: guarantee on labels, not agent behaviour."
+"O7168241292",0,"Conceptual position paper; no formal, statistical or architectural guarantee stated or evaluated.","","","","","","","","","","",""
+"O3114355749",1,"","RTA","A","planning","op","A","disturbance","L_dyn;L_mon","S","proof","Backward-reachable permissible set plus one-step robust forward check guarantees safe vehicle states, else evasive maneuver. Doubt: nominal ADS not explicitly learned."

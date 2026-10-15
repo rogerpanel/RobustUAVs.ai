@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4411399924",1,"","CRL","B","control","tr","P","distribution","L_dyn","S","proof","Masked NN policy: P(enter unsafe set within horizon)<=eps per task, via known transition model; alt class RTA (shield-like mask); tr vs op doubt"
+"O7139143999",0,"Data-driven linear robust MPC; no learned (ML) component guaranteed","","","","","","","","","",""
+"O7155371970",1,"","CP","B","planning","pop","P","distribution","L_conc","S","simulated","ICAD labels LLM-agent step rewards with FNR<=eps_s, FPR<=eps_f under iid; doubt: guarantee on labeler, not agent itself"
+"O7168241292",0,"Position/framework paper; no formal, statistical or architectural guarantee stated","","","","","","","","","",""
+"O3114355749",0,"Reachability safety monitor for generic ADS; no learned component identified","","","","","","","","","",""

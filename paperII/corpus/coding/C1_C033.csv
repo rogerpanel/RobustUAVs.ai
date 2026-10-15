@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4403365237",1,"","CRL","B","control","op","P","distribution","L_conc","SEC","simulated","Per-episode probability of satisfying bounded temporal logic >= Pr_des with high confidence (Wilson bound) during RL. Rule 6: op vs pop doubt."
+"O4303857556",1,"","CRL","B","control","pop","P","distribution","L_conc","S","modelled","Localized policy is O(rho^(kappa+1))-approximate stationary point of discounted reward, w.h.p. 1-delta; exponential decay and exploration assumed. Class fit weak."
+"O7160560765",0,"Conceptual architecture description; no formal, statistical or architectural guarantee stated or proved.","","","","","","","","","",""
+"O4413945503",1,"","CP","B","estimation","pop","P","distribution","L_conc;L_mon","S","measured","Conformal threshold gives P(score<=C)>=1-delta for OOD detection of trajectory predictor, switching to physics model. Spring test, not vehicle."
+"O4416177651",0,"Thesis on regret bounds for online distributed optimization; no learned component of an autonomous system.","","","","","","","","","",""

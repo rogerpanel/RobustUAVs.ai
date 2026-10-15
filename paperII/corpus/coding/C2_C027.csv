@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7134959935",1,"","CP","B","perception","pop","P","distribution","L_conc","S","measured","RCPS/LTT plus transfer-informed betting: Pr[unsafe cache-hit rate of selective intent classifier <= alpha] >= 1-delta under iid calibration. Class doubt: CP vs PACB."
+"O4403593963",0,"Empirical RL architecture study with RTA; no guarantee stated or proven.","","","","","","","","","",""
+"O4417439619",0,"Hybrid-system identification algorithm correctness; no guarantee about a deployed learned component.","","","","","","","","","",""
+"O4390349808",0,"Formal guarantee from HJI BRS covers non-learned dynamics; LSTM predictor unguaranteed.","","","","","","","","","",""
+"O7157859985",1,"","PIL","A","perception","tr","A","distribution","L_dyn;L_gen","SE","measured","SLS output-feedback tubes guarantee constraint satisfaction over horizon given empirically calibrated state-dependent visual observation error bounds; modality A conditional on calibration."

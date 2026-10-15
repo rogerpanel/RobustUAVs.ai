@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7123346317",1,"","NCERT","A","control","tr","A","none","none","S","simulated","Max-composition of learned CS-RBF local CBFs is a valid nonsmooth CBF giving forward invariance; local validity not certified (Lipschitz too large). Scope tr vs op doubt."
+"O7133204952",0,"Approximation-error lower bounds for equivariant model classes; no assurance guarantee on a component.","","","","","","","","","",""
+"O7138907351",1,"","OPREL","B","end2end","pop","P","distribution","L_op;L_rate","S","simulated","Hierarchical imprecise-Bayes posterior envelopes on LLM failure probability and n-task failure-free reliability under OP; component LLM fits no category."
+"O7128015350",1,"","RTA","A","control","op","A","none","L_mon","U","simulated","Viability-based action mask shields tabular Q-learning so hard constraints never violated; by construction on abstraction representative states, no formal theorem."
+"O7171968334",0,"Narrative review of hybrid robot navigation; no guarantee of its own.","","","","","","","","","",""
