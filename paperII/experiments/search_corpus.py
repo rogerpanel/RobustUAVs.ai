@@ -521,18 +521,30 @@ def dblp_get(url: str, as_json=True, retries=8):
     raise RuntimeError(f"failed: {url}")
 
 
+def toc_names(html: str, stream: str) -> set[str]:
+    """Volume page names (e.g. cav2023-1) linked from a DBLP stream index, whatever
+    the link form: https://dblp.org/db/conf/cav/cav2023-1.html, /db/conf/cav/...,
+    db/conf/cav/... or a bare href="cav2023-1.html"."""
+    name = r"([a-z][a-z0-9-]*?\d{4}(?:-\d+)?)\.html"
+    out = set(re.findall(rf"{re.escape(stream)}/{name}", html))
+    out |= set(re.findall(rf"href=\"{name}", html))
+    return out
+
+
 def dblp_tocs(stream: str) -> list[str]:
     """Main-proceedings volumes 2017-2026 of a DBLP stream, e.g. conf/cav/cav2023-1."""
     html = dblp_get(f"https://dblp.org/db/{stream}/index.html", as_json=False)
     if not html:
         return []
-    names = set(re.findall(rf"(?:https://dblp\.org/db/{re.escape(stream)}/|href=\")([a-z]+\d{{4}}(?:-\d+)?)\.html",
-                           html))
     out = []
-    for n in sorted(names):
+    for n in sorted(toc_names(html, stream)):
         y = int(re.search(r"(\d{4})", n).group(1))
         if YEARS[0] <= y <= YEARS[1]:
             out.append(f"{stream}/{n}")
+    if not out:
+        # Never record an empty venue as complete: keep a sample of what came back.
+        log({"source": "dblp_venue", "stream": stream, "error": "no volume links parsed",
+             "html_len": len(html), "sample": re.findall(r'href="[^"]{0,120}"', html)[:40]})
     return out
 
 
@@ -541,7 +553,7 @@ def cmd_venues_dblp(a):
     done = set()
     if a.resume:
         done = {e["venue"] for e in _read_jsonl(C / "search_log.jsonl")
-                if e.get("source") == "dblp_venue" and e.get("complete")}
+                if e.get("source") == "dblp_venue" and e.get("complete") and e.get("tocs", 0) > 0}
         old = [r for r in _read_jsonl(a.out) if r.get("found_by", "").removeprefix("venue_dblp:") in done]
         with open(a.out, "w") as fh:
             for r in old:
@@ -553,6 +565,9 @@ def cmd_venues_dblp(a):
                 continue
             try:
                 tocs = dblp_tocs(stream)
+                if not tocs:
+                    raise RuntimeError(f"no 2017-2026 volumes parsed from the {stream} index "
+                                       f"(see the 'sample' entry in search_log.jsonl)")
                 buf, n_toc = [], 0
                 for toc in tocs:
                     off, n_vol = 0, 0
