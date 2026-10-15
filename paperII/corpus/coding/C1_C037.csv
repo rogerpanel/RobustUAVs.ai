@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3037655992",1,"","CRL","B","control","pop","E","distribution","none","S","modelled","DARC policy's target-domain entropy-regularised return within 4Rmax*sqrt(eps/2) of optimal, given Assumption 1 (source-target return gap); scope pop vs tr doubtful."
+"O7128825065",1,"","CP","A","planning","tr","P","distribution","L_dyn;L_conc","S","simulated","Weighted-CP model-error ellipsoids plus SLS tubes give closed-loop constraint satisfaction w.p. >=1-sum(sigma_k) over horizon T; component planning vs estimation doubtful."
+"O7161737938",0,"Certificates for unknown monotone plant from trajectories; no learned component; guarantee about non-learned dynamics.","","","","","","","","","",""
+"O4415795436",1,"","CP","B","perception","pop","P","distribution","L_conc","S","simulated","SAMOCP online conformal sets over multiple classifiers: coverage error o(1) and strongly adaptive regret, under weight-smoothness condition; evaluated on CIFAR-C."
+"O7161640018",1,"","NEW:LLM multi-agent consensus verification","B","planning","op","P","distribution","L_hor;L_mon","SE","modelled","Task success probability >= prod(1 - eps(1-d)^R) given independent step failures and detector accuracy d; scope op vs pop doubtful."

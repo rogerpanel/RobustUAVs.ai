@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7220723858",0,"Governance framework for AI-assisted engineering workflows; gate guarantee rests on non-learned verifier",,,,,,,,,,
+"O7154959401",0,"TLA+ guarantees cover non-learned admission-control protocol for software agents only",,,,,,,,,,
+"O2948254043",1,,"OPREL","A","perception","pop","E","distribution","L_conc","SE","measured","Unbiased CES-sampled estimate of DNN operational accuracy on operational data; no confidence bound. Tier A only via Dave steering; component mixes classifiers/end2end."
+"O4312564465",0,"Impossibility theorem on RL reward translation; no guarantee about a learned component",,,,,,,,,,
+"O7204803478",0,"Differential-privacy guarantee for emotion recognition; no safety/robustness guarantee, not autonomous system",,,,,,,,,,
