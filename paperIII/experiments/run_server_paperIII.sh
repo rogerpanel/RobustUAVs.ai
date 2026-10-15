@@ -78,12 +78,21 @@ stage_r4() {
     git clone --recursive --branch v1.14.3 --depth 1 --shallow-submodules \
       https://github.com/PX4/PX4-Autopilot.git "$PX4" > "$LOG/r4_clone.txt" 2>&1
   fi
+  # The shallow clone has no tags in the NuttX submodule, but px_update_git_header.py reads the
+  # NuttX version from its "nuttx-X.Y.Z" tags (IndexError otherwise), even for SITL. Fetch the
+  # real release tags (shallow, no history) instead of inventing one.
+  NX="$PX4/platforms/nuttx/NuttX/nuttx"
+  if [ -d "$NX" ] && ! git -C "$NX" tag -l 'nuttx-*' | grep -q .; then
+    say "R4: fetching NuttX release tags for the PX4 version header"
+    git -C "$NX" fetch -q --depth 1 origin 'refs/tags/nuttx-*:refs/tags/nuttx-*' >> "$LOG/r4_clone.txt" 2>&1 \
+      || say "R4: could not fetch NuttX tags (see r4_clone.txt); the build will likely fail at the version header"
+  fi
   IMG="${PX4_IMG:-px4io/px4-dev-simulation-jammy:latest}"
   docker pull -q "$IMG" > /dev/null
   # build once (SIH: physics inside PX4, no Gazebo, runs headless)
   # the container runs as root on a checkout owned by the host user: allow git to read it
   # (otherwise git stops with "dubious ownership" and PX4's version step fails).
-  # PX4 v1.14's message generators need empy 3.x; empy 4 breaks the uORB header step.
+  # PX4 v1.14's message generators need empy 3.x; pinned so a newer image cannot break them.
   if ! docker run --rm -v "$PX4":/src -w /src "$IMG" bash -lc \
     "git config --global --add safe.directory '*' && \
      { pip3 install -q 'empy==3.3.4' > /src/pip_r4.log 2>&1 || true; } && \
