@@ -1,0 +1,433 @@
+<title>Quantifier Gap Screening</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+/* Layout: one record at a time, a decision bar under it, a slim progress rail on top. */
+:root {
+  --bg: #f3f5f7; --panel: #ffffff; --ink: #1b2430; --muted: #5b6878; --line: #d8dee6;
+  --accent: #2d4e8a; --accent-soft: #e3eaf6; --inc: #1f7a4d; --inc-soft: #dff1e7;
+  --exc: #a33a2c; --exc-soft: #f7e3df; --warn: #8a6100; --warn-soft: #fbf0d6;
+  --f-display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-read: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #12161c; --panel: #1a2029; --ink: #e6ebf1; --muted: #9aa6b4; --line: #2c3542;
+  --accent: #8fb0ea; --accent-soft: #233149; --inc: #6fcf9b; --inc-soft: #183527;
+  --exc: #f0917f; --exc-soft: #3c211c; --warn: #e7c06a; --warn-soft: #362b12; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #12161c; --panel: #1a2029; --ink: #e6ebf1; --muted: #9aa6b4; --line: #2c3542;
+  --accent: #8fb0ea; --accent-soft: #233149; --inc: #6fcf9b; --inc-soft: #183527;
+  --exc: #f0917f; --exc-soft: #3c211c; --warn: #e7c06a; --warn-soft: #362b12; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5 }
+.wrap { max-width: 920px; margin: 0 auto; padding-block: 20px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 16px }
+header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px }
+h1 { font-family: var(--f-display); font-weight: 600; font-size: 1.55rem; margin: 0; letter-spacing: .01em; text-wrap: balance }
+.sub { color: var(--muted); font-size: .85rem }
+.chip { font-family: var(--f-mono); font-size: .78rem; padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); white-space: nowrap }
+nav { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--line) }
+nav button { font: 500 .9rem var(--f-body); background: none; border: 0; border-bottom: 2px solid transparent; color: var(--muted); padding: 8px 10px; cursor: pointer }
+nav button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent) }
+nav button:focus-visible, button:focus-visible, textarea:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.rail { display: grid; gap: 6px }
+.railbar { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; position: relative }
+.railbar > i { position: absolute; inset: 0 auto 0 0; background: var(--accent); border-radius: 3px }
+.railbar > b { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--warn) }
+.railtxt { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; font: .8rem var(--f-mono); color: var(--muted); font-variant-numeric: tabular-nums }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 20px; display: grid; gap: 12px; min-width: 0 }
+.rk { font: .78rem var(--f-mono); color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 14px }
+.title { font-family: var(--f-display); font-weight: 600; font-size: 1.35rem; line-height: 1.25; margin: 0; text-wrap: balance; overflow-wrap: anywhere }
+.meta { color: var(--muted); font-size: .88rem; overflow-wrap: anywhere }
+.meta a { color: var(--accent) }
+.abs { font-family: var(--f-read); font-size: 1.04rem; line-height: 1.62; max-width: 68ch; overflow-wrap: anywhere; white-space: pre-line }
+.abs.none { font-family: var(--f-body); color: var(--warn); background: var(--warn-soft); padding: 8px 10px; border-radius: 6px; font-size: .9rem }
+.decide { display: grid; gap: 10px }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
+.btn { font: 600 .95rem var(--f-body); border-radius: 8px; padding: 10px 16px; cursor: pointer; border: 1px solid var(--line); background: var(--panel); color: var(--ink) }
+.btn kbd { font: 500 .72rem var(--f-mono); margin-left: 6px; padding: 1px 5px; border: 1px solid currentColor; border-radius: 4px; opacity: .7 }
+.btn.inc { background: var(--inc); border-color: var(--inc); color: var(--panel) }
+.btn.exc { background: var(--exc); border-color: var(--exc); color: var(--panel) }
+.btn.ghost { background: none }
+.btn[disabled] { opacity: .45; cursor: not-allowed }
+.reasons { display: grid; gap: 6px }
+.reasons[hidden] { display: none }
+.reason { text-align: left; font: .9rem var(--f-body); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--exc); background: var(--exc-soft); color: var(--ink); cursor: pointer }
+.reason kbd { font: 500 .72rem var(--f-mono); margin-right: 8px }
+textarea { width: 100%; min-height: 54px; font: .9rem var(--f-body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px }
+.hint { font-size: .82rem; color: var(--muted) }
+.done { font: .85rem var(--f-body); padding: 6px 10px; border-radius: 6px; display: inline-flex; gap: 6px }
+.done.i { background: var(--inc-soft); color: var(--inc) } .done.e { background: var(--exc-soft); color: var(--exc) }
+.status { font: .8rem var(--f-mono); color: var(--muted); min-height: 1.2em }
+.status.err { color: var(--exc) }
+.notice { background: var(--warn-soft); color: var(--ink); border: 1px solid var(--warn); border-radius: 8px; padding: 12px 14px; font-size: .92rem }
+.rule { display: grid; gap: 10px; max-width: 70ch }
+.rule h2 { font: 600 1.05rem var(--f-display); margin: 6px 0 0 }
+.rule p { margin: 0; font-family: var(--f-read); font-size: 1rem }
+.tbl { overflow-x: auto }
+table { border-collapse: collapse; width: 100%; font-size: .88rem; font-variant-numeric: tabular-nums }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top }
+th { font: 500 .78rem var(--f-mono); color: var(--muted); text-transform: uppercase; letter-spacing: .05em }
+td.num { text-align: right; font-family: var(--f-mono) }
+.pill { font: .75rem var(--f-mono); padding: 1px 7px; border-radius: 999px }
+.pill.ok { background: var(--inc-soft); color: var(--inc) } .pill.no { background: var(--warn-soft); color: var(--warn) }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px }
+.stat { display: grid; gap: 2px } .stat b { font: 600 1.4rem var(--f-display); font-variant-numeric: tabular-nums } .stat span { font-size: .8rem; color: var(--muted) }
+.roles { display: flex; flex-wrap: wrap; gap: 10px }
+@media (prefers-reduced-motion: no-preference) { .railbar > i { transition: width .3s ease } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Quantifier Gap Screening</h1>
+      <div class="sub">Paper II · title/abstract stage · prioritised order under the pre-registered stopping rule</div>
+    </div>
+    <span class="chip" id="whoChip">loading…</span>
+  </header>
+
+  <nav role="tablist">
+    <button role="tab" id="tabScreen" aria-selected="true" data-view="screen">Screen</button>
+    <button role="tab" id="tabMine" aria-selected="false" data-view="mine">My decisions</button>
+    <button role="tab" id="tabRule" aria-selected="false" data-view="rule">Inclusion rule</button>
+    <button role="tab" id="tabCoord" aria-selected="false" data-view="coord" hidden>Coordinator</button>
+  </nav>
+
+  <section id="vScreen" class="rail-and-card" style="display:grid;gap:16px">
+    <div class="rail" id="rail">
+      <div class="railbar"><i id="railFill" style="width:0%"></i><b id="railMark" style="left:0%"></b></div>
+      <div class="railtxt"><span id="railLeft">—</span><span id="railRight">—</span></div>
+    </div>
+    <div id="gate" class="notice" hidden></div>
+    <div id="rolePick" class="card" hidden>
+      <h2 class="title" style="font-size:1.15rem">Which screener are you?</h2>
+      <p class="hint" style="margin:0">Pick once. H1 and H2 screen the same records in the same order, independently; neither sees the other's decisions.</p>
+      <div class="roles">
+        <button class="btn" id="pickH1">I am H1</button>
+        <button class="btn" id="pickH2">I am H2</button>
+      </div>
+    </div>
+    <article class="card" id="recCard" hidden>
+      <div class="rk"><span id="recRank"></span><span id="recId"></span><span id="recPrev"></span></div>
+      <h2 class="title" id="recTitle"></h2>
+      <div class="meta" id="recMeta"></div>
+      <div class="abs" id="recAbs"></div>
+      <div class="decide">
+        <div class="row">
+          <button class="btn inc" id="bInc">Include for full text<kbd>I</kbd></button>
+          <button class="btn exc" id="bExc">Exclude<kbd>E</kbd></button>
+          <button class="btn ghost" id="bBack">Previous<kbd>B</kbd></button>
+          <button class="btn ghost" id="bNext">Skip ahead<kbd>N</kbd></button>
+        </div>
+        <div class="reasons" id="reasons" hidden>
+          <button class="reason" data-r="no guarantee stated (empirical or attack study)"><kbd>1</kbd>No guarantee stated (empirical or attack study)</button>
+          <button class="reason" data-r="guarantee not about a learned component"><kbd>2</kbd>Guarantee is not about a learned component or a system containing one</button>
+          <button class="reason" data-r="off topic"><kbd>3</kbd>Off topic (no learned system, no guarantee)</button>
+          <button class="reason" data-r="thesis duplicating a journal version"><kbd>4</kbd>Thesis duplicating a journal version</button>
+          <button class="reason" data-r="other"><kbd>5</kbd>Other (write a note first)</button>
+        </div>
+        <label class="hint" for="note">Note (optional; required for "Other")</label>
+        <textarea id="note" placeholder="e.g. guarantee is about the plant model only"></textarea>
+        <div class="hint">Unsure? Include. At this stage, uncertainty is resolved at full text, not here.</div>
+        <div class="status" id="status" role="status"></div>
+      </div>
+    </article>
+  </section>
+
+  <section id="vMine" hidden>
+    <div class="card">
+      <div class="grid2" id="mineStats"></div>
+      <div class="tbl"><table><thead><tr><th>#</th><th>Decision</th><th>Title</th><th>Reason / note</th><th></th></tr></thead><tbody id="mineRows"></tbody></table></div>
+      <p class="hint" id="mineEmpty" style="margin:0">Your decisions appear here, most recent first. Open one to change it.</p>
+    </div>
+  </section>
+
+  <section id="vRule" hidden>
+    <div class="card rule">
+      <h2>Inclusion (manuscript Sec. IV-A, verbatim)</h2>
+      <p>We include a paper if it states a formal, statistical or architectural guarantee about a learned component, or about a system containing one, and if the object its guarantee quantifies over can be identified. We exclude empirical attack studies without a guarantee, guarantees about non-learned components, and theses that duplicate a journal version.</p>
+      <h2>Two tiers (verbatim)</h2>
+      <p>The inclusion rule in our proposal required evaluation on an autonomous vehicle. Applied literally, it would exclude the canonical verifiers that define the guarantee classes, which are evaluated on image benchmarks. We therefore code two tiers. Tier A contains guarantees evaluated on a vehicle task, including standard vehicle benchmarks such as ACAS Xu, TaxiNet, adaptive cruise control and quadrotors. Tier B contains method anchors evaluated only on generic benchmarks. Both tiers are included.</p>
+      <h2>Screening convention</h2>
+      <p>A record that might meet the rule is included for full-text reading; uncertainty is resolved at full text, not here. A record with no abstract is judged on its title and the same convention.</p>
+      <h2>Order and stopping (amendment 1, fixed 2026-10-15)</h2>
+      <p>Records are shown best-first by a ranking model trained on human decisions; the model is retrained after every 200 consensus decisions. Screening stops only when at least 2,538 records (10%) have been screened by both of you and the last 250 consecutive records were excluded by both, followed by a model switch and a random check of 400 unscreened records. Screen independently: do not discuss records until adjudication.</p>
+    </div>
+  </section>
+
+  <section id="vCoord" hidden>
+    <div class="card">
+      <div class="notice">This view combines both screeners' decisions. If you are also screening, open it only at a phase check, so your own screening stays blind.</div>
+      <div class="grid2" id="coordStats"></div>
+      <div class="tbl"><table><thead><tr><th>Screener</th><th>Role</th><th class="num">Decided</th><th class="num">Included</th><th class="num">Excluded</th><th>Last decision</th></tr></thead><tbody id="coordRows"></tbody></table></div>
+      <div class="row">
+        <button class="btn" id="bExport">Download decisions (CSV)</button>
+        <span class="status" id="coordStatus"></span>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const PHASE_A_MIN = 2538, RUN_MIN = 250, BLOCK = 100;
+  const S = { recs: [], byCid: new Map(), uid: null, role: null, mine: new Map(), pos: 0, db: null, user: null,
+              downloads: null, writing: Promise.resolve(), view: "screen", isOwner: false, coordUnsub: [] };
+
+  function setStatus(msg, err) { const s = $("status"); s.textContent = msg; s.className = "status" + (err ? " err" : ""); }
+  function blockId(k) { return "b" + String(Math.floor((k - 1) / BLOCK)).padStart(4, "0"); }
+
+  // ---- tabs
+  document.querySelectorAll("nav button").forEach((b) => b.addEventListener("click", () => show(b.dataset.view)));
+  function show(v) {
+    S.view = v;
+    for (const [view, tab, sec] of [["screen", "tabScreen", "vScreen"], ["mine", "tabMine", "vMine"],
+                                    ["rule", "tabRule", "vRule"], ["coord", "tabCoord", "vCoord"]]) {
+      $(tab).setAttribute("aria-selected", String(view === v)); $(sec).hidden = view !== v;
+    }
+    if (v === "mine") renderMine();
+    if (v === "coord") startCoord();
+  }
+
+  // ---- records
+  async function loadRecords() {
+    const r = await fetch("records.json"); const js = await r.json();
+    S.recs = js.records; S.meta = js;
+    js.records.forEach((x, i) => S.byCid.set(x.c, i));
+  }
+
+  // ---- position: first record this screener has not decided
+  function firstOpen(from = 0) {
+    for (let i = from; i < S.recs.length; i++) if (!S.mine.has(S.recs[i].c)) return i;
+    return S.recs.length;
+  }
+
+  function renderRail() {
+    const n = S.mine.size, total = S.meta ? S.meta.n_candidates : 0;
+    $("railFill").style.width = Math.min(100, 100 * n / Math.max(1, S.recs.length)) + "%";
+    $("railMark").style.left = Math.min(100, 100 * PHASE_A_MIN / Math.max(1, S.recs.length)) + "%";
+    $("railLeft").textContent = `${n.toLocaleString()} decided of ${S.recs.length.toLocaleString()} loaded`;
+    $("railRight").textContent = `Phase A minimum ${PHASE_A_MIN.toLocaleString()} · ${total.toLocaleString()} candidates in all`;
+  }
+
+  function renderRecord() {
+    renderRail();
+    const card = $("recCard");
+    if (!S.role) { card.hidden = true; return; }
+    if (S.pos >= S.recs.length) {
+      card.hidden = true; $("gate").hidden = false;
+      $("gate").textContent = "You have reached the end of the loaded list. Tell the coordinator: the next ranking will extend it.";
+      return;
+    }
+    $("gate").hidden = true; card.hidden = false;
+    const r = S.recs[S.pos], d = S.mine.get(r.c);
+    $("recRank").textContent = `rank ${r.k.toLocaleString()}`;
+    $("recId").textContent = r.c;
+    $("recPrev").innerHTML = "";
+    if (d) { const s = document.createElement("span"); s.className = "done " + (d.i ? "i" : "e");
+      s.textContent = d.i ? "You included this" : "You excluded this: " + d.r; $("recPrev").appendChild(s); }
+    $("recTitle").textContent = r.t || "(no title)";
+    const meta = $("recMeta"); meta.textContent = [r.y, r.v, r.ty].filter(Boolean).join(" · ");
+    if (r.d) { meta.append(" · "); const a = document.createElement("a"); a.href = "https://doi.org/" + r.d;
+      a.target = "_blank"; a.rel = "noopener"; a.textContent = "doi:" + r.d; meta.appendChild(a); }
+    const abs = $("recAbs");
+    if (r.a && r.a.trim()) { abs.className = "abs"; abs.textContent = r.a; }
+    else { abs.className = "abs none"; abs.textContent = "No abstract in the record. Judge on the title, under the same convention."; }
+    $("note").value = d && d.n ? d.n : "";
+    $("reasons").hidden = true;
+    setStatus("");
+  }
+
+  // ---- writes: one block document per 100 ranks, one write at a time
+  function decide(include, reason) {
+    const r = S.recs[S.pos]; if (!r || !S.db || !S.uid) return;
+    const note = $("note").value.trim();
+    if (!include && reason === "other" && !note) { setStatus("Write a note for 'Other' first.", true); $("note").focus(); return; }
+    const entry = { i: include ? 1 : 0, r: include ? "" : reason, n: note, k: r.k, t: new Date().toISOString(), v: S.meta.version };
+    S.mine.set(r.c, entry);
+    const bid = blockId(r.k);
+    const body = {};
+    for (const [cid, e] of S.mine) if (blockId(e.k) === bid) body[cid] = e;
+    const ref = S.db.doc(`screens/${S.uid}/blocks/${bid}`);
+    setStatus("Saving…");
+    S.writing = S.writing.then(() => ref.set({ d: body })).then(
+      () => setStatus(`Saved ${include ? "include" : "exclude"} for rank ${r.k}.`),
+      (e) => setStatus(e && e.code === "quota_exceeded" ? "The store is full; tell the coordinator." :
+                       "Not saved (" + (e && e.code || "error") + "). Your decision is kept on this page; try again.", true));
+    S.pos = firstOpen(S.pos + 1);
+    renderRecord();
+  }
+
+  $("bInc").addEventListener("click", () => decide(true, ""));
+  $("bExc").addEventListener("click", () => { $("reasons").hidden = !$("reasons").hidden; });
+  document.querySelectorAll(".reason").forEach((b) => b.addEventListener("click", () => decide(false, b.dataset.r)));
+  $("bBack").addEventListener("click", () => { if (S.pos > 0) { S.pos -= 1; renderRecord(); } });
+  $("bNext").addEventListener("click", () => { S.pos = Math.min(S.recs.length, S.pos + 1); renderRecord(); });
+  document.addEventListener("keydown", (ev) => {
+    if (S.view !== "screen" || !S.role || ev.target.tagName === "TEXTAREA" || ev.metaKey || ev.ctrlKey || ev.altKey) return;
+    const k = ev.key.toLowerCase();
+    if (k === "i") decide(true, "");
+    else if (k === "e") $("reasons").hidden = !$("reasons").hidden;
+    else if (k === "b") $("bBack").click();
+    else if (k === "n") $("bNext").click();
+    else if (!$("reasons").hidden && "12345".includes(k)) document.querySelectorAll(".reason")[+k - 1].click();
+    else return;
+    ev.preventDefault();
+  });
+
+  // ---- my decisions
+  function renderMine() {
+    const rows = [...S.mine.entries()].sort((a, b) => b[1].t.localeCompare(a[1].t));
+    const inc = rows.filter(([, e]) => e.i).length;
+    $("mineStats").innerHTML = "";
+    for (const [n, l] of [[rows.length, "decided"], [inc, "included for full text"], [rows.length - inc, "excluded"]]) {
+      const d = document.createElement("div"); d.className = "stat";
+      const b = document.createElement("b"); b.textContent = n.toLocaleString();
+      const s = document.createElement("span"); s.textContent = l; d.append(b, s); $("mineStats").appendChild(d);
+    }
+    const tb = $("mineRows"); tb.innerHTML = "";
+    $("mineEmpty").hidden = rows.length > 0;
+    for (const [cid, e] of rows.slice(0, 300)) {
+      const i = S.byCid.get(cid), r = i != null ? S.recs[i] : { t: cid, k: e.k };
+      const tr = document.createElement("tr");
+      const c = (t) => { const td = document.createElement("td"); td.textContent = t; tr.appendChild(td); return td; };
+      c(String(r.k)); const dd = c(""); const p = document.createElement("span");
+      p.className = "pill " + (e.i ? "ok" : "no"); p.textContent = e.i ? "include" : "exclude"; dd.appendChild(p);
+      c(r.t); c([e.r, e.n].filter(Boolean).join(" — "));
+      const td = document.createElement("td"); const btn = document.createElement("button"); btn.className = "btn ghost";
+      btn.textContent = "Open"; btn.addEventListener("click", () => { if (i != null) { S.pos = i; show("screen"); renderRecord(); } });
+      td.appendChild(btn); tr.appendChild(td); tb.appendChild(tr);
+    }
+  }
+
+  // ---- coordinator (owner only): aggregate both screeners
+  function kappa(pairs) {
+    const n = pairs.length; if (!n) return null;
+    let a = 0, p1 = 0, p2 = 0;
+    for (const [x, y] of pairs) { if (x === y) a++; p1 += x; p2 += y; }
+    const po = a / n, pe = (p1 / n) * (p2 / n) + (1 - p1 / n) * (1 - p2 / n);
+    return pe === 1 ? 1 : (po - pe) / (1 - pe);
+  }
+  let coordStarted = false; const coord = { roles: {}, dec: {} };
+  function startCoord() {
+    if (coordStarted || !S.db) { renderCoord(); return; }
+    coordStarted = true;
+    S.db.collection("screens").onSnapshot((snap) => {
+      for (const d of snap.docs) {
+        const uid = d.id; coord.roles[uid] = (d.data() || {}).role || "?";
+        if (!coord.dec[uid]) {
+          coord.dec[uid] = new Map();
+          S.db.collection(`screens/${uid}/blocks`).onSnapshot((bs) => {
+            const m = new Map();
+            for (const b of bs.docs) for (const [cid, e] of Object.entries((b.data() || {}).d || {})) m.set(cid, e);
+            coord.dec[uid] = m; renderCoord();
+          }, (e) => { $("coordStatus").textContent = "Could not read decisions (" + e.code + ")."; });
+        }
+      }
+      renderCoord();
+    }, (e) => { $("coordStatus").textContent = "Could not read screeners (" + e.code + ")."; });
+  }
+  async function renderCoord() {
+    const uids = Object.keys(coord.roles);
+    const ps = S.user ? await S.user.profiles(uids) : {};
+    const tb = $("coordRows"); tb.innerHTML = "";
+    for (const uid of uids) {
+      const m = coord.dec[uid] || new Map(); const es = [...m.values()];
+      const inc = es.filter((e) => e.i).length; const last = es.reduce((a, e) => (e.t > a ? e.t : a), "");
+      const tr = document.createElement("tr");
+      for (const [t, cls] of [[(ps[uid] && ps[uid].name) || "Someone", ""], [coord.roles[uid], ""], [es.length, "num"],
+                              [inc, "num"], [es.length - inc, "num"], [last ? last.slice(0, 16).replace("T", " ") : "—", ""]]) {
+        const td = document.createElement("td"); td.textContent = typeof t === "number" ? t.toLocaleString() : t;
+        if (cls) td.className = cls; tr.appendChild(td);
+      }
+      tb.appendChild(tr);
+    }
+    const h1 = uids.find((u) => coord.roles[u] === "H1"), h2 = uids.find((u) => coord.roles[u] === "H2");
+    const A = h1 ? coord.dec[h1] : new Map(), B = h2 ? coord.dec[h2] : new Map();
+    const pairs = []; let run = 0, both = 0, disagree = 0;
+    for (const r of S.recs) {                       // walk the shared order; stop at the first record not decided by both
+      const a = A.get(r.c), b = B.get(r.c);
+      if (!a || !b) break;
+      both++; pairs.push([a.i, b.i]); if (a.i !== b.i) disagree++;
+      run = (a.i === 0 && b.i === 0) ? run + 1 : 0;
+    }
+    const k = kappa(pairs);
+    const okA = both >= PHASE_A_MIN, okR = run >= RUN_MIN;
+    const st = $("coordStats"); st.innerHTML = "";
+    for (const [v, l] of [[both.toLocaleString(), "screened by both, in order"], [k == null ? "—" : k.toFixed(2), "Cohen's κ (H1 vs H2)"],
+                          [disagree.toLocaleString(), "disagreements to adjudicate"], [run.toLocaleString(), "current run of consensus excludes"]]) {
+      const d = document.createElement("div"); d.className = "stat";
+      const b = document.createElement("b"); b.textContent = v; const s = document.createElement("span"); s.textContent = l;
+      d.append(b, s); st.appendChild(d);
+    }
+    const ph = document.createElement("div"); ph.className = "stat";
+    const pb = document.createElement("b"); const pill = document.createElement("span");
+    pill.className = "pill " + (okA && okR ? "ok" : "no");
+    pill.textContent = okA && okR ? "Phase A conditions met" : `Phase A: ${okA ? "✓" : "✗"} ≥${PHASE_A_MIN} both · ${okR ? "✓" : "✗"} run ≥${RUN_MIN}`;
+    pb.appendChild(pill); const ps2 = document.createElement("span"); ps2.textContent = "stopping rule";
+    ph.append(pb, ps2); st.appendChild(ph);
+    if (!h1 || !h2) $("coordStatus").textContent = "Waiting for both screeners to pick H1 and H2.";
+  }
+  $("bExport").addEventListener("click", async () => {
+    const lines = ["screener,cid,rank,include,reason,note,decided_utc,rank_version"];
+    const q = (s) => '"' + String(s ?? "").replace(/"/g, '""') + '"';
+    for (const uid of Object.keys(coord.dec)) for (const [cid, e] of coord.dec[uid])
+      lines.push([coord.roles[uid], cid, e.k, e.i, q(e.r), q(e.n), e.t, e.v].join(","));
+    if (!S.downloads) { $("coordStatus").textContent = "Downloads are not available in this view."; return; }
+    try { await S.downloads.save({ filename: "screening_decisions.csv", data: lines.join("\n") + "\n" });
+          $("coordStatus").textContent = "Saved."; }
+    catch (e) { $("coordStatus").textContent = "Not saved (" + (e && e.code || "declined") + ")."; }
+  });
+
+  // ---- role
+  async function pickRole(role) {
+    try { await S.db.doc(`screens/${S.uid}`).set({ role }); S.role = role; $("rolePick").hidden = true;
+          $("whoChip").textContent = "screener " + role; renderRecord(); }
+    catch (e) { $("gate").hidden = false; $("gate").textContent = "Could not save your role (" + (e && e.code || "error") +
+          "). You need Contributor access to this page; ask the coordinator."; }
+  }
+  $("pickH1").addEventListener("click", () => pickRole("H1"));
+  $("pickH2").addEventListener("click", () => pickRole("H2"));
+
+  // ---- boot
+  async function boot() {
+    renderRail();
+    try { await loadRecords(); } catch (e) { $("gate").hidden = false; $("gate").textContent = "Could not load the records."; return; }
+    renderRail();
+    const [db, user, downloads] = await Promise.all([claude.use("db"), claude.use("user"), claude.use("downloads")]);
+    S.db = db; S.user = user; S.downloads = downloads;
+    S.uid = user ? await user.id() : null;
+    S.isOwner = user ? await user.isOwner() : false;
+    $("tabCoord").hidden = !S.isOwner;
+    if (!db || !S.uid) {
+      $("whoChip").textContent = "read only";
+      $("gate").hidden = false;
+      $("gate").textContent = "Sign in with the account the coordinator invited to record decisions. You can still read the records and the rule.";
+      S.role = "preview"; S.pos = 0; renderRecord();
+      ["bInc", "bExc"].forEach((id) => ($(id).disabled = true));
+      return;
+    }
+    const me = await db.doc(`screens/${S.uid}`).get();
+    S.role = me.exists ? (me.data().role || null) : null;
+    $("whoChip").textContent = S.role ? "screener " + S.role : "choose your role";
+    $("rolePick").hidden = !!S.role;
+    let first = true;
+    db.collection(`screens/${S.uid}/blocks`).onSnapshot((bs) => {
+      const m = new Map();
+      for (const b of bs.docs) for (const [cid, e] of Object.entries((b.data() || {}).d || {})) m.set(cid, e);
+      // keep decisions made on this page that the store has not echoed yet
+      for (const [cid, e] of S.mine) if (!m.has(cid)) m.set(cid, e);
+      S.mine = m;
+      if (first) { first = false; S.pos = firstOpen(0); renderRecord(); }
+      else renderRail();
+      if (S.view === "mine") renderMine();
+    }, (e) => setStatus("Lost the connection to your decisions (" + e.code + "). Reload the page.", true));
+  }
+  boot();
+})();
+</script>
