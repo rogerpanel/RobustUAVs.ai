@@ -106,7 +106,8 @@ python3 r1_attackers.py --par 4      # R1: CMA-ES / TPE / mixed family, scaled E
 python3 r1_attackers.py --par 4 --stage optimise_tail && python3 r1_attackers.py --par 4 --stage delta \
   && python3 r1_attackers.py --par 4 --stage e4
 python3 r1_diagnose.py               # the scaled-E4 violations, mission by mission
-python3 r8_analytic_bound.py --par 4 # R8: LP stealth budget (~1 h on 4 cores)
+python3 r8_analytic_bound.py --par 4 --anchors 5 --out r8_ta5.csv  # R8 at T_a = 5 s, the rows the paper uses
+python3 r8_analytic_bound.py --par 4 # R8 full T_a sweep (5, 10, 20 s, none): ~14 h on 4 cores
 python3 r5_measured_gnss.py          # R5: measured GNSS envelope (uses results/gamma_campaign_samples.csv)
 python3 e4_revised.py --par 4        # revised instantiation on fresh seeds (~30 min on 4 cores)
 python3 make_numbers.py
