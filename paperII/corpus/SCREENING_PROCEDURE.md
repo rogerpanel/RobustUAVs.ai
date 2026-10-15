@@ -72,3 +72,32 @@ LLM-vs-human κ, and the number of records the LLM flags rescued.
 ## Change log
 
 - 2026-10-15: amendment 1 (this file).
+
+## Amendment 2 (2026-10-15): LLM screeners, disclosed
+
+Fixed before any record was screened. No human screener is available for the
+title/abstract stage. The stage is therefore performed by **two independent
+LLM screeners**, reported as such everywhere (never as human screeners):
+
+- **L1** and **L2**: separate sub-agent runs on two different models. Each
+  reads only `SCREENING_RULE.md` and a batch of records, and never sees the
+  other's output, the pilot set, or the ranking scores.
+- **Decision**: a record is excluded only when both L1 and L2 exclude it;
+  any include, and any disagreement, goes forward to full text (the
+  screening convention: uncertainty is resolved at full text). This replaces
+  the H1/H2 roles of amendment 1 for this stage, and it relaxes the S2 rule
+  that LLM output may never exclude: two independent LLM excludes now can.
+- **Order and stopping**: as in amendment 1, with L1/L2 in place of H1/H2.
+  Phase A in rank order (`rank_v1.csv`, held fixed: no active learning, so
+  no LLM decision ever becomes a ranking label); Phase B re-ranks with
+  character 3-5-grams trained on the same development-half positives only;
+  Phase C draws the 400-record random tail sample (seed 20261016).
+- **Human check (recommended)**: the author screens a simple random sample of
+  100 records excluded by both LLMs (seed 20261017), blind to the LLM
+  decisions; agreement and any missed includes are reported. If it is not
+  done, the paper reports the screening as LLM-only, as a limitation.
+- **Outputs**: `screening/screen_L1.csv`, `screening/screen_L2.csv`
+  (cid, include, reason), `screening/decisions.csv` (consensus), and a
+  per-batch cost log.
+
+- 2026-10-15: amendment 2 (this section).
