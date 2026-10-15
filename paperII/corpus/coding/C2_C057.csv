@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7164836213",1,"","CP","B","estimation","pop","P","distribution","L_conc","U","measured","Split-conformal finite-sample coverage for clinical risk regression heads; coverage invoked, not evaluated in visible text; exchangeability unstated; component estimation doubtful."
+"O7135162928",1,"","CP","A","estimation","pop","P","distribution","L_conc","SE","measured","ConForME: conformal multi-horizon trajectory-prediction tubes with joint 1-alpha coverage under exchangeability; thesis, journal-duplication not verifiable from text."
+"O4415197707",1,"","CP","B","perception","pop","P","distribution","L_conc","SE","measured","Split conformal prediction sets for LVLM multiple-choice VQA with marginal coverage >= 1-alpha under exchangeability; empirical error rates checked."
+"O4416190460",1,"","CP","A","estimation","pop","P","distribution","L_conc","U","measured","Split-conformal intervals on neural-process robot state estimates, coverage >= 1-alpha for next sample; coverage not empirically reported, assumption unstated."
+"O7144391708",0,"Cryptographic integrity/privacy guarantees for V2X messages; no guarantee on learned component behaviour","","","","","","","","","",""

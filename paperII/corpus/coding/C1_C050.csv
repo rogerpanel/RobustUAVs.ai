@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7166859555",1,"","CRL","B","control","in","A","none","L_sup","S","modelled","Guarded Bellman operator is a gamma-contraction over data-supported safe actions; masked execution. Scope in vs op doubtful (rule 6); Atari only, no proof on network."
+"O4310631281",1,"","NCERT","B","control","tr","P","none","L_dyn;L_conc","S","simulated","GP-based feedback-linearised CBF-SOCP keeps joint-limit set forward invariant with prob >= 1-(m+m^2)delta; GP-sample-function assumption; 2-DOF elastic robot simulation."
+"O7131319644",0,"Short empirical conformal case study on EEG; theory only cited, not stated or proved here","","","","","","","","","",""
+"O4390092008",1,"","NCERT","A","control","tr","P","disturbance","L_dyn;L_conc","U","simulated","Stochastic CBF with Bayesian-learned drift and diffusion gives worst-case safety probability prod b_j/c_j over infinite horizon; ACC example; learned-model accuracy not formally carried."
+"O2964359568",1,"","SMT","B","perception","in","A","none","none","S","proof","MILP/SMT-oracle abductive explanations: subset- or cardinality-minimal feature cubes provably entail the NN prediction for all completions; exact encoding assumed."

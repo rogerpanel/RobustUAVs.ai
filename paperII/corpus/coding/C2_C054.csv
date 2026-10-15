@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7140091238",0,"Empirical RAG uncertainty benchmark; conformal coverage used as metric, no own guarantee",,,,,,,,,,
+"O2970900401",0,"SMC validation of POMDP planner and Bayesian occupancy grid; no learned component",,,,,,,,,,
+"O7166701031",1,,"NEW:Training-distribution bound on dangerous predictors","B","estimation","pop","P","none","none","S","modelled","Thm 5.26: training-process probability of dangerous Predictor <= Cbad*Rshell; purely theoretical, no benchmark; tier B and component estimation doubtful."
+"O4390576807",1,,"CRL","A","control","tr","A","disturbance","L_dyn","S","measured","Barrier-force actor-critic: proven constraint satisfaction, stability, convergence to disturbance set via Lipschitz tightening; tr vs op doubt, chose smaller."
+"O3087456546",1,,"CRL","A","planning","op","A","none","none","S","simulated","CMAX++ reaches goal within |S|^3 steps per repetition, converges to optimal cost, under optimistic model assumption; model-mismatch not a listed perturbation."
