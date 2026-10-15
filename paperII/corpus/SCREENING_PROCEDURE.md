@@ -129,3 +129,9 @@ therefore replaced by a sampling design; nothing already screened is changed.
   screened (by design), and the estimated includes among them.
 
 - 2026-10-15: amendment 3 (this section).
+- 2026-10-15: amendment 3, execution note. The 1,000-record sample included
+  186 records; proportional allocation of the coding sample asks for 208 from
+  the remainder stratum. The sample is therefore extended by 250 records drawn
+  without replacement from the not-yet-sampled remainder (seed 20261018 + 1),
+  so the remainder sample stays a simple random sample (now 1,250). Decided
+  from the include count only, before any coding.
