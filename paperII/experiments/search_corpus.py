@@ -498,15 +498,25 @@ DBLP_STREAMS = {
 }
 
 
+class SourceBlocked(RuntimeError):
+    """The source answers with a bot-protection challenge instead of data. We do
+    not try to get past such a challenge: the stage is recorded as not executed."""
+
+
 def dblp_get(url: str, as_json=True, retries=8):
     import urllib.error
     for i in range(retries):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": "paperII-sok/1.0 (systematic review)"})
             with urllib.request.urlopen(req, timeout=90) as r:
+                status = r.status
                 body = r.read().decode("utf-8", "replace")
             time.sleep(1.0)                                   # DBLP asks for about 1 request/s
+            if status == 202 or "not a bot" in body[:2000] or "/.within.website/" in body[:4000]:
+                raise SourceBlocked(f"bot-protection challenge (HTTP {status}) at {url}")
             return json.loads(body) if as_json else body
+        except SourceBlocked:
+            raise
         except Exception as e:  # noqa: BLE001
             status = getattr(e, "code", None)
             if status == 404:
@@ -559,6 +569,13 @@ def cmd_venues_dblp(a):
             for r in old:
                 fh.write(json.dumps(r) + "\n")
         print(f"resume: {len(done)} of {len(DBLP_STREAMS)} venues complete ({len(old)} records kept)")
+    try:
+        dblp_get("https://dblp.org/search/publ/api?q=test&h=1&format=json")
+    except SourceBlocked as e:
+        log({"source": "dblp_venue", "blocked": True, "complete": False, "error": str(e)})
+        print(f"DBLP venue sweep NOT EXECUTED: {e}. Recorded in search_log.jsonl; "
+              "venue coverage rests on the OpenAlex venue sweeps and on snowballing.", flush=True)
+        sys.exit(76)
     with open(a.out, "a" if a.resume else "w") as fh:
         for short, stream in DBLP_STREAMS.items():
             if short in done:

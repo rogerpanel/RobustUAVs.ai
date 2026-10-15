@@ -67,12 +67,23 @@ def main() -> int:
     unique = len(rows)          # dedup_groups() in search_corpus.py is authoritative
 
     truncated = 0
+    dblp = []
     log = a.corpus / "search_log.jsonl"
     if log.exists():
         for line in log.open():
             e = json.loads(line)
             if e.get("total_hits") is not None and e.get("cap") and e["total_hits"] > e["cap"]:
                 truncated += 1
+            if e.get("source") == "dblp_venue":
+                dblp.append(e)
+    # A DBLP sweep that parsed no volume at all did not run, whatever it logged:
+    # on 2026-10-15 DBLP served a bot-protection page instead of its index pages.
+    dblp_status = ""
+    if dblp:
+        if any(e.get("blocked") for e in dblp) or all(e.get("tocs", 0) == 0 for e in dblp if "tocs" in e):
+            dblp_status = "not executed: DBLP blocked automated access (bot protection)"
+        else:
+            dblp_status = "executed"
 
     out = a.corpus / "prisma_counts.csv"
     with out.open("w", newline="") as fh:
@@ -89,6 +100,8 @@ def main() -> int:
         w.writerow(["truncated_queries", truncated])
         for v, n in per_venue_file.items():
             w.writerow([f"identified_{v.split('.')[0]}", n])
+        if dblp_status:
+            w.writerow(["dblp_venue_sweep", dblp_status])
     print(f"[S1] identified {identified} (search {n_search}, venue sweeps {n_venue}, "
           f"other databases {len(external)}); duplicates {identified - unique}; "
           f"{unique} records to screen; {truncated} queries truncated")

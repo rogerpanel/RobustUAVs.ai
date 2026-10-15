@@ -37,3 +37,35 @@ rev0,G78,B,2019,ICML,PROVEN: Verifying Robustness of Neural Networks with a Prob
 rev0,G81,B,2021,AISafety@IJCAI,Assessing the Reliability of Deep Learning Classifiers Through Robustness Evaluation and Operational Profiles
 rev0,G82,A,2023,ACM TECS,Reliability Assessment and Safety Arguments for ML Components in System Assurance
 rev0,G86,A,2021,SAFECOMP,Towards Certification of a Reduced Footprint ACAS-Xu System: A Hybrid ML-Based Solution
+rev1,G01,B,2019,ICML,Certified Adversarial Robustness via Randomized Smoothing
+rev1,G03,B,2019,NeurIPS,Provably Robust Deep Learning via Adversarially Trained Smoothed Classifiers
+rev1,G04,B,2020,ICML,Randomized Smoothing of All Shapes and Sizes
+rev1,G05,B,2019,ICCV,Scalable Verified Training for Provably Robust Image Classification (IBP)
+rev1,G09,B,2022,NeurIPS,General Cutting Planes for Bound-Propagation-Based Neural Network Verification
+rev1,G14,B,2024,CAV,Marabou 2.0: A Versatile Formal Analyzer of Neural Networks
+rev1,G15,B,2018,NeurIPS,Lipschitz-Margin Training: Scalable Certification of Perturbation Invariance
+rev1,G16,B,2021,ICLR,Orthogonalizing Convolutional Layers with the Cayley Transform
+rev1,G19,A,2021,ICML,Scalable Certified Segmentation via Randomized Smoothing (Cityscapes)
+rev1,G20,B,2021,USENIX Security,PatchGuard: A Provably Robust Defense against Adversarial Patches
+rev1,G23,B,2020,NeurIPS,Certified Defense to Image Transformations via Randomized Smoothing
+rev1,G25,B,2020,CVPR,Towards Verifying Robustness of Neural Networks Against a Family of Semantic Perturbations
+rev1,G26,B,2021,ICCV,Robustness Certification for Point Cloud Models
+rev1,G27,A,2019,JGCD,Deep Neural Network Compression for Aircraft Collision Avoidance Systems
+rev1,G28,A,2022,NFM,NNLander-VeriF: Formal Verification for Vision-Based Autonomous Aircraft Landing
+rev1,G38,A,2019,HSCC,Verisig: Verifying Safety Properties of Hybrid Systems with Neural Network Controllers
+rev1,G40,A,2020,CAV,NNV: The Neural Network Verification Tool for DNNs and Learning-Enabled CPS
+rev1,G47,A,2022,JMLR,OVERT: Safety Verification of Neural Network Control Policies for Nonlinear Systems
+rev1,G51,A,2025,ARCH,ARCH-COMP25 Category Report: AINNCS for Continuous and Hybrid Systems Plants
+rev1,G55,B,2022,ICLR,COPA: Certifying Robust Policies for Offline RL against Poisoning Attacks
+rev1,G57,B,2021,CAV,FOSSIL: A Software Tool for the Formal Synthesis of Lyapunov Functions and Barrier Certificates using Neural Networks
+rev1,G65,A,2020,JGCD,Runtime Assurance for Autonomous Aerospace Systems
+rev1,G69,B,2020,ECAI,Outside the Box: Abstraction-Based Monitoring of Neural Networks
+rev1,G70,B,2020,IMBSA,SafeML: Safety Monitoring of ML Classifiers through Statistical Difference Measures
+rev1,G71,A,2020,CAV,Formal Analysis and Redesign of a Neural Network-Based Aircraft Taxiing System with VerifAI
+rev1,G72,A,2019,CAV,VerifAI: A Toolkit for the Formal Design and Analysis of AI-Based Systems
+rev1,G74,A,2018,NeurIPS,Scalable End-to-End Autonomous Vehicle Testing via Rare-Event Simulation
+rev1,G75,B,2017,UAI,Computing Nonvacuous Generalization Bounds for Deep (Stochastic) Neural Networks
+rev1,G78,B,2019,ICML,PROVEN: Verifying Robustness of Neural Networks with a Probabilistic Approach
+rev1,G81,B,2021,AISafety@IJCAI,Assessing the Reliability of Deep Learning Classifiers Through Robustness Evaluation and Operational Profiles
+rev1,G82,A,2023,ACM TECS,Reliability Assessment and Safety Arguments for ML Components in System Assurance
+rev1,G86,A,2021,SAFECOMP,Towards Certification of a Reduced Footprint ACAS-Xu System: A Hybrid ML-Based Solution
