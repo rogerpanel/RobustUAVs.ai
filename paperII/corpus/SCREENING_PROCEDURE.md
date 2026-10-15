@@ -163,3 +163,13 @@ is reported as a limitation.
 - **Estimates**: corpus-level shares are weighted by stratum, with intervals.
 
 - 2026-10-15: amendment 4 (this section).
+- 2026-10-15: amendment 4, execution note (added after adjudication; it changes
+  no rule). Agreement C1-C2: eligibility 257/287 (kappa 0.75); on papers both
+  found eligible, Cohen's kappa 0.74 (class) to 0.97 (tier), lowest for
+  `assumption` (0.47). ADJ resolved all 168 papers (30 eligibility, 219 field
+  disagreements), 0 unresolved, 0 attempts to change an agreed field. ADJ ran on
+  the same model as C2 and chose C2's value in 166 of the 219 field
+  disagreements (C1 47, a third value 6). Because of this, every hypothesis
+  quantity is also reported from C1's and from C2's codes alone
+  (`hypotheses_full_C1.csv`, `hypotheses_full_C2.csv`), and a conclusion is
+  stated only where all three agree.
