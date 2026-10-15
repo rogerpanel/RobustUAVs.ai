@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7138277436","1","","BP","B","perception","in","A","norm","none","S","proof","Complete BaB verification (alpha-beta-CROWN, DRG branching) of local robustness on MNIST/CIFAR-10 nets; doubt BP vs SMT (complete verifier)."
+"O4283657298","1","","NEW:WCET/implementation timing bound","A","control","in","A","none","none","S","proof","OTAWA static WCET bound on generated C code of ACAS-Xu/CNN nets; semantics preservation only tested; rule-6 doubt in vs op; also perception nets."
+"O4286224460","0","Empirical study of a prior approximate GE bound; no own guarantee, bound often violated.","","","","","","","","","",""
+"O3212063444","1","","NCERT","B","control","tr","A","norm","L_sup","S","proof","Learned NN positive invariant proves infinite-horizon safety for all BNN weights in interval box; rejection sampling keeps weights inside; perturbation is weight box."
+"O4404314050","1","","RS","B","perception","in","Ac","norm","none","S","proof","Randomized smoothing for uncertainty-equipped classifier: l2 radii for consistent-confident and no-confident-label-change predictions, confidence 1-alpha; CIFAR10/ImageNet."

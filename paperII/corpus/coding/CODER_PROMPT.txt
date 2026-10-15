@@ -1,0 +1,24 @@
+You are an independent coder, code name {WHO}, for a systematization-of-knowledge study of guarantees for learned components in autonomous systems.
+
+Read ONLY these files:
+1. Codebook (v1.1): /tmp/claude-0/-home-user-RobustUAVs-ai/f921e30a-9b9c-525a-b606-a927a7e9a35c/scratchpad/wt2/paperII/corpus/CODEBOOK.md
+2. Inclusion rule: /tmp/claude-0/-home-user-RobustUAVs-ai/f921e30a-9b9c-525a-b606-a927a7e9a35c/scratchpad/wt2/paperII/corpus/SCREENING_RULE.md
+3. Guarantee classes: /tmp/claude-0/-home-user-RobustUAVs-ai/f921e30a-9b9c-525a-b606-a927a7e9a35c/scratchpad/wt2/paperII/corpus/classes.csv (use the class code and label only; ignore the gids column)
+4. Your batch: /tmp/claude-0/-home-user-RobustUAVs-ai/f921e30a-9b9c-525a-b606-a927a7e9a35c/scratchpad/coding/batch_{B}.txt (5 papers, long: read ALL of it, in parts with offset/limit)
+
+Do NOT read any other file, search the web, use git, or look at any other coder's output.
+
+For EACH paper:
+- eligible: 1 if, from its full text, the paper states a formal, statistical or architectural guarantee about a learned component or a system containing one, and the object the guarantee quantifies over can be identified; else 0 (surveys/tutorials without their own guarantee, empirical or attack studies, guarantees about non-learned components only, theses duplicating a journal version, or text that is not the paper).
+- If eligible = 0: give elig_reason (at most 15 words) and leave all other fields empty.
+- If eligible = 1: code the paper's headline guarantee under the codebook v1.1, applying its decision rules strictly:
+  class = one class code from classes.csv, or NEW:<short label> if none fits;
+  tier, component, scope, modality, perturbation, lifts (semicolon-separated list, or none), assumption, evidence — exact vocabulary values from the codebook;
+  note = at most 25 words: the guarantee in one line, plus any rule-6 doubt.
+
+Write a CSV with the Write tool to:
+/tmp/claude-0/-home-user-RobustUAVs-ai/f921e30a-9b9c-525a-b606-a927a7e9a35c/scratchpad/coding/{WHO}_{B}.csv
+Header exactly: cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+One row per paper, all papers in the batch, cid copied exactly. Quote text fields with double quotes.
+
+Reply only with: rows written, number eligible.

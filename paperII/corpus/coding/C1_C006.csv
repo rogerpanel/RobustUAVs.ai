@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4312475894",1,"","CLR","B","control","tr","A","none","L_dyn","S","proof","Polynomial-time exact one-step and bounding-box reachable sets for LTI plus TLL NN controller; rule-6 doubt: in vs tr."
+"O4403853633",1,"","NCERT","B","control","tr","A","disturbance","L_sup","SE","measured","ISS Lyapunov LMI: closed loop with learned feedback-linearizing NN converges to invariant set, given residual nonlinearity bound eps measured on train data."
+"O4405785676",1,"","OPREL","A","perception","pop","P","distribution","L_gen","S","simulated","Adaptive multilevel splitting estimate of AV failure probability under learned perception-error-model noise; only asymptotic convergence, no finite-N bound; rule-6 doubt on class."
+"O3213106995",1,"","PACB","A","end2end","pop","P","distribution","L_conc","S","simulated","PAC-Bayes bound, w.p. 1-delta, on expected cost of vision-based UAV policy in novel environments, using generative-model prior; E vs P doubt."
+"O4378977211",1,"","SEM","B","perception","in","A","semantic","L_gen","S","proof","Sound CEGAR verification of classifier robustness over a CVAE latent-space perturbation set for real-world shifts; sigmoid abstraction refinement."

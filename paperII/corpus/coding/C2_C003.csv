@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4412514774",1,"","SMT","A","control","in","A","norm","none","S","proof","Complete DPLL(T) verifier proves input-output properties on VNN-COMP'24 incl. ACAS Xu; tier A via ACAS Xu, most benchmarks are image classifiers (component doubt)."
+"O4407951861",1,"","OPREL","A","estimation","pop","P","distribution","L_op","SE","measured","Module uncertainty spec via total probability weighting scenario frequencies P(z) ensures P(C(u)>c)<alpha; estimates by counting, no confidence; eligibility borderline."
+"O3029730229",1,"","LIP","B","perception","in","A","norm","none","S","proof","Curvature (Hessian eigenvalue) bound gives deterministic l2 robustness certificate for smooth-activation classifiers on MNIST; LIP vs BP class doubt."
+"O2921112343",1,"","NEW:Learned stochastic forward reachable sets","A","estimation","tr","P","distribution","L_dyn","S","simulated","Nested reach sets from learned human-action predictor capture trajectories with empirical probability 0.75-1; no confidence; tr vs pop doubt, chose smaller."
+"O7139111173",1,"","SMT","B","perception","in","A","norm","none","S","proof","SMiLE architecture plus MILP counterexample search proves zero violation of global relational properties (robustness, fairness, monotonicity) over whole input domain."
