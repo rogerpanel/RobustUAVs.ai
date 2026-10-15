@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3092184188",1,"","SMT","A","control","in","A","norm","none","U","proof","Sound and complete exact optimum of network output or minimum L-inf perturbation over an input region (ACAS Xu, TaxiNet); component choice control vs perception doubtful."
+"O4408666991",1,"","NEW:Bayesian posterior harm-probability bound","B","estimation","in","P","distribution","L_conc","S","simulated","Bayesian-posterior cautious-theory bound on true harm probability of an action, with prob 1-delta; scope in vs pop doubtful, smaller chosen."
+"O7125517238",0,"Model-checks finite-automata IDS abstractions; no learned component or autonomous system identified.","","","","","","","","","",""
+"O7214657561",1,"","RTA","B","planning","op","A","none","L_mon","S","simulated","Conditional completion and recovery-authorization soundness of runtime-mediated LLM agent execution under assumptions A1-A5; evaluated on household and manipulation simulators."
+"O4414050564",1,"","CP","B","end2end","pop","P","distribution","L_conc","S","measured","Time-varying functional conformal band bounds false-positive rate of failure detector for imitation-learning policies at level alpha; exchangeability assumed."

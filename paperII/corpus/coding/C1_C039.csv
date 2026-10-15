@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7160879966",1,"","CP","A","perception","pop","P","distribution","L_conc","S","measured","Split-CP marginal coverage 1-4alpha (Bonferroni) for detector boxes on KITTI/BDD/CODA; exchangeability stated, violated under CODA shift."
+"O4393161169",1,"","CP","B","perception","pop","P","distribution","L_conc","U","simulated","MC-CP inherits split-CP finite-sample marginal coverage 1-alpha for CNN classifiers/quantile regressors; exchangeability not stated; generic benchmarks."
+"O7160305831",1,"","RTA","B","control","tr","A","none","L_dyn;L_mon","S","simulated","Neural-operator boundary CBF-QP filter intended to keep output in safe set over horizon; proof deferred to prior work; scope tr by rule 6."
+"O4415042174",0,"Assurance-case/SPI methodology with expert-opinion Dempster-Shafer; no guarantee about a learned component.","","","","","","","","","","",""
+"O4401416547",0,"Planning method with zonotope collision constraints; no stated guarantee, only simulated crash rates.","","","","","","","","","","",""

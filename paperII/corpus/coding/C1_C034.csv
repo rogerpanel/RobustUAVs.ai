@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7172049593",1,"","RTA","B","planning","op","A","none","L_mon","S","proof","Two-level monitor with sound subtype checker so every accepted LLM-generated protocol refinement is deadlock-free; scope in vs op doubtful, chose op per rule 5."
+"O7134853944",1,"","DTMC","B","control","tr","P","distribution","none","S","modelled","Exact PCTL model-checked bridge-failure probability 3.55% of RL policy over 20-year horizon on induced DTMC; synthetic MDP; tr vs pop doubtful, chose tr."
+"O3089014878",1,"","CRL","B","control","tr","E","none","none","S","proof","Coq proof that value and policy iteration converge to the optimal expected discounted value and policy for finite MDPs; scope tr vs pop doubtful."
+"O7169876191",1,"","SEM","B","perception","in","A","semantic","none","S","proof","Certified training with SSIP/RSIP bounds gives verified robustness of image classifiers to parameterised blur and sharpen kernels over [0,eps]; class SEM vs BP doubtful."
+"O4416904409",1,"","NEW:Stability-based generalisation bound","B","estimation","pop","P","distribution","L_conc","S","modelled","High-probability generalisation bound for GeoAda-trained crop-yield regressor via uniform stability and Rademacher complexity under G-invariance, convexity, Lipschitz assumptions."

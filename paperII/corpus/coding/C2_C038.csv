@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3092184188",1,"","SMT","A","control","in","A","norm","none","S","proof","MarabouOpt: exact global optimum of output / minimum Linf adversarial perturbation over input regions (ACAS Xu, TaxiNet, MNIST). Doubt: component control vs perception (TaxiNet)."
+"O4408666991",1,"","NEW:Bayesian posterior harm bound","B","estimation","in","P","distribution","L_conc","S","simulated","W.p. >=1-delta over data stream, true harm probability <= max over plausible theories (Ville/martingale). Rule-6: in vs op; component control vs estimation doubtful."
+"O7125517238",0,"Model checking of non-learned IDS automaton abstractions; no learned-component guarantee","","","","","","","","","",""
+"O7214657561",1,"","RTA","B","planning","op","A","none","L_mon","S","simulated","Runtime mediating LLM-agent device actions: authorized completions satisfy task obligations, recoveries sound, conditional on assumptions A1-A5."
+"O4414050564",1,"","CP","B","end2end","pop","P","distribution","L_conc","SE","measured","Time-varying conformal band bounds false-positive failure-detection rate at alpha over successful rollouts of visuomotor imitation policy; hardware tested."

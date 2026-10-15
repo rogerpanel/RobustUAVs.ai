@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3095839831","1","","PACB","A","control","pop","P","distribution","L_conc;L_mon","SE","simulated","NN-approximated MPC feasible and tmax-suboptimal w.p. 1-eps (conf 1-beta) via scenario/VC bounds; dual check plus backup. Scenario/VC PAC, not PAC-Bayes."
+"O3035780950","1","","NEW:PAC-RL sample complexity","B","control","pop","P","distribution","L_conc","S","modelled","Certified self-play policies are eps-approximate Nash w.p. 1-p after O(H^6 S(A+B)/eps^2) episodes; tabular Markov games, no experiments."
+"O4414806824","1","","CP","A","perception","pop","P","distribution","L_conc","S","simulated","PICNN conformal set covers true object transition matrix w.p. >=1-alpha (marginal); Habitat indoor MultiON, tier A doubtful."
+"O7133238252","0","Online convex optimisation regret/projection-efficiency theory; no guarantee about a learned component.","","","","","","","","","",""
+"O4402883652","1","","NCERT","A","control","tr","A","none","L_dyn;L_conc","S","simulated","Demonstration-learned switching LQR reaches goal from initial set in finitely many iterations; polynomial certificate checked by dense sampling; non-neural."
