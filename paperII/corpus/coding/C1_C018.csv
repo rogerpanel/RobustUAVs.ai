@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4402753567",1,"","LIP","B","perception","in","A","norm","none","S","proof","Certified l2 robust accuracy of 1-Lipschitz networks via margin bound; comparison study, guarantee inherited from layers. Rule 6: eligibility doubtful (benchmarking paper)."
+"O7151076360",1,"","LIP","B","perception","in","A","norm","none","S","modelled","Exact Lipschitz constant of kernel feature maps / infinite random NNs under differentiability and moment assumptions; purely analytical, component choice arbitrary."
+"O4385300825",1,"","CP","A","estimation","pop","P","distribution","L_conc","SE","simulated","Conformal prediction regions with 1-delta coverage for learned vehicle trajectory predictor on F1Tenth; i.i.d. calibration assumed, coverage checked on test set."
+"O4284967541",1,"","LIP","A","perception","in","A","norm","none","SE","simulated","Maximum safe norm-ball radius from Lipschitz metric estimated by derivative-free search; estimate not sound. Rule 6: ACAS Xu plus image nets, component perception chosen."
+"O4399157133",1,"","SMT","B","control","tr","A","none","none","S","proof","Sound policy predicate abstraction via SMT with CEGAR proves neural action policy reach-avoid safe from start set; planning benchmarks. Rule 6: planning vs control."

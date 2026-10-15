@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4385289198",0,"Regret bound for black-box verification search; verified systems are not learned components.","","","","","","","","","",""
+"O7171488556",1,"","CP","B","perception","pop","P","distribution","L_conc","SE","simulated","Per-role conformal risk control: violation rate of allowed untrusted-influenced tool-call fields <= budget, finite-sample, under exchangeability. Detector as perception is a rule-6 doubt."
+"O4405469692",0,"Guarantees concern QP constraint removal in non-learned MPC; no learned component.","","","","","","","","","",""
+"O4407949559",1,"","NCERT","B","control","tr","A","none","none","S","proof","Sublevel set of given piecewise-affine neural Lyapunov function at LP-computed maximal admissible level is a constraint-admissible invariant set; pendulum and cart-pole only."
+"O4385453437",0,"Rule-based reachability safety verifier for planned trajectories; no learned component involved.","","","","","","","","","",""

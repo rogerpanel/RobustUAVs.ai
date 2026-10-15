@@ -13,6 +13,7 @@ O3037629243,class,SMT,CLR
 O3037629243,lifts,none,L_dyn
 O3092567899,lifts,L_conc,L_conc;L_dyn
 O3093796394,assumption,U,S
+O3101293418,evidence,proof,modelled
 O3112586141,class,PIL,SEM
 O3134881993,lifts,L_conc;L_gen,L_conc
 O3183883635,perturbation,none,distribution
@@ -25,9 +26,13 @@ O3213615249,class,NCERT,LIP
 O3213615249,modality,A,E
 O3213615249,perturbation,disturbance,none
 O3213615249,evidence,modelled,proof
+O3214930062,class,NEW:GP-bounded contraction tube,NEW:GP-learned model in robust adaptive control tubes
 O4206840646,assumption,U,S
 O4221148689,lifts,L_dyn;L_mon,L_dyn;L_hor;L_mon
+O4225423574,assumption,S,SE
 O4283657298,eligible,0,1
+O4284967541,class,LIP,NEW:Lipschitz-metric robustness estimation
+O4284967541,assumption,SE,S
 O4286224460,eligible,1,0
 O4312744983,eligible,0,1
 O4313447601,evidence,modelled,simulated
@@ -40,12 +45,23 @@ O4381542600,assumption,U,S
 O4383613691,class,NCERT,CLR
 O4383613691,lifts,none,L_dyn
 O4386875196,eligible,1,0
+O4389665627,eligible,1,0
 O4390832684,assumption,U,S
 O4391528845,assumption,SEC,S
 O4393954477,perturbation,norm,none
 O4393954477,assumption,U,S
+O4399157133,class,SMT,CLR
+O4399157133,lifts,none,L_dyn
 O4400025616,eligible,1,0
 O4400776977,evidence,proof,modelled
+O4400946840,class,NEW:GP-CBF chance-constrained safety filter,NCERT
+O4400946840,scope,in,tr
+O4400946840,perturbation,distribution,disturbance
+O4401414359,class,NEW:Distributionally robust chance-constrained MPC,NEW:Distributionally robust chance-constrained planning
+O4401414359,scope,tr,pop
+O4401414359,lifts,none,L_sup
+O4401414359,evidence,proof,simulated
+O4402354142,eligible,1,0
 O4402520256,tier,A,B
 O4402520256,component,control,perception
 O4402520256,perturbation,none,norm
@@ -54,19 +70,29 @@ O4403317714,lifts,L_dyn;L_mon,L_dyn;L_hor;L_mon
 O4403853633,class,NCERT,CLR
 O4403853633,lifts,L_sup,L_dyn;L_sup
 O4403853633,evidence,measured,proof
+O4404305051,class,NEW:Off-policy evaluation sample complexity,NEW:PAC off-policy evaluation bound
+O4404305051,component,estimation,control
 O4404689764,evidence,modelled,simulated
 O4405785676,class,OPREL,DTMC
 O4405955404,assumption,U,S
+O4406764499,tier,A,B
+O4406764499,assumption,S,SE
 O4407948456,class,NCERT,CLR
 O4407948456,lifts,none,L_dyn
 O4407951861,class,NEW:System-level uncertainty-measure specification,OPREL
 O4407951861,assumption,S,SE
+O4409079480,class,SEM,SMT
+O4409079480,lifts,L_gen,none
 O4409364009,class,SEM,RS
 O4409364009,evidence,proof,simulated
 O4411552344,lifts,none,L_conc
 O4411552344,assumption,S,SE
 O4412514774,component,perception,control
 O4412514774,assumption,U,S
+O4415886758,perturbation,distribution,disturbance
+O4415886758,assumption,SEC,SE
+O4415913028,evidence,simulated,measured
+O4416243460,eligible,1,0
 O4416603702,class,PROB,BP
 O4416603702,modality,P,A
 O4416603702,lifts,L_conc,none
@@ -74,6 +100,15 @@ O4416603702,assumption,SEC,S
 O4416919197,eligible,1,0
 O7118017025,modality,E,P
 O7133267090,class,NEW:GD generalisation theory for two-layer nets,NEW:Learning-theoretic generalisation bound
+O7135102326,perturbation,disturbance,distribution
 O7139111173,assumption,U,S
+O7160958905,eligible,1,0
+O7161387891,component,estimation,perception
+O7161387891,assumption,S,SE
+O7161387891,evidence,simulated,measured
 O7164897298,class,NEW:algorithmic-robustness generalisation bound,NEW:robustness-based generalisation bound
 O7164897298,evidence,simulated,measured
+O7171488556,component,perception,end2end
+O7171488556,lifts,L_conc,L_conc;L_mon
+O7204467824,class,NCERT,RTA
+O7204467824,scope,tr,op

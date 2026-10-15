@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7171834681",0,"Conformal calibration only heuristically used inside Bayesian optimization; no stated guarantee, simulation comparison only.","","","","","","","","","",""
+"O7169592824",1,"","RTA","A","control","op","A","none","L_mon","S","modelled","Safety-first behavior tree plus policy mask guarantees no learned MARL policy overrides safety (Theorem HAF); no experiments, tier A by UAV application only."
+"O7138945547",1,"","CP","B","perception","pop","P","distribution","L_conc","U","measured","Conformal prediction sets give 1-alpha coverage for RF landslide classifier; exchangeability unstated, spatial autocorrelation unaddressed; non-vehicle remote-sensing task."
+"O4417292332",1,"","CP","B","perception","pop","P","distribution","L_conc","S","simulated","Split-conformal wavelet-domain intervals (1-alpha coverage) give CHEM hallucination metric with finite-sample bound, for image reconstruction networks; iid calibration assumed."
+"O2741041149",0,"Doctoral summary of MPC/PSO plan synthesis; optimizer is not a learned component.","","","","","","","","","",""
