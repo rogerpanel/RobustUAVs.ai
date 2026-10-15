@@ -81,11 +81,18 @@ stage_r4() {
   IMG="${PX4_IMG:-px4io/px4-dev-simulation-jammy:latest}"
   docker pull -q "$IMG" > /dev/null
   # build once (SIH: physics inside PX4, no Gazebo, runs headless)
-  docker run --rm -v "$PX4":/src -w /src "$IMG" bash -lc \
-    "make px4_sitl_default > /src/build_r4.log 2>&1" || { say "R4: PX4 build failed, see $PX4/build_r4.log"; return 0; }
+  # the container runs as root on a checkout owned by the host user: allow git to read it
+  # (otherwise git stops with "dubious ownership" and PX4's version step fails)
+  if ! docker run --rm -v "$PX4":/src -w /src "$IMG" bash -lc \
+    "git config --global --add safe.directory '*' && make px4_sitl_default > /src/build_r4.log 2>&1"; then
+    say "R4: PX4 build failed, see $PX4/build_r4.log; its last lines:"
+    tail -n 25 "$PX4/build_r4.log" | sed 's/^/    /' | tee -a "$LOG/r4_build_tail.txt"
+    return 0
+  fi
   # launch N SIH quadrotors; instance i listens on UDP 14540+i for offboard
   docker rm -f px4sitl >/dev/null 2>&1 || true
   docker run -d --name px4sitl --network host -v "$PX4":/src -w /src "$IMG" bash -lc '
+    git config --global --add safe.directory "*"
     cd build/px4_sitl_default
     for i in $(seq 0 '"$((${R4_VEHICLES:-6} - 1))"'); do
       mkdir -p rootfs/$i
