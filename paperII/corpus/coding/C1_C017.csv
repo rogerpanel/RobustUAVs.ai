@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4401024639",0,"Certificates for MDP policies in gridworld swarms; no learned component involved.","","","","","","","","","",""
+"O2890660842",1,"","BP","A","perception","in","A","norm","none","U","proof","Neurify: sound L-inf/L1/L2 output-range bounds via symbolic linear relaxation plus refinement; ACAS Xu and DAVE evaluated; component could be end2end/control."
+"O4206840646",1,"","BP","A","perception","in","A","norm","none","U","proof","PRIMA: sound multi-neuron convex-hull abstractions certifying norm-bounded robustness; autonomous-driving regression net evaluated; mostly image classifiers."
+"O3134881993",1,"","OPREL","A","control","pop","P","distribution","L_gen;L_conc","S","simulated","Deep-PrAE: upper-bound relaxed efficiency certificate for rare crash probability; NN set learner, IDM car-following; rule-6 doubt: SUT is non-learned IDM."
+"O4404689764",1,"","PACB","B","estimation","pop","P","distribution","L_conc","S","modelled","PAC-Bayes Renyi bound on generalisation gap of learned stochastic LTI state-space predictors, O(1/sqrt N); synthetic example only."

@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4401024639",0,"Certificates for SMT-synthesized tabular MDP policies; no learned component involved","","","","","","","","","",""
+"O2890660842",1,"","BP","A","control","in","A","norm","none","S","proof","Neurify: symbolic linear relaxation plus LP refinement proves/refutes input-region safety (ACAS Xu, L-norm). DAVE steering net (end2end) also verified; BP vs SMT doubt."
+"O4206840646",1,"","BP","A","perception","in","A","norm","none","S","proof","PRIMA multi-neuron convex relaxation certifies lp robustness of classifiers; abstract claims driving-network verification (text truncated), so component perception vs end2end doubtful."
+"O3134881993",1,"","OPREL","A","control","pop","P","distribution","L_conc","S","simulated","Deep-PrAE: certified upper bound on crash probability via NN outer-set plus IS. Tested AV is IDM (not learned); eligibility borderline."
+"O4404689764",1,"","PACB","B","estimation","pop","P","distribution","L_conc","S","simulated","Renyi PAC-Bayes bound on generalisation gap of learned stochastic LTI predictors (RNN special case), O(1/sqrt N), w.p. 1-2delta."

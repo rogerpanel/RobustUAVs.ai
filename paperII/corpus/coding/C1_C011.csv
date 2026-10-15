@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7167735818",1,"","BP","A","perception","in","A","norm","none","S","proof","Reachability-verified targeted epsilon-robustness of a feature subset against a chosen alternative class; sound/complete solver assumed; TaxiNet and GTSRB."
+"O4313121846",0,"Empirical study of existing Lipschitz bounds on MNIST/CIFAR; no new guarantee of its own.","","","","","","","","","",""
+"O2963160885",1,"","PROB","B","perception","in","P","norm","none","S","proof","Analytic upper bound (Borell-TIS) on probability that GP prediction deviates by delta within an input neighbourhood; MNIST via NN-GP convergence (rule 6 doubt: surrogate)."
+"O4221148689",1,"","RTA","A","control","op","A","disturbance","L_dyn;L_mon","S","simulated","Safety layer from sampled-and-Lipschitz-inflated safe action sets gives worst-case collision-free rollouts vs other agents; known dynamics assumed; highD driver data."
+"O4312744983",0,"Guarantee concerns a non-learned stochastic plant; the neural network is only the certificate.","","","","","","","","","",""

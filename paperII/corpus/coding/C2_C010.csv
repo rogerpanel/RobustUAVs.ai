@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7220695213",1,"","CRL","A","control","tr","P","disturbance","L_conc","SEC","simulated","With confidence 1-beta, P(paired return degradation <= alpha) >= rho under declared sparse action-attack/episode law (incl. ACC); tr vs pop doubt, chose tr."
+"O4283326543",0,"Tool/platform description; no guarantee of its own, only metamorphic testing results.","","","","","","","","","",""
+"O4407231265",1,"","BP","A","perception","in","A","norm","none","S","proof","IBP bounds on NeSy (CNNs + arithmetic circuit) constraint-satisfaction probability over l_inf ball, ROAD-R driving; perception vs end2end doubt."
+"O4383613691",1,"","CLR","B","control","tr","A","disturbance","L_dyn","S","proof","LMI/quadratic-Lyapunov certificate: event-triggered NN controller locally stable, ellipsoidal ROA estimate for IQC-perturbed plant; inverted pendulum only."
+"O7161742013",0,"Verifier benchmark; robustness proofs concern hand-constructed, not learned, networks.","","","","","","","","","",""
