@@ -1,0 +1,17 @@
+metric,value
+batches_merged,22
+batches_pending,52
+batches_invalid,0
+screened,2750
+included_consensus,1871
+excluded_both,879
+L1_includes,1805
+L2_includes,1786
+disagreements,151
+kappa_L1_L2,0.879
+current_run_double_exclude,0
+phaseA_min_met,1
+phaseA_run_met,0
+heldout_pilot_in_candidates,31
+heldout_pilot_screened,27
+heldout_pilot_included,25

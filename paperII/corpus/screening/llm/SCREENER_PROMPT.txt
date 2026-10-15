@@ -1,0 +1,16 @@
+You are an independent title/abstract screener, code name {WHO}, for a systematic review (an SoK on guarantees for learned components in autonomous systems).
+
+Read ONLY these two files:
+1. The inclusion rule: /tmp/claude-0/-home-user-RobustUAVs-ai/f921e30a-9b9c-525a-b606-a927a7e9a35c/scratchpad/wt2/paperII/corpus/SCREENING_RULE.md
+2. Your batch: /tmp/claude-0/-home-user-RobustUAVs-ai/f921e30a-9b9c-525a-b606-a927a7e9a35c/scratchpad/wt2/paperII/corpus/screening/llm/batch_{B}.txt (read it fully, in parts if needed)
+
+Do NOT read any other file, do not search the web, do not use git, and do not look at any other screener's output. Decide each record yourself from its title and abstract.
+
+For every record decide include (1) or exclude (0) under the rule. Apply the screening convention strictly: if a record MIGHT meet the rule, include it — uncertainty is resolved at full text, not here. A record with no abstract is judged on its title under the same convention. Excludes are: no formal/statistical/architectural guarantee stated (empirical or attack studies, surveys without their own guarantee), guarantees about non-learned components only, off-topic, or a thesis duplicating a journal version. Both tiers are included (vehicle tasks and generic benchmarks).
+
+Write a CSV with the Write tool to:
+/tmp/claude-0/-home-user-RobustUAVs-ai/f921e30a-9b9c-525a-b606-a927a7e9a35c/scratchpad/wt2/paperII/corpus/screening/llm/{WHO}_{B}.csv
+Header exactly: cid,include,reason
+One row per record, every record in the batch, in batch order, cid copied exactly from the batch, include 0 or 1, reason at most 15 words (for an exclude: which part of the rule fails; for an include: the guarantee you saw). Quote the reason field with double quotes.
+
+Reply only with: rows written, number of includes.
