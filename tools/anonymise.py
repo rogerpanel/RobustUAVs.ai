@@ -155,8 +155,23 @@ SKIP_SUFFIXES = {".aux", ".log", ".out", ".bbl", ".blg", ".toc", ".synctex",
                  ".buildlog"}
 
 
-def anonymise_text(text: str) -> str:
+# Bibliographic records copied verbatim from search APIs (titles, abstracts of
+# other people's papers). Tool names inside them are data, not authorship
+# traces, so the tooling rules and tokens below are not applied there; every
+# author-identity rule still is.
+VERBATIM_DATA = ("paperII/corpus/",)
+TOOLING = {r"Co-Authored-By: Claude[^\n]*\n?", r"Claude-Session: [^\n]*\n?", r"\bClaude Code\b",
+           r"RUNBOOK_CLAUDE_CODE\.md"}
+
+
+def is_verbatim(rel: Path) -> bool:
+    return str(rel).startswith(VERBATIM_DATA) and rel.suffix.lower() in {".csv", ".jsonl", ".json"}
+
+
+def anonymise_text(text: str, tooling: bool = True) -> str:
     for pattern, replacement in RULES:
+        if not tooling and pattern in TOOLING:
+            continue
         text = re.sub(pattern, replacement, text)
     return text
 
@@ -216,7 +231,7 @@ def copy_tree(src: Path, dst: Path) -> tuple[int, int, list[Path]]:
                 binaries.append(rel)
                 copied += 1
                 continue
-            out.write_text(anonymise_text(text), encoding="utf-8")
+            out.write_text(anonymise_text(text, tooling=not is_verbatim(rel)), encoding="utf-8")
             rewritten += 1
         else:
             shutil.copy2(path, out)
@@ -280,6 +295,8 @@ def verify(dst: Path) -> list[tuple[Path, int, str]]:
         r"[A-Za-z0-9._%+-]+@(?!example\.org)[A-Za-z0-9.-]+\.(?:com|org|net|edu|ru|it|ai)\b",
     ]
     rx = re.compile("|".join(tokens))
+    rx_data = re.compile("|".join(t for t in tokens if "laude" not in t and "LAUDE" not in t
+                                  and "Co-Authored" not in t))
     survivors: list[tuple[Path, int, str]] = []
     for path in sorted(dst.rglob("*")):
         if rx.search(path.relative_to(dst).as_posix()):
@@ -289,8 +306,9 @@ def verify(dst: Path) -> list[tuple[Path, int, str]]:
         if path.suffix.lower() not in TEXT_SUFFIXES and path.name not in TEXT_NAMES:
             continue
         try:
+            r_ = rx_data if is_verbatim(path.relative_to(dst)) else rx
             for n, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
-                if rx.search(line):
+                if r_.search(line):
                     survivors.append((path.relative_to(dst), n, line.strip()[:120]))
         except UnicodeDecodeError:
             continue
