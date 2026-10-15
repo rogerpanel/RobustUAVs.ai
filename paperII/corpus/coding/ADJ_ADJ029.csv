@@ -1,0 +1,8 @@
+cid,field,value,rationale
+O7157859985,lifts,L_dyn;L_gen,"Perception replaced by learned reduced observation with calibrated bounded error (contract surrogate, L_gen) propagated through SLS tubes on plant model (L_dyn); no ODD-containment argument."
+O7157859985,evidence,measured,"Strongest evidence: hardware TurtleBot from onboard images, closed-loop rollouts stay within tubes; real-world data outranks the simulated car/quadrotor tasks."
+O7160305831,eligible,0,"No own guarantee: BCBF learned from data and unverified, theory deferred to [11], filter disabled when deviation exceeds beta; only empirical safe-rate results."
+O7160879966,assumption,SE,"Exchangeability stated; evidence supplied via empirical coverage on 100 held-out random calibration/evaluation splits and explicit CODA shift test; no confidence enters final bound."
+O7160958905,eligible,0,"Enterprise LLM-agent governance; architectural claims asserted, not formalized (formal verification left as future work); only production metrics, 0.5% unreviewed-risk errors."
+O7161176011,scope,op,"Bound P(release|infeasible)<=alpha holds per task run via conditional dominance; release gate enforced on each execution; rule 6 picks smaller scope (op over pop)."
+O7161176011,lifts,L_conc;L_hor,"Rank calibration against sampled hard-negative pool (L_conc); Ville/e-process carries stepwise validity across the whole adaptive run under optional stopping (L_hor); no fallback switching."

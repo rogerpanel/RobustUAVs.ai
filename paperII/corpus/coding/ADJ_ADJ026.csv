@@ -1,0 +1,7 @@
+cid,field,value,rationale
+O7133204952,eligible,0,"Proves approximation-error lower bounds for equivariant model classes to guide model selection; certifies nothing about a component, so no guarantee per inclusion rule."
+O7133267090,class,NEW:Learning-theoretic generalisation bound,"Rademacher/online-convex GD error bound w.p. 1-delta; not PAC-Bayes so PACB does not fit; generic label preferred for clustering."
+O7134853944,lifts,L_dyn,"Per-state policy outputs carried to 20-year failure probability by reachability through the PRISM MDP plant model (induced DTMC); L_dyn covers plant-model reachability."
+O7134853944,evidence,proof,"Storm computes exact PCTL probability on the actual trained policy's induced DTMC: ""exact, model-checked guarantees, not empirical estimates""; sound certificate on actual model."
+O7134959935,evidence,measured,"Headline bounds (MASSIVE 94.0% coverage, NyayaBench) use real SetFit predictions on real-world query datasets, not a simulator; real data is measured."
+O7135102326,perturbation,distribution,"Conformal bound over i.i.d. particle trajectories from initial-state belief and Brownian (unbounded) process noise; no bounded disturbance term, so natural sampling variation (CLR-1)."

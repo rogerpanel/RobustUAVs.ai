@@ -1,0 +1,6 @@
+cid,field,value,rationale
+O2955566917,class,"NEW:Lipschitz global-optimisation verification","Bounds come from Lipschitz-based grid search with convergence proof, not SMT/MILP encoding; no classes.csv code fits."
+O2962295100,evidence,simulated,"Optimality theorem holds only on abstract MDP (paper says it implies no plant guarantee); headline performance numbers come from SUMO simulations."
+O2964359568,perturbation,none,"Explanation entailment over unconstrained free features; no threat model and not a localized patch region."
+O2970900401,eligible,0,"SMC validates a POMDP planner and Bayesian occupancy grid (CMCDOT); no learned component, so excluded as non-learned guarantee."
+O2972713160,perturbation,none,"Agreed tier A/control coding rests on ACAS Xu input-output properties over input regions, not norm balls around points."

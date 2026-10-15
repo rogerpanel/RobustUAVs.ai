@@ -1,0 +1,13 @@
+cid,field,value,rationale
+O7214748213,class,"NEW:Local gain-prediction concentration bound","Thm 1 is a Hoeffding bound on kNN-transferred skill-gain error; not conformal (CP), PAC-Bayes (PACB) or local robustness (PROB), so no existing class fits."
+O7220413358,eligible,0,"Only guarantee is V(h)<=1-Rclass(h), a relation between two defined metrics, not certified/estimated for a model; rest is empirical attack/defense; thesis duplicates published articles [9-15]."
+O7220723858,eligible,1,"States architectural guarantee E(i,o)=>S(i,o) for a system containing an untrusted AI generator with gate and fallback; object (every valid input, artefact) identifiable."
+O7220723858,class,RTA,"Deterministic gate admits AI artefact only if verifier accepts, else declared fallback: a Simplex/shield-style runtime assurance architecture."
+O7220723858,tier,B,"Evaluated on AI-generated CAD for wing-spar structural analysis, not a perception, estimation, navigation, planning or control task of an autonomous vehicle."
+O7220723858,component,end2end,"Learned part is a generative AI mapping requirements directly to a CAD program; not perception/estimation/control/planning; matches batch convention for generative/LLM agents."
+O7220723858,scope,op,"Rule 5: runtime-assurance architecture with safety theorem conditional on verifier soundness; property enforced on every execution of the unit."
+O7220723858,modality,A,"Rule 5; clause (1) is a deterministic per-instance implication for every valid input and artefact, conditional on verifier soundness."
+O7220723858,perturbation,none,"No threat or uncertainty model; generator treated as untrusted black box, guarantee independent of its behaviour."
+O7220723858,lifts,L_mon,"Rule 5: gate (monitor) with routing to declared fallback carries the guarantee to the released output."
+O7220723858,assumption,SE,"Verifier-soundness obligation stated; evidence ([Eng] review/testing) recorded and obligations satisfied before the run, but no confidence level enters the guarantee."
+O7220723858,evidence,simulated,"Headline result (23 deterministic checks passed) comes from an executed CAD/FE software workflow, not a soundness proof or real-world measurement."

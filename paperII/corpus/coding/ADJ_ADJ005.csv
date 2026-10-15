@@ -1,0 +1,6 @@
+cid,field,value,rationale
+O3093796394,assumption,S,"lifts=none; main modelling assumptions (l-inf input set, precomputed activation bounds) are explicitly stated ""we assume access to lower and upper bounds"" but not evidenced."
+O3101293418,evidence,modelled,"Theorem 3 generalisation bound is analytical only; never computed on trained networks, so not a sound certificate on the actual model (proof)."
+O3112586141,class,SEM,"Open-loop certification of a lane-distance regressor over a generator's semantic configuration/latent space; no closed loop, so semantic certification, not PIL."
+O3114355749,eligible,0,"Guarantee is backward-reachability safety supervisor on a linear vehicle model; nominal ADS is generic, no learned component identified; excluded as non-learned guarantee."
+O3134881993,lifts,L_conc,"Importance-sampling concentration argument carries the bound; NN outer set approximates the failure set, not a surrogate for the real sensor, so no L_gen."

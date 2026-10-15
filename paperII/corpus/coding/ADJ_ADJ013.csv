@@ -1,0 +1,8 @@
+cid,field,value,rationale
+O4387561115,assumption,S,"Exchangeability is stated (Thm 2.1) but never tested; empirical coverage on test splits checks the outcome, not the assumption."
+O4387561115,evidence,measured,"Headline coverage and set sizes are measured on real ImageNet/CIFAR images, which are real-world data, not a simulator."
+O4388561670,lifts,"L_gen;L_op","Pfail is integrated over ODD distribution (operational profile weighting) using simulated images and a surrogate; point estimate with no concentration bound, so not L_conc."
+O4389665627,eligible,0,"No guarantee of its own: reuses CPO Theorem 3.1; the ESB constraint satisfaction is argued informally and shown only empirically."
+O4390092008,lifts,none,"Theorem 1 holds for the identified SDE; no argument carries it to the true system and no sampling bound enters the claim."
+O4390092008,assumption,SE,"lifts=none, so plant model is coded: SDE model and Assumption 1 stated; learned drift and diffusion validated against ground truth (Table 1, Figs 1-4)."
+O4390576807,evidence,modelled,"Robustness theorem proven analytically on the nominal model; authors say it may not hold under NN approximation error. Vehicle experiments do not evaluate the bound."

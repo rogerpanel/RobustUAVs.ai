@@ -1,0 +1,8 @@
+cid,field,value,rationale
+O4393954477,perturbation,none,"Tier-A headline is quantitative verification over a VCAS operational input box (I,O,p), not a norm ball around a point; no threat model."
+O4393954477,assumption,S,"lifts=none, so code main modelling assumption: ReLU piecewise-linear network, hyperrectangle input, polyhedral output are explicitly stated (Sec. 3.1); no evidence needed."
+O4396600859,class,CP,"Headline is conformal coverage P[y in C(x~)]>=1-alpha (modality P, scope pop agreed); smoothing is only the score mechanism, not an Ac per-input certificate."
+O4396650433,eligible,0,"Theorem 4.1 covers only idealised exact update (4.4) under realizability; trained LLMs use surrogate (4.6), evaluated empirically. Training-convergence result, no guarantee on learned component."
+O4399115387,eligible,0,"Stability only paraphrased from cited Lemma of [11]; learned Lyapunov network never verified, no theorem or certificate in paper; all results empirical Pointbot simulations."
+O4399157133,class,CLR,"Guarantee is closed-loop reach-avoid safety of a neural policy from a start set (scope tr); SMT/Marabou is only the backend for abstract transitions."
+O4399157133,lifts,L_dyn,"Per-state NN queries are carried to all paths via predicate-abstraction reachability through the transition-system (plant) model, which is L_dyn."

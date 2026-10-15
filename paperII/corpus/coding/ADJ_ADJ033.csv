@@ -1,0 +1,9 @@
+cid,field,value,rationale
+O7203720573,assumption,"SE","Exchangeability stated (Eq. 7); evidenced by held-out validation/test coverage (89.3%, 77%/86.5%); evidence confidence does not enter guarantee, so not SEC."
+O7204119119,assumption,"SE","Assumptions stated (dual-agent soundness, adequate alpha score); evidence supplied by measured AMR 0.95 and adversarial rejection 0.85 on ColO-RAN tests."
+O7204467824,class,"RTA","Guarantee is a safe-abort fallback triggered on MPC infeasibility (agreed L_mon); learned viability set is not a proven Lyapunov/barrier certificate."
+O7204467824,scope,"op","Rule 5: runtime-assurance architecture with monitor and fallback guaranteeing safe abort on every execution; scope=op, consistent with agreed modality A and L_mon."
+O7212031345,scope,"pop","Conformal joint coverage is marginal over exchangeable bridges (data distribution), not reachability from an initial set under disturbance; pop per codebook."
+O7214089039,component,"estimation","Rule COMP-1: guarantee certifies error of a learned action-conditioned world model (trajectory/consequence predictor), which counts as estimation."
+O7214089039,lifts,"L_conc;L_hor","Conformal/confidence-sequence certificate (L_conc) plus closed-loop extension under repeated replanning carrying per-step gating to whole-episode return (L_hor, Thm 3)."
+O7214089039,assumption,"SE","Exchangeable calibration requests stated; evidenced on 240 held-out worlds (harmful use 0.30%, familywise false promotion <5%); no separate evidence confidence enters bound."

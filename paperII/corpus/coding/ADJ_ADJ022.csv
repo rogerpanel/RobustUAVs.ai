@@ -1,0 +1,8 @@
+cid,field,value,rationale
+O4414811182,class,NEW:statistical generalisation bound,"Thm 1 is a heavy-tailed, dependent-sequence concentration bound, not PAC-Bayes (PACB) nor any classes.csv class; broader NEW label preferred over ICL-specific one."
+O4415197707,assumption,SE,"Exchangeability stated; paper supplies test-set evidence: empirical error rate below alpha over 100 random calibration/test splits (Table 1, Fig. 1)."
+O4415197707,evidence,measured,"Headline coverage checked on real-world datasets ScienceQA and MMMU with eight LVLMs; no simulator involved, so measured not simulated."
+O4415795436,modality,E,"Thm 2 bounds CovE(T) = (1/T) sum E[err_t] - alpha, a long-run average of expected miscoverage, not a probability bound over data distribution."
+O4415799201,evidence,measured,"Theorems are analytical, not a sound certificate computed on the model, so not proof; strongest evidence is real Elec2 and polyp segmentation data."
+O4415886758,perturbation,disturbance,"Shield (Thm 1) is a forall guarantee over all successors of stochastic hybrid dynamics (random dampening, action outcomes): explicit process noise term, not distributional."
+O4415886758,assumption,SE,"Sampled abstraction checked by SMC with 99% confidence (Tables 1-2), but that confidence does not enter Thm 1's forall guarantee (modality A), so not SEC."

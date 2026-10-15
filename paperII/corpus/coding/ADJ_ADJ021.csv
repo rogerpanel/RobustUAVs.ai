@@ -1,0 +1,10 @@
+cid,field,value,rationale
+O4411399924,class,CRL,"Guarantee is safe-RL all-time safety of masked policy space during learning; mask is a policy layer, no monitor/fallback switching, modality P (not rule-5 RTA)."
+O4411399924,scope,tr,"Chance constraint P(trajectory over horizon H_tau from s0 outside inevitably-unsafe set hits unsafe set)<=eps; bounded-horizon trajectories; rule 6 picks smaller scope."
+O4411399924,lifts,L_dyn,"Per-state action bound eps/2H carried to trajectory safety via backward reachable sets through known transition model T_S (Prop. 5.2, Alg. 2)."
+O4411552344,lifts,L_conc,"Rule 3: quantization error bound eps_p over domain is obtained by testing on sampled inputs and enters the SMT claim for NN_q."
+O4411552344,assumption,SE,"Reliance on tested error bound eps_p is stated; eps_p measured by testing (Table II), no confidence level, so SE not SEC."
+O4412514774,component,control,"Tier A rests on ACAS Xu, a state-to-advisory network; codebook: learned part mapping state to action counts as control."
+O4412514774,assumption,U,"lifts=none; paper states no modelling assumption (exact network/arithmetic soundness, property encoding) behind its verification results."
+O4413945503,assumption,S,"Assumption 1 states exchangeable calibration samples; Fig. 4 only illustrates scores, no test of exchangeability or coverage evidence supplied."
+O4414050564,assumption,S,"CP coverage holds 'under mild conditions' (exchangeability, cited); no evidence specifically supporting the assumption; TNR is a performance metric."

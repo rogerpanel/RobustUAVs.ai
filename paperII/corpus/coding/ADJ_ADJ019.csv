@@ -1,0 +1,8 @@
+cid,field,value,rationale
+O4405785676,class,DTMC,"Closed-loop AV failure probability under a probabilistic perception error model; average-case closed-loop analysis, not operational-profile testing or reliability (OPREL)."
+O4405955404,assumption,S,"lifts=none: main modelling assumption is the per-benchmark specification/input set, explicitly stated for each instance; no evidence it matches deployment."
+O4406764499,tier,B,"Codebook tier A requires a task of an autonomous vehicle; fuel-consumption estimation for a human-driven PHEV is not one."
+O4406764499,assumption,SE,"Exchangeability for L_conc is stated; evidenced by held-out test coverage above 90% (Fig. 9) and synthetic-vs-real parameter comparison (Fig. 7)."
+O4406786055,evidence,measured,"Headline coverage-gap results use real-world recorded datasets (airfoil self-noise, PeMSD4/8, Seattle-loop, epidemic data), not a simulator."
+O4407948456,class,CLR,"Lyapunov function is quadratic (QC/sector SDP on NN controller), not neural; NN-control-system stability/ROA certificate fits CLR, not NCERT."
+O4407948456,lifts,L_dyn,"NN sector bounds are carried through the (data-represented) LTI plant model via Lyapunov SDP to closed-loop stability over the ROA."
