@@ -230,3 +230,14 @@ stop rule of the manuscript is applied to a sampled corpus).
   at least 25 per stratum (75 of 300 in amendment 3). The stop-rule estimate
   of new eligible papers is stratified, with the bootstrap of
   `corpus_estimates.py` (B = 4000, seed 20261020).
+- 2026-10-16: amendment 5, execution note for iteration 3 (changes no rule).
+  2,226 candidates from 84 seeds (2 without OpenAlex references), so every
+  record is screened. Two L2 outputs failed the merge check (N303: one cid
+  mistyped; N318: one record missing). The merge then covered 2,000 records
+  and a coding sample was drawn from it and committed (3c55177) before the
+  check was read; it was never used. Each L2 run corrected its own file (the
+  mistyped record's decision unchanged; the missing record screened), the
+  merge was rerun on all 2,226, and the sample was redrawn with the same seed
+  (20261025). `snowball_sample.py` now refuses to sample while any screening
+  batch is pending or invalid. L1 gave a single generic exclusion reason in 15
+  of 18 batches; its decisions remain per record.
