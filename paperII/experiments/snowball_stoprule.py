@@ -7,7 +7,11 @@ cell not seen before (pilot and every earlier stage). Snowballing stops after tw
 quiet iterations, or after three iterations.
 
 New eligible papers = iteration includes x eligible share among its coded papers (adjudicated),
-with a 95 % Clopper-Pearson interval on the share. Field before = the main study's weighted
+with a 95 % Clopper-Pearson interval on the share. In a ranked iteration (core + random sample
+of the remainder) it is the stratified sum over core and remainder of estimated includes x
+eligible share, with the 95 % percentile bootstrap of corpus_estimates.py (B = 4000, seed
+20261020: coded papers resampled within stratum, remainder includes redrawn as
+N_rem x Binomial(m, p_hat) / m). Field before = the main study's weighted
 estimate (results/corpus_estimates.csv) plus the estimates of earlier iterations.
 
 Usage   python3 snowball_stoprule.py --iter 1     -> results/snowball_iter<k>_status.csv
@@ -18,6 +22,7 @@ import argparse
 import csv
 from pathlib import Path
 
+import numpy as np
 from scipy.stats import beta
 
 C = Path(__file__).resolve().parent.parent / "corpus"
@@ -48,18 +53,35 @@ def main() -> int:
         field += float(prev["new_eligible_est"])
         seen |= cells(csv.DictReader((S / f"iter{j}_codes_full_final.csv").open()))
     st = {r["metric"]: r["value"] for r in csv.DictReader((S / f"iter{k}_screening_status.csv").open())}
-    inc = int(st["included"])
     final = list(csv.DictReader((S / f"iter{k}_codes_full_final.csv").open()))
     n = len(final); e = sum(r["eligible"] == "1" for r in final)
     lo, hi = cp(e, n)
-    new = inc * e / n
+    if "included_est" not in st:
+        inc = int(st["included"])
+        new = inc * e / n
+        new_lo, new_hi = inc * lo, inc * hi
+    else:
+        inc = float(st["included_est"])
+        stratum = {r["cid"]: r["stratum"].rsplit("_", 1)[1]
+                   for r in csv.DictReader((S / f"iter{k}_coding_sample.csv").open())}
+        el = {s: np.array([r["eligible"] == "1" for r in final if stratum[r["cid"]] == s], float)
+              for s in ("core", "remainder")}
+        m, x, n_rem = int(st["sample_screened"]), int(st["sample_included"]), int(st["remainder_size"])
+        Ns = {"core": float(st["core_included"]), "remainder": n_rem * x / m}
+        new = sum(Ns[s] * el[s].mean() for s in el)
+        rng = np.random.default_rng(20261020)
+        bs = np.empty(4000)
+        for b in range(4000):
+            nb = {"core": Ns["core"], "remainder": n_rem * rng.binomial(m, x / m) / m}
+            bs[b] = sum(nb[s] * el[s][rng.integers(0, len(el[s]), len(el[s]))].mean() for s in el)
+        new_lo, new_hi = float(np.quantile(bs, .025)), float(np.quantile(bs, .975))
     new_cells = sorted(cells(final) - seen)
     new_classes = sorted({r["class"] for r in final if r["eligible"] == "1" and r["class"].startswith("NEW:")})
     frac = new / field
-    rows = [("iteration", k), ("candidates_screened", st["screened"]), ("includes", inc), ("coded", n),
+    rows = [("iteration", k), ("candidates_screened", st["screened"]), ("includes", round(inc)), ("coded", n),
             ("eligible_coded", e), ("eligible_share", round(e / n, 4)),
             ("eligible_share_lo", round(lo, 4)), ("eligible_share_hi", round(hi, 4)),
-            ("new_eligible_est", round(new)), ("new_eligible_lo", round(inc * lo)), ("new_eligible_hi", round(inc * hi)),
+            ("new_eligible_est", round(new)), ("new_eligible_lo", round(new_lo)), ("new_eligible_hi", round(new_hi)),
             ("field_before", round(field)), ("new_fraction", round(frac, 4)),
             ("condition_a_below_2pct", int(frac < THRESH)),
             ("new_type_cells", ";".join(f"{a}/{b}" for a, b in new_cells) or "none"),

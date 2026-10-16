@@ -213,3 +213,20 @@ stop rule of the manuscript is applied to a sampled corpus).
   amendment 3 prescribes). The remainder stratum tried all 233 included
   records and retrieved 195 (38 not retrieved). Per-record status:
   `fulltext_status.csv`.
+- 2026-10-16: amendment 5, execution note for iteration 2 (written after the
+  candidates were retrieved and ranked, before any of them was screened; it
+  changes no rule). Iteration 2 found 3,522 new candidates from 77 seeds (10
+  seeds had no references in OpenAlex), so the ranked design applies. "The
+  frozen ranker" is the rank_v1 model (word TF-IDF, PU bagging on the
+  development half of the pilot set, no screening labels, as amendment 2 held
+  it fixed), fitted on `candidates.csv` and applied to the new records in its
+  own vocabulary; it reproduces every score of `rank_v1.csv` (to the 6
+  printed decimals). Core = ranks 1-1,500; the remainder of 2,022 is sampled
+  by a simple random sample of 500 drawn from the sorted cids (seed
+  20261024 = 20261022 + 2). Core and sample are screened in one random order
+  from the same generator, so L1/L2 see neither rank nor stratum
+  (`snowball/iter2_rank.csv`, `iter2_strata.csv`). The coding sample of 100 is
+  allocated as in amendment 3, scaled: in proportion to estimated includes,
+  at least 25 per stratum (75 of 300 in amendment 3). The stop-rule estimate
+  of new eligible papers is stratified, with the bootstrap of
+  `corpus_estimates.py` (B = 4000, seed 20261020).
