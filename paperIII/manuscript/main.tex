@@ -107,6 +107,10 @@ assignment during learning, where in-expectation baselines (PPO-, PID- and
 MAPPO-Lagrangian, QMIX) execute millions, and it lifts every learned policy to maximal
 coverage at deployment. A classical consensus auction under the same monitor outperforms
 every learned allocator: the security guarantee comes from the monitor, not from learning.
+Closed-loop PX4 flight with a ground-truth oracle exposes the one point where the
+certificate premise fails, GNSS reacquisition: the estimate lagged the returning fix by up
+to \nRfPeakErr\,m, at a moment a jammer chooses. Measuring staleness at the estimator rather
+than the receiver closes the gap.
 \end{abstract}
 
 % =====================================================================
@@ -185,6 +189,10 @@ composition makes possible.
   study answer seven research questions. They separate what a learned policy contributes
   from what the monitor enforces, and show that a classical auction under the monitor is the
   stronger allocator in our setting.
+\item \textbf{A closed-loop test of the premise} (\cref{sec:rq8}). Software-in-the-loop PX4
+  flight with a ground-truth oracle finds the one point at which a sound-looking certificate
+  stops being sound, GNSS reacquisition, where the estimate lags the fix by up to \nRfPeakErr\,m.
+  A jammer controls when that window opens. We state the design rule that closes it.
 \end{enumerate}
 
 % =====================================================================
@@ -339,7 +347,8 @@ questions: \textbf{RQ1} violations during learning; \textbf{RQ2} coverage under
 degradation, against the bounds; \textbf{RQ3} what the policy adds over the monitor,
 against stronger baselines and at larger fleet sizes; \textbf{RQ4} scalability;
 \textbf{RQ5} dynamics between decision epochs; \textbf{RQ6} the population lift;
-\textbf{RQ7} Byzantine aircraft and decentralised agreement.
+\textbf{RQ7} Byzantine aircraft and decentralised agreement; \textbf{RQ8} whether the
+certificate premise holds in closed-loop flight.
 
 \input{fig_framework}
 
@@ -936,19 +945,65 @@ the agreed deficiency over all liar strategies, when liars forward or drop relay
 \resizebox{\columnwidth}{!}{\input{tab_r5}}
 \end{table}
 
-\paragraph{Vector certificates (\cref{rem:frontier}).} We gave each aircraft horizontal and
-vertical protection levels, with the vertical-to-horizontal ratio lognormal around 1.5, and
-each task horizontal and vertical alert limits. The scalar surrogate
-$\max(\rho_h,\rho_v/c)$ against $\min(\alpha_h,\alpha_v/c)$ is sound: over \nVecInst\
-instances per cell it never admitted an infeasible pair, and its closed-form worst case
-always bounded the brute force. It is conservative. At $N=12$ and dispersion 0.5, only
-\nVecNestedTwelve\% of exact eligibility graphs were still nested, and the surrogate lost
-\nVecLostTwelve\ of 8 tasks on average (some loss in \nVecLossFracTwelve\% of instances). At
-$N=20$ and dispersion 1, \nVecNestedTwenty\% were nested and it lost \nVecLostTwenty\ tasks
-on average, up to \nVecLostTwentyMax. The exact worst case after three collapses, by brute
-force, took \nVecBruteEight\,ms at $N=8$ and \nVecBruteTwenty\,ms at $N=20$, against at most
-\nVecClosed\,ms for the closed form. With perfectly correlated levels the loss was
-\nVecSigZeroLost.
+\paragraph{Vector certificates (\cref{rem:frontier}).} The scalar surrogate
+$\max(\rho_h,\rho_v/c)$ stays sound for horizontal and vertical protection levels but loses
+tasks once eligibility stops being nested (\cref{app:vector}).
+
+\subsection{RQ8: the premise in closed-loop flight}
+\label{sec:rq8}
+Every result so far takes the certificate as given. \Cref{thm:proj} is exact under
+\cref{as:sound}(a), and neither the brute-force oracle, the learning study nor the replayed
+traces can test that premise, because none of them has a ground truth for the position
+error. A closed loop can. We flew \nRfVeh\ PX4 quadrotors (v1.14.3, software in the loop with
+its built-in physics) in offboard control, with the projection layer allocating at 5 and
+2\,Hz for \nRfRun\,s each. A driver computed $\rho_i$ as a deployed allocator would, from the
+fix status the receiver reports over MAVLink, and we cut GNSS \nRfLoss\ times for
+\nRfStaleMin--\nRfStaleMax\,s. PX4 logs both its position estimate and the simulator's true
+position, so we checked \cref{as:sound}(a) at every one of \nRfSamples\ logged samples.
+
+\emph{The monitor did its job.} Over \nRfEpochs\ aircraft-epochs (\nRfHeld\ with a task held)
+it executed \nRfExecViol\ infeasible assignments. Each outage raised $\rho_i$ at $\Lrho$, the
+projection released the aircraft's task, and it reassigned it when the fix returned. Certified
+coverage was \nRfCovFive\% at 5\,Hz and \nRfCovTwo\% at 2\,Hz.
+
+\emph{The premise fails at one precise moment: reacquisition.} The oracle found \nRfViol\
+violations of \cref{as:sound}(a). \nRfTransViol\ of them form \nRfEpisodes\ episodes, all
+within \nRfSpanOne\,s after a fix returned. In the worst, the estimate was \nRfPeakErr\,m from the true
+position at the instant the fix came back, while $\rho_i$ had already dropped to
+\nRfRhoAtPeak\,m. The error took \nRfFirstBlock\,s to fall back under $\rho_i$. The cause is a
+mismatch between two clocks. Receiver staleness resets the moment a fix arrives, but the
+estimator fuses that fix gradually, so for a short window the certificate certifies a
+position the estimate has not yet reached. During the outage itself the bound held: the error
+never approached the envelope of at least \nRfEnvelope\,m that $\rho_i$ had grown to. The
+other \nRfFloorViol\ violations exceed the benign floor $\Lrho\,\theta=\nRfFloor$\,m by at most
+\nRfFloorExcessCm\,cm on \nRfFloorVeh\ aircraft: the simulator's receiver noise is slightly
+larger than the measured $\theta$.
+
+\emph{Why it matters.} This failure is invisible to open-loop evaluation, and it is
+adversarially relevant. The jammer of A1 chooses when a fix returns, so it also chooses when
+the window opens. An aircraft that has drifted for tens of seconds becomes eligible for a
+2\,m task at the instant its error is largest. We did not mount this timing attack, but
+nothing in the monitor stops it. The fix is a rule about the monitor's input, not about the
+theorem.
+
+\begin{quote}
+\emph{Design rule.} Measure staleness at the estimator, not at the receiver: $\Delta_i$ is
+the age of the newest fix the estimator has fused. Equivalently, hold $\rho_i$ at its
+pre-reacquisition value until the estimator reports the fix fused.
+\end{quote}
+Under this rule \cref{as:sound}(a) at reacquisition reduces to the parent's dead-reckoning
+bound, which held throughout the outages: \nRfLatchCov\ of \nRfLatchTot\ transient samples
+lie inside the pre-reacquisition envelope. This is a consistency check on the run
+that revealed the transient, not a validation of the rule on fresh flights. The replayed traces
+of R3 already measure staleness at the estimator, so their results stand.
+
+Three caveats apply to this run. Spoofing was not exercised: the simulator rejected both
+injections of falsified fixes. One aircraft entered PX4's own GNSS failsafe after its \nRfStaleMax\,s
+outage, landed and disarmed. The driver does not read arming state, so it kept that aircraft
+on a 20\,m task for \nRfGroundHeld\ epochs, with no violation but lower coverage. In the
+\nRfNegEpochs\ epochs that contained an injection call, a timestamp taken before the call
+understated staleness by up to \nRfNegMax\,s; none produced a violation, and the released driver takes
+the timestamp after the call.
 
 % =====================================================================
 \section{Related Work}
@@ -1040,11 +1095,12 @@ European Union Aviation Safety Agency (EASA) guidance~\cite{jarus2019sora,easa20
 give the regulatory target.
 
 % =====================================================================
-\section{Discussion, Limitations and Broader Impact}
+\section{Discussion and Limitations}
 \label{sec:limits}
 % =====================================================================
 \paragraph{What the guarantee is.} \Cref{thm:proj} is sure, not statistical, but it is
-conditional. It holds at decision epochs, given a sound certificate (\cref{as:sound}).
+conditional. It holds at decision epochs, given a sound certificate (\cref{as:sound}), and
+\cref{sec:rq8} shows that soundness depends on where staleness is measured.
 \Cref{thm:predict} extends it between epochs except across jumps, and the rate condition
 tells the designer how fast the allocator must run. Everything population-level rests on
 obligations O1--O2, which we show can fail.
@@ -1062,18 +1118,13 @@ obligations O1--O2, which we show can fail.
   or adversarial one, so they do not depend on training scale; the comparative coverage
   figures do, and a classical auction beat every learned allocator at the budgets we ran.
 \item \emph{Simulation.} The learning study runs in simulation. Measured traces replace the
-  synthetic jamming onsets in one variant (R3), but software-in-the-loop flight (runbook R4)
-  is scripted and not part of this version, and the relay channel's onset rate remains an
-  assumption.
+  synthetic jamming onsets in one variant (R3), and closed-loop flight is software in the
+  loop with one simulator and six aircraft (\cref{sec:rq8}), not hardware. The design rule
+  of \cref{sec:rq8} is checked in-sample, not yet on fresh flights, and the relay channel's
+  onset rate remains an assumption.
 \item \emph{Scalar certificates only.} Vector certificates lose the closed forms
   (\cref{rem:frontier}).
 \end{itemize}
-
-\paragraph{Broader impact.} The work aims at safer autonomous fleets in public airspace. UAV
-swarms are dual-use, and a method that keeps a fleet operating under jamming could serve
-military ends. Our contribution is an assurance mechanism that withholds tasks from aircraft
-that cannot be trusted with them; it does not increase any capability to cause harm. We
-release code and data under the artifact's licence.
 
 % =====================================================================
 \section{Conclusion}
@@ -1086,7 +1137,9 @@ degradation are linear-time closed forms. A projection in the environment then m
 executed assignment feasible and coverage-maximal for any policy, during learning as during
 deployment. The remaining risk becomes visible as two quantities: exposure caused by
 certificate jumps, which no rate bound can predict, and the independence obligation of the
-population lift, which common-cause jamming violates. Both are what an airworthiness
+population lift, which common-cause jamming violates. Closed-loop flight adds a third:
+the certificate is only as sound as the clock its staleness is measured on, and at GNSS
+reacquisition the receiver's clock is the wrong one. All three are what an airworthiness
 argument has to evidence next.
 
 % =====================================================================
@@ -1096,8 +1149,9 @@ flight logs and network captures of test UAVs~\cite{whelan2020uavattack,parentpa
 under their licences. UAV swarms are dual-use, and a method that keeps a fleet operating
 under jamming could serve military ends. Our contribution is an assurance mechanism that
 withholds tasks from aircraft that cannot be trusted with them and quantifies how much of a
-mission an attacker can deny; it adds no capability to cause harm, and it describes no
-attack beyond those already published.
+mission an attacker can deny; it adds no capability to cause harm. The one attack-relevant
+observation beyond published work, the reacquisition window of \cref{sec:rq8}, follows from
+standard estimator behaviour, and we report it together with the rule that closes it.
 
 \section*{Artifact Availability}
 Code, data and the scripts that regenerate every number, table and figure of this paper from
@@ -1109,7 +1163,8 @@ number in the text is a macro generated from a result file, never typed by hand.
 \bibliography{refs}
 
 % =====================================================================
-\appendix
+\appendices
+\crefalias{section}{appendix}
 \section{Proofs}
 \label{app:proofs}
 % =====================================================================
@@ -1217,6 +1272,24 @@ $C_\ell$ counts aircraft of class $\ell$. Under O1--O2, $C\sim\mathrm{Multinomia
 Sequential binomial splitting gives a dynamic programme over the cumulative count with
 $O(N)$ states and $O(N)$ transitions per class.
 \end{proof}
+
+% =====================================================================
+\section{Vector Certificates}
+\label{app:vector}
+% =====================================================================
+We gave each aircraft horizontal and
+vertical protection levels, with the vertical-to-horizontal ratio lognormal around 1.5, and
+each task horizontal and vertical alert limits. The scalar surrogate
+$\max(\rho_h,\rho_v/c)$ against $\min(\alpha_h,\alpha_v/c)$ is sound: over \nVecInst\
+instances per cell it never admitted an infeasible pair, and its closed-form worst case
+always bounded the brute force. It is conservative. At $N=12$ and dispersion 0.5, only
+\nVecNestedTwelve\% of exact eligibility graphs were still nested, and the surrogate lost
+\nVecLostTwelve\ of 8 tasks on average (some loss in \nVecLossFracTwelve\% of instances). At
+$N=20$ and dispersion 1, \nVecNestedTwenty\% were nested and it lost \nVecLostTwenty\ tasks
+on average, up to \nVecLostTwentyMax. The exact worst case after three collapses, by brute
+force, took \nVecBruteEight\,ms at $N=8$ and \nVecBruteTwenty\,ms at $N=20$, against at most
+\nVecClosed\,ms for the closed form. With perfectly correlated levels the loss was
+\nVecSigZeroLost.
 
 % =====================================================================
 \section{Constants and Provenance}

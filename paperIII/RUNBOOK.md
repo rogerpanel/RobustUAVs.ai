@@ -34,7 +34,7 @@ cd ../manuscript && latexmk -pdf main.tex
 1. The MARL study is small: 12 aircraft, 5 seeds, CPU only, 4.8 × 10⁵ fleet-epochs per run. The guarantees do not depend on it, but the comparative return claims do. **R1 is load-bearing.**
 2. Baselines are re-implemented in a compact form: PPO-Lagrangian with plain dual ascent and no PID; no MACPO, QMIX or shielded MADDPG. **R2 is load-bearing.**
 3. Threat *rates* are modelling assumptions; only magnitudes are measured. R3 replays measured traces instead.
-4. No flight-dynamics simulator. R4 (PX4 SITL) closes this.
+4. No flight-dynamics simulator. R4 (PX4 SITL) closes this (done; it found the reacquisition gap, RQ8).
 
 ## Status of the runbook items (October 2026)
 
@@ -44,7 +44,7 @@ cd ../manuscript && latexmk -pdf main.tex
 | R1 headline | run | `results/e5_marl/` seeds 0-9 | 10 seeds instead of 20. |
 | R2 baselines | run | `results/e5_marl/{mappo_lag,mappo_lag0,pid_lag,qmix,qmix_mask}_s*`; CBBA in `references_eval.csv` | Implemented in-repo, not through SafePO/OmniSafe/EPyMARL. MACPO not run; shielded MADDPG not run (masking = factored shield, trained with PPO). CBBA computed as its converged sequential auction (bundle length 1, connected network). |
 | R3 trace replay | run (server, 2026-10-14) | `results/r3_*.csv`, `results/e2_lift_trace.csv`, `results/e5_marl_trace/`, `results/server_logs/2026-10-14/` | 11 PX4 flights (3 benign, 1 jamming, 3 spoofing, 4 link-DoS), staleness over each airborne window from vehicle_land_detected, labels from the dataset's own folders. The hop ledger has one packet per run, so the relay channel keeps the measured-magnitude episode model; only GNSS staleness is replayed. 4 methods x 3 seeds. |
-| R4 PX4 SITL | scripted, not run | `r4_sitl_fleet.py`, `run_server_paperIII.sh r4` | SIH quadrotors in Docker instead of Gazebo x500; GNSS loss by failure injection or SIM_GPS_USED = 0; spoofing logged as unsupported if PX4 refuses FailureType.WRONG. |
+| R4 PX4 SITL | run 2026-10-16 (RQ8) | `r4_sitl_fleet.py`, `run_server_paperIII.sh r4`, `r4_analysis.py` | 6 SIH quadrotors, 5 and 2 Hz, 240 s each. Monitor: 0 executed infeasible assignments. Ground-truth oracle: 89 violations of the certificate premise, 75 of them in 2 GNSS-reacquisition episodes (estimate lags the fix by up to 13.9 m) and 14 benign-floor exceedances of at most 3.6 cm. Spoofing not exercised (SIH rejects FailureType.WRONG). Results as measured; the design rule (estimator-sourced staleness) is checked in-sample only. |
 | R5 consensus | run | `r5_consensus.py`, `results/r5_consensus.csv` | Two-phase protocol (signed report flooding, then W-MSR on local count profiles); graph robustness computed exactly by enumeration. |
 | R6 vector certificates | run | `r6_vector.py`, `results/r6_vector.csv` | Vertical/horizontal ratio and vertical alert limits are assumptions (stated in the script). |
 | R7 learned jammer | not run | -- | -- |

@@ -602,8 +602,37 @@ def r3_traces(m):
         m["TrEOursRatio"] = f(mt["ours"]["cov_ratio_iqm"], 2)
 
 
+def r4_sitl(m):
+    """R4: PX4 SITL closed-loop run and its ground-truth soundness oracle (r4_analysis.py)."""
+    a = {r["metric"]: r["value"] for r in rd("r4_analysis.csv")}
+    if not a:
+        return
+    g = lambda k, nd=1: f(a[k], nd)  # noqa: E731
+    m["RfVeh"] = a["vehicles"]; m["RfRun"] = a["run_s"]
+    m["RfEpochs"] = tex_int(int(a["agent_epochs_5hz"]) + int(a["agent_epochs_2hz"]))
+    m["RfHeld"] = tex_int(int(a["held_epochs_5hz"]) + int(a["held_epochs_2hz"]))
+    m["RfExecViol"] = tex_int(int(a["executed_violations_5hz"]) + int(a["executed_violations_2hz"]))
+    m["RfExposure"] = tex_int(int(a["exposure_total_5hz"]) + int(a["exposure_total_2hz"]))
+    m["RfCovFive"] = f(100 * float(a["coverage_5hz"]), 1); m["RfCovTwo"] = f(100 * float(a["coverage_2hz"]), 1)
+    m["RfLoss"] = a["injections_gnss_loss"]; m["RfSpoof"] = a["injections_spoof"]
+    m["RfStaleMin"] = g("outage_staleness_min_s", 0); m["RfStaleMax"] = g("outage_staleness_max_s", 0)
+    m["RfNegEpochs"] = a["negative_staleness_epochs"]; m["RfNegMax"] = f(a["negative_staleness_max_s"], 1)
+    m["RfSamples"] = tex_int(a["samples_checked"]); m["RfViol"] = a["violations_total"]
+    m["RfReacq"] = a["reacquisitions"]; m["RfTransViol"] = a["violations_transient"]
+    m["RfFloorViol"] = a["violations_floor"]; m["RfEpisodes"] = a["transient_episodes"]
+    m["RfPeakErr"] = g("transient_peak_err_m"); m["RfPeakExcess"] = g("transient_peak_excess_m")
+    m["RfRhoAtPeak"] = f(a["ep1_rho_at_peak_m"], 2); m["RfFirstBlock"] = f(a["ep1_first_block_s"], 2)
+    m["RfSpanOne"] = f(a["ep1_span_s"], 1); m["RfPeakErrTwo"] = f(a["ep2_peak_err_m"], 2)
+    m["RfEnvelope"] = g("envelope_min_m", 0)
+    m["RfLatchCov"] = a["latch_covered"]; m["RfLatchTot"] = a["latch_total"]
+    m["RfFloor"] = f(a["floor_m"], 2); m["RfFloorExcessCm"] = f(100 * float(a["floor_peak_excess_m"]), 1)
+    m["RfFloorVeh"] = a["floor_vehicles"]; m["RfFailsafe"] = a["failsafe_entries"]
+    m["RfGroundHeld"] = tex_int(a.get("grounded_held_epochs", 0))
+
+
 def extended(m):
     r3_traces(m)
+    r4_sitl(m)
     mn = rd("e6_main.csv")
     if mn:
         r2_table(m, {r["method"]: r for r in mn})
