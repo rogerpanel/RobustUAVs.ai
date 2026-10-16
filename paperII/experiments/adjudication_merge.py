@@ -17,7 +17,8 @@ Every final row is checked against the codebook vocabulary (coding_merge.check).
 Outputs  corpus/codes_full_final.csv              one row per coded paper
          corpus/coding/adjudication_log.csv    every ADJ decision with C1, C2 and its rationale
          results/adjudication_status.csv       counts
-Usage:   python3 adjudication_merge.py
+Usage:   python3 adjudication_merge.py            (main study)
+         python3 adjudication_merge.py --iter 1   (snowballing iteration 1: batch_S1ADJ<nnn>)
 """
 from __future__ import annotations
 
@@ -44,12 +45,22 @@ def clean(field: str, v: str) -> str:
 
 
 def main() -> int:
+    import argparse
+    ap = argparse.ArgumentParser(); ap.add_argument("--iter", type=int, default=0)
+    it = ap.parse_args().iter
+    S = C / "snowball"
+    pre = f"S{it}ADJ" if it else "ADJ"
+    f1 = S / f"iter{it}_codes_full_C1.csv" if it else C / "codes_full_C1.csv"
+    f2 = S / f"iter{it}_codes_full_C2.csv" if it else C / "codes_full_C2.csv"
+    f_final = S / f"iter{it}_codes_full_final.csv" if it else C / "codes_full_final.csv"
+    f_log = D / (f"adjudication_log_S{it}.csv" if it else "adjudication_log.csv")
+    f_stat = R / (f"adjudication_status_S{it}.csv" if it else "adjudication_status.csv")
     csv.field_size_limit(10 ** 9)
     classes = {r["class"] for r in csv.DictReader((C / "classes.csv").open())}
-    c1 = {r["cid"]: r for r in csv.DictReader((C / "codes_full_C1.csv").open())}
-    c2 = {r["cid"]: r for r in csv.DictReader((C / "codes_full_C2.csv").open())}
+    c1 = {r["cid"]: r for r in csv.DictReader(f1.open())}
+    c2 = {r["cid"]: r for r in csv.DictReader(f2.open())}
     adj, pending, expected = {}, [], set()
-    for cf in sorted(D.glob("batch_ADJ*.cids")):
+    for cf in sorted(D.glob(f"batch_{pre}[0-9]*.cids")):
         b = cf.stem.replace("batch_", "")
         cids = set(cf.read_text().split()); expected |= cids
         p = D / f"ADJ_{b}.csv"
@@ -107,16 +118,16 @@ def main() -> int:
         if err:
             stat["invalid_final"] += 1; print(f"INVALID {cid}: {err} = {row.get(err)!r}")
         final.append(row)
-    with (C / "codes_full_final.csv").open("w", newline="") as fh:
+    with f_final.open("w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=COLS, lineterminator="\n"); w.writeheader(); w.writerows(final)
-    with (D / "adjudication_log.csv").open("w", newline="") as fh:
+    with f_log.open("w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=["cid", "field", "C1", "C2", "ADJ", "choice", "rationale", "batch"],
                            lineterminator="\n"); w.writeheader(); w.writerows(log)
     rows = [("papers_coded", len(c1)), ("papers_to_adjudicate", len(expected)), ("adj_batches_pending", len(pending)),
             ("papers_final", len(final)), ("eligible_final", sum(r["eligible"] == "1" for r in final))]
     rows += sorted(stat.items())
     R.mkdir(exist_ok=True)
-    with (R / "adjudication_status.csv").open("w", newline="") as fh:
+    with f_stat.open("w", newline="") as fh:
         w = csv.writer(fh, lineterminator="\n"); w.writerow(["metric", "value"]); w.writerows(rows)
     for k, v in rows:
         print(f"{k:<30} {v}")

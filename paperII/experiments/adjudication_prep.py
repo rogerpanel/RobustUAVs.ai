@@ -27,11 +27,17 @@ def main() -> int:
     ap.add_argument("--fulltext", type=Path, required=True)
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--per", type=int, default=5)
+    ap.add_argument("--iter", type=int, default=0, help="snowballing iteration (0 = main study)")
     a = ap.parse_args()
+    S = C / "snowball"
+    f1 = S / f"iter{a.iter}_codes_full_C1.csv" if a.iter else C / "codes_full_C1.csv"
+    f2 = S / f"iter{a.iter}_codes_full_C2.csv" if a.iter else C / "codes_full_C2.csv"
+    fc = S / f"iter{a.iter}_candidates.csv" if a.iter else C / "candidates.csv"
+    pre = f"S{a.iter}ADJ" if a.iter else "ADJ"
     csv.field_size_limit(10 ** 9)
-    c1 = {r["cid"]: r for r in csv.DictReader((C / "codes_full_C1.csv").open())}
-    c2 = {r["cid"]: r for r in csv.DictReader((C / "codes_full_C2.csv").open())}
-    cand = {r["cid"]: r for r in csv.DictReader((C / "candidates.csv").open())}
+    c1 = {r["cid"]: r for r in csv.DictReader(f1.open())}
+    c2 = {r["cid"]: r for r in csv.DictReader(f2.open())}
+    cand = {r["cid"]: r for r in csv.DictReader(fc.open())}
     todo = []
     for cid in sorted(c1):
         x, y = c1[cid], c2[cid]
@@ -42,7 +48,7 @@ def main() -> int:
     a.out.mkdir(parents=True, exist_ok=True)
     for b in range(0, len(todo), a.per):
         chunk = todo[b:b + a.per]; k = b // a.per + 1
-        parts = [f"# Adjudication batch ADJ{k:03d}: {len(chunk)} papers\n"]
+        parts = [f"# Adjudication batch {pre}{k:03d}: {len(chunk)} papers\n"]
         for j, (cid, kind) in enumerate(chunk, 1):
             x, y = c1[cid], c2[cid]
             t = (a.fulltext / f"{cid}.txt").read_text(errors="replace")
@@ -56,8 +62,8 @@ def main() -> int:
                          f"Title: {cand[cid]['title']}\n\nCodings:\n" + "\n".join(rows) +
                          f"\nC1 note: {x['note']}\nC2 note: {y['note']}\n\n"
                          f"Full text (first 80,000 characters):\n\n{t[:80000]}\n")
-        (a.out / f"batch_ADJ{k:03d}.txt").write_text("".join(parts))
-        (a.out / f"batch_ADJ{k:03d}.cids").write_text("\n".join(c for c, _ in chunk) + "\n")
+        (a.out / f"batch_{pre}{k:03d}.txt").write_text("".join(parts))
+        (a.out / f"batch_{pre}{k:03d}.cids").write_text("\n".join(c for c, _ in chunk) + "\n")
     n_e = sum(1 for _, k in todo if k == "eligibility")
     print(f"{len(todo)} papers to adjudicate ({n_e} eligibility, {len(todo) - n_e} fields) "
           f"-> {(len(todo) + a.per - 1) // a.per} batches")
