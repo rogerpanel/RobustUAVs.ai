@@ -1,0 +1,7 @@
+cid,field,value,rationale
+O2777012514,eligible,0,"MILP used only for feature visualization and constructing targeted adversarial examples; no robustness bound claimed. Screening rule excludes attack studies without a guarantee."
+O2890075623,scope,in,"Theorem 2 bounds probability that the next sampled state is safe (per-step); scope in includes per-step certificates; rule 6 picks smaller scope."
+O2890075623,perturbation,distribution,"Probability is over sub-Gaussian observation noise of an unknown RKHS safety function; dynamics deterministic, no bounded disturbance term, so not disturbance."
+O2905146218,class,NEW:compositional robustness,"Serial/parallel composition theorems for lambda-resilient feature extractors match no classes.csv code; both coders proposed NEW, label harmonised."
+O2947562989,modality,Ac,"Per-image forall bound uses L and omega estimated by certifier's own EVT sampling (Monte Carlo certification); paper calls it heuristic, not deterministic sound."
+O2965721472,class,NEW:DP poisoning robustness,"Differential-privacy lower bound on expected poisoning attack cost matches no classes.csv code; both coders proposed NEW, label harmonised."

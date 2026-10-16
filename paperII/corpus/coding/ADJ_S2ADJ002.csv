@@ -1,0 +1,10 @@
+cid,field,value,rationale
+O3008591962,class,"NEW:Intrinsic robustness limit (isoperimetric bound)","Classifier-independent upper bound on achievable robustness via Gaussian isoperimetry; no classes.csv class covers such limits; C1 label more specific."
+O3008591962,lifts,"L_gen;L_conc","Conditional GAN stands in for real distribution (L_gen); Lipschitz condition over latent domain estimated by sampling and plugged into bound (rule 3)."
+O3008591962,assumption,"S","Main lift L_gen: data captured by conditional generative model is stated but not evidenced; experiments use generated data; Lipschitz estimate admitted underestimate."
+O3008591962,evidence,"simulated","Headline bounds (Table 3) computed on GAN-generated MNIST/ImageNet10 benchmarks with sampled Lipschitz constants; not analytical-only."
+O3014860839,component,"control","Guarantee concerns returned policy mapping state to action; codebook: learned part mapping state to action counts as control."
+O3014860839,scope,"pop","Epsilon-optimality of expected discounted value over stochastic transitions, w.p. 1-delta over samples: generalisation, not bounded-horizon trajectory set."
+O3017595567,scope,"tr","Regret bound over one run's trajectory of length T from initial state under stochastic transitions; rule 6 picks smaller of tr/op."
+O3028525609,lifts,"L_conc","Theorem 5.3 carries guarantee from N=poly(d) training samples to population robust error w.h.p. via sample-complexity concentration (Lemma A.2)."
+O3033405017,perturbation,"distribution","Uncertainty is unknown, possibly unbounded noise distribution covered by Wasserstein ball around empirical data; not bounded additive disturbance."

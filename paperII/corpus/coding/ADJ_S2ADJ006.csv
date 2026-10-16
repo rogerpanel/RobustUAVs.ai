@@ -1,0 +1,8 @@
+cid,field,value,rationale
+O3182348021,evidence,modelled,"Prop 5.2 is an analytical bound proved, never computed on trained models; experiments report PGD attack error, not the certificate, so not proof or simulated."
+O3184908869,scope,pop,"Theorem 4 bounds robust risk R_adv, defined as expectation over (x,y)~D (Def. 2); headline statement is explicit, so Rule 6 not triggered."
+O3184908869,modality,E,"Theorem 4 gives a deterministic bound R_adv^{eps/2}(f_clf) <= beta on an expected robust risk; E = bound on an expectation."
+O3187326931,class,GEN,"Headline is (epsilon,delta)-PAC instance-dependent sample complexity of Moca, explicitly 'beyond no regret'; GEN label covers sample-complexity bounds, ALG covers convergence/regret."
+O3192782817,class,GEN,"Theorems 1-2 are upper/lower sample-complexity bounds for (epsilon,delta)-PAC task-agnostic exploration; matches GEN sample-complexity label, not regret/convergence (ALG)."
+O3192782817,perturbation,distribution,"PAC probability is over randomness of trajectory sampling in the exploration phase (Eq. 2.2): natural sampling variation, coded distribution."
+O3209563920,eligible,0,"Headline Theorem 2 is an SQ learnability impossibility within a conceptual framework; no guarantee about a learned component; Theorem 3 is trivial parity identification."

@@ -1,0 +1,7 @@
+cid,field,value,rationale
+O4388756775,assumption,S,"L_conc needs i.i.d. calibration/test data; stated (Thm 1) but only satisfied by construction on synthetic data, no evidence for it."
+O4388756775,evidence,measured,"Coverage confirmed by testing on physical imbq_quito NISQ hardware (real device noise), stronger than simulator runs."
+O4390421907,evidence,simulated,"Guarantee is probabilistic (w.p. 1-eps_bar), not a sound certificate on the model; evaluated only in unicycle robot simulation."
+O4393159987,component,estimation,"Learned part is the NN load forecaster; downstream QP is not learned. Predictors count as estimation (cf. COMP-1)."
+O4396214268,perturbation,semantic,"VHAGaR supports L-inf plus six perturbations the paper calls semantic features; running headline examples are occlusion/brightness feature perturbations."
+O4400877915,evidence,simulated,"Coverage shown only on benchmark datasets (MNIST-DVS, DVS128 Gesture, CIFAR-10); codebook: benchmark environment is simulated."

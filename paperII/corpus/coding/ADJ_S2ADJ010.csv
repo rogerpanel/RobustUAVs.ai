@@ -1,0 +1,4 @@
+cid,field,value,rationale
+O4403405723,assumption,SE,"IID requirement stated (Sec 4.1) and evidenced by space-based CV coverage test (PI-90%: 90.5%); no confidence level enters guarantee, so not SEC."
+O4405486670,perturbation,none,"Regret bound holds in nominal Black-Scholes GBM model; no perturbation, disturbance term or distribution shift is modelled; market noise is the plant itself."
+O4405489636,assumption,SE,"Exchangeability/i.i.d. stated (Sec III) and evidenced by held-out test coverage over 5 random partitions (Table II); no confidence enters guarantee, so not SEC."

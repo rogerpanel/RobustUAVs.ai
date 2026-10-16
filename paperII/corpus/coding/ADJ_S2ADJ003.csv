@@ -1,0 +1,6 @@
+cid,field,value,rationale
+O3034772830,class,"NEW:Distributionally robust worst-case risk bound","No classes.csv code fits; Thm 3.1 dual gives computable upper bound on worst-case risk over ambiguity set, not a generalisation/sample-complexity bound."
+O3035441470,class,SEM,"Certifies exact robust accuracy over all ED1 typo perturbations (agreed perturbation=semantic); non-norm discrete perturbation certification fits SEM, no SMT/MILP used."
+O3040161731,evidence,simulated,"Theorem 1 is analytical, not a certificate computed on a model, so not proof; headline safety observed in gridworld/platformer simulations (no unsafe states)."
+O3092718793,class,GEN,"Headline is PAC sample-complexity bound (O~(S^2A/eps^2) episodes, minimax-matching); GEN label explicitly covers sample-complexity bounds, ALG is convergence/regret."
+O3097068942,evidence,measured,"MDL PAC-Bayes bounds evaluated on trained networks using real PsychENCODE/PCAWG genomics data (Sec. 3.4); codebook: measured = real-world data."
