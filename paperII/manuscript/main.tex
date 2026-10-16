@@ -98,11 +98,12 @@ converts to a per-hour rate without any independence assumption, but temporal co
 earns its usual exponential credit only under independence. SORA's test-hour ladder is exactly
 the zero-failure ``rule of three''. Runtime assurance discharges per-operation objectives, but it
 moves the gap onto its monitor rather than closing it. A registered study screens
-$\fsScreened$ of $\fsCandidates$ candidate records and codes $\fsCoded$ full texts against
-$\nObj$ objectives. It estimates $\fsField$ eligible papers and finds that the field has moved
-toward population-level statistical guarantees, conformal prediction above all. Only
-$\fsHTwoAcc$ of the lifted guarantees evidence the assumption their lift needs
-($\fsHTwoAccCA$--$\fsHTwoAccCB$ across coders). Almost none performs the rate lift, and no
+$\fsScreened$ of $\fsCandidates$ searched records and three snowballing iterations, codes
+$\fdCoded$ full texts against $\nObj$ objectives, and estimates $\fdField$ eligible papers. The
+field has moved toward population-level statistical guarantees, conformal prediction above all.
+It is not saturated: each snowballing iteration added papers, but none added a new kind of
+guarantee. Only $\fdHTwoAcc$ of the lifted guarantees evidence the assumption their lift needs
+($\fdHTwoAccCA$--$\fdHTwoAccCB$ across coders). Almost none performs the rate lift, and no
 guarantee class discharges a per-flight-hour objective without one. A SORA Annex~A evidence generator demonstrates one
 sound path end to end and lists every assumption as an open obligation. Nothing here certifies
 an aircraft: we map mathematical guarantees onto an evidence framework, and we say where the
@@ -171,13 +172,15 @@ category errors. Our contributions are as follows.
   prevalence-adjusted bias-adjusted kappa (PABAK), and a disclosed amendment log for every
   deviation, including screening and coding by large language model (LLM) instances.
 \item \textbf{A computed transfer table and a full study} (Sections~\ref{sec:results}
-  and~\ref{sec:agenda}). A stratified probability sample of the $\fsCandidates$ records gives
-  weighted estimates with intervals for the whole field. The table types $\fsTtRows$ class
-  states, $\fsClassesAdded$ of them classes the full study added to the pilot's $\nClasses$,
-  against six objective types: $\fsTtD$ discharges, $\fsTtL$ lifts and $\fsTtX$ category errors.
-  No class discharges a per-flight-hour objective without a lift. Two pilot findings are
-  reversed: vehicle-facing perception guarantees are mostly per input, and statistical guarantees
-  for perception are not the least developed.
+  and~\ref{sec:agenda}). Stratified probability samples of the $\fsCandidates$ searched records
+  and of three snowballing iterations give weighted estimates with intervals for the searched
+  corpus and its citation neighbourhood. The table types $\fdTtRows$ class states,
+  $\fdClassesAdded$ of them classes added to the pilot's $\nClasses$, against six objective types:
+  $\fdTtD$ discharges, $\fdTtL$ lifts and $\fdTtX$ category errors. No class discharges a
+  per-flight-hour objective without a lift. One pilot finding is reversed: vehicle-facing
+  perception guarantees are mostly per input. A second, that statistical guarantees for
+  perception are not the least developed, holds in the searched corpus but not in the expanded
+  field, where perception and control tie.
 \item \textbf{An evidence generator} (Section~\ref{sec:case}). From the committed results of a
   published composition certificate~\cite{parentpaper}, it emits a SORA Annex~A-shaped evidence
   pack in which every lift's assumption appears as an obligation with its status.
@@ -556,9 +559,12 @@ We stop when two consecutive iterations each add fewer than $2\,\%$ new inclusio
 no iteration adds a new cell of the type plane. The second condition matters more: an SoK can
 miss papers, but it should not miss a kind of guarantee. On a sampled corpus we apply the rule to
 estimates. The seeds are the eligible coded papers, and new candidates are screened, sampled and
-coded as in the main study, for at most three iterations. The coded sample already occupies
-$\fsTypeCells$ cells of the type plane, $\fsTypeNewCells$ of which the pilot did not reach. At
-submission the first iteration is running, so we do not yet claim saturation.
+coded as in the main study, for at most three iterations. The three iterations added an
+estimated $\sbOneNew$, $\sbTwoNew$ and $\sbThreeNew$ eligible papers ($\sbOneFrac$, $\sbTwoFrac$
+and $\sbThreeFrac$ of the field before each), so the corpus is \emph{not saturated} in papers.
+None added a cell of the type plane: the citation graph leads to more papers of the kinds already
+found, mostly generic learning theory. Tier~A is $\fdTierA$ of the expanded field against
+$\fdTierASearched$ of the searched corpus.
 
 \subsection{Codebook}
 \label{sec:codebook}
@@ -680,6 +686,12 @@ paper stands for its stratum's estimated includes divided by its coded papers. C
 results are weighted shares with 95\,\% bootstrap intervals that resample papers within strata
 and redraw the remainder's include count. They are estimates for the field, never counts.
 
+\emph{Snowballing and the expanded field.} Iterations follow references and citations through
+OpenAlex; candidates are screened in full up to 3{,}000 (else a ranked core plus a random
+sample), and up to 100 includes per iteration are coded as above. The expanded field combines all
+$\fdStrata$ strata ($\fdCoded$ coded papers). We report it throughout, with the searched-corpus
+value where the two differ in substance.
+
 \subsection{The Evidence Generator}
 The generator reads a certified configuration of the running example from its committed result
 files. It emits a SORA Annex~A-shaped pack in which: the ODD is the parent's measured operating
@@ -694,11 +706,13 @@ hides its assumptions would commit exactly the category error this paper names.
 \label{sec:landscape}
 % =====================================================================
 We now systematize what each level offers, with classes in parentheses; a $^{+}$ marks the
-classes the full study added. Appendix~\ref{app:classes} lists pilot membership. By weighted
-estimate, $\fsScIn$ of the field's guarantees are per input, $\fsScTr$ per trajectory, $\fsScOp$
-per operation and $\fsScPop$ per population. The levels are uneven in a second way. The
-highest-ranked records, which resemble the pilot, are $\fsProofCore$ proofs, while the rest of the
-field is $\fsProofRem$ proofs and $\fsSimRem$ simulation.
+classes the full study added and a $^{\ast}$ those added from the snowballing iterations.
+Appendix~\ref{app:classes} lists pilot membership. By weighted estimate, $\fdScIn$ of the
+expanded field's guarantees are per input, $\fdScTr$ per trajectory, $\fdScOp$ per operation and
+$\fdScPop$ per population ($\fdScPopSearched$ in the searched corpus). The levels are uneven in a
+second way. In the searched corpus the highest-ranked records, which resemble the pilot, are
+$\fsProofCore$ proofs, while the rest of the field is $\fsProofRem$ proofs and $\fsSimRem$
+simulation.
 
 \subsection{Per Input}
 Per-input certificates are the most developed class. Complete methods decide properties over
@@ -783,11 +797,14 @@ confidence. The negative results on demonstrating ultra-high reliability by test
 any of these can achieve~\cite{butler1993infeasibility,littlewood1993validation,kalra2016driving}.
 
 The full study puts the weight of the field at this level. Conformal prediction is the largest
-class, at $\fsCP$ of guarantees ($[\fsCPLo, \fsCPHi]$). The pilot coded its members as per-operation
-runtime checks, but in the field the dominant form is marginal coverage over a population
-(about $\fsCpPopd$ papers). Learning-theoretic generalization and sample-complexity bounds outside
-PAC-Bayes form a class of their own (GEN$^{+}$). Convergence and regret bounds for the learning
-algorithm (ALG$^{+}$) are guarantees about training, not about the deployed component.
+class, at $\fdCP$ of guarantees ($[\fdCPLo, \fdCPHi]$; $\fdCPSearched$ in the searched corpus).
+The pilot coded its members as per-operation runtime checks, but in the field the dominant form
+is marginal coverage over a population. Learning-theoretic generalization and sample-complexity
+bounds outside PAC-Bayes form the second largest class (GEN$^{+}$, $\fdGEN$ against
+$\fdGENSearched$ in the searched corpus), and convergence and regret bounds for the learning
+algorithm (ALG$^{+}$, $\fdALG$) are guarantees about training, not about the deployed component.
+Snowballing grows both, and adds population-level robustness limits (RLIM$^{\ast}$) that bound
+what any classifier can achieve rather than certify one.
 
 % =====================================================================
 \section{The Objective Landscape}
@@ -824,7 +841,7 @@ $^\dagger$Wording rests on a secondary source and is flagged for checking. Gener
 \texttt{corpus/objectives.csv}.}
 \label{tab:objectives}
 \scriptsize
-\renewcommand{\arraystretch}{1.05}
+\renewcommand{\arraystretch}{1.0}
 \begin{tabularx}{\textwidth}{@{}l>{\raggedright\arraybackslash}p{0.27\textwidth}Xlll@{}}
 \toprule
 ID & Document & Statement (paraphrased) & Type & Hazard & Target/FH \\
@@ -839,19 +856,16 @@ ID & Document & Statement (paraphrased) & Type & Hazard & Target/FH \\
 \label{sec:results}
 % =====================================================================
 \subsection{Reliability of the Coding}
-Table~\ref{tab:reliability} reports agreement between the two full-study coders. The fields the
-findings rest on are reliable. For the type, scope times modality, Krippendorff's $\alpha$ is
-$\fsRelTypeAlpha$ (95\,\% bootstrap interval $[\fsRelTypeAlphaLo,\fsRelTypeAlphaHi]$), and for
-the tier it is $\fsRelTierAlpha$. Full-text eligibility reaches $\alpha=\fsRelEligAlpha$, and the
-open-vocabulary class $\fsRelClassAlpha$. The assumption field again shows the prevalence paradox:
-$\fsRelAssmAgree$ agreement but $\kappa=\fsRelAssmKappa$, because ``stated'' dominates, with AC1
-$\fsRelAssmAcOne$. It is the one field below $\alpha=0.667$, so every finding that rests on it
-(H2) is reported from each coder separately. The lifts field has mean Jaccard similarity
-$\fsRelJaccard$. An adjudicator resolved all $\fsAdjPapers$ papers with a disagreement and changed
-no agreed field. It ran on the same model as the second coder and took that coder's value in
-$\fsAdjChoseCTwo$ of $\fsAdjFields$ field disagreements (the first coder's in $\fsAdjChoseCOne$,
-a third value in $\fsAdjChoseThird$). This is a second reason to report each coder's estimate.
-The pilot coding of the same codebook gave type $\alpha=\relTypeAlpha$.
+Table~\ref{tab:reliability} reports agreement between the two coders on the searched sample.
+The fields the findings rest on are reliable: Krippendorff's $\alpha$ is $\fsRelTypeAlpha$ for
+the type ($[\fsRelTypeAlphaLo,\fsRelTypeAlphaHi]$; pilot $\relTypeAlpha$), $\fsRelTierAlpha$ for
+the tier, $\fsRelEligAlpha$ for eligibility and $\fsRelClassAlpha$ for the open-vocabulary class.
+The assumption field shows the prevalence paradox ($\fsRelAssmAgree$ agreement, $\kappa=
+\fsRelAssmKappa$, AC1 $\fsRelAssmAcOne$) and is the one field below $\alpha=0.667$, so H2 is
+reported from each coder separately. An adjudicator resolved every disagreement without changing
+an agreed field. It ran on the second coder's model and took that coder's value in
+$\fsAdjChoseCTwo$ of $\fsAdjFields$ field disagreements, a second reason to report each coder's
+estimate.
 
 \begin{table}[t]
 \centering
@@ -875,93 +889,105 @@ Field & $n$ & \% & $\kappa$ & $\alpha$ [95\,\% CI] & AC1 & PABAK \\
 \subsection{H1: Where Guarantees Sit}
 \input{fig_results}
 
-Fig.~\ref{fig:dist} shows the estimated field by component and scope. Across both tiers,
-$\fsHOnePercIn$ of perception guarantees quantify per input ($[\fsHOnePercInLo,
-\fsHOnePercInHi]$, $n=\fsHOnePercInN$), against $\fsHOneCtrlIn$ of control guarantees
-($[\fsHOneCtrlInLo, \fsHOneCtrlInHi]$). For control, $\fsHOneCtrlTr$ quantify per trajectory.
-H1 fails for control, as predicted. For perception it holds only in a weak form: per input is the
-largest level, but it is about half, not most. The rest of perception is mostly population-level
-statistics. Each coder's codes alone give the same picture ($\fsHOnePercInCA$ and
-$\fsHOnePercInCB$).
+Fig.~\ref{fig:dist} shows the estimated expanded field by component and scope. Across both
+tiers, $\fdHOnePercIn$ of perception guarantees quantify per input ($[\fdHOnePercInLo,
+\fdHOnePercInHi]$, $n=\fdHOnePercInN$; $\fsHOnePercIn$ in the searched corpus), against
+$\fdHOneCtrlIn$ of control guarantees ($[\fdHOneCtrlInLo, \fdHOneCtrlInHi]$). For control,
+$\fdHOneCtrlTr$ quantify per trajectory. H1 fails for control, as predicted. For perception it
+holds only in a weak form: per input is the largest level, but it is about half, not most. The
+rest of perception is mostly population-level statistics. Each coder's codes alone give the same
+picture ($\fdHOnePercInCA$ and $\fdHOnePercInCB$).
 
 The full study reverses the pilot's refinement of H1. In the pilot, only $\hOnePercInA$ of
 tier-A perception guarantees, those evaluated on vehicles, were per input, and we read this as a
-shift of vehicle-facing perception to closed-loop verification through surrogates. In the field,
-$\fsHOnePercInA$ of tier-A perception guarantees are per input ($[\fsHOnePercInALo,
-\fsHOnePercInAHi]$; $\fsHOnePercInACA$ and $\fsHOnePercInACB$ by coder). Perception-in-the-loop
-verification is a small class, $\fsPIL$ of the field ($[\fsPILLo, \fsPILHi]$). The pilot
-had over-sampled it by design. Vehicle-facing perception is therefore mostly certified per input,
-like perception in general, and the surrogate route to a trajectory claim is the exception.
+shift of vehicle-facing perception to closed-loop verification through surrogates. In the
+expanded field, $\fdHOnePercInA$ of tier-A perception guarantees are per input
+($[\fdHOnePercInALo, \fdHOnePercInAHi]$; $\fdHOnePercInACA$ and $\fdHOnePercInACB$ by coder;
+$\fsHOnePercInA$ in the searched corpus). Perception-in-the-loop verification is a small class,
+fewer than one guarantee in a hundred (about $\fdPILPapers$ papers). The pilot had over-sampled
+it by design. Vehicle-facing perception is therefore mostly certified per input, like perception
+in general, and the surrogate route to a trajectory claim is the exception.
 
 \subsection{H2: Are Lifts Accounted For?}
-An estimated $\fsHTwoLifted$ of guarantees use at least one lift. Of these, $\fsHTwoU$ leave the
-lift's assumption unstated and $\fsHTwoS$ state it without evidence. $\fsHTwoSE$ evidence it, and
-only $\fsHTwoSEC$ carry that evidence's confidence into the final claim. In total $\fsHTwoAcc$
-($[\fsHTwoAccLo, \fsHTwoAccHi]$) account for the assumption as an obligation in the sense of
-Theorem~\ref{th:sound}. This share rests on the least reliable field, and it depends on the
-coder: $\fsHTwoAccCA$ from the first coder's codes and $\fsHTwoAccCB$ from the second's. Every
-reading leaves a large majority of lifted guarantees unaccounted for, so H2 is supported. The
-pilot's $\hTwoAccounted$ lies at the low end of that range.
+An estimated $\fdHTwoLifted$ of guarantees use at least one lift. Of these, $\fdHTwoU$ leave the
+lift's assumption unstated and $\fdHTwoS$ state it without evidence. $\fdHTwoSE$ evidence it, and
+only $\fdHTwoSEC$ carry that evidence's confidence into the final claim. In total $\fdHTwoAcc$
+($[\fdHTwoAccLo, \fdHTwoAccHi]$; $\fsHTwoAcc$ in the searched corpus) account for the assumption
+as an obligation in the sense of Theorem~\ref{th:sound}. This share rests on the least reliable
+field, and it depends on the coder: $\fdHTwoAccCA$ from the first coder's codes and
+$\fdHTwoAccCB$ from the second's. Every reading leaves a large majority of lifted guarantees
+unaccounted for, so H2 is supported. The pilot's $\hTwoAccounted$ lies inside that range.
 
-The rate differs by lift. The concentration lift is now the most common ($\fsHTwoConcUse$ of
-guarantees, because conformal and PAC arguments dominate) and is evidenced in $\fsHTwoConcAcc$ of
-its uses. The dynamics lift ($\fsHTwoDynUse$) is evidenced in only $\fsHTwoDynAcc$: the plant model
-is stated and taken as given. The monitor lift ($\fsHTwoMonUse$) is evidenced in $\fsHTwoMonAcc$,
-more often than the pilot suggested. The support lift remains nearly absent: $\fsHTwoSupUse$ of
-guarantees use it, although every per-operation guarantee ($\fsScOp$ of the field) needs it to
-reach a population objective. The lift most often left implicit is still the one regulators care
-most about: that deployment stays inside the certified set.
+The rate differs by lift. The concentration lift is the most common ($\fdHTwoConcUse$ of
+guarantees, as conformal and PAC arguments dominate) and is evidenced in $\fdHTwoConcAcc$ of its
+uses; the dynamics lift ($\fdHTwoDynUse$) in only $\fdHTwoDynAcc$, the plant model taken as
+given; the monitor lift ($\fdHTwoMonUse$) in $\fdHTwoMonAcc$. The support lift is nearly absent
+($\fdHTwoSupUse$), although every per-operation guarantee ($\fdScOp$ of the field) needs it: the
+lift most often left implicit is the one regulators care most about.
 
 The pilot suggested a trend, from $\hTwoAccEarly$ accounted in 2017--2021 to $\hTwoAccLate$ in
-2022--2026. The full study does not confirm it: $\fsHTwoAccEarly$ ($n=\fsHTwoAccEarlyN$) against
-$\fsHTwoAccLate$ ($n=\fsHTwoAccLateN$), with overlapping intervals
-($[\fsHTwoAccEarlyLo, \fsHTwoAccEarlyHi]$ and $[\fsHTwoAccLateLo, \fsHTwoAccLateHi]$).
+2022--2026. The searched corpus does not confirm it ($\fsHTwoAccEarly$ against
+$\fsHTwoAccLate$, intervals overlapping). The expanded field shows it ($\fdHTwoAccEarly$,
+$[\fdHTwoAccEarlyLo, \fdHTwoAccEarlyHi]$, against $\fdHTwoAccLate$, $[\fdHTwoAccLateLo,
+\fdHTwoAccLateHi]$), as do the second coder's codes alone, but not the first coder's
+($\fdHTwoAccEarlyCA$ against $\fdHTwoAccLateCA$, intervals overlapping). Since a conclusion needs
+all readings, the trend is suggestive, not established.
 
 \subsection{H3: The Transfer Table}
-Table~\ref{tab:transfer} is the computed transfer table for the $\nClasses$ pilot classes, the
-$\fsClassesAdded$ classes the full study added, and two field variants. Of its $\fsTtCells$ cells,
-$\fsTtD$ are discharges, $\fsTtL$ need lifts, and $\fsTtX$ are category errors. Four patterns
-stand out.
+Table~\ref{tab:transfer} is the computed transfer table on the expanded field: the $\nClasses$
+pilot classes, the $\fsClassesAdded$ classes the full study added, the $\fdClassesSnow$ classes
+grouped from the snowballing iterations, and $\fdVariants$ field variants. Of its $\fdTtCells$
+cells, $\fdTtD$ are discharges, $\fdTtL$ need lifts, and $\fdTtX$ are category errors. Four
+patterns stand out.
 
-\emph{No class discharges a per-flight-hour objective (T1).} $\fsTtTOneReach$ of the
-$\fsTtRows$ rows reach T1, all through \lift{rate}, so no per-hour claim exists without exposure
-and dependence evidence. The cheapest classes (CP, PACB, OPREL and the added GEN) need only that
-one lift, which matches H3's prediction that statistical guarantees are the natural fit. Every
+\emph{No class discharges a per-flight-hour objective (T1).} $\fdTtTOneReach$ of the
+$\fdTtRows$ rows reach T1, all through \lift{rate}, so no per-hour claim exists without exposure
+and dependence evidence. The cheapest classes (CP, PACB, OPREL and the added GEN and ALG) need
+only that one lift, which matches H3's prediction that statistical guarantees are the natural
+fit. Every
 per-input certificate class needs three or four obligations. Proposition~\ref{pr:nofree} is
 visible in the column: every T1 path carries a statistical obligation. The field variants change
 little. Conformal prediction's population form has the same row as its per-operation form, and
 certified reinforcement learning with $\forall$ rather than $\modAc$ claims saves the $\alpha$
 lift.
 
-\emph{Statistical guarantees are common; the rate lift is not.} The second half of H3 is
-reversed. Statistical guarantees for perception are not the least developed class: $\fsHThreePercP$
-of perception guarantees have modality $\modP$ ($[\fsHThreePercPLo, \fsHThreePercPHi]$), more than
-for control ($\fsHThreeCtrlP$), and estimation, mostly conformal trajectory prediction, leads at
-$\fsHThreeEstP$. Both coders agree on the order (perception $\fsHThreePercPCA$ and
-$\fsHThreePercPCB$, control $\fsHThreeCtrlPCA$ and $\fsHThreeCtrlPCB$). What remains scarce is
-the step that turns these guarantees into airworthiness evidence. Only $\fsHThreeRate$ of
-guarantees ($[\fsHThreeRateLo, \fsHThreeRateHi]$) perform the rate lift to a per-hour or
-per-demand system figure. The first half of H3, that per-hour and ODD objectives are the natural
-targets of statistical guarantees, is supported by the table.
+\emph{Statistical guarantees are common; the rate lift is not.} The second half of H3, that
+statistical guarantees for perception are the least developed, is reversed in the searched
+corpus ($\fsHThreePercP$ of perception guarantees have modality $\modP$, against $\fsHThreeCtrlP$
+for control, in both coders' codes). In the expanded field perception and control tie
+($\fdHThreePercP$, $[\fdHThreePercPLo, \fdHThreePercPHi]$, and $\fdHThreeCtrlP$) and the coders
+split, so we neither confirm nor reverse it. Both estimates agree that estimation, mostly
+conformal trajectory prediction, leads at $\fdHThreeEstP$, and that the scarce step is the one
+that turns statistical guarantees into airworthiness evidence. Only $\fdHThreeRate$ of guarantees ($[\fdHThreeRateLo,
+\fdHThreeRateHi]$) perform the rate lift to a per-hour or per-demand system figure. The first
+half of H3, that per-hour and ODD objectives are the natural targets of statistical guarantees,
+is supported by the table.
 
 \emph{Local robustness objectives (T6) are never discharged.} EASA and MLEAP robustness refers to
 both natural and adversarial perturbations. Every per-input class covers one of them, so every
 cell carries \obl{thr}. This is a modelling gap, not a proof gap: the certified sets of the
 literature were designed for an adversary that the objective does not single out.
 
-\emph{Falsification, average-case and training-time results discharge nothing above their own
-type.} $\fsTtAllX$ rows are all $\times$: falsification, global robustness estimates and the
-convergence and regret bounds of the added ALG class. DTMC discharges only the average-error
-objective T3. This is the formal version of a familiar warning, that a failed search for
-counterexamples, an average case or a statement about training are not evidence for a worst-case
-or tail objective. No coded full-study paper falls into the falsification class.
+\emph{Falsification and average-case results discharge nothing above their own type.}
+$\fdTtAllX$ rows are all $\times$: falsification, global robustness estimates and differential
+privacy of training (DPG$^{\ast}$). DTMC discharges only the average-error objective T3, and the
+population robustness limits (RLIM$^{\ast}$) reach only T3. This is the formal version of a
+familiar warning, that a failed search for counterexamples or an average case is not evidence
+for a worst-case or tail objective. No coded full-study paper falls into the falsification class.
 
-\begin{table*}[t]
+\emph{The calculus types claims, not their subject.} The convergence and regret bounds of
+ALG$^{+}$ were all $\times$ in the searched corpus. In the expanded field their modal type is
+$\fdAlgType$ ($\fdAlgN$ coded papers), so the table lets them discharge T2 and T3. That is right
+about the type and wrong about the subject, the training algorithm rather than the deployed
+model. We report the row as computed; it marks a missing lift, from an algorithm to the model it
+returns.
+
+\begin{table*}[!t]
 \centering
-\caption{The computed transfer table. Rows are guarantee classes with their estimated number of
-papers in the field and their type: pilot classes with the type fixed in the pilot,
-$^{\mathrm{f}}$ a pilot class's full-study modal type where it differs, and $^{+}$ classes the
-full study added. Columns are objective types: T1 per flight hour $\Q{poph}{P}$, T2 ODD
+\caption{The computed transfer table on the expanded field. Rows are guarantee classes with their
+estimated number of papers and their type: pilot classes with the type fixed in the pilot,
+$^{\mathrm{f}}$ a pilot class's full-study modal type where it differs, $^{+}$ classes the full
+study added and $^{\ast}$ classes grouped from the snowballing iterations. Columns are objective types: T1 per flight hour $\Q{poph}{P}$, T2 ODD
 generalization $\Q{popd}{P}$, T3 average error $\Q{popd}{E}$, T4 per operation $\Q{op}{A}$ (N),
 T5 security threat condition $\Q{op}{A}$ (Adv), T6 local robustness $\Q{in}{A}$ (B).
 \textbf{D}: discharge. L$_k$: least path with $k$ obligations, lifts listed (thr: hazard
@@ -970,7 +996,7 @@ members whose lift assumption is evidenced (SE or SEC). Generated by \texttt{tra
 \label{tab:transfer}
 \scriptsize
 \setlength{\tabcolsep}{3pt}
-\renewcommand{\arraystretch}{1.25}
+\renewcommand{\arraystretch}{1.0}
 \begin{tabular}{@{}lrc*{6}{>{\centering\arraybackslash}p{0.098\textwidth}}r@{}}
 \toprule
 Class & papers & type & T1 per FH & T2 ODD gen. & T3 average & T4 per op. & T5 security & T6 local rob. & ev.\,\% \\
@@ -981,16 +1007,15 @@ Class & papers & type & T1 per FH & T2 ODD gen. & T3 average & T4 per op. & T5 s
 \end{table*}
 
 \subsection{H4: Runtime Assurance}
-Of the $\fsTtRows$ rows, $\fsTtTFourReach$ reach a per-operation objective (T4), and only RTA
+Of the $\fdTtRows$ rows, $\fdTtTFourReach$ reach a per-operation objective (T4), and only RTA
 discharges one directly. This is H4's prediction, but Proposition~\ref{pr:rta} qualifies it. RTA
 carries $\hFourRtaDeficit$ intrinsic obligations: monitor coverage, switching latency, verified
-recovery and independence. RTA is $\fsHFourRta$ of the field ($[\fsHFourRtaLo, \fsHFourRtaHi]$),
-and $\fsHFourRtaMon$ of its guarantees rest on the monitor lift. In the pilot no RTA paper
-evidenced its assumption. In the full study $\fsHFourRtaAcc$ do, but the interval is wide
-($[\fsHFourRtaAccLo, \fsHFourRtaAccHi]$) and the coders differ ($\fsHFourRtaAccCA$ and
-$\fsHFourRtaAccCB$). The codebook records whether the lift's assumption is evidenced, not each of
-the four obligations, so the full study cannot say how many papers evidence all four.
-For a perception-based monitor, coverage is a $\Q{popd}{P}$ statement about the
+recovery and independence. RTA is $\fdHFourRta$ of the expanded field ($[\fdHFourRtaLo,
+\fdHFourRtaHi]$; $\fsHFourRta$ of the searched corpus), and $\fdHFourRtaMon$ of its guarantees
+rest on the monitor lift. In the pilot no RTA paper evidenced its assumption. In the full study
+$\fdHFourRtaAcc$ do, but the interval is wide ($[\fdHFourRtaAccLo, \fdHFourRtaAccHi]$) and the
+coders differ ($\fdHFourRtaAccCA$ and $\fdHFourRtaAccCB$); the codebook does not record the four
+obligations separately. For a perception-based monitor, coverage is a $\Q{popd}{P}$ statement about the
 monitor's learned input, so the architecture has moved the original gap onto its own monitor.
 H4 is supported in the form ``RTA is the only direct bridge, and it relocates the deficit''. It
 is not supported in the stronger form ``RTA closes the gap''. The independence obligation is
@@ -1051,18 +1076,15 @@ obligations, because the certificate says nothing about them.
 \paragraph*{What it does not certify}
 Of the pack's $\epNObl$ obligations, $\epNOpen$ are open or assumed. The chain is a valid
 transfer path to $\Q{op}{A}$ (T4) and, through \lift{sup}, to $\Q{popd}{P}$ (T2). It stops there:
-\obl{dep} is open, so the pack supports no per-flight-hour claim, and it says so. The case also
-illustrates Corollary~\ref{co:route}. The parent pays four obligations where two would buy a
-per-hour number, and in return it obtains the per-operation envelope that sizes a contingency
-volume. Neither route is wrong. The pack makes the choice visible.
+\obl{dep} is open, so the pack supports no per-flight-hour claim, and it says so. As
+Corollary~\ref{co:route} predicts, the parent pays four obligations where two would buy a
+per-hour number, and obtains the per-operation envelope that sizes a contingency volume.
 
 \paragraph*{Why this reframes a limitation}
-The parent bounds a proportion of missions, not a single flight, and a reviewer can read that as
-a weakness. In the type plane it is the correct level for an airworthiness argument. Every
-$\Q{poph}{P}$ objective is a population statement, and the only per-operation statement the
-parent could add is the $\Q{op}{A}$ corridor bound it already proves. This is a reframing, and
-we present it as one. It does not close the parent's interface-calibration limitation, which
-remains the pack's only partially evidenced obligation.
+The parent bounds a proportion of missions, not a single flight. In the type plane that is the
+correct level for an airworthiness argument: every $\Q{poph}{P}$ objective is a population
+statement. This is a reframing, and it does not close the parent's interface-calibration
+limitation, the pack's only partially evidenced obligation.
 
 % =====================================================================
 \section{Research Agenda}
@@ -1073,48 +1095,41 @@ many objectives they would discharge.
 
 \begin{enumerate}[leftmargin=*,itemsep=2pt,topsep=2pt]
 \item \textbf{Evidence for \obl{dep}} (all T1 cells, 7 objectives). Per-hour objectives are
-  reachable from every non-refuting class only through the rate lift, and only $\fsHThreeRate$ of
+  reachable from every non-refuting class only through the rate lift, and only $\fdHThreeRate$ of
   the field performs it. Temporal-dependence models of perception error, with confidence and
   validated on flight data, are the single most valuable missing piece. Proposition~\ref{pr:rate}
   shows that credit for confirmation turns on them. The field's statistical guarantees, conformal
   coverage above all, are one lift away from T1 and wait on exactly this evidence.
 \item \textbf{Reachable tubes as contingency volumes} (T4, 6 objectives). Q$_\mathsf{tr}$ tools
-  could size SORA's position-holding term directly. No pilot paper does so, and the codebook
-  does not record it for the full study; the evidence pack is a first instance. The missing step is \obl{hor} under realistic
-  re-anchoring, including denial.
+  could size SORA's position-holding term directly; the evidence pack is a first instance. The
+  missing step is \obl{hor} under realistic re-anchoring, including denial.
 \item \textbf{Calibrated surrogate coverage} (PIL to T2, T4). Perception-in-the-loop results
-  become transferable once \obl{cov} carries a confidence. Recent work does this for
-  contracts and semi-probabilistic controllers. The class is small ($\fsPIL$ of the field), so
-  for vehicle perception this is an opening rather than a backlog.
+  become transferable once \obl{cov} carries a confidence, as recent work does for contracts and
+  semi-probabilistic controllers. The class is small (about $\fdPILPapers$ papers): an opening,
+  not a backlog.
 \item \textbf{Monitor coverage with confidence} (RTA and MON to T4). ASTM F3269 names coverage
-  as a concern. $\fsHFourRtaAcc$ of RTA guarantees evidence their monitor assumption, and across the
-  field only $\fsHTwoSEC$ of lifted guarantees carry a confidence into the claim. Independence of
-  the monitor's input must be argued, not assumed.
-\item \textbf{Hazard models that match the objective} (all T6 cells). Robustness objectives name
-  natural and adversarial perturbations together. Certified sets parametrized by the ODD, with
-  an adversarial margin, would close the coverage obligation.
+  as a concern; $\fdHFourRtaAcc$ of RTA guarantees evidence their monitor assumption, and only
+  $\fdHTwoSEC$ of lifted guarantees carry a confidence. Independence must be argued, not assumed.
+\item \textbf{Hazard models that match the objective} (all T6 cells). Certified sets parametrized
+  by the ODD, with an adversarial margin, would close the coverage obligation.
 \end{enumerate}
 
 % =====================================================================
 \section{Related SoKs and Surveys}
 \label{sec:related}
 % =====================================================================
-Prior systematizations catalogue one level. The SoK of Li et al.\ organizes certified robustness
-for deep networks by verification and training technique, entirely at
-$\scin$~\cite{li2023sok}. Liu et al.\ survey verification algorithms~\cite{liu2021algorithms}.
-Brunke et al.\ and Dawson et al.\ survey safe learning-based control and learned
-certificates~\cite{brunke2022safe,dawson2023certificates}. Hobbs et al.\ introduce runtime
-assurance~\cite{hobbs2023rta}. Huang et al.\ and Mohseni et al.\ survey safety and trustworthiness
-of deep networks~\cite{huang2020survey,mohseni2023taxonomy}. Papernot et al.\ systematize security
-and privacy in ML~\cite{papernot2018sok}. Tambon et al.\ conduct a systematic review of how to
-certify ML-based safety-critical systems, and are our closest methodological
-precedent~\cite{tambon2022certify}. On the assurance side, Burton et al.\ name the semantic gap
-between specification and learned behaviour~\cite{burton2020mindthegaps}. Ashmore et al.\
-structure assurance across the ML lifecycle~\cite{ashmore2021lifecycle}. AMLAS provides
-safety-case patterns~\cite{hawkins2021amlas}, and Assurance~2.0 and eliminative argumentation
-make residual doubt explicit~\cite{bloomfield2020assurance2,goodenough2015eliminative}. Seshia et
-al.\ set out the challenges of verified AI~\cite{seshia2022verifiedai}, and Bensalem et al.\
-argue for combining statistical and formal guarantees~\cite{bensalem2023achievable}. None of
+Prior systematizations catalogue one level: certified robustness by technique, entirely at
+$\scin$~\cite{li2023sok}, verification algorithms~\cite{liu2021algorithms}, safe learning-based
+control and learned certificates~\cite{brunke2022safe,dawson2023certificates}, runtime
+assurance~\cite{hobbs2023rta}, and safety, trustworthiness, security and privacy of deep
+networks~\cite{huang2020survey,mohseni2023taxonomy,papernot2018sok}. Tambon et al.\ review how to
+certify ML-based safety-critical systems and are our closest methodological
+precedent~\cite{tambon2022certify}. On the assurance side, the semantic gap between specification
+and learned behaviour~\cite{burton2020mindthegaps}, lifecycle assurance~\cite{ashmore2021lifecycle},
+safety-case patterns~\cite{hawkins2021amlas} and explicit residual
+doubt~\cite{bloomfield2020assurance2,goodenough2015eliminative} are established, as are the
+challenges of verified AI~\cite{seshia2022verifiedai} and the case for combining statistical and
+formal guarantees~\cite{bensalem2023achievable}. None of
 these works types claims by what they quantify over, and none treats lifts as obligations whose
 deficit can be computed. That cross-level transfer analysis is our contribution. Our obligations
 map onto the assumption nodes and assurance claim points of goal structuring notation
@@ -1131,33 +1146,34 @@ quantification in probabilistic computation tree logic (PCTL)~\cite{hansson1994p
 done by LLM instances, a disclosed deviation from the registered human coding. Their agreement
 measures how unambiguous the codebook is, not how experts read the papers, and coders that share
 a training distribution may agree for the wrong reasons. A paper was screened out only when both
-screeners excluded it, and the held-out half of the pilot set lost $\fsHeldLost$ of $\fsHeldScreened$ papers
-at screening. The adjudicator shared a model with one coder and favoured its codes, so we report
-each coder's estimate beside the adjudicated one and state a conclusion only where they agree.
-Every code is released, and a human re-coding regenerates the paper.
+screeners excluded it; the held-out half of the pilot set lost $\fsHeldLost$ of
+$\fsHeldScreened$. The adjudicator shared a model with one coder and favoured its codes, so we
+state a conclusion only where each coder's estimate agrees. Every code is released, and a human
+re-coding regenerates the paper.
 
-\emph{The corpus is a sample.} Field-level numbers are weighted estimates from $\fsCoded$ coded
-papers in two strata. Intervals carry sampling error in coding and in screening, but not search
-error. The search retrieves $\fsRecallAll$ of the pilot set. Full texts were limited to
-open-access copies, and $\fsRemNotRetrieved$ of $\fsRemTried$ remainder records had none. If
-paywalled papers differ systematically, for example toward journal-only control results, the
-estimates are biased in an unknown direction. DBLP's venue indexes could not be swept.
-Snowballing is still running, so saturation of the type plane is not yet established.
+\emph{The corpus is a sample, and it is not saturated.} Field-level numbers are weighted
+estimates from $\fdCoded$ coded papers in $\fdStrata$ strata. Intervals carry sampling error in
+coding and in screening, but not search error. The search retrieves $\fsRecallAll$ of the pilot
+set. Snowballing stopped at its cap with every iteration above the $2\,\%$ stop threshold, so
+the expanded field is a citation neighbourhood, not the whole literature, and would keep
+growing; the type plane did not grow, which is the claim the stop rule protects. Seeds without
+references in OpenAlex ($\sbOneNoRefs$ of $\sbOneSeeds$ in the first iteration) contribute only
+citing papers. Full texts were limited to open-access copies, and
+$\fsRemNotRetrieved$ of $\fsRemTried$ remainder records had none. If paywalled papers differ
+systematically, for example toward journal-only control results, the estimates are biased in an
+unknown direction. DBLP's venue indexes could not be swept.
 
 \emph{The calculus is ours.} The verdicts depend on the edge set. We chose edges that correspond
 to arguments in the corpus, and we release the code so that a reader can add, remove or
 re-weight an edge and regenerate the table. Unit weights treat all obligations alike. A
 deficit weighted by evidence kind is a natural refinement.
 
-\emph{Class-level types hide within-class spread.} A class takes its modal type. Members of
-other types are visible in Appendix~\ref{app:classes} and in the released codes.
-
-\emph{Regulatory drift.} ED-324 and the EASA Proposed Issue~03 were moving at our cut-off, and
-$\nObj-\nObjPrimary$ objectives rest on secondary sources. We code concepts, not clause numbers,
-and flag every secondary objective.
+\emph{Types and sources.} A class takes its modal type; members of other types are in
+Appendix~\ref{app:classes} and the released codes. ED-324 and EASA Proposed Issue~03 were moving
+at our cut-off, and $\nObj-\nObjPrimary$ objectives rest on secondary sources, which we flag.
 
 \emph{Construct validity.} ``Accounted for'' (SE or SEC) is a strict reading of H2. Under a
-looser reading that counts any stated assumption, the share is $\fsHTwoStated$. The gap H2 names
+looser reading that counts any stated assumption, the share is $\fdHTwoStated$. The gap H2 names
 is therefore one of evidence, not of disclosure.
 
 % =====================================================================
@@ -1166,14 +1182,13 @@ is therefore one of evidence, not of disclosure.
 % =====================================================================
 Certified robustness and airworthiness assurance do not fail to meet because one is too weak.
 They quantify over different things. Once guarantees and objectives carry types, the gap becomes
-computable. Lifts bridge it, and each lift leaves an obligation behind. No chain of proofs
-reaches a probability objective without a statistical obligation. The cheapest route to a
-per-hour number skips the per-operation envelope that sizes a contingency volume. Runtime
-assurance moves the gap onto its monitor. Across the field, the literature has moved toward
-statistical guarantees at the population level, yet almost none take the rate lift to a
-per-hour figure. It states most of its lift assumptions but evidences few of them, least of all
-the one regulators care about: that the aircraft stays where the certificate holds. The evidence generator shows the alternative. It
-lists every assumption as an obligation, and it keeps the boundary of the claim in the pack.
+computable, lifts bridge it, and each lift leaves an obligation behind. No chain of proofs
+reaches a probability objective without a statistical obligation, and runtime assurance moves
+the gap onto its monitor. The literature has moved toward population-level statistical
+guarantees, yet almost none take the rate lift to a per-hour figure, and few evidence the
+assumption regulators care most about: that the aircraft stays where the certificate holds. The
+evidence generator shows the alternative: every assumption listed as an obligation, and the
+boundary of the claim kept in the pack.
 
 % =====================================================================
 \section*{Ethics Considerations}
@@ -1341,6 +1356,12 @@ LUC$^{+}$ & learned-uncertainty safe control: Gaussian-process bounds, chance co
 ALG$^{+}$ & convergence and regret bounds of the learning algorithm ($\fsNewNAlg$) \\
 GLOB$^{+}$ & global robustness by Lipschitz-based optimization ($\fsNewNGlob$) \\
 IMPL$^{+}$ & verification of the executable implementation, e.g.\ timing ($\fsNewNImpl$) \\
+\midrule
+ARCH$^{\ast}$ & guarantees by architectural construction: constraint layers, equivariance, structure-preserving models ($\sbNArch$) \\
+RLIM$^{\ast}$ & population-level robustness bounds and limits: distributionally robust risk, sensitivity, impossibility ($\sbNRlim$) \\
+DPG$^{\ast}$ & differential privacy of training, and poisoning bounds derived from it ($\sbNDpg$) \\
+APPROX$^{\ast}$ & approximation-error bounds against a reference: compression, approximate MPC, data-driven predictors ($\sbNApprox$) \\
+GREG$^{\ast}$, DSM$^{\ast}$, XAI$^{\ast}$, COMP$^{\ast}$ & global robustness by region enumeration, deterministic smoothing, sound explanations, compositional robustness (one each) \\
 \bottomrule
 \end{tabularx}
 \end{table}

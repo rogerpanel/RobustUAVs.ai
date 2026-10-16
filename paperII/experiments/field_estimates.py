@@ -17,6 +17,7 @@ Outputs  results/field_strata.csv                 stratum, N, coded, eligible_co
                                                   Field "class_grouped" is the class after new_class_map.csv
                                                   (NEW: labels grouped, amendments 5-6).
          results/type_plane_field.csv             scope x modality cells on the expanded field
+         results/distribution_field.csv           estimated papers by tier x component x scope (Fig. 3)
          results/field_hypotheses{_C1,_C2}.csv    key, description, n_den, estimate [lo, hi], searched
 Usage    python3 field_estimates.py [final|C1|C2]   (C1/C2: each coder's codes alone, all strata)
 """
@@ -142,6 +143,16 @@ def main() -> int:
                "share_searched": r["share_searched"]} for r in out if r["field"] == "scope_x_modality"]
         with (R / "type_plane_field.csv").open("w", newline="") as fh:
             w = csv.DictWriter(fh, fieldnames=list(tp[0]), lineterminator="\n"); w.writeheader(); w.writerows(tp)
+        w0 = bt.point()
+        dist = []
+        for tier in ("A", "AB"):
+            for comp in ("perception", "estimation", "control", "planning", "end2end"):
+                for sc in ("in", "tr", "op", "pop"):
+                    x = sum(wi for wi, r in zip(w0, rows) if r["eligible"] == "1" and (tier == "AB" or r["tier"] == "A")
+                            and r["component"] == comp and r["scope"] == sc)
+                    dist.append({"tier": tier, "component": comp, "scope": sc, "papers": round(x)})
+        with (R / "distribution_field.csv").open("w", newline="") as fh:
+            w = csv.DictWriter(fh, fieldnames=list(dist[0]), lineterminator="\n"); w.writeheader(); w.writerows(dist)
         for name, rr, N, rdw in st:
             print(f"stratum {name:<20} N={N:8.1f} coded {len(rr):3d}{' (sampled)' if rdw else ''}")
         for r in out:

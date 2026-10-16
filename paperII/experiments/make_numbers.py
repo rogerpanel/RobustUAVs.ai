@@ -155,6 +155,100 @@ def full_study(N):
     N["fsCpPopd"] = big(cp["full_state_weights"].split(";")[0].split()[-1])
 
 
+def field(N):
+    """Amendment 6: the expanded field (searched corpus + three snowballing iterations), macros fd*;
+    the snowballing iterations themselves, macros sb*."""
+    import json
+    C = HERE.parent / "corpus"
+    big = lambda x: f"{int(round(float(x))):,}".replace(",", "{,}")  # noqa: E731
+    est = {(r["field"], r["value"]): r for r in rd("field_estimates.csv")}
+    def E(field_, value, key):
+        r = est[(field_, value)]
+        N[key] = pct(r["share"]); N[key + "Lo"] = pct(r["share_lo"]); N[key + "Hi"] = pct(r["share_hi"])
+        N[key + "Papers"] = big(r["papers"]); N[key + "Searched"] = pct(r["share_searched"])
+    e = est[("eligible", "1")]
+    N["fdField"] = big(e["papers"]); N["fdFieldLo"] = big(e["papers_lo"]); N["fdFieldHi"] = big(e["papers_hi"])
+    N["fdGrowth"] = pct(float(e["papers"]) / float(next(r for r in rd("corpus_estimates.csv")
+                                                       if r["field"] == "eligible" and r["value"] == "1")["papers"]) - 1)
+    for (f, v), k in {("class_grouped", "CP"): "fdCP", ("class_grouped", "RTA"): "fdRTA", ("class_grouped", "PIL"): "fdPIL",
+                      ("class_grouped", "GEN"): "fdGEN", ("class_grouped", "ALG"): "fdALG", ("class_grouped", "BP"): "fdBP",
+                      ("scope", "in"): "fdScIn", ("scope", "tr"): "fdScTr", ("scope", "op"): "fdScOp",
+                      ("scope", "pop"): "fdScPop", ("modality", "P"): "fdModP", ("modality", "A"): "fdModA",
+                      ("tier", "A"): "fdTierA", ("component", "perception"): "fdPerc",
+                      ("component", "control"): "fdCtrl"}.items():
+        E(f, v, k)
+    N["fdTypeCells"] = len(rd("type_plane_field.csv"))
+    hyp = {}
+    for tag in ("", "_C1", "_C2"):
+        for r in rd(f"field_hypotheses{tag}.csv"):
+            hyp[(tag, r["key"])] = r
+    for key, mac in (("h1_AB_perc_in", "fdHOnePercIn"), ("h1_AB_ctrl_in", "fdHOneCtrlIn"),
+                     ("h1_AB_ctrl_tr", "fdHOneCtrlTr"), ("h1_A_perc_in", "fdHOnePercInA"),
+                     ("h2_share_lifted", "fdHTwoLifted"), ("h2_share_U", "fdHTwoU"), ("h2_share_S", "fdHTwoS"),
+                     ("h2_share_SE", "fdHTwoSE"), ("h2_share_SEC", "fdHTwoSEC"), ("h2_share_accounted", "fdHTwoAcc"),
+                     ("h2_accounted_2017", "fdHTwoAccEarly"), ("h2_accounted_2022", "fdHTwoAccLate"),
+                     ("h2_L_dyn_use", "fdHTwoDynUse"), ("h2_L_dyn_acc", "fdHTwoDynAcc"),
+                     ("h2_L_conc_use", "fdHTwoConcUse"), ("h2_L_conc_acc", "fdHTwoConcAcc"),
+                     ("h2_L_mon_use", "fdHTwoMonUse"), ("h2_L_mon_acc", "fdHTwoMonAcc"),
+                     ("h2_L_sup_use", "fdHTwoSupUse"),
+                     ("h3_perception_share_P", "fdHThreePercP"), ("h3_control_share_P", "fdHThreeCtrlP"),
+                     ("h3_estimation_share_P", "fdHThreeEstP"), ("h3_rate_use", "fdHThreeRate"),
+                     ("h4_share_RTA", "fdHFourRta"), ("h4_RTA_accounted", "fdHFourRtaAcc"),
+                     ("h4_RTA_L_mon", "fdHFourRtaMon")):
+        r = hyp[("", key)]
+        N[mac] = pct(r["estimate"]); N[mac + "Lo"] = pct(r["lo"]); N[mac + "Hi"] = pct(r["hi"]); N[mac + "N"] = r["n_den"]
+        N[mac + "CA"] = pct(hyp[("_C1", key)]["estimate"]); N[mac + "CB"] = pct(hyp[("_C2", key)]["estimate"])
+        for t, nm in (("_C1", "CA"), ("_C2", "CB")):
+            N[mac + nm + "Lo"] = pct(hyp[(t, key)]["lo"]); N[mac + nm + "Hi"] = pct(hyp[(t, key)]["hi"])
+    N["fdHTwoStated"] = pct(1 - float(hyp[("", "h2_share_U")]["estimate"]))
+    from collections import Counter
+    ttf = rd("transfer_table_field.csv")
+    V = Counter(r["verdict"] for r in ttf)
+    N["fdTtRows"] = len({r["class"] for r in ttf}); N["fdTtCells"] = len(ttf)
+    N["fdTtD"], N["fdTtL"], N["fdTtX"] = V["D"], V["L"], V["X"]
+    N["fdTtTOneReach"] = len({r["class"] for r in ttf if r["type"] == "T1" and r["verdict"] != "X"})
+    N["fdTtTFourReach"] = len({r["class"] for r in ttf if r["type"] == "T4" and r["verdict"] != "X"})
+    N["fdTtAllX"] = sum(all(r["verdict"] == "X" for r in ttf if r["class"] == c) for c in {r["class"] for r in ttf})
+    cs = rd("class_states_field.csv")
+    N["fdClassesSnow"] = sum(r["source"] == "snowballing (added)" for r in cs)
+    N["fdVariants"] = sum(r["source"] == "full study (variant)" for r in cs)
+    alg = next(r for r in cs if r["class"] == "ALG")
+    N["fdAlgN"] = alg["n_coded_full"]; N["fdAlgType"] = f"\\Q{{{alg['scope']}}}{{{alg['modality']}}}"
+    main_ids = {r["cid"] for r in csv.DictReader(open(C / "codes_full_final.csv"))}
+    nm = [r for r in csv.DictReader(open(C / "new_class_map.csv")) if r["cid"] not in main_ids]
+    N["sbNewCoded"] = len(nm)
+    for k in ("ARCH", "RLIM", "DPG", "APPROX", "GREG", "DSM", "XAI", "COMP"):
+        N["sbN" + k.capitalize()] = sum(r["class"] == k for r in nm)
+    fst = rd("field_strata.csv")
+    N["fdCoded"] = sum(int(r["coded"]) for r in fst); N["sbCoded"] = N["fdCoded"] - N["fsCoded"]
+    N["fdStrata"] = len(fst)
+    N["fdClassesAdded"] = sum(r["source"].endswith("(added)") for r in cs)
+    N["sbNewGrouped"] = sum(r["class"] in ("GEN", "LUC") for r in nm)
+    # snowballing iterations
+    S = C / "snowball"
+    log = [json.loads(l) for l in open(C / "search_log.jsonl")]
+    seeds = [x for x in log if "snowball_seed" in x]
+    names = {1: "One", 2: "Two", 3: "Three"}
+    tot_new = 0.0
+    for k, nmk in names.items():
+        st = {r["metric"]: r["value"] for r in rd(f"snowball_iter{k}_status.csv")}
+        ss = {r["metric"]: r["value"] for r in csv.DictReader(open(S / f"iter{k}_screening_status.csv"))}
+        cand = sum(1 for _ in csv.DictReader(open(S / f"iter{k}_candidates.csv")))
+        N[f"sb{nmk}Cand"] = big(cand); N[f"sb{nmk}Screened"] = big(ss["screened"])
+        N[f"sb{nmk}Inc"] = big(st["includes"]); N[f"sb{nmk}Coded"] = st["coded"]; N[f"sb{nmk}Elig"] = st["eligible_coded"]
+        N[f"sb{nmk}New"] = big(st["new_eligible_est"]); N[f"sb{nmk}NewLo"] = big(st["new_eligible_lo"])
+        N[f"sb{nmk}NewHi"] = big(st["new_eligible_hi"]); N[f"sb{nmk}Frac"] = pct(st["new_fraction"])
+        N[f"sb{nmk}Kappa"] = f2(ss["kappa_L1_L2"])
+        tot_new += float(st["new_eligible_est"])
+    # seeds per iteration and seeds with no references (from the search log, in order)
+    n1 = sum(r["eligible"] == "1" for r in csv.DictReader(open(C / "codes_full_final.csv")))
+    n2, n3 = int(rd("snowball_iter1_status.csv")[4]["value"]), int(rd("snowball_iter2_status.csv")[4]["value"])
+    blocks = [seeds[:n1], seeds[n1:n1 + n2], seeds[n1 + n2:n1 + n2 + n3]]
+    for (k, nmk), b in zip(names.items(), blocks):
+        N[f"sb{nmk}Seeds"] = len(b); N[f"sb{nmk}NoRefs"] = sum(x["refs"] == 0 for x in b)
+    N["sbNewTotal"] = big(round(tot_new))
+
+
 def main():
     H = {r["key"]: r["value"] for r in rd("hypotheses.csv")}
     rel = {r["field"]: r for r in rd("reliability_C1_C2.csv")}
@@ -234,13 +328,14 @@ def main():
     N["epNObl"] = len(obl); N["epNOpen"] = sum(o["status"] in ("open", "assumed") for o in obl)
 
     full_study(N)
+    field(N)
     with open(M / "numbers.tex", "w") as fh:
         fh.write("% Generated by paperII/experiments/make_numbers.py -- do not edit by hand.\n")
         for k, v in N.items():
             fh.write(f"\\newcommand{{\\{k}}}{{{v}}}\n")
 
     # ---------------- figure data ----------------
-    dist = rd("distribution_full.csv")
+    dist = rd("distribution_field.csv")   # amendment 6: the expanded field
     for tier in ("A", "AB"):
         with open(FD / f"dist_{tier}.dat", "w") as fh:
             fh.write("component in tr op popd\n")
@@ -270,8 +365,8 @@ def main():
 
     # ---------------- transfer table body ----------------
     # full study (amendment 5): pilot classes with pilot states, added classes, field variants
-    tt = rd("transfer_table_full.csv")
-    cs = {r["class"]: r for r in rd("class_states_full.csv")}
+    tt = rd("transfer_table_field.csv")   # amendment 6: the expanded field
+    cs = {r["class"]: r for r in rd("class_states_field.csv")}
     types = ["T1", "T2", "T3", "T4", "T5", "T6"]
     lines = []
     short = {"L_alpha": "$\\alpha$", "L_dyn": "dyn", "L_hor": "hor", "L_op": "op", "L_sup": "sup",
@@ -294,8 +389,10 @@ def main():
         name = cls.replace(" (field)", "$^{\\mathrm{f}}$")
         if c["source"] == "full study (added)":
             name += "$^{+}$"
+        if c["source"] == "snowballing (added)":
+            name += "$^{\\ast}$"
         n = c["est_papers_full"] if int(c["n_coded_full"]) else "0"
-        if c["source"] == "full study (added)" and cls == next(k for k, v in cs.items() if v["source"] == "full study (added)"):
+        if c["source"].endswith("(added)") and cls == next(k for k, v in cs.items() if v["source"].endswith("(added)")):
             lines.append("\\midrule")
         lines.append(f"{name} & {n} & {typ} & " + " & ".join(cells) + f" & {ev} \\\\")
     (M / "tab_transfer_body.tex").write_text("% generated by make_numbers.py\n" + "\n".join(lines) + "\n")

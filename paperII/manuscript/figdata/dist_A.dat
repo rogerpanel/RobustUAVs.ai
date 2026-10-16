@@ -1,6 +1,6 @@
 component in tr op popd
-perception 245 22 22 128
-estimation 0 107 0 127
-control 249 356 149 64
-planning 0 0 43 43
-end2end 20 0 0 42
+perception 254 30 22 128
+estimation 8 124 0 127
+control 296 386 168 78
+planning 21 0 49 43
+end2end 20 0 0 50
