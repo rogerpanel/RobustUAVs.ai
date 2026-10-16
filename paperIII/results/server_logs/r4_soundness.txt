@@ -1,0 +1,6 @@
+{'log': '0/log/2026-10-16/01_27_32.ulg', 'samples': 63255, 'status': 'checked', 'violations': 75, 'max_excess_m': 12.92103963163512, 'max_err_m': 13.884869219450273, 'provenance': 'sitl'}
+{'log': '1/log/2026-10-16/01_27_32.ulg', 'samples': 60832, 'status': 'checked', 'violations': 2, 'max_excess_m': 0.01942264298596097, 'max_err_m': 4.902696672385852, 'provenance': 'sitl'}
+{'log': '2/log/2026-10-16/01_27_32.ulg', 'samples': 64527, 'status': 'checked', 'violations': 0, 'max_excess_m': -0.02940712545505475, 'max_err_m': 0.9156819113482653, 'provenance': 'sitl'}
+{'log': '3/log/2026-10-16/01_27_32.ulg', 'samples': 16447, 'status': 'checked', 'violations': 0, 'max_excess_m': -0.22164689526688985, 'max_err_m': 1.8847022709183852, 'provenance': 'sitl'}
+{'log': '4/log/2026-10-16/01_27_32.ulg', 'samples': 64533, 'status': 'checked', 'violations': 12, 'max_excess_m': 0.03642456154500684, 'max_err_m': 0.9800520096458182, 'provenance': 'sitl'}
+{'log': '5/log/2026-10-16/01_27_32.ulg', 'samples': 64508, 'status': 'checked', 'violations': 0, 'max_excess_m': -0.022470426092808138, 'max_err_m': 0.9220288020898878, 'provenance': 'sitl'}

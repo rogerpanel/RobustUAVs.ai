@@ -30,7 +30,8 @@ If the ground-truth topic is not in the log, the check is reported as
 "not available" (never estimated).
 
 Outputs: results/r4_sitl.csv (epoch log, provenance=sitl),
-         results/r4_sitl_summary.csv, results/r4_soundness.csv
+         results/r4_sitl_summary.csv, results/r4_soundness.csv,
+         results/r4_soundness_violations.csv (every violating sample with its GNSS context)
 Usage:   python3 r4_sitl_fleet.py --vehicles 6 --rate 5 --duration 240
          python3 r4_sitl_fleet.py --soundness-only --logs <dir with rootfs/*/log>
 """
@@ -199,7 +200,8 @@ async def run(vs, rate, duration, tag):
                 active.add(key); inj_log.append((t, vi, kind, "on", await inject(vs[vi], kind, True)))
             elif t >= s + du and key in active:
                 active.discard(key); inj_log.append((t, vi, kind, "off", await inject(vs[vi], kind, False)))
-        stale = np.array([(now - v.last_fix_t) if v.last_fix_t else 1e3 for v in vs])
+        t_obs = time.monotonic()            # after the injection calls, which can take seconds
+        stale = np.array([max(0.0, t_obs - v.last_fix_t) if v.last_fix_t else 1e3 for v in vs])
         rho = rho_now(stale)
         pos = np.stack([v.ned for v in vs])
         d = np.linalg.norm(pos[:, None, :] - SITES[None, :, :], axis=-1)
@@ -258,35 +260,59 @@ def latlon_dist(lat1, lon1, lat2, lon2):
 
 
 def soundness(log_root: Path):
+    """Per log: every estimate sample against rho from the logged GNSS stream. Writes the
+    summary rows and, separately, every violating sample with its GNSS context (time since the
+    last fix, since the last reacquisition, fix type), so a violation can be traced to its cause."""
     from pyulog import ULog
-    rows = []
+    rows, samples = [], []
     ulgs = sorted(log_root.rglob("*.ulg"))
     for f in ulgs:
         u = ULog(str(f))
         D = {d.name: d.data for d in u.data_list if d.multi_id == 0}
         gp, gt = D.get("vehicle_global_position"), D.get("vehicle_global_position_groundtruth")
         gps = D.get("vehicle_gps_position") or D.get("sensor_gps")
+        name = str(f.relative_to(log_root))
         if gp is None or gps is None:
             continue
-        if gt is None:
-            rows.append({"log": str(f.relative_to(log_root)), "samples": 0, "status": "groundtruth not logged",
-                         "violations": "", "max_excess_m": "", "max_err_m": "", "provenance": "sitl"})
-            continue
         t = gp["timestamp"] * 1e-6
+        t0 = float(t[0])
+        if gt is None:
+            rows.append({"log": name, "duration_s": round(float(t[-1] - t0), 1), "samples": 0,
+                         "status": "groundtruth not logged", "violations": "", "max_excess_m": "",
+                         "max_err_m": "", "violations_fresh_fix": "", "violations_10s_after_reacq": "",
+                         "provenance": "sitl"})
+            continue
         tg = gt["timestamp"] * 1e-6
         lat_t = np.interp(t, tg, gt["lat"]); lon_t = np.interp(t, tg, gt["lon"])
         err = latlon_dist(gp["lat"], gp["lon"], lat_t, lon_t)
-        tf = gps["timestamp"][gps["fix_type"] >= 3] * 1e-6
+        tgps = gps["timestamp"] * 1e-6
+        fix = gps["fix_type"] >= 3
+        tf = tgps[fix]
         idx = np.searchsorted(tf, t, side="right") - 1
         stale = np.where(idx >= 0, t - tf[np.maximum(idx, 0)], np.inf)
         rho = rho_now(stale)
+        # reacquisitions: GNSS message with a fix after one without
+        reacq = tgps[1:][fix[1:] & ~fix[:-1]]
+        ir = np.searchsorted(reacq, t, side="right") - 1
+        since_reacq = np.where(ir >= 0, t - reacq[np.maximum(ir, 0)], np.inf)
         ok = np.isfinite(rho)
-        exc = err[ok] - rho[ok]
-        rows.append({"log": str(f.relative_to(log_root)), "samples": int(ok.sum()), "status": "checked",
-                     "violations": int((exc > 0).sum()), "max_excess_m": float(exc.max()) if ok.any() else "",
-                     "max_err_m": float(err[ok].max()) if ok.any() else "", "provenance": "sitl"})
-        print(rows[-1])
-    return rows
+        exc = err - rho
+        bad = ok & (exc > 0)
+        for j in np.flatnonzero(bad):
+            samples.append({"log": name, "t_s": round(float(t[j] - t0), 3), "err_m": round(float(err[j]), 3),
+                            "rho_m": round(float(rho[j]), 3), "excess_m": round(float(exc[j]), 3),
+                            "staleness_s": round(float(stale[j]), 3),
+                            "since_reacq_s": round(float(since_reacq[j]), 3) if np.isfinite(since_reacq[j]) else "",
+                            "provenance": "sitl"})
+        rows.append({"log": name, "duration_s": round(float(t[-1] - t0), 1), "samples": int(ok.sum()),
+                     "status": "checked", "violations": int(bad.sum()),
+                     "max_excess_m": float(exc[ok].max()) if ok.any() else "",
+                     "max_err_m": float(err[ok].max()) if ok.any() else "",
+                     "violations_fresh_fix": int((bad & (stale < 1.0)).sum()),
+                     "violations_10s_after_reacq": int((bad & (since_reacq <= 10.0)).sum()),
+                     "reacquisitions": int(len(reacq)), "provenance": "sitl"})
+        print(rows[-1], flush=True)
+    return rows, samples
 
 
 def write(name, rows):
@@ -317,10 +343,11 @@ def main():
                 log(s)
         asyncio.run(session(a.vehicles, a.rate, a.duration, done))
     if a.logs:
-        sr = soundness(a.logs)
+        sr, samples = soundness(a.logs)
         write("r4_soundness.csv", sr or [{"log": "", "samples": 0, "status": "no ULog found",
                                           "violations": "", "max_excess_m": "", "max_err_m": "",
                                           "provenance": "sitl"}])
+        write("r4_soundness_violations.csv", samples)
 
 
 if __name__ == "__main__":

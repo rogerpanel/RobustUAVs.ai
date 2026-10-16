@@ -1,0 +1,17 @@
+rate_hz,t_s,vehicle,kind,phase,result
+5.0,40.13,1,off,on,SIM_GPS_USED
+5.0,60.02,1,off,off,SIM_GPS_USED
+5.0,90.14,3,off,on,SIM_GPS_USED
+5.0,120.06,3,off,off,SIM_GPS_USED
+5.0,140.15,2,wrong,on,unsupported:FailureError
+5.0,155.01,2,wrong,off,unsupported:FailureError
+5.0,170.09,0,off,on,SIM_GPS_USED
+5.0,180.16,0,off,off,SIM_GPS_USED
+2.0,40.06,1,off,on,SIM_GPS_USED
+2.0,60.12,1,off,off,SIM_GPS_USED
+2.0,90.19,3,off,on,SIM_GPS_USED
+2.0,120.27,3,off,off,SIM_GPS_USED
+2.0,140.33,2,wrong,on,unsupported:FailureError
+2.0,155.37,2,wrong,off,unsupported:FailureError
+2.0,170.42,0,off,on,SIM_GPS_USED
+2.0,180.44,0,off,off,SIM_GPS_USED
