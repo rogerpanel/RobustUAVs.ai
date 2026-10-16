@@ -374,8 +374,10 @@ def soundness(log_root: Path):
         stale = np.where(idx >= 0, t - tf[np.maximum(idx, 0)], np.inf)
         rho = rho_now(stale)
         rho_l = None
-        if "lat" in gps and "lon" in gps:
-            rho_l = latched_rho(tgps, fix, _deg(gps["lat"]), _deg(gps["lon"]), t, gp["lat"], gp["lon"], t, rho)
+        for la, lo in (("lat", "lon"), ("latitude_deg", "longitude_deg")):   # PX4 v1.14 / v1.15+
+            if la in gps and lo in gps:
+                rho_l = latched_rho(tgps, fix, _deg(gps[la]), _deg(gps[lo]), t, gp["lat"], gp["lon"], t, rho)
+                break
         # reacquisitions: GNSS message with a fix after one without
         reacq = tgps[1:][fix[1:] & ~fix[:-1]]
         if len(reacq):
