@@ -1,25 +1,48 @@
-name,value,provenance
-gamma_sup_m_s,1.625,parent
-L_loc,1.1814,parent
-T_c_s,1.0,parent
-amp_eLT,3.25893351754929,derived
-L_rho_m_per_s,5.295766966017596,derived
-rho_floor_m,0.942646519951132,derived (hop_ledger benign max 0.178 s)
-rho_bar_m,4.99920401592061,model: L_rho * DELTA_BAR_S
-delta_adv_m,4.371,P4 e4_delta_adv.csv
-net_tube_theta025_m,2.647883483008798,P4 net_tube
-hidden_residual_median_s,3.942,parent hop_ledger
-max_fleet,12.0,platform
-T_mission_s,70.0,platform
-kappa_sched,0.1,parent
-kappa_sched_alt,0.25,platform
-dt_s,0.1,model
-Ts_filter_s,0.5,model
-Np,10.0,model
-u_max,4.0,P4
-v_max,12.0,model
-kp,1.2,P4
-kd,1.8,P4
-w_bar_nom,0.5,model
-d_sep_m,5.0,model
-delta_bar_s,0.944,model
+name,value,unit,provenance,source
+GAMMA_SUP,1.625,m/s,paperIV,paperIV/experiments/constants.py (674 hover samples)
+GAMMA_KIN,15,m/s,parent,kinematic companion row
+GAMMA_FLEET,1.365,m/s,platform,fleet-table gamma (ablation)
+L_LOC,1.1814,1/s,paperIV,results/local_lipschitz.csv
+T_C,1,s,parent,certification horizon
+L_RHO,5.29577,m/s,derived,e^{L_LOC T_C} GAMMA_SUP (Paper III KAPPA)
+SLACK_S,4.84,s,paperIV,paperIV/experiments/constants.py
+H_HOPS,2,-,paperIV,paperIV/experiments/constants.py
+CORRIDOR_M,2;5;10;20,m,paperIV,paperIV/experiments/constants.py
+DELTA_ADV_R1_FPR01,5.463,m,paperIV,paperIV/results/r1_delta_adv.csv
+DELTA_ADV_R1_FPR05,5.463,m,paperIV,paperIV/results/r1_delta_adv.csv (headline)
+DELTA_ADV_R1_FPR10,5.038,m,paperIV,paperIV/results/r1_delta_adv.csv
+DELTA_ADV_PILOT,4.371,m,paperIV,paperIV/results/e4_delta_adv.csv (sensitivity)
+THETA_NET,0.1,s,model,network-delay operating point of b2
+EPS_B3,0.05,-,model,tail risk of b3
+N_UAV,12,-,platform,uav.py MAX_FLEET
+T_MISSION,70,s,platform,uav.py NOMINAL_MISSION_S
+KAPPA_SCHED,0.1,-,parent,schedule tolerance (headline)
+KAPPA_SCHED_ALT,0.25,-,platform,uav.py KAPPA (sensitivity)
+T_HORIZON_SIM,87.5,s,model,(1 + 0.25) T
+NUM_ATTACK_CLASSES,9,-,platform,uav.py ATTACKS: nine plus nominal
+DT,0.1,s,model,10 Hz control; <= (alpha - rho_0)/L_rho = 0.200 s at alpha = 2 m
+PLAN_PERIOD,5,s,model,planner cadence
+N_P,20,-,model,filter horizon
+V_MAX,15,m/s,platform,per-axis speed bound
+V_CRUISE,12,m/s,platform,benign cruise
+U_MAX,4,m/s^2,paperIV,PD saturation
+KP,1.2,1/s^2,paperIV,PD position gain
+KD,1.8,1/s,paperIV,PD velocity gain
+K_V,1,1/s,model,pi_nom velocity gain
+ETA_INTERVENE,0.001,m/s^2,model,intervention threshold
+TERMINAL_V_LAT,3,m/s,model,lateral speed cap in X_f
+S_LO,-30,m,model,along-track geofence
+S_HI,870,m,model,along-track geofence
+WAYPOINTS_S,240.0;480.0;720.0,m,model,task sites; last = goal
+R_REACH,10,m,model,waypoint radius
+C_DRAG,0.35,1/s,paperIV,paperIV/experiments/constants.py
+W20_KT_LO,15,kt,paperIV,envelope C4
+W20_KT_HI,30,kt,paperIV,envelope C4
+H_FT,100,ft,paperIV,Dryden altitude
+GUST_CLIP_SIGMA,2,-,assumption,declared gust envelope
+W_INFLATE,1.2,-,assumption,fixed before calibration
+W_BAR,2.21896,m/s^2,derived,results/wbar_calibration.csv (11xxx supremum x W_INFLATE)
+DELTA_BAR_S,0.944,s,assumption,declared staleness envelope (A2)
+RHO_FLOOR,0.942647,m,derived,L_RHO x benign residual ceiling (hop_ledger.csv)
+RHO_BAR,4.9992,m,derived,L_RHO x DELTA_BAR_S
+J_BAR,0,m,assumption,no upward jumps

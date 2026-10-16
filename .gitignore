@@ -56,3 +56,20 @@ paperI/experiments/__pycache__/
 # per-job training logs of the R-MARL queue (the CSVs carry the results)
 paperIII/results/logs_r/
 paperIV/results/logs/
+
+# paperV: secrets, attack material and raw campaign logs never enter git
+paperV/restricted/
+paperV/results/campaign/
+paperV/results/llm_cache/
+paperV/.env*
+*.env
+paperV/experiments/__pycache__/
+paperV/experiments/tests/__pycache__/
+paperV/experiments/.hypothesis/
+paperV/manuscript/*.aux
+paperV/manuscript/*.bbl
+paperV/manuscript/*.blg
+paperV/manuscript/*.fls
+paperV/manuscript/*.fdb_latexmk
+paperV/manuscript/*.log
+paperV/manuscript/*.out

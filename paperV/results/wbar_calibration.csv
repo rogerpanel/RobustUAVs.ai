@@ -1,0 +1,8 @@
+name,value,unit,provenance,note
+seeds,11000-11199,-,derived,calibration block 11xxx
+missions,200,-,derived,
+samples,4200000,-,derived,aircraft-steps x 2 axes
+sup_abs_w,1.849136,m/s^2,sim,largest |C_DRAG g| observed
+envelope_bound,1.853687,m/s^2,derived,C_DRAG * GUST_CLIP_SIGMA * sigma_v(30 kt)
+w_inflate,1.2,-,assumption,fixed before calibration
+w_bar,2.218963,m/s^2,derived,sup_abs_w x w_inflate

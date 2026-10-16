@@ -1,197 +1,343 @@
-"""Seeded, controllable fleet plant for Paper V.
+"""Seeded, controllable fleet plant (runbook P1.1).
 
-Per aircraft a planar double integrator at DT (exact zero-order-hold discretisation):
-    x = (px, py, vx, vy),   x+ = A x + B sat(u) + B d,   |d|_inf <= w_true   (accel mismatch)
-The navigation state x is what the control loop closes on. The TRUE position is
-    p_true = p + e,   e = e_cert + e_adv,  |e_cert|_inf <= rho_i(t),  |e_adv|_inf <= b_adv
-(separation of estimation and control: the certificate error and the covert sensing
-offset enter the safety check, not the dynamics -- the additive-tightening model of the
-Paper V plan, matching Paper IV's delta_adv semantics as a sup true deviation).
+Each aircraft flies its own straight corridor. Coordinates are corridor-frame
+(s along-track, l lateral); the world frame (x, y) is used only for snapshots.
 
-All randomness flows from numpy Generators derived from one episode seed (CRN).
+    true dynamics   x+ = A x + B sat(u) + B w,   w = C_DRAG * g        (per axis, ZOH at DT)
+    g               Dryden gust velocity, MIL-F-8785C low altitude, W20 ~ U[15, 30] kt per
+                    mission, clipped at GUST_CLIP_SIGMA * sigma_v(W20) (declared envelope, A1)
+    estimate        p_hat = p + e, |e|_inf <= rho_i(t) + b_adv   (A2 plus the covert budget)
+
+The state integrated by `step` is the estimate x_hat; the true position is p_hat - e,
+where e is drawn by Nature at every step. The estimate error therefore offsets the true
+position but does not excite the loop (the additive-tightening model of the manuscript).
+The autopilot cancels its own-speed drag; the unmodelled part is the gust term C_DRAG * g.
+
+rho_i(t) comes from Paper III's CertificateProcess (imported, never edited). Inside (A2)
+the profile has no relay jumps (J_bar = 0) and caps the dead-reckoning clock so that
+rho <= rho_bar = L_rho * DELTA_BAR_S. Outside (A2) uses Paper III's default profile.
+
+All randomness comes from SeedSequence(mission_seed) sub-streams, so every cell that
+shares a mission seed sees the same wind, rho process and layout (common random numbers).
+
+    python3 plant.py --calibrate-wbar --seeds 11000-11199 --inflate 1.2
+    python3 plant.py --check-wbar --seeds 14000-14199
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+import argparse
+import csv
+import sys
+from dataclasses import dataclass
 
 import numpy as np
 
-from constants import (DT, U_MAX, V_MAX, LANE, GOAL_X, D_SEP, residual_pools, kappa_rho,
-                       DELTA_BAR_S, GAMMA_SUP)
+try:
+    from . import constants as C
+except ImportError:
+    import constants as C
+
+sys.path.insert(0, str(C.REPO / "paperIII" / "experiments"))
+from certcmdp.certificate import CertificateProcess, ThreatProfile, KAPPA as KAPPA_III  # noqa: E402
+
+STREAMS = ("wind", "rho", "layout", "nature", "planner", "attack")
 
 
-def di_matrices(h):
+def substreams(seed):
+    """Named, independent generators for one mission seed (CRN across cells)."""
+    ss = np.random.SeedSequence(int(seed))
+    return {name: np.random.default_rng(s) for name, s in zip(STREAMS, ss.spawn(len(STREAMS)))}
+
+
+def di_matrices(h=C.DT):
     """Per-axis double integrator, ZOH with step h. State (p, v)."""
-    A = np.array([[1.0, h], [0.0, 1.0]])
-    B = np.array([[0.5 * h * h], [h]])
-    return A, B
+    return np.array([[1.0, h], [0.0, 1.0]]), np.array([0.5 * h * h, h])
 
 
-# ---------------------------------------------------------------- geometry
-@dataclass
-class Geometry:
-    N: int
-    H: np.ndarray            # (nh, 2) unit outward normals
-    c: np.ndarray            # (nh,)    a^T p <= c
-    starts: np.ndarray       # (N, 2)
-    goals: np.ndarray        # (N, 2)
-    speeds: np.ndarray       # (N,) benign cruise speeds
+# ------------------------------------------------------------------ Dryden gusts
+class Dryden:
+    """Discretised Dryden lateral shaping filter H(s) = (1 + sqrt3 tau s)/(1 + tau s)^2,
+    tau = L_v / V, driven by unit white noise and scaled so the stationary standard
+    deviation equals sigma_v(W20) exactly (checked against Paper IV in the tests)."""
 
-    def slack(self, P):
-        """(N, nh) signed slack c - a^T p  (>=0 inside)."""
-        return self.c[None, :] - P @ self.H.T
+    def __init__(self, shape, w20_kt, rng, v_air=C.V_CRUISE, clip_sigma=C.GUST_CLIP_SIGMA):
+        from scipy.linalg import expm, solve_discrete_lyapunov
+        self.sigma, L = C.dryden_sigma(w20_kt)
+        tau = L / v_air
+        # controllable canonical form of 1/(1 + tau s)^2 = (1/tau^2) / (s^2 + (2/tau) s + 1/tau^2)
+        Ac = np.array([[0.0, 1.0], [-1.0 / tau ** 2, -2.0 / tau]])
+        Bc = np.array([[0.0], [1.0 / tau ** 2]])
+        M = expm(np.block([[Ac, Bc], [np.zeros((1, 3))]]) * C.DT)
+        self.Ad, self.Bd = M[:2, :2], M[:2, 2:]
+        Cc = np.array([1.0, np.sqrt(3.0) * tau])          # numerator 1 + sqrt3 tau s
+        P = solve_discrete_lyapunov(self.Ad, self.Bd @ self.Bd.T)
+        self.Cd = Cc * self.sigma / np.sqrt(Cc @ P @ Cc)
+        # start in the stationary distribution
+        Lc = np.linalg.cholesky(P + 1e-15 * np.eye(2))
+        self.rng = rng
+        self.x = rng.standard_normal(shape + (2,)) @ Lc.T
+        self.clip = clip_sigma * self.sigma
 
-
-def make_geometry(N, cruise=10.0, cruise_slow=8.5):
-    ys = (np.arange(N) - (N - 1) / 2.0) * LANE
-    half = (N - 1) / 2.0 * LANE + 30.0
-    x_lo, x_hi = -30.0, GOAL_X + 60.0
-    cham = 20.0
-    s2 = np.sqrt(0.5)
-    H = np.array([[1, 0], [-1, 0], [0, 1], [0, -1], [s2, s2], [s2, -s2]], float)
-    c = np.array([x_hi, -x_lo, half, half, s2 * (x_hi + half - cham), s2 * (x_hi + half - cham)])
-    starts = np.stack([np.zeros(N), ys], 1)
-    perm = np.arange(N)
-    for i in range(0, N - 1, 2):          # pairwise lane swap -> crossing traffic
-        perm[i], perm[i + 1] = i + 1, i
-    goals = np.stack([np.full(N, GOAL_X), ys[perm]], 1)
-    speeds = np.where(np.arange(N) % 2 == 0, cruise, cruise_slow)
-    return Geometry(N, H, c, starts, goals, speeds)
+    def step(self):
+        n = self.rng.standard_normal(self.x.shape[:-1])
+        self.x = self.x @ self.Ad.T + n[..., None] * self.Bd[:, 0]
+        return np.clip(self.x @ self.Cd, -self.clip, self.clip)
 
 
-# ---------------------------------------------------------------- certificate process
-class RhoProcess:
-    """Paper III-style protection-level generator rho_i(t) = L_rho * staleness.
+# ------------------------------------------------------------------ certificate process
+class Certificate:
+    """Paper III CertificateProcess for one fleet, rescaled for gamma / L, with the (A2) profile."""
 
-    staleness = benign residual + dead-reckoning clock + relay offset   (Paper III
-    CertificateProcess, rates from ThreatProfile). within=True enforces assumption (A2):
-    staleness capped at DELTA_BAR (rho <= rho_bar) and no relay jumps (J=0). within=False
-    is the negative control: Paper III defaults (10 s cap, relay jumps from the
-    hidden-residual pool) -- outside the theorem's scope.
-    """
-
-    def __init__(self, N, rng, gamma=GAMMA_SUP, within=True, delta_bar=DELTA_BAR_S,
-                 jam_rate=0.010, jam_mean=6.0, relay_rate=0.010, relay_mean=10.0,
-                 fault_rate=0.002, fault_mean=4.0, reanchor=2.0, stale_cap=10.0, rate_mult=1.0):
-        self.N, self.rng, self.within = N, rng, within
-        self.kap = kappa_rho(gamma)
-        self.ben, self.hid = residual_pools()
-        self.benign = rng.choice(self.ben, N)
-        self.dr = np.zeros(N); self.relay = np.zeros(N)
-        self.jam_left = np.zeros(N); self.fault_left = np.zeros(N)
-        self.relay_left = np.zeros(N); self.reanchor_left = np.zeros(N)
-        self.p = dict(jam_rate=jam_rate * rate_mult, jam_mean=jam_mean, relay_rate=relay_rate * rate_mult,
-                      relay_mean=relay_mean, fault_rate=fault_rate * rate_mult, fault_mean=fault_mean,
-                      reanchor=reanchor)
-        self.cap = delta_bar if within else stale_cap
-        self.n_jumps = 0
+    def __init__(self, n, rng, gamma=C.GAMMA_SUP, L=C.L_LOC, within=True, delta_bar=C.DELTA_BAR_S,
+                 jump_m=0.0):
+        self.scale = C.l_rho(gamma, L) / KAPPA_III
+        if within:
+            prof = ThreatProfile(relay_rate=0.0, stale_cap_s=max(delta_bar - C.theta_benign(), 0.0))
+        else:
+            prof = ThreatProfile()
+        self.within = within
+        self.jump_m = jump_m          # ablation J_bar > 0: added on each re-anchor-free jump onset
+        self.proc = CertificateProcess(1, n, prof, rng)
 
     def rho(self):
-        return self.kap * (self.benign + self.dr + self.relay)
+        return self.proc.rho()[0] * self.scale
 
-    def step(self, dt):
-        p, rng, N = self.p, self.rng, self.N
-        u = rng.random((4, N))
-        jon = (u[0] < p["jam_rate"] * dt) & (self.jam_left <= 0)
-        self.jam_left[jon] = rng.exponential(p["jam_mean"], int(jon.sum()))
-        fon = (u[1] < p["fault_rate"] * dt) & (self.fault_left <= 0)
-        self.fault_left[fon] = rng.exponential(p["fault_mean"], int(fon.sum()))
-        if not self.within:
-            ron = (u[2] < p["relay_rate"] * dt) & (self.relay_left <= 0)
-            if ron.any():
-                k = int(ron.sum())
-                self.relay[ron] = rng.choice(self.hid, size=(k, 2)).sum(1)
-                self.relay_left[ron] = rng.exponential(p["relay_mean"], k)
-                self.n_jumps += k
-        deg = (self.jam_left > 0) | (self.fault_left > 0)
-        cap_dr = np.maximum(self.cap - self.benign - self.relay, 0.0) if self.within else self.cap
-        was = self.dr > 0
-        self.dr = np.where(deg, np.minimum(self.dr + dt, cap_dr), self.dr)
-        ended = was & ~deg & (self.reanchor_left <= 0)
-        self.reanchor_left = np.where(ended, p["reanchor"], self.reanchor_left)
-        self.reanchor_left = np.where(deg, 0.0, self.reanchor_left)
-        rel = (self.reanchor_left > 0) & ~deg
-        self.reanchor_left = np.where(rel, self.reanchor_left - dt, self.reanchor_left)
-        done = rel & (self.reanchor_left <= 0)
-        if done.any():
-            self.dr[done] = 0.0
-            self.benign[done] = rng.choice(self.ben, int(done.sum()))
-        self.relay_left = np.maximum(self.relay_left - dt, 0.0)
-        self.relay = np.where(self.relay_left > 0, self.relay, 0.0)
-        self.jam_left = np.maximum(self.jam_left - dt, 0.0)
-        self.fault_left = np.maximum(self.fault_left - dt, 0.0)
+    def staleness(self):
+        p = self.proc
+        return (p.benign + p.dr + p.relay)[0]
+
+    def step(self, dt=C.DT):
+        self.proc.step(dt)
         return self.rho()
 
 
-# ---------------------------------------------------------------- nature (disturbance + estimate error)
-def outward_dirs(geo: Geometry, P):
-    """Per aircraft: unit direction of its most binding constraint (wall normal or
-    toward the nearest neighbour), from the navigation positions P (N,2)."""
-    N = P.shape[0]
-    sl = geo.slack(P)
-    jw = sl.argmin(1)
-    dirs = geo.H[jw].copy()
-    best = sl[np.arange(N), jw]
-    if N > 1:
-        D = P[None, :, :] - P[:, None, :]           # D[i,j] = p_j - p_i
-        dist = np.linalg.norm(D, axis=2) + np.eye(N) * 1e9
-        jn = dist.argmin(1)
-        dn = dist[np.arange(N), jn]
-        half_slack = 0.5 * (dn - D_SEP)
-        use = half_slack < best
-        nv = D[np.arange(N), jn] / np.maximum(dn[:, None], 1e-9)
-        dirs[use] = nv[use]
-    return dirs
+# ------------------------------------------------------------------ mission layout
+@dataclass
+class Layout:
+    n: int
+    m: float                       # corridor half-width
+    waypoints: np.ndarray          # (W,) along-track task sites; last = goal
+    origin: np.ndarray             # (n, 2) world origin of each corridor
+    heading: np.ndarray            # (n,) world heading of each corridor, rad
+
+    def world(self, P):
+        """Corridor frame (n, 2) [s, l] -> world (n, 2) [x, y]."""
+        c, s = np.cos(self.heading), np.sin(self.heading)
+        return self.origin + np.stack([c * P[:, 0] - s * P[:, 1], s * P[:, 0] + c * P[:, 1]], 1)
+
+    def slack(self, P):
+        """(n, 4) signed slack of the corridor half-planes [m-l, m+l, S_HI-s, s-S_LO] (>= 0 inside)."""
+        return np.stack([self.m - P[:, 1], self.m + P[:, 1], C.S_HI - P[:, 0], P[:, 0] - C.S_LO], 1)
 
 
+def make_layout(n, m, rng=None):
+    """Parallel straight corridors; the layout stream is consumed even though the
+    headline layout is deterministic, so adding randomness later keeps other streams aligned."""
+    if rng is not None:
+        rng.random()
+    origin = np.stack([np.zeros(n), np.arange(n) * C.LANE_SPACING], 1)
+    return Layout(n, float(m), np.asarray(C.WAYPOINTS_S, float), origin, np.zeros(n))
+
+
+# ------------------------------------------------------------------ nature
 class Nature:
-    """Mismatch disturbance d and estimate offset e for the whole fleet.
+    """Disturbance w and estimate offset e.
 
-    mode 'random': Gauss-Markov gust accel (tau 2 s) clipped at w_true; e uniform in box.
-    mode 'adversarial': d = w_true*sign(outward), e = (rho+b_adv)*sign(outward) -- the
-       box-worst case, which is exactly what the ||a||_1-scaled tightening covers.
-    mode 'zero': no disturbance, e = 0.
+    w_mode  'dryden'  : C_DRAG * clipped Dryden gust (the physical plant)
+            'uniform' : uniform in the box |w| <= w_level
+            'vertex'  : w_level * sign(outward) (worst box vertex, adversarial)
+            'zero'
+    e_mode  'random'  : uniform in the box |e| <= rho + b_adv
+            'vertex'  : (rho + b_adv) * sign(outward)
+            'zero'
+    `outward` points at each aircraft's most binding corridor face.
     """
 
-    def __init__(self, N, rng, mode, w_true, b_adv):
-        self.N, self.rng, self.mode, self.w, self.b = N, rng, mode, w_true, b_adv
-        self.g = np.zeros((N, 2))
+    def __init__(self, n, streams, w20_kt=None, w_mode="dryden", w_level=0.0, e_mode="random", b_adv=0.0):
+        self.n = n
+        self.rw, self.re = streams["wind"], streams["nature"]
+        if w20_kt is None:
+            w20_kt = self.rw.uniform(*C.W20_KT)
+        self.w20 = float(w20_kt)
+        self.gust = Dryden((n, 2), self.w20, self.rw)
+        self.w_mode, self.w_level, self.e_mode, self.b_adv = w_mode, float(w_level), e_mode, float(b_adv)
 
-    def disturbance(self, geo, P):
-        if self.mode == "zero" or self.w == 0:
-            return np.zeros((self.N, 2))
-        if self.mode == "adversarial":
-            return self.w * np.sign(outward_dirs(geo, P))
-        a = np.exp(-DT / 2.0)
-        self.g = a * self.g + np.sqrt(1 - a * a) * self.rng.standard_normal((self.N, 2)) * (0.6 * self.w)
-        return np.clip(self.g, -self.w, self.w)
+    @staticmethod
+    def outward(lay, P):
+        sl = lay.slack(P)
+        j = sl.argmin(1)
+        d = np.zeros((len(P), 2))
+        d[j == 0, 1] = 1.0; d[j == 1, 1] = -1.0; d[j == 2, 0] = 1.0; d[j == 3, 0] = -1.0
+        # the other axis: toward its own nearer face
+        other_l = np.where(P[:, 1] >= 0, 1.0, -1.0)
+        other_s = np.where(C.S_HI - P[:, 0] <= P[:, 0] - C.S_LO, 1.0, -1.0)
+        d[:, 1] = np.where(d[:, 1] == 0, other_l, d[:, 1])
+        d[:, 0] = np.where(d[:, 0] == 0, other_s, d[:, 0])
+        return d
 
-    def offset(self, geo, P, rho):
-        if self.mode == "zero":
-            return np.zeros((self.N, 2))
-        mag = rho + self.b
-        if self.mode == "adversarial":
-            return mag[:, None] * np.sign(outward_dirs(geo, P))
-        return self.rng.uniform(-1, 1, (self.N, 2)) * mag[:, None]
+    def disturbance(self, lay, P):
+        g = self.gust.step()                       # always advanced: keeps the wind stream aligned
+        if self.w_mode == "dryden":
+            return C.C_DRAG * g
+        if self.w_mode == "uniform":
+            return self.rw.uniform(-1, 1, (self.n, 2)) * self.w_level
+        if self.w_mode == "vertex":
+            return self.w_level * self.outward(lay, P)
+        return np.zeros((self.n, 2))
+
+    def offset(self, lay, P_hat, rho):
+        u = self.re.uniform(-1, 1, (self.n, 2))   # always drawn (CRN)
+        mag = (np.asarray(rho) + self.b_adv)[:, None]
+        if self.e_mode == "random":
+            return u * mag
+        if self.e_mode == "vertex":
+            # e such that the TRUE position p_hat - e is pushed outward
+            return -mag * self.outward(lay, P_hat)
+        return np.zeros((self.n, 2))
 
 
-# ---------------------------------------------------------------- violation check
-def check_true(geo: Geometry, Ptrue):
-    """Return per-aircraft (corridor_violation, separation_violation, corridor_margin, sep_margin)."""
-    sl = geo.slack(Ptrue).min(1)
-    N = Ptrue.shape[0]
-    if N > 1:
-        D = np.linalg.norm(Ptrue[None] - Ptrue[:, None], axis=2) + np.eye(N) * 1e9
-        dmin = D.min(1)
-    else:
-        dmin = np.full(N, np.inf)
-    return sl < 0.0, dmin < D_SEP, sl, dmin - D_SEP
+# ------------------------------------------------------------------ the plant
+class FleetPlant:
+    """Integrates the estimate x_hat; reports the true position each step."""
+
+    def __init__(self, n, seed, m, cfg=None):
+        cfg = dict(cfg or {})
+        self.n, self.seed, self.m = n, int(seed), float(m)
+        self.st = substreams(seed)
+        self.layout = make_layout(n, m, self.st["layout"])
+        self.cert = Certificate(n, self.st["rho"], gamma=cfg.get("gamma", C.GAMMA_SUP),
+                                L=cfg.get("L", C.L_LOC), within=cfg.get("within", True),
+                                delta_bar=cfg.get("delta_bar", C.DELTA_BAR_S))
+        self.nature = Nature(n, self.st, w_mode=cfg.get("w_mode", "dryden"), w_level=cfg.get("w_level", 0.0),
+                             e_mode=cfg.get("e_mode", "random"), b_adv=cfg.get("b_adv", 0.0))
+        self.X = np.zeros((n, 4))                  # [s, l, vs, vl] estimate
+        self.X[:, 0] = 0.0
+        self.rho = self.cert.rho()
+        self.e = self.nature.offset(self.layout, self.X[:, :2], self.rho)
+        self.t = 0.0
+        self.A, self.B = di_matrices()
+        self.last_w = np.zeros((n, 2))
+        self.sat_steps = 0
+
+    def true_pos(self):
+        return self.X[:, :2] - self.e
+
+    def step(self, U):
+        """Apply per-aircraft accelerations U (n, 2); returns the true position after the step."""
+        Us = np.clip(U, -C.U_MAX, C.U_MAX)
+        self.sat_steps += int(np.any(np.abs(U) > C.U_MAX + 1e-9))
+        w = self.nature.disturbance(self.layout, self.X[:, :2])
+        a = Us + w
+        self.X[:, :2] = self.X[:, :2] + C.DT * self.X[:, 2:] + 0.5 * C.DT * C.DT * a
+        self.X[:, 2:] = self.X[:, 2:] + C.DT * a
+        self.rho = self.cert.step(C.DT)
+        self.e = self.nature.offset(self.layout, self.X[:, :2], self.rho)
+        self.last_w = w
+        self.t += C.DT
+        return self.true_pos()
+
+    def violations(self, P_true=None):
+        """Per aircraft: corridor violated (bool) and signed margin (m)."""
+        P = self.true_pos() if P_true is None else P_true
+        sl = self.layout.slack(P).min(1)
+        return sl < 0.0, sl
+
+    def snapshot(self, nominal=None, mode=None, progress=None, completed=None, t_arr=None, on_time=None):
+        """Platform-compatible snapshot (uav.py UAVState field names)."""
+        P = self.true_pos()
+        W = self.layout.world(P)
+        Nw = self.layout.world(self.X[:, :2] if nominal is None else nominal)
+        st = self.cert.staleness()
+        out = []
+        for i in range(self.n):
+            out.append(dict(
+                x=float(W[i, 0]), y=float(W[i, 1]),
+                heading_deg=float(np.degrees(np.arctan2(self.X[i, 3], self.X[i, 2])) if np.any(self.X[i, 2:]) else 0.0),
+                nom_x=float(Nw[i, 0]), nom_y=float(Nw[i, 1]),
+                deviation_m=float(abs(P[i, 1])),
+                mission_progress_pct=float(100 * (progress[i] if progress is not None else 0.0)),
+                autopilot_mode=(mode[i] if mode is not None else "nominal"),
+                staleness_s=float(st[i]),
+                completed=bool(completed[i]) if completed is not None else False,
+                t_arr_s=(None if t_arr is None or not np.isfinite(t_arr[i]) else float(t_arr[i])),
+                on_time=(None if on_time is None else bool(on_time[i]))))
+        return out
 
 
-def plant_step(X, U, d):
-    """X (N,4) [px,py,vx,vy]; U actuator command (N,2) (saturated here); d (N,2)."""
-    Us = np.clip(U, -U_MAX, U_MAX)
-    a = Us + d
-    P = X[:, :2] + DT * X[:, 2:] + 0.5 * DT * DT * a
-    V = X[:, 2:] + DT * a
-    return np.concatenate([P, V], 1), Us
+# ------------------------------------------------------------------ w_bar calibration (P1.4)
+def _parse_seeds(s):
+    a, b = s.split("-")
+    return range(int(a), int(b) + 1)
+
+
+def gust_supremum(seeds, n=C.N_UAV, steps=None):
+    """Largest |w| per mission over the full simulated horizon (w does not depend on control)."""
+    steps = steps or int(round(C.T_HORIZON_SIM / C.DT))
+    rows = []
+    for sd in seeds:
+        st = substreams(sd)
+        nat = Nature(n, st)
+        mx = 0.0
+        for _ in range(steps):
+            g = nat.gust.step()
+            mx = max(mx, float(np.abs(C.C_DRAG * g).max()))
+        rows.append((sd, nat.w20, mx, n * steps * 2))
+    return rows
+
+
+def calibrate(seeds, inflate):
+    if abs(inflate - C.W_INFLATE) > 1e-12:
+        raise SystemExit(f"--inflate {inflate} differs from constants.W_INFLATE = {C.W_INFLATE}; "
+                         "W_INFLATE is fixed before calibration")
+    rows = gust_supremum(seeds)
+    sup = max(r[2] for r in rows)
+    out = C.RESULTS / "wbar_calibration.csv"
+    with out.open("w", newline="") as fh:
+        w = csv.writer(fh)
+        w.writerow(["name", "value", "unit", "provenance", "note"])
+        w.writerow(["seeds", f"{min(seeds)}-{max(seeds)}", "-", "derived", "calibration block 11xxx"])
+        w.writerow(["missions", len(rows), "-", "derived", ""])
+        w.writerow(["samples", sum(r[3] for r in rows), "-", "derived", "aircraft-steps x 2 axes"])
+        w.writerow(["sup_abs_w", f"{sup:.6f}", "m/s^2", "sim", "largest |C_DRAG g| observed"])
+        w.writerow(["envelope_bound", f"{C.C_DRAG * C.GUST_CLIP_SIGMA * C.dryden_sigma(C.W20_KT[1])[0]:.6f}",
+                    "m/s^2", "derived", "C_DRAG * GUST_CLIP_SIGMA * sigma_v(30 kt)"])
+        w.writerow(["w_inflate", C.W_INFLATE, "-", "assumption", "fixed before calibration"])
+        w.writerow(["w_bar", f"{C.W_INFLATE * sup:.6f}", "m/s^2", "derived", "sup_abs_w x w_inflate"])
+    with (C.RESULTS / "wbar_calibration_missions.csv").open("w", newline="") as fh:
+        w = csv.writer(fh); w.writerow(["seed", "w20_kt", "sup_abs_w", "samples", "provenance"])
+        for r in rows:
+            w.writerow([r[0], f"{r[1]:.4f}", f"{r[2]:.6f}", r[3], "sim"])
+    return out, C.W_INFLATE * sup
+
+
+def check(seeds):
+    wbar = C.load_wbar()
+    rows = gust_supremum(seeds)
+    exc = sum(1 for r in rows if r[2] > wbar)
+    out = C.RESULTS / "wbar_heldout.csv"
+    with out.open("w", newline="") as fh:
+        w = csv.writer(fh); w.writerow(["seed", "w20_kt", "sup_abs_w", "w_bar", "exceeds", "provenance"])
+        for r in rows:
+            w.writerow([r[0], f"{r[1]:.4f}", f"{r[2]:.6f}", f"{wbar:.6f}", int(r[2] > wbar), "sim"])
+    return out, exc, len(rows), max(r[2] for r in rows), wbar
+
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--calibrate-wbar", action="store_true")
+    ap.add_argument("--check-wbar", action="store_true")
+    ap.add_argument("--seeds", default="11000-11199")
+    ap.add_argument("--inflate", type=float, default=C.W_INFLATE)
+    a = ap.parse_args()
+    if a.calibrate_wbar:
+        s = _parse_seeds(a.seeds)
+        if not (11000 <= min(s) and max(s) <= 11999):
+            raise SystemExit("calibration seeds must come from block 11xxx")
+        out, wb = calibrate(s, a.inflate)
+        print(f"wrote {out}: w_bar = {wb:.4f} m/s^2")
+    if a.check_wbar:
+        s = _parse_seeds(a.seeds)
+        if not (14000 <= min(s) and max(s) <= 14999):
+            raise SystemExit("held-out check seeds must come from block 14xxx")
+        out, exc, nm, mx, wb = check(s)
+        print(f"wrote {out}: {exc}/{nm} missions exceed w_bar = {wb:.4f} (held-out max {mx:.4f})")

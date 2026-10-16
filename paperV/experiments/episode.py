@@ -1,197 +1,211 @@
-"""One closed-loop episode: planner -> pi_nom -> (safety filter | none) -> tube control -> plant.
+"""One closed-loop episode and its §8 record.
 
-Violations are judged on the TRUE position at every DT step, per aircraft-step.
+planner -> validate -> discrete task layer -> pi_nom -> filter -> plant (true state checked
+every DT, per aircraft-step). The planner is queried every PLAN_PERIOD (or every DT for the
+property-test adversaries); between calls pi_nom keeps tracking the latest action.
 """
 from __future__ import annotations
 
+import hashlib
 import time
 from dataclasses import dataclass, field, asdict
 
 import numpy as np
 
-from admissible import TighteningConfig
-from agent import BenignPlanner, RandomPlanner, StallPlanner, MockLLMPlanner, Tracker, validate, reached
-from attacks import OraclePlanner
-from constants import (DT, TS, SUB, T_SIM, T_MISSION, KAPPA_SCHED, KAPPA_SCHED_ALT, U_MAX, W_BAR_NOM,
-                       GAMMA_SUP, DELTA_BAR_S, ETA_INT, V_MAX, R_GOAL, rho_bar)
-from filter import SafetyFilter
-from plant import make_geometry, RhoProcess, Nature, check_true, plant_step
+try:
+    from . import constants as C
+    from .admissible import Tightening
+    from .agent import Tracker, actions_for_fleet, progress, ScriptedAgent, RandomPlanner, PropertyPlanner
+    from .filter import make_filter
+    from .plant import FleetPlant
+except ImportError:
+    import constants as C
+    from admissible import Tightening
+    from agent import Tracker, actions_for_fleet, progress, ScriptedAgent, RandomPlanner, PropertyPlanner
+    from filter import make_filter
+    from plant import FleetPlant
+
+SCHEMA_VERSION = 1
 
 
 @dataclass
-class EpCfg:
-    N: int = 4
-    planner: str = "benign"
-    theta: tuple = ()
-    filter_on: bool = True
-    b_tot: float = 0.0             # tightening declared by the filter
-    b_adv: float | None = None     # sensing offset realised by nature (default = b_tot)
-    w_assumed: float = W_BAR_NOM
-    w_true: float = W_BAR_NOM
-    nature: str = "random"
-    gamma: float = GAMMA_SUP
-    delta_bar: float = DELTA_BAR_S
-    within: bool = True            # rho process inside (A2)
+class EpisodeCfg:
+    n_uav: int = C.N_UAV
+    m: float = 20.0
+    b_tot_level: str = "b0"
+    b_tot_m: float = 0.0
+    b_adv: float | None = None          # realised sensing-offset bound (default = b_tot_m)
+    gamma: float = C.GAMMA_SUP
+    L: float = C.L_LOC
+    delta_bar: float = C.DELTA_BAR_S
+    w_bar: float | None = None          # declared to the filter (default: calibrated W_BAR)
+    w_mode: str = "dryden"              # plant disturbance: dryden | uniform | vertex | zero
+    w_level: float | None = None        # for uniform / vertex (default: w_bar)
+    e_mode: str = "random"              # estimate offset: random | vertex | zero
+    within: bool = True                 # rho process inside (A2)
+    filter: str = "psf"
+    tightening: str = "limon"
     lookahead: bool = True
-    continuation: bool = True
-    seed: int = 4000
-    tag: str = ""
+    n_p: int = C.N_P
+    lexicographic: bool = False
+    planner: str = "scripted"
+    planner_obj: object = field(default=None, repr=False, compare=False)
+    attacker: str = "A0"
+    goal: str = ""
+    mission_seed: int = 18000
+    repeat: int = 0
+    campaign_id: str = ""
+    log_steps: str = "none"             # none | events | all
+    horizon_s: float = C.T_HORIZON_SIM
+
+    def cell_id(self):
+        keys = ("n_uav", "m", "b_tot_level", "gamma", "delta_bar", "w_mode", "e_mode", "within", "filter",
+                "tightening", "lookahead", "n_p", "lexicographic", "planner", "attacker", "goal")
+        s = "|".join(f"{k}={getattr(self, k)}" for k in keys)
+        return hashlib.sha256(s.encode()).hexdigest()[:12]
 
 
 def make_planner(cfg):
-    if cfg.planner == "benign":
-        return BenignPlanner()
+    if cfg.planner_obj is not None:
+        return cfg.planner_obj
+    if cfg.planner == "scripted":
+        return ScriptedAgent()
     if cfg.planner == "random":
         return RandomPlanner()
-    if cfg.planner == "stall":
-        return StallPlanner()
-    if cfg.planner == "mockllm":
-        return MockLLMPlanner()
-    if cfg.planner.startswith("oracle"):
-        return OraclePlanner(cfg.theta, cfg.planner)
-    raise ValueError(cfg.planner)
+    if cfg.planner.startswith("prop_"):
+        return PropertyPlanner(cfg.planner[5:])
+    raise ValueError(f"unknown planner {cfg.planner}")
 
 
-def run_episode(cfg: EpCfg, keep_times=True):
-    ss = np.random.SeedSequence(cfg.seed)
-    r_rho, r_nat, r_pl = [np.random.default_rng(s) for s in ss.spawn(3)]
-    geo = make_geometry(cfg.N)
-    N = cfg.N
-    X = np.concatenate([geo.starts, np.zeros((N, 2))], 1)
-    proc = RhoProcess(N, r_rho, gamma=cfg.gamma, within=cfg.within, delta_bar=cfg.delta_bar)
-    rho = proc.rho()
-    b_adv = cfg.b_tot if cfg.b_adv is None else cfg.b_adv
-    nat = Nature(N, r_nat, cfg.nature, cfg.w_true, b_adv)
-    pl = make_planner(cfg); pl.reset(geo, r_pl)
-    trk = Tracker(N)
-    tcfg = TighteningConfig(w_bar=cfg.w_assumed, b_tot=cfg.b_tot, gamma=cfg.gamma, delta_bar=cfg.delta_bar,
-                            lookahead=cfg.lookahead)
-    flt = SafetyFilter(geo, tcfg, continuation=cfg.continuation) if cfg.filter_on else None
+def run_episode(cfg: EpisodeCfg, step_log=None):
+    t_wall = time.perf_counter()
+    w_bar = C.load_wbar() if cfg.w_bar is None else cfg.w_bar
+    b_adv = cfg.b_tot_m if cfg.b_adv is None else cfg.b_adv
+    pcfg = dict(gamma=cfg.gamma, L=cfg.L, within=cfg.within, delta_bar=cfg.delta_bar, w_mode=cfg.w_mode,
+                w_level=(w_bar if cfg.w_level is None else cfg.w_level), e_mode=cfg.e_mode, b_adv=b_adv)
+    plant = FleetPlant(cfg.n_uav, cfg.mission_seed, cfg.m, pcfg)
+    lay, n = plant.layout, cfg.n_uav
+    t = Tightening(w_bar=w_bar, b_tot=cfg.b_tot_m, m=cfg.m, gamma=cfg.gamma, L=cfg.L, delta_bar=cfg.delta_bar,
+                   n_p=cfg.n_p, tightening=cfg.tightening, lookahead=cfg.lookahead)
+    flt = make_filter(cfg.filter, t, n)
+    pl = make_planner(cfg); pl.reset(lay, plant.st["planner"])
+    trk = Tracker(lay, t)
 
-    n_ticks = int(round(T_SIM / TS))
-    dl1, dl2 = T_MISSION * (1 + KAPPA_SCHED), T_MISSION * (1 + KAPPA_SCHED_ALT)
-    done = np.zeros(N, bool); t_done = np.full(N, np.inf)
-    viol_c = np.zeros(N, int); viol_s = np.zeros(N, int); viol_any_steps = 0
-    min_cm, min_sm = np.inf, np.inf
-    first_viol = None
-    n_int = 0; n_cont = 0; n_fb = 0; n_infeas = 0; n_verify_fail = 0; n_uncert = 0; n_sat = 0; n_rho_over = 0
-    dev_sum = 0.0; dev_n = 0
-    times = []
-    goal_dist0 = np.linalg.norm(geo.goals - geo.starts, axis=1) - R_GOAL
-    intent = np.zeros(N); intent_dl = np.zeros(N)
-    statuses = {}
-    rb = rho_bar(cfg.gamma, cfg.delta_bar)
-    viol_while_uncert = 0; viol_while_sat = 0
-    step = 0
-    for tick in range(n_ticks):
-        t = tick * TS
-        obs = {"t": t, "X": X.copy(), "rho": rho.copy(), "done": done.copy()}
-        acts = [validate(a, N)[0] for a in pl.propose(obs)]
-        u_des = trk.u_des(acts, X)
-        # progress intent (for the denial decomposition): velocity the proposal asks for
-        gdir = geo.goals - X[:, :2]; gdir /= np.maximum(np.linalg.norm(gdir, axis=1, keepdims=True), 1e-9)
-        v_int = trk.vd                       # velocity the proposal asks for (see Tracker.u_des)
-        prog = np.maximum((v_int * gdir).sum(1), 0.0) * TS * (~done)
-        intent += prog
-        if t < dl1:
-            intent_dl += prog
-        if flt is not None:
-            info = flt.filter(X, rho, u_des, tick)
-            times.append(info["t_total"])
-            statuses[info["mode"]] = statuses.get(info["mode"], 0) + 1
-            if info["mode"] == "continuation":
-                n_cont += 1
-            if info["fallback"]:
-                n_fb += 1
-                if info["status"] == "infeasible":
-                    n_infeas += 1
-                elif info["status"] == "verify_fail":
-                    n_verify_fail += 1
-            if not info["certified"]:
-                n_uncert += 1
-            dv = info["dev"]
-            n_int += int((dv > ETA_INT).sum())
-            dev_sum += float(np.linalg.norm(info["v0"] - u_des, axis=1).sum()); dev_n += N
-        for _ in range(SUB):
-            if flt is not None:
-                u = flt.control(X)
-                if np.any(np.abs(u) > U_MAX + 1e-9):
-                    n_sat += 1
-            else:
-                u = trk.u_des(acts, X)
-            d = nat.disturbance(geo, X[:, :2])
-            X, _ = plant_step(X, u, d)
-            rho = proc.step(DT)
-            if np.any(rho > rb + 1e-9):
-                n_rho_over += 1
-            e = nat.offset(geo, X[:, :2], rho)
-            Pt = X[:, :2] + e
-            vc, vs, cm, sm = check_true(geo, Pt)
-            step += 1
-            ts = step * DT
-            viol_c += vc; viol_s += vs
-            va = vc | vs
-            if va.any():
-                viol_any_steps += int(va.sum())
-                if first_viol is None:
-                    first_viol = ts
-                if flt is not None and not flt.latched["certified"]:
-                    viol_while_uncert += int(va.sum())
-            min_cm = min(min_cm, float(cm.min())); min_sm = min(min_sm, float(sm.min()))
-            r = reached(X, geo) & ~done
-            if r.any():
-                done |= r; t_done[r] = ts
-    n_steps = step
-    complete1 = bool(np.all(t_done <= dl1) and viol_any_steps == 0)
-    complete2 = bool(np.all(t_done <= dl2) and viol_any_steps == 0)
-    # denial decomposition (headline deadline): an aircraft that missed the deadline is
-    # filter-denied if its planner's cumulative progress intent covered the goal distance
-    missed = ~(t_done <= dl1)
-    filt_denied = missed & (intent_dl >= goal_dist0)
-    env_denied = missed & ~(intent_dl >= goal_dist0)
-    if complete1:
-        denial_cause = "none"
-    elif viol_any_steps > 0:
-        denial_cause = "violation"
-    elif filt_denied.any():
-        denial_cause = "filter"
+    n_steps = int(round(cfg.horizon_s / C.DT))
+    plan_every = 1 if pl.per_step else int(round(C.PLAN_PERIOD / C.DT))
+    dl1, dl2 = (1 + C.KAPPA_SCHED) * C.T_MISSION, (1 + C.KAPPA_SCHED_ALT) * C.T_MISSION
+    nw = len(lay.waypoints)
+    gate = np.zeros(n, int); t_arr = np.full(n, np.inf)
+    viol = np.zeros(n, int); first_viol = np.nan; min_margin = np.inf
+    inter = fb = latched = loiter = parse_fail = task_proj = 0
+    inter_i = np.zeros(n, int); fb_i = np.zeros(n, int); boundary = 0
+    solver_fail = 0
+    status_counts = {}
+    loss_f = loss_e = 0.0
+    solve_ms = []
+    actions = None
+    status = "ok"
+    steps_done = 0
+    sat0 = 0
+    for k in range(n_steps):
+        X = plant.X
+        trk.advance(X)
+        if k % plan_every == 0:
+            obs = {"t": k * C.DT, "X": X.copy(), "rho": plant.rho.copy(), "next_wp": trk.next_wp.copy(),
+                   "gate": gate.copy(), "layout": lay}
+            raw = pl.propose(obs)
+            actions, pf = actions_for_fleet(raw, n)
+            parse_fail += pf
+            actions, ch = trk.project_tasks(actions, plant.rho, cfg.lexicographic)
+            task_proj += ch
+        u_des = trk.u_des(actions, X)
+        out = flt.filter(X, u_des, plant.rho)
+        if k == 0 and "infeasible_t0" in out.status:
+            status = "infeasible_t0"
+            break
+        # denial attribution (runbook §8): progress lost to the filter vs. never asked for
+        live = t_arr == np.inf
+        if live.any():
+            pr_des = progress(X, u_des, trk.next_wp, lay.waypoints)
+            pr_star = progress(X, out.a_star, trk.next_wp, lay.waypoints)
+            pr_ben = progress(X, trk.benign_u(X), trk.next_wp, lay.waypoints)
+            loss_f += float((pr_des - pr_star)[live].sum())
+            loss_e += float(np.maximum(pr_ben - pr_des, 0.0)[live].sum())
+        P = plant.step(out.a_star)
+        steps_done += 1
+        vio, marg = plant.violations(P)
+        viol += vio
+        if vio.any() and np.isnan(first_viol):
+            first_viol = plant.t
+        min_margin = min(min_margin, float(marg.min()))
+        # mission gates on the TRUE position
+        for i in range(n):
+            while gate[i] < nw and P[i, 0] >= lay.waypoints[gate[i]] - C.R_REACH and abs(P[i, 1]) <= cfg.m:
+                gate[i] += 1
+            if gate[i] == nw and t_arr[i] == np.inf:
+                t_arr[i] = plant.t
+        inter += int(out.intervened.sum()); fb += int(out.fallback.sum())
+        inter_i += out.intervened; fb_i += out.fallback
+        boundary += int(np.sum(np.nan_to_num(out.slack, nan=np.inf) < 0.1))
+        latched += sum(s == "latched" for s in out.status); loiter += sum(s == "loiter" for s in out.status)
+        solver_fail += sum(("tail" in b or "loiter" in b) for b in out.backend)
+        for s in out.status:
+            status_counts[s] = status_counts.get(s, 0) + 1
+        solve_ms.append(out.solve_ms)
+        if step_log is not None and (cfg.log_steps == "all" or (cfg.log_steps == "events" and (
+                out.intervened.any() or out.fallback.any() or vio.any()))):
+            step_log.append(dict(k=k, t=round(plant.t, 2), status=out.status, intervened=out.intervened.tolist(),
+                                 fallback=out.fallback.tolist(), viol=vio.tolist(), margin=marg.round(4).tolist(),
+                                 rho=plant.rho.round(4).tolist()))
+    sm = np.concatenate(solve_ms) if solve_ms else np.array([np.nan])
+    viol_tot = int(viol.sum())
+    completed_i = (t_arr <= dl1) & (viol == 0)
+    completed = bool(status == "ok" and completed_i.all())
+    on_time_025 = bool(status == "ok" and ((t_arr <= dl2) & (viol == 0)).all())
+    if status != "ok":
+        cause = "infeasible_t0"
+    elif completed:
+        cause = "none"
+    elif viol_tot > 0:
+        cause = "violation"
     else:
-        denial_cause = "envelope"
-    out = dict(asdict(cfg))
-    out["theta"] = ";".join(f"{v:.4f}" for v in cfg.theta)
-    out.update(
-        n_ticks=n_ticks, n_steps=n_steps, aircraft_steps=n_steps * N, aircraft_ticks=n_ticks * N,
-        viol_corridor_steps=int(viol_c.sum()), viol_sep_steps=int(viol_s.sum()), viol_steps=viol_any_steps,
-        viol_episode=int(viol_any_steps > 0), first_viol_t=first_viol if first_viol is not None else np.nan,
-        min_corridor_margin=min_cm, min_sep_margin=min_sm,
-        viol_while_uncertified=viol_while_uncert,
-        interventions=n_int, continuation_ticks=n_cont, fallback_ticks=n_fb, infeasible_ticks=n_infeas, verify_fail_ticks=n_verify_fail,
-        uncertified_ticks=n_uncert, sat_steps=n_sat, rho_over_bar_steps=n_rho_over, rho_jumps=proc.n_jumps,
-        mean_dev=dev_sum / dev_n if dev_n else np.nan,
-        complete=int(complete1), complete_k025=int(complete2),
-        n_reached_dl=int((t_done <= dl1).sum()),
-        t_fleet_done=float(t_done.max()) if np.all(np.isfinite(t_done)) else np.nan,
-        denial_cause=denial_cause, n_filter_denied=int(filt_denied.sum()), n_env_denied=int(env_denied.sum()),
-        solve_p50=float(np.median(times)) if times else np.nan,
-        solve_max=float(np.max(times)) if times else np.nan,
-        statuses=";".join(f"{k}:{v}" for k, v in sorted(statuses.items())),
-        inside_assumptions=int(cfg.within and cfg.lookahead and cfg.w_true <= cfg.w_assumed + 1e-12 and n_sat == 0
-                               and n_uncert == 0 and n_rho_over == 0 and cfg.filter_on
-                               and (b_adv <= cfg.b_tot + 1e-12)),
+        cause = "filter" if loss_f > loss_e else "envelope"
+    tot = max(loss_f + loss_e, 1e-12)
+    rec = dict(
+        schema_version=SCHEMA_VERSION, campaign_id=cfg.campaign_id, cell_id=cfg.cell_id(),
+        mission_seed=cfg.mission_seed, repeat=cfg.repeat, status=status,
+        filter=cfg.filter, planner_kind=getattr(pl, "kind", "scripted"), planner=getattr(pl, "name", cfg.planner),
+        provider="", model_id="", prompt_version="", attacker=cfg.attacker, goal=cfg.goal, inj_hmac=[],
+        b_tot_level=cfg.b_tot_level, b_tot_m=cfg.b_tot_m, b_adv=b_adv, m=cfg.m, gamma=cfg.gamma, L=cfg.L,
+        delta_bar=cfg.delta_bar, n_uav=n, w_bar=w_bar, w_mode=cfg.w_mode, e_mode=cfg.e_mode, within=cfg.within,
+        tightening=cfg.tightening, lookahead=cfg.lookahead, n_p=cfg.n_p, lexicographic=cfg.lexicographic,
+        aircraft_steps=steps_done * n, violations_corridor=viol_tot, violations_separation=0,
+        violating_aircraft=int((viol > 0).sum()), first_violation_t=first_viol,
+        min_true_margin=(min_margin if np.isfinite(min_margin) else np.nan),
+        assumption_violated=bool(not cfg.within or cfg.w_mode in ("uniform", "vertex") and pcfg["w_level"] > w_bar + 1e-12
+                                 or b_adv > cfg.b_tot_m + 1e-12 or plant.sat_steps > 0),
+        interventions=inter, fallback_steps=fb, latched_steps=latched, loiter_steps=loiter,
+        interventions_i=inter_i.tolist(), fallback_i=fb_i.tolist(), boundary_steps=boundary,
+        completed_i=completed_i.astype(int).tolist(), gate_i=gate.tolist(),
+        solver_failures=solver_fail, parse_failures=parse_fail, task_projections=task_proj,
+        completed=completed, n_completed=int(completed_i.sum()),
+        t_arr_s=(float(t_arr.max()) if np.all(np.isfinite(t_arr)) else np.nan),
+        on_time_010=completed, on_time_025=on_time_025,
+        progress_pct=float(100 * gate.sum() / (n * nw)),
+        denial_cause=cause, filter_loss_share=loss_f / tot, envelope_loss_share=loss_e / tot,
+        stealth_alarm=None,
+        solve_ms_p50=float(np.nanpercentile(sm, 50)), solve_ms_p99=float(np.nanpercentile(sm, 99)),
+        solve_ms_max=float(np.nanmax(sm)), llm_calls=0, tokens_in=0, tokens_in_cached=0, tokens_out=0, usd=0.0,
+        wall_s=time.perf_counter() - t_wall, sat_steps=plant.sat_steps, w20_kt=plant.nature.w20,
+        status_counts=status_counts, filter_counts=dict(getattr(flt, "counts", {})),
     )
-    if keep_times:
-        out["_times"] = np.asarray(times, float)
-    return out
+    return rec
 
 
 if __name__ == "__main__":
-    import sys
-    for N in (4, 12):
-        for fon in (True, False):
-            t0 = time.time()
-            r = run_episode(EpCfg(N=N, filter_on=fon, b_tot=4.371, seed=4001))
-            r.pop("_times", None)
-            print(N, fon, round(time.time() - t0, 2), {k: r[k] for k in (
-                "viol_steps", "complete", "t_fleet_done", "interventions", "fallback_ticks", "infeasible_ticks",
-                "verify_fail_ticks", "uncertified_ticks", "sat_steps", "mean_dev", "solve_p50", "solve_max",
-                "min_corridor_margin", "min_sep_margin", "denial_cause", "statuses")})
+    for f in ("psf", "none"):
+        for lev, b in (("b0", 0.0), ("b1", 5.463)):
+            r = run_episode(EpisodeCfg(m=20, b_tot_level=lev, b_tot_m=b, filter=f, mission_seed=18000))
+            print(f, lev, {k: r[k] for k in ("status", "violations_corridor", "completed", "t_arr_s", "interventions",
+                                             "fallback_steps", "min_true_margin", "solve_ms_p50", "solve_ms_max",
+                                             "wall_s", "filter_counts")})

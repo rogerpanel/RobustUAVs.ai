@@ -1,0 +1,2 @@
+backend,n,p50_ms,p99_ms,p999_ms,max_ms,certified_frac,n_p,cpu,provenance
+osqp,20000,0.1411,0.3124,0.8271,4.5525,1.0000,20,Intel(R) Xeon(R) Processor @ 2.10GHz,measured

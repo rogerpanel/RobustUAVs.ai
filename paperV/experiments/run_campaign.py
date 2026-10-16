@@ -1,219 +1,245 @@
-"""Paper V NON-LLM pilot campaign.
+"""Campaign runner: episode-level JSONL checkpoints, resume and sharding (runbook §2).
 
-Stages (all seeds fixed; evaluation seeds 4xxx shared across stages = common random numbers):
-  cem       CEM tuning of the oracle (violation / denial objectives) on 2xxx seeds, N=4;
-            the N=4 optimum is transferred unchanged to N=12 (stated, not re-tuned)
-  main      N in {4,12} x {benign, random, stall, oracle_violation, oracle_denial} x filter {ON, OFF}
-  hand      hand-designed oracle family members (press_wall, press_neighbour, overspeed,
-            goal_plus_neighbour, goal_plus_wall), ON and OFF
-  budget    b_tot sweep (and gamma / staleness-envelope levels) with the covert sensing offset
-            realised at the budget (A7-style composition)
-  mismatch  w_true in {0, 1x, 2x, 4x} of the assumed w_bar (negative control beyond 1x)
-  negative  outside (A2): uncapped staleness + relay jumps (5xxx seeds); ablations
-            (no look-ahead, no continuation)
-  nested    one-step nestedness / transparency study (budget.py)
+Each finished episode appends one line to results/campaign/<id>/shard_<k>.jsonl.gz (gzip member
+per line, flush + fsync). --resume skips every (cell_id, mission_seed, repeat) already done
+(status api_error / incomplete do not count). --shard k/K keeps the cells with
+sha256(cell_id, mission_seed) mod K == k. Raw campaign directories are not committed.
 
-Usage: python run_campaign.py [stage ...]   (default: all). Counts via env SCALE (float).
+Phases
+  p1-timing     seconds per episode per filter backend (results/p1_timing.csv)
+  p1-property   Theorem 1 property campaign (2,000 episodes x 12 aircraft; --quick 200)
+  p2            A0 / random / A6 oracle evaluation on held-out missions (block 14xxx)
+  p2-budget     A6 attack-budget curve (b_att epochs x hijacked aircraft) and the stealth monitor (11xxx on A0)
 """
 from __future__ import annotations
 
+import argparse
+import csv
+import gzip
+import hashlib
+import itertools
 import json
 import os
 import platform
+import subprocess
 import sys
 import time
 from multiprocessing import Pool
 
 import numpy as np
-import pandas as pd
 
-from adaptive import cem
-from attacks import HAND_VIOLATION, HAND_DENIAL
-from budget import budget_levels, nestedness_study
-from constants import RESULTS, DELTA_ADV, W_BAR_NOM, GAMMA_LEVELS, provenance_rows
-from episode import EpCfg, run_episode
-
-SCALE = float(os.environ.get("SCALE", "1.0"))
-WORKERS = int(os.environ.get("WORKERS", "2"))
-
-
-def n(k):
-    return max(2, int(round(k * SCALE)))
+try:
+    from . import constants as C
+    from .budget import level_values, levels as budget_rows
+    from .episode import EpisodeCfg, run_episode
+except ImportError:
+    import constants as C
+    from budget import level_values, levels as budget_rows
+    from episode import EpisodeCfg, run_episode
 
 
-def _job(cfg):
-    t0 = time.time()
-    r = run_episode(cfg)
-    r["wall_s"] = time.time() - t0
-    return r
+# ------------------------------------------------------------------ JSONL store
+def _json_default(o):
+    if isinstance(o, (np.integer,)):
+        return int(o)
+    if isinstance(o, (np.floating,)):
+        return None if not np.isfinite(o) else float(o)
+    if isinstance(o, np.ndarray):
+        return o.tolist()
+    if isinstance(o, (np.bool_,)):
+        return bool(o)
+    raise TypeError(type(o))
 
 
-def run_jobs(jobs, stage, pool):
-    jobs = sorted(jobs, key=lambda c: -(c.N * (3 if c.filter_on else 0.1)))
-    rows, times = [], {}
-    t0 = time.time()
-    for i, r in enumerate(pool.imap_unordered(_job, jobs, chunksize=1)):
-        tm = r.pop("_times", None)
-        key = f"{r['tag']}|N{r['N']}|{r['planner']}|{'on' if r['filter_on'] else 'off'}|b{r['b_tot']:.3f}|w{r['w_true']:.2f}"
-        if tm is not None and len(tm):
-            times.setdefault(key, []).append(tm)
-        rows.append(r)
-        if (i + 1) % 25 == 0 or i + 1 == len(jobs):
-            print(f"  [{stage}] {i+1}/{len(jobs)} episodes, {time.time()-t0:.0f}s", flush=True)
-    df = pd.DataFrame(rows)
-    df.to_csv(RESULTS / f"episodes_{stage}.csv", index=False)
-    np.savez_compressed(RESULTS / f"solve_times_{stage}.npz",
-                        **{k.replace("|", "__"): np.concatenate(v) for k, v in times.items()})
-    return df
-
-
-def load_theta():
-    p = RESULTS / "oracle_theta.json"
-    return json.loads(p.read_text()) if p.exists() else None
-
-
-def stage_cem(pool):
-    log = []
-    base = dict(filter_on=True, b_tot=DELTA_ADV, nature="adversarial")
-    tv, sv = cem(4, "violation", base, pool=pool, n_cand=n(8), n_elite=3, n_gen=4, n_train=2, seed=2000, log=log)
-    td, sd = cem(4, "denial", base, pool=pool, n_cand=n(8), n_elite=3, n_gen=4, n_train=2, seed=2100, log=log)
-    out = {"violation": tv.tolist(), "violation_score": sv, "denial": td.tolist(), "denial_score": sd,
-           "note": "CEM on seeds 2000-2001 (violation) / 2100-2101 (denial), N=4, filter ON, b_tot=delta_adv, "
-                   "adversarial nature; transferred unchanged to N=12."}
-    (RESULTS / "oracle_theta.json").write_text(json.dumps(out, indent=1))
-    pd.DataFrame(log).to_csv(RESULTS / "cem_log.csv", index=False)
+def _clean(rec):
+    out = {}
+    for k, v in rec.items():
+        if isinstance(v, float) and not np.isfinite(v):
+            v = None
+        out[k] = v
     return out
 
 
-def planners(theta):
-    return [("benign", (), "random"), ("random", (), "random"), ("stall", (), "random"),
-            ("oracle_violation", tuple(theta["violation"]), "adversarial"),
-            ("oracle_denial", tuple(theta["denial"]), "adversarial")]
+class Store:
+    def __init__(self, cid, shard=(0, 1)):
+        self.dir = C.RESULTS / "campaign" / cid
+        self.dir.mkdir(parents=True, exist_ok=True)
+        self.path = self.dir / f"shard_{shard[0]}.jsonl.gz"
+
+    def done_keys(self):
+        keys = set()
+        for f in self.dir.glob("shard_*.jsonl.gz"):
+            try:
+                with gzip.open(f, "rt") as fh:
+                    for line in fh:
+                        try:
+                            r = json.loads(line)
+                        except json.JSONDecodeError:
+                            continue
+                        if r.get("status") not in ("api_error", "incomplete"):
+                            keys.add((r["cell_id"], r["mission_seed"], r.get("repeat", 0)))
+            except (EOFError, OSError):
+                continue                      # torn tail of an interrupted shard
+        return keys
+
+    def append(self, rec):
+        line = json.dumps(_clean(rec), default=_json_default) + "\n"
+        with open(self.path, "ab") as fh:
+            fh.write(gzip.compress(line.encode()))
+            fh.flush(); os.fsync(fh.fileno())
 
 
-def stage_main(pool, theta):
-    jobs = []
-    for N, ne in ((4, n(40)), (12, n(14))):
-        for name, th, nat in planners(theta):
-            for fon in (True, False):
-                for e in range(ne):
-                    jobs.append(EpCfg(N=N, planner=name, theta=th, filter_on=fon, b_tot=DELTA_ADV, nature=nat,
-                                      seed=4000 + e, tag="main"))
-    return run_jobs(jobs, "main", pool)
+def shard_of(cell_id, seed, K):
+    return int(hashlib.sha256(f"{cell_id}|{seed}".encode()).hexdigest(), 16) % K
 
 
-def stage_hand(pool):
-    jobs = []
-    for N, ne in ((4, n(16)), (12, n(5))):
-        for name, th in list(HAND_VIOLATION.items()) + list(HAND_DENIAL.items()):
-            for fon in (True, False):
-                for e in range(ne):
-                    jobs.append(EpCfg(N=N, planner="oracle_" + name, theta=th, filter_on=fon, b_tot=DELTA_ADV,
-                                      nature="adversarial", seed=4000 + e, tag="hand"))
-    return run_jobs(jobs, "hand", pool)
+def _run(cfg):
+    try:
+        return run_episode(cfg)
+    except Exception as e:                       # never silently: the record says incomplete and why
+        return dict(cell_id=cfg.cell_id(), mission_seed=cfg.mission_seed, repeat=cfg.repeat, status="incomplete",
+                    error=f"{type(e).__name__}: {e}", campaign_id=cfg.campaign_id)
 
 
-def stage_budget(pool, theta):
-    levels, ss = budget_levels()
-    jobs = []
-    for b, lab in levels:
-        for e in range(n(16)):
-            jobs.append(EpCfg(N=4, planner="benign", filter_on=True, b_tot=b, nature="adversarial",
-                              seed=4000 + e, tag="budget"))
-            jobs.append(EpCfg(N=4, planner="oracle_denial", theta=tuple(theta["denial"]), filter_on=True,
-                              b_tot=b, nature="adversarial", seed=4000 + e, tag="budget"))
-        for e in range(n(5)):
-            jobs.append(EpCfg(N=12, planner="benign", filter_on=True, b_tot=b, nature="adversarial",
-                              seed=4000 + e, tag="budget"))
-    # gamma levels and staleness-envelope levels at b = delta_adv (benign, N=4)
-    for g in GAMMA_LEVELS:
-        for e in range(n(12)):
-            jobs.append(EpCfg(N=4, planner="benign", filter_on=True, b_tot=DELTA_ADV, gamma=g, nature="adversarial",
-                              seed=4000 + e, tag=f"gamma{g}"))
-    for dbar in (0.5, 2.0):
-        for e in range(n(12)):
-            jobs.append(EpCfg(N=4, planner="benign", filter_on=True, b_tot=DELTA_ADV, delta_bar=dbar,
-                              nature="adversarial", seed=4000 + e, tag=f"dbar{dbar}"))
-    df = run_jobs(jobs, "budget", pool)
-    (RESULTS / "budget_levels.json").write_text(json.dumps({"levels": levels, "s_star": ss}, indent=1))
-    return df
+def execute(cfgs, cid, par, resume, shard, label=""):
+    store = Store(cid, shard)
+    done = store.done_keys() if resume else set()
+    todo = [c for c in cfgs if shard_of(c.cell_id(), c.mission_seed, shard[1]) == shard[0]
+            and (c.cell_id(), c.mission_seed, c.repeat) not in done]
+    print(f"[{cid}] {len(cfgs)} episodes in grid, {len(todo)} to run (shard {shard[0]}/{shard[1]}, par {par})",
+          flush=True)
+    t0 = time.perf_counter()
+    n = 0
+    try:
+        from .adaptive import quiet
+    except ImportError:
+        from adaptive import quiet
+    with Pool(par, initializer=quiet) as pool:
+        for rec in pool.imap_unordered(_run, todo, chunksize=1):
+            store.append(rec)
+            n += 1
+            if n % 20 == 0 or n == len(todo):
+                el = time.perf_counter() - t0
+                print(f"  [{cid}] {n}/{len(todo)} done, {el:.0f} s elapsed", flush=True)
+    return store
 
 
-def stage_mismatch(pool, theta):
-    jobs = []
-    for mult in (0.0, 1.0, 2.0, 4.0):
-        w = mult * W_BAR_NOM
-        for e in range(n(16)):
-            jobs.append(EpCfg(N=4, planner="benign", filter_on=True, b_tot=DELTA_ADV, w_true=w, nature="random",
-                              seed=4000 + e, tag="mismatch"))
-            jobs.append(EpCfg(N=4, planner="oracle_violation", theta=tuple(theta["violation"]), filter_on=True,
-                              b_tot=DELTA_ADV, w_true=w, nature="adversarial", seed=4000 + e, tag="mismatch"))
-            jobs.append(EpCfg(N=4, planner="oracle_press_wall", theta=HAND_VIOLATION["press_wall"], filter_on=True,
-                              b_tot=DELTA_ADV, w_true=w, nature="adversarial", seed=4000 + e, tag="mismatch"))
-        for e in range(n(4)):
-            jobs.append(EpCfg(N=12, planner="oracle_violation", theta=tuple(theta["violation"]), filter_on=True,
-                              b_tot=DELTA_ADV, w_true=w, nature="adversarial", seed=4000 + e, tag="mismatch"))
-    return run_jobs(jobs, "mismatch", pool)
+def git_sha():
+    try:
+        return subprocess.run(["git", "rev-parse", "HEAD"], cwd=C.REPO, capture_output=True, text=True).stdout.strip()
+    except OSError:
+        return ""
 
 
-def stage_negative(pool, theta):
-    jobs = []
-    for e in range(n(16)):
-        for name, th in (("benign", ()), ("oracle_violation", tuple(theta["violation"])),
-                         ("oracle_press_wall", HAND_VIOLATION["press_wall"])):
-            jobs.append(EpCfg(N=4, planner=name, theta=th, filter_on=True, b_tot=DELTA_ADV, within=False,
-                              nature="adversarial", seed=5000 + e, tag="outsideA2"))
-        jobs.append(EpCfg(N=4, planner="oracle_press_wall", theta=HAND_VIOLATION["press_wall"], filter_on=True,
-                          b_tot=DELTA_ADV, lookahead=False, nature="adversarial", seed=4000 + e, tag="no_lookahead"))
-        jobs.append(EpCfg(N=4, planner="oracle_denial", theta=tuple(theta["denial"]), filter_on=True,
-                          b_tot=DELTA_ADV, continuation=False, nature="adversarial", seed=4000 + e,
-                          tag="no_continuation"))
-    for e in range(n(4)):
-        jobs.append(EpCfg(N=12, planner="benign", filter_on=True, b_tot=DELTA_ADV, within=False,
-                          nature="adversarial", seed=5000 + e, tag="outsideA2"))
-    return run_jobs(jobs, "negative", pool)
+def meta_update(key, value):
+    p = C.RESULTS / "run_meta.json"
+    meta = json.loads(p.read_text()) if p.exists() else {}
+    meta[key] = value
+    p.write_text(json.dumps(meta, indent=1, default=_json_default))
 
 
-def stage_nested():
-    levels, _ = budget_levels()
-    rows = nestedness_study([b for b, _ in levels], M=n(300))
-    df = pd.DataFrame(rows)
-    df.to_csv(RESULTS / "nestedness.csv", index=False)
-    return df
-
-
-def main(stages):
-    t_all = time.time()
-    meta_p = RESULTS / "run_meta.json"
-    meta = json.loads(meta_p.read_text()) if meta_p.exists() else {}
-    pd.DataFrame(provenance_rows(), columns=["name", "value", "provenance"]).to_csv(RESULTS / "constants_paperV.csv",
-                                                                                    index=False)
-    with Pool(WORKERS) as pool:
-        theta = load_theta()
-        for st in stages:
-            t0 = time.time()
-            print(f"== stage {st}", flush=True)
-            if st == "cem":
-                theta = stage_cem(pool)
-                n_ep = len(pd.read_csv(RESULTS / "cem_log.csv")) * 2
-            elif st == "nested":
-                df = stage_nested(); n_ep = 0
-            else:
-                fn = {"main": stage_main, "budget": stage_budget, "mismatch": stage_mismatch,
-                      "negative": stage_negative}.get(st)
-                df = stage_hand(pool) if st == "hand" else fn(pool, theta)
-                n_ep = len(df)
-            meta[st] = {"wall_s": round(time.time() - t0, 1), "episodes": int(n_ep)}
-            print(f"== stage {st} done in {time.time()-t0:.0f}s ({n_ep} episodes)", flush=True)
-            meta_p.write_text(json.dumps(meta, indent=1))
-    meta["_env"] = {"python": sys.version.split()[0], "platform": platform.platform(), "numpy": np.__version__,
-                    "scale": SCALE, "workers": WORKERS}
+def env_meta():
     import osqp, clarabel, scipy
-    meta["_env"].update(osqp=osqp.__version__, clarabel=clarabel.__version__, scipy=scipy.__version__)
-    meta["_last_invocation_wall_s"] = round(time.time() - t_all, 1)
-    meta_p.write_text(json.dumps(meta, indent=1))
+    cpu = platform.machine()
+    try:
+        for line in open("/proc/cpuinfo"):
+            if line.startswith("model name"):
+                cpu = line.split(":", 1)[1].strip(); break
+    except OSError:
+        pass
+    return dict(python=sys.version.split()[0], numpy=np.__version__, scipy=scipy.__version__,
+                osqp=osqp.__version__, clarabel=clarabel.__version__, cpu=cpu, nproc=os.cpu_count(),
+                host=platform.node(), git_sha=git_sha())
+
+
+# ------------------------------------------------------------------ dispatchable cells
+def dispatchable(level, m, gamma=C.GAMMA_SUP, delta_bar=C.DELTA_BAR_S):
+    for r in budget_rows(gamma=gamma, delta_bar=delta_bar):
+        if r["level"] == level and r["m"] == m:
+            return bool(r["dispatchable"])
+    raise KeyError((level, m))
+
+
+# ------------------------------------------------------------------ phases
+STYLES = ("uniform", "far", "bangbang", "flap", "press", "garbage")
+
+
+def phase_p1_property(a):
+    lv = level_values()
+    cells = [(lev, lv[lev], m) for lev in ("b0", "b1", "b2", "b3") for m in (10.0, 20.0) if dispatchable(lev, m)]
+    combos = list(itertools.product(STYLES, cells, ("uniform", "vertex"), ("random", "vertex")))
+    n_ep = 200 if a.quick else a.episodes
+    cfgs = []
+    for i in range(n_ep):
+        style, (lev, b, m), wm, em = combos[i % len(combos)]
+        cfgs.append(EpisodeCfg(n_uav=C.N_UAV, m=m, b_tot_level=lev, b_tot_m=b, planner="prop_" + style, w_mode=wm,
+                               e_mode=em, mission_seed=10000 + i // 2, repeat=i % 2, campaign_id=a.campaign_id,
+                               attacker="property", goal=style))
+    t0 = time.perf_counter()
+    execute(cfgs, a.campaign_id, a.par, a.resume, a.shard)
+    meta_update("p1_property", dict(episodes=n_ep, cells=[c[0] + f"@m{c[2]:g}" for c in cells],
+                                    seed_block="10000-10999", wall_s=round(time.perf_counter() - t0, 1),
+                                    env=env_meta()))
+
+
+def phase_p1_timing(a):
+    rows = []
+    lv = level_values()
+    n = 2 if a.quick else 6
+    for flt in ("psf", "none", "simplex", "cbf1", "fixed_margin"):
+        for planner in ("scripted", "prop_press"):
+            ws = []
+            for k in range(n):
+                r = run_episode(EpisodeCfg(m=20.0, b_tot_level="b1", b_tot_m=lv["b1"], filter=flt, planner=planner,
+                                           e_mode="vertex", mission_seed=10950 + k))
+                ws.append(r["wall_s"])
+            rows.append(dict(filter=flt, planner=planner, episodes=n, n_uav=C.N_UAV, s_per_episode_mean=np.mean(ws),
+                             s_per_episode_max=np.max(ws), aircraft_steps_per_episode=C.N_UAV * 875,
+                             provenance="measured"))
+            print(rows[-1], flush=True)
+    p = C.RESULTS / "p1_timing.csv"
+    with p.open("w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
+    meta_update("p1_timing", dict(env=env_meta()))
+    print("wrote", p)
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--phase", required=True)
+    ap.add_argument("--campaign-id", default=None)
+    ap.add_argument("--episodes", type=int, default=2000)
+    ap.add_argument("--quick", action="store_true")
+    ap.add_argument("--resume", action="store_true")
+    ap.add_argument("--par", type=int, default=max(1, (os.cpu_count() or 2)))
+    ap.add_argument("--shard", default="0/1")
+    ap.add_argument("--planners", default="scripted,random,oracle:best,oracle:heldout")
+    ap.add_argument("--btot", default="b0,b1,b2,b3")
+    ap.add_argument("--margins", default="10,20")
+    ap.add_argument("--gamma", default="1.625,15")
+    ap.add_argument("--missions", type=int, default=300)
+    ap.add_argument("--seed-block", type=int, default=14000)
+    ap.add_argument("--filters", default="psf,none,simplex,cbf1,fixed_margin")
+    ap.add_argument("--goals", default="G1,G2,G3,G4")
+    ap.add_argument("--log-steps", default="events")
+    ap.add_argument("--stage", default=None, help="p2-budget: monitor | curve")
+    a = ap.parse_args(argv)
+    k, K = (int(x) for x in a.shard.split("/"))
+    a.shard = (k, K)
+    a.campaign_id = a.campaign_id or a.phase.replace("-", "_")
+    if a.phase == "p1-property":
+        phase_p1_property(a)
+    elif a.phase == "p1-timing":
+        phase_p1_timing(a)
+    elif a.phase in ("p2", "p2-budget"):
+        try:
+            from . import campaigns_p2 as P2
+        except ImportError:
+            import campaigns_p2 as P2
+        P2.run(a)
+    else:
+        raise SystemExit(f"unknown phase {a.phase}")
 
 
 if __name__ == "__main__":
-    st = sys.argv[1:] or ["cem", "main", "hand", "budget", "mismatch", "negative", "nested"]
-    main(st)
+    main()

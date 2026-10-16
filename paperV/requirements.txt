@@ -1,0 +1,14 @@
+numpy>=1.26
+scipy>=1.11
+pandas>=2.0
+cvxpy>=1.5
+osqp>=0.6.7
+clarabel>=0.9
+jsonschema>=4.0
+httpx>=0.28
+pyyaml>=6.0
+pytest>=8.0
+hypothesis>=6.100
+cma>=3.3
+optuna>=3.6
+rliable>=1.0
