@@ -1,643 +1,542 @@
-\begin{thebibliography}{91}
-\providecommand{\natexlab}[1]{#1}
-\providecommand{\url}[1]{\texttt{#1}}
-\expandafter\ifx\csname urlstyle\endcsname\relax
-  \providecommand{\doi}[1]{doi: #1}\else
-  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
-
-\bibitem[rtc(2016)]{rtca2016do229}
-Minimum operational performance standards for global positioning
-  system/satellite-based augmentation system airborne equipment.
-\newblock Technical Report DO-229E, RTCA, Inc., 2016.
-
-\bibitem[jar(2019)]{jarus2019sora}
-{JARUS} guidelines on specific operations risk assessment ({SORA}).
-\newblock Technical Report JAR-DEL-WG6-D.04, Edition 2.0, Joint Authorities for
-  Rulemaking of Unmanned Systems, 2019.
-
-\bibitem[eas(2024)]{easa2024mlguidance}
-{EASA} concept paper: Guidance for level 1 \& 2 machine learning applications,
-  issue 02.
-\newblock Technical report, European Union Aviation Safety Agency, 2024.
-
-\bibitem[Achiam et~al.(2017)Achiam, Held, Tamar, and Abbeel]{achiam2017cpo}
-Joshua Achiam, David Held, Aviv Tamar, and Pieter Abbeel.
-\newblock Constrained policy optimization.
-\newblock In \emph{Proceedings of the 34th International Conference on Machine
-  Learning (ICML)}, volume~70 of \emph{PMLR}, pages 22--31, 2017.
-
-\bibitem[Adjiashvili et~al.(2016)Adjiashvili, Bindewald, and
-  Michaels]{adjiashvili2016robust}
-David Adjiashvili, Viktor Bindewald, and Dennis Michaels.
-\newblock Robust assignments via ear decompositions and randomized rounding.
-\newblock In \emph{43rd International Colloquium on Automata, Languages, and
-  Programming (ICALP)}, volume~55 of \emph{LIPIcs}, pages 71:1--71:14, 2016.
-
-\bibitem[Adjiashvili et~al.(2017)Adjiashvili, Bindewald, and
-  Michaels]{adjiashvili2017vulnerable}
-David Adjiashvili, Viktor Bindewald, and Dennis Michaels.
-\newblock Robust assignments with vulnerable nodes.
-\newblock \emph{arXiv preprint arXiv:1703.06074}, 2017.
-
-\bibitem[Agarwal et~al.(2021)Agarwal, Schwarzer, Castro, Courville, and
-  Bellemare]{agarwal2021precipice}
-Rishabh Agarwal, Max Schwarzer, Pablo~Samuel Castro, Aaron Courville, and
-  Marc~G. Bellemare.
-\newblock Deep reinforcement learning at the edge of the statistical precipice.
-\newblock In \emph{Advances in Neural Information Processing Systems
-  (NeurIPS)}, volume~34, 2021.
-
-\bibitem[Agrawal et~al.(2019)Agrawal, Amos, Barratt, Boyd, Diamond, and
-  Kolter]{agrawal2019cvxpylayers}
-Akshay Agrawal, Brandon Amos, Shane Barratt, Stephen Boyd, Steven Diamond, and
-  J.~Zico Kolter.
-\newblock Differentiable convex optimization layers.
-\newblock In \emph{Advances in Neural Information Processing Systems
-  (NeurIPS)}, volume~32, 2019.
-
-\bibitem[Alshiekh et~al.(2018)Alshiekh, Bloem, Ehlers, K{\"o}nighofer, Niekum,
-  and Topcu]{alshiekh2018shielding}
-Mohammed Alshiekh, Roderick Bloem, R{\"u}diger Ehlers, Bettina K{\"o}nighofer,
-  Scott Niekum, and Ufuk Topcu.
-\newblock Safe reinforcement learning via shielding.
-\newblock In \emph{Proceedings of the AAAI Conference on Artificial
-  Intelligence}, volume~32, pages 2669--2678, 2018.
-\newblock \doi{10.1609/aaai.v32i1.11797}.
-
-\bibitem[Altman(1999)]{altman1999cmdp}
-Eitan Altman.
-\newblock \emph{Constrained {M}arkov Decision Processes}.
-\newblock Chapman \& Hall/CRC, 1999.
-
-\bibitem[Ames et~al.(2019)Ames, Coogan, Egerstedt, Notomista, Sreenath, and
-  Tabuada]{ames2019cbf}
-Aaron~D. Ames, Samuel Coogan, Magnus Egerstedt, Gennaro Notomista, Koushil
-  Sreenath, and Paulo Tabuada.
-\newblock Control barrier functions: Theory and applications.
-\newblock In \emph{18th European Control Conference (ECC)}, pages 3420--3431,
-  2019.
-\newblock \doi{10.23919/ECC.2019.8796030}.
-
-\bibitem[Anonymous(2026{\natexlab{a}})]{paperI}
-Anonymous.
-\newblock What authenticity costs in metres: A certified budget for
-  cryptography and sensing in {UAV} navigation, 2026{\natexlab{a}}.
-\newblock Companion paper, under review.
-
-\bibitem[Anonymous(2026{\natexlab{b}})]{paperII}
-Anonymous.
-\newblock {SoK}: The quantifier gap between certified robustness and
-  airworthiness assurance, 2026{\natexlab{b}}.
-\newblock Companion paper, under review.
-
-\bibitem[Anonymous(2026{\natexlab{c}})]{parentpaper}
-Anonymous.
-\newblock From wire to flight: A conditional mission-completion guarantee for
-  {UAVs}, 2026{\natexlab{c}}.
-\newblock Under review; artifact released with this submission.
-
-\bibitem[Bansal et~al.(2017)Bansal, Chen, Herbert, and Tomlin]{bansal2017hj}
-Somil Bansal, Mo~Chen, Sylvia Herbert, and Claire~J. Tomlin.
-\newblock {H}amilton--{J}acobi reachability: A brief overview and recent
-  advances.
-\newblock In \emph{IEEE 56th Conference on Decision and Control (CDC)}, 2017.
-
-\bibitem[Bertsekas(1988)]{bertsekas1988auction}
-Dimitri~P. Bertsekas.
-\newblock The auction algorithm: A distributed relaxation method for the
-  assignment problem.
-\newblock \emph{Annals of Operations Research}, 14:\penalty0 105--123, 1988.
-
-\bibitem[Bertsimas and Sim(2004)]{bertsimas2004price}
-Dimitris Bertsimas and Melvyn Sim.
-\newblock The price of robustness.
-\newblock \emph{Operations Research}, 52\penalty0 (1):\penalty0 35--53, 2004.
-
-\bibitem[Boutilier et~al.(2018)Boutilier, Cohen, Daniely, Hassidim, Mansour,
-  Meshi, Mladenov, and Schuurmans]{boutilier2018sas}
-Craig Boutilier, Alon Cohen, Amit Daniely, Avinatan Hassidim, Yishay Mansour,
-  Ofer Meshi, Martin Mladenov, and Dale Schuurmans.
-\newblock Planning and learning with stochastic action sets.
-\newblock In \emph{Proceedings of the 27th International Joint Conference on
-  Artificial Intelligence (IJCAI)}, pages 4674--4682, 2018.
-\newblock \doi{10.24963/ijcai.2018/650}.
-
-\bibitem[Brodal et~al.(2007)Brodal, Georgiadis, Hansen, and
-  Katriel]{brodal2007dynamic}
-Gerth~St{\o}lting Brodal, Loukas Georgiadis, Kristoffer~Arnsfelt Hansen, and
-  Irit Katriel.
-\newblock Dynamic matchings in convex bipartite graphs.
-\newblock In \emph{Mathematical Foundations of Computer Science (MFCS)}, volume
-  4708 of \emph{LNCS}, pages 406--417, 2007.
-
-\bibitem[Chandak et~al.(2020)Chandak, Theocharous, Nota, and
-  Thomas]{chandak2020changingactions}
-Yash Chandak, Georgios Theocharous, Chris Nota, and Philip~S. Thomas.
-\newblock Lifelong learning with a changing action set.
-\newblock In \emph{Proceedings of the AAAI Conference on Artificial
-  Intelligence}, volume~34, 2020.
-
-\bibitem[Cheng et~al.(2019)Cheng, Orosz, Murray, and
-  Burdick]{cheng2019endtoend}
-Richard Cheng, G{\'a}bor Orosz, Richard~M. Murray, and Joel~W. Burdick.
-\newblock End-to-end safe reinforcement learning through barrier functions for
-  safety-critical continuous control tasks.
-\newblock In \emph{Proceedings of the AAAI Conference on Artificial
-  Intelligence}, volume~33, 2019.
-
-\bibitem[Choi et~al.(2009)Choi, Brunet, and How]{choi2009cbba}
-Han-Lim Choi, Luc Brunet, and Jonathan~P. How.
-\newblock Consensus-based decentralized auctions for robust task allocation.
-\newblock \emph{IEEE Transactions on Robotics}, 25\penalty0 (4):\penalty0
-  912--926, 2009.
-\newblock \doi{10.1109/TRO.2009.2022423}.
-
-\bibitem[Clopper and Pearson(1934)]{clopper1934}
-C.~J. Clopper and E.~S. Pearson.
-\newblock The use of confidence or fiducial limits illustrated in the case of
-  the binomial.
-\newblock \emph{Biometrika}, 26\penalty0 (4):\penalty0 404--413, 1934.
-
-\bibitem[Cort{\'e}s et~al.(2004)Cort{\'e}s, Mart{\'\i}nez, Karata{\c{s}}, and
-  Bullo]{cortes2004coverage}
-Jorge Cort{\'e}s, Sonia Mart{\'\i}nez, Timur Karata{\c{s}}, and Francesco
-  Bullo.
-\newblock Coverage control for mobile sensing networks.
-\newblock \emph{IEEE Transactions on Robotics and Automation}, 20\penalty0
-  (2):\penalty0 243--255, 2004.
-
-\bibitem[Dalal et~al.(2018)Dalal, Dvijotham, Vecerik, Hester, Paduraru, and
-  Tassa]{dalal2018safety}
-Gal Dalal, Krishnamurthy Dvijotham, Matej Vecerik, Todd Hester, Cosmin
-  Paduraru, and Yuval Tassa.
-\newblock Safe exploration in continuous action spaces.
-\newblock \emph{arXiv preprint arXiv:1801.08757}, 2018.
-
-\bibitem[Edmonds and Fulkerson(1965)]{edmonds1965transversal}
-Jack Edmonds and D.~R. Fulkerson.
-\newblock Transversals and matroid partition.
-\newblock \emph{Journal of Research of the National Bureau of Standards},
-  69B:\penalty0 147--153, 1965.
-
-\bibitem[ElSayed-Aly et~al.(2021)ElSayed-Aly, Bharadwaj, Amato, Ehlers, Topcu,
-  and Feng]{elsayedaly2021marlshield}
-Ingy ElSayed-Aly, Suda Bharadwaj, Christopher Amato, R{\"u}diger Ehlers, Ufuk
-  Topcu, and Lu~Feng.
-\newblock Safe multi-agent reinforcement learning via shielding.
-\newblock In \emph{Proceedings of the 20th International Conference on
-  Autonomous Agents and Multiagent Systems (AAMAS)}, pages 483--491, 2021.
-
-\bibitem[Gerkey and Matari{\'c}(2004)]{gerkey2004taxonomy}
-Brian~P. Gerkey and Maja~J. Matari{\'c}.
-\newblock A formal analysis and taxonomy of task allocation in multi-robot
-  systems.
-\newblock \emph{The International Journal of Robotics Research}, 23\penalty0
-  (9):\penalty0 939--954, 2004.
-
-\bibitem[Glover(1967)]{glover1967convex}
-Fred Glover.
-\newblock Maximum matching in a convex bipartite graph.
-\newblock \emph{Naval Research Logistics Quarterly}, 14\penalty0 (3):\penalty0
-  313--316, 1967.
-
-\bibitem[Gros et~al.(2020)Gros, Zanon, and Bemporad]{gros2020projection}
-S{\'e}bastien Gros, Mario Zanon, and Alberto Bemporad.
-\newblock Safe reinforcement learning via projection on a safe set: How to
-  achieve optimality?
-\newblock \emph{IFAC-PapersOnLine}, 53\penalty0 (2):\penalty0 8076--8081, 2020.
-
-\bibitem[Gu et~al.(2023)Gu, Kuba, Chen, Du, Yang, Knoll, and Yang]{gu2023macpo}
-Shangding Gu, Jakub~Grudzien Kuba, Yuanpei Chen, Yali Du, Long Yang, Alois
-  Knoll, and Yaodong Yang.
-\newblock Safe multi-agent reinforcement learning for multi-robot control.
-\newblock \emph{Artificial Intelligence}, 319:\penalty0 103905, 2023.
-\newblock \doi{10.1016/j.artint.2023.103905}.
-
-\bibitem[Gu et~al.(2024)Gu, Yang, Du, Chen, Walter, Wang, and
-  Knoll]{gu2024review}
-Shangding Gu, Long Yang, Yali Du, Guang Chen, Florian Walter, Jun Wang, and
-  Alois Knoll.
-\newblock A review of safe reinforcement learning: Methods, theories and
-  applications.
-\newblock \emph{IEEE Transactions on Pattern Analysis and Machine
-  Intelligence}, 2024.
-
-\bibitem[Hall(1935)]{hall1935}
-Philip Hall.
-\newblock On representatives of subsets.
-\newblock \emph{Journal of the London Mathematical Society}, 10:\penalty0
-  26--30, 1935.
-
-\bibitem[Hammer et~al.(1990)Hammer, Peled, and Sun]{hammer1990difference}
-Peter~L. Hammer, Uri~N. Peled, and Xiaorong Sun.
-\newblock Difference graphs.
-\newblock \emph{Discrete Applied Mathematics}, 28\penalty0 (1):\penalty0
-  35--44, 1990.
-\newblock \doi{10.1016/0166-218X(90)90092-Q}.
-
-\bibitem[Hanley and Lippman-Hand(1983)]{hanley1983ruleofthree}
-James~A. Hanley and Abby Lippman-Hand.
-\newblock If nothing goes wrong, is everything all right? interpreting zero
-  numerators.
-\newblock \emph{JAMA}, 249\penalty0 (13):\penalty0 1743--1745, 1983.
-
-\bibitem[Hommelsheim et~al.(2019)Hommelsheim, M{\"u}hlenthaler, and
-  Schaudt]{hommelsheim2019edge}
-Felix Hommelsheim, Moritz M{\"u}hlenthaler, and Oliver Schaudt.
-\newblock How to secure matchings against edge failures.
-\newblock In \emph{36th International Symposium on Theoretical Aspects of
-  Computer Science (STACS)}, LIPIcs, 2019.
-\newblock \doi{10.4230/LIPIcs.STACS.2019.38}.
-
-\bibitem[Hopcroft and Karp(1973)]{hopcroft1973}
-John~E. Hopcroft and Richard~M. Karp.
-\newblock An $n^{5/2}$ algorithm for maximum matchings in bipartite graphs.
-\newblock \emph{SIAM Journal on Computing}, 2\penalty0 (4):\penalty0 225--231,
-  1973.
-
-\bibitem[Hsu et~al.(2024)Hsu, Hu, and Fisac]{hsu2024safetyfilter}
-Kai-Chieh Hsu, Haimin Hu, and Jaime~F. Fisac.
-\newblock The safety filter: A unified view of safety-critical control in
-  autonomous systems.
-\newblock \emph{Annual Review of Control, Robotics, and Autonomous Systems},
-  7:\penalty0 47--72, 2024.
-\newblock \doi{10.1146/annurev-control-071723-102940}.
-
-\bibitem[Huang and Onta{\~n}{\'o}n(2022)]{huang2022masking}
-Shengyi Huang and Santiago Onta{\~n}{\'o}n.
-\newblock A closer look at invalid action masking in policy gradient
-  algorithms.
-\newblock In \emph{Proceedings of the International FLAIRS Conference},
-  volume~35, 2022.
-\newblock \doi{10.32473/flairs.v35i.130584}.
-
-\bibitem[Ji et~al.(2023)Ji, Zhang, Zhou, Pan, Huang, Sun, Geng, Zhong, Dai, and
-  Yang]{ji2023safetygymnasium}
-Jiaming Ji, Borong Zhang, Jiayi Zhou, Xuehai Pan, Weidong Huang, Ruiyang Sun,
-  Yiran Geng, Yifan Zhong, Juntao Dai, and Yaodong Yang.
-\newblock Safety-gymnasium: A unified safe reinforcement learning benchmark.
-\newblock In \emph{Advances in Neural Information Processing Systems (NeurIPS),
-  Datasets and Benchmarks Track}, 2023.
-
-\bibitem[Ji et~al.(2024)Ji, Zhou, Zhang, Dai, Pan, Sun, Huang, Geng, Liu, and
-  Yang]{ji2024omnisafe}
-Jiaming Ji, Jiayi Zhou, Borong Zhang, Juntao Dai, Xuehai Pan, Ruiyang Sun,
-  Weidong Huang, Yiran Geng, Mickel Liu, and Yaodong Yang.
-\newblock {OmniSafe}: An infrastructure for accelerating safe reinforcement
-  learning research.
-\newblock \emph{Journal of Machine Learning Research}, 2024.
-
-\bibitem[Katriel(2008)]{katriel2008weighted}
-Irit Katriel.
-\newblock Matchings in node-weighted convex bipartite graphs.
-\newblock \emph{INFORMS Journal on Computing}, 20\penalty0 (2):\penalty0
-  205--211, 2008.
-\newblock \doi{10.1287/ijoc.1070.0232}.
-
-\bibitem[Kerns et~al.(2014)Kerns, Shepard, Bhatti, and
-  Humphreys]{kerns2014capture}
-Andrew~J. Kerns, Daniel~P. Shepard, Jahshan~A. Bhatti, and Todd~E. Humphreys.
-\newblock Unmanned aircraft capture and control via {GPS} spoofing.
-\newblock \emph{Journal of Field Robotics}, 31\penalty0 (4):\penalty0 617--636,
-  2014.
-
-\bibitem[Kleinberg et~al.(2010)Kleinberg, Niculescu-Mizil, and
-  Sharma]{kleinberg2010sleeping}
-Robert Kleinberg, Alexandru Niculescu-Mizil, and Yogeshwer Sharma.
-\newblock Regret bounds for sleeping experts and bandits.
-\newblock \emph{Machine Learning}, 80:\penalty0 245--272, 2010.
-
-\bibitem[Korsah et~al.(2013)Korsah, Stentz, and Dias]{korsah2013taxonomy}
-G.~Ayorkor Korsah, Anthony Stentz, and M.~Bernardine Dias.
-\newblock A comprehensive taxonomy for multi-robot task allocation.
-\newblock \emph{The International Journal of Robotics Research}, 32\penalty0
-  (12):\penalty0 1495--1512, 2013.
-
-\bibitem[Krasowski et~al.(2023)Krasowski, Thumm, M{\"u}ller, Sch{\"a}fer, Wang,
-  and Althoff]{krasowski2023provably}
-Hanna Krasowski, Jakob Thumm, Marlon M{\"u}ller, Lukas Sch{\"a}fer, Xiao Wang,
-  and Matthias Althoff.
-\newblock Provably safe reinforcement learning: Conceptual analysis, survey,
-  and benchmarking.
-\newblock \emph{Transactions on Machine Learning Research}, 2023.
-
-\bibitem[Kuba et~al.(2022)Kuba, Chen, Wen, Wen, Sun, Wang, and
-  Yang]{kuba2022happo}
-Jakub~Grudzien Kuba, Ruiqing Chen, Muning Wen, Ying Wen, Fanglei Sun, Jun Wang,
-  and Yaodong Yang.
-\newblock Trust region policy optimisation in multi-agent reinforcement
-  learning.
-\newblock In \emph{International Conference on Learning Representations
-  (ICLR)}, 2022.
-
-\bibitem[Kumar et~al.(2022)Kumar, Levine, and Feizi]{kumar2022policysmoothing}
-Aounon Kumar, Alexander Levine, and Soheil Feizi.
-\newblock Policy smoothing for provably robust reinforcement learning.
-\newblock In \emph{International Conference on Learning Representations
-  (ICLR)}, 2022.
-
-\bibitem[Laroche et~al.(2014)Laroche, Marchetti, Martin, and
-  R{\'o}ka]{laroche2014interdiction}
-Pierre Laroche, Franc Marchetti, S{\'e}bastien Martin, and Zsuzsanna R{\'o}ka.
-\newblock Bipartite complete matching vertex interdiction problem: Application
-  to robust nurse assignment.
-\newblock In \emph{International Conference on Control, Decision and
-  Information Technologies (CoDIT)}, pages 182--187, 2014.
-\newblock \doi{10.1109/CoDIT.2014.6996890}.
-
-\bibitem[LeBlanc et~al.(2013)LeBlanc, Zhang, Koutsoukos, and
-  Sundaram]{leblanc2013wmsr}
-Heath~J. LeBlanc, Haotian Zhang, Xenofon Koutsoukos, and Shreyas Sundaram.
-\newblock Resilient asymptotic consensus in robust networks.
-\newblock \emph{IEEE Journal on Selected Areas in Communications}, 31\penalty0
-  (4):\penalty0 766--781, 2013.
-
-\bibitem[Liu et~al.(2023)Liu, Guo, Cen, Zhang, Tan, Li, and
-  Zhao]{liu2023robustsafe}
-Zuxin Liu, Zijian Guo, Zhepeng Cen, Huan Zhang, Jie Tan, Bo~Li, and Ding Zhao.
-\newblock On the robustness of safe reinforcement learning under observational
-  perturbations.
-\newblock In \emph{International Conference on Learning Representations
-  (ICLR)}, 2023.
-
-\bibitem[Lov{\'a}sz and Plummer(1986)]{lovasz1986matching}
-L{\'a}szl{\'o} Lov{\'a}sz and Michael~D. Plummer.
-\newblock \emph{Matching Theory}, volume~29 of \emph{Annals of Discrete
-  Mathematics}.
-\newblock North-Holland, 1986.
-
-\bibitem[Lowe et~al.(2017)Lowe, Wu, Tamar, Harb, Abbeel, and
-  Mordatch]{lowe2017maddpg}
-Ryan Lowe, Yi~Wu, Aviv Tamar, Jean Harb, Pieter Abbeel, and Igor Mordatch.
-\newblock Multi-agent actor-critic for mixed cooperative-competitive
-  environments.
-\newblock In \emph{Advances in Neural Information Processing Systems
-  (NeurIPS)}, volume~30, 2017.
-
-\bibitem[Mahadev and Peled(1995)]{mahadev1995threshold}
-N.~V.~R. Mahadev and Uri~N. Peled.
-\newblock \emph{Threshold Graphs and Related Topics}, volume~56 of \emph{Annals
-  of Discrete Mathematics}.
-\newblock North-Holland, 1995.
-
-\bibitem[Mahdavi et~al.(2012)Mahdavi, Jin, and Yang]{mahdavi2012oco}
-Mehrdad Mahdavi, Rong Jin, and Tianbao Yang.
-\newblock Trading regret for efficiency: Online convex optimization with long
-  term constraints.
-\newblock \emph{Journal of Machine Learning Research}, 13:\penalty0 2503--2528,
-  2012.
-
-\bibitem[Markgraf et~al.(2025)Markgraf, Sawant, Krasowski, Sch{\"a}fer, Gros,
-  and Althoff]{markgraf2025actionprojection}
-Hannah Markgraf, Shamburaj Sawant, Hanna Krasowski, Lukas Sch{\"a}fer,
-  S{\'e}bastien Gros, and Matthias Althoff.
-\newblock Safe reinforcement learning using action projection: Safeguard the
-  policy or the environment?
-\newblock \emph{Transactions on Machine Learning Research}, 2025.
-\newblock arXiv:2509.12833.
-
-\bibitem[McMahan and Zhu(2024{\natexlab{a}})]{mcmahan2024anytime}
-Jeremy McMahan and Xiaojin Zhu.
-\newblock Anytime-constrained reinforcement learning.
-\newblock In \emph{Proceedings of the 27th International Conference on
-  Artificial Intelligence and Statistics (AISTATS)}, volume 238 of \emph{PMLR},
-  pages 4321--4329, 2024{\natexlab{a}}.
-
-\bibitem[McMahan and Zhu(2024{\natexlab{b}})]{mcmahan2024anytimemarl}
-Jeremy McMahan and Xiaojin Zhu.
-\newblock Anytime-constrained multi-agent reinforcement learning.
-\newblock \emph{arXiv preprint arXiv:2410.23637}, 2024{\natexlab{b}}.
-
-\bibitem[Mondal and Aggarwal(2024)]{mondal2024pdanpg}
-Washim~Uddin Mondal and Vaneet Aggarwal.
-\newblock Sample-efficient constrained reinforcement learning with general
-  parameterization.
-\newblock In \emph{Advances in Neural Information Processing Systems
-  (NeurIPS)}, volume~37, pages 68380--68405, 2024.
-
-\bibitem[Notomista et~al.(2019)Notomista, Mayya, Hutchinson, and
-  Egerstedt]{notomista2019heterogeneous}
-Gennaro Notomista, Siddharth Mayya, Seth Hutchinson, and Magnus Egerstedt.
-\newblock An optimal task allocation strategy for heterogeneous multi-robot
-  systems.
-\newblock In \emph{18th European Control Conference (ECC)}, 2019.
-
-\bibitem[Ore(1955)]{ore1955}
-Oystein Ore.
-\newblock Graphs and matching theorems.
-\newblock \emph{Duke Mathematical Journal}, 22\penalty0 (4):\penalty0 625--639,
-  1955.
-\newblock \doi{10.1215/S0012-7094-55-02268-7}.
-
-\bibitem[Paternain et~al.(2019)Paternain, Chamon, Calvo-Fullana, and
-  Ribeiro]{paternain2019zeroduality}
-Santiago Paternain, Luiz F.~O. Chamon, Miguel Calvo-Fullana, and Alejandro
-  Ribeiro.
-\newblock Constrained reinforcement learning has zero duality gap.
-\newblock In \emph{Advances in Neural Information Processing Systems
-  (NeurIPS)}, volume~32, 2019.
-
-\bibitem[Pham et~al.(2018)Pham, De~Magistris, and Tachibana]{pham2018optlayer}
-Tu-Hoa Pham, Giovanni De~Magistris, and Ryuki Tachibana.
-\newblock {OptLayer} -- practical constrained optimization for deep
-  reinforcement learning in the real world.
-\newblock In \emph{IEEE International Conference on Robotics and Automation
-  (ICRA)}, 2018.
-
-\bibitem[Pinto et~al.(2017)Pinto, Davidson, Sukthankar, and
-  Gupta]{pinto2017rarl}
-Lerrel Pinto, James Davidson, Rahul Sukthankar, and Abhinav Gupta.
-\newblock Robust adversarial reinforcement learning.
-\newblock In \emph{Proceedings of the 34th International Conference on Machine
-  Learning (ICML)}, 2017.
-
-\bibitem[Qin et~al.(2021)Qin, Zhang, Chen, Chen, and Fan]{qin2021macbf}
-Zengyi Qin, Kaiqing Zhang, Yuxiao Chen, Jingkai Chen, and Chuchu Fan.
-\newblock Learning safe multi-agent control with decentralized neural barrier
-  certificates.
-\newblock In \emph{International Conference on Learning Representations
-  (ICLR)}, 2021.
-
-\bibitem[Rashid et~al.(2020)Rashid, Samvelyan, de~Witt, Farquhar, Foerster, and
-  Whiteson]{rashid2020qmix}
-Tabish Rashid, Mikayel Samvelyan, Christian~Schroeder de~Witt, Gregory
-  Farquhar, Jakob Foerster, and Shimon Whiteson.
-\newblock Monotonic value function factorisation for deep multi-agent
-  reinforcement learning.
-\newblock \emph{Journal of Machine Learning Research}, 21\penalty0
-  (178):\penalty0 1--51, 2020.
-
-\bibitem[Ray et~al.(2019)Ray, Achiam, and Amodei]{ray2019safetygym}
-Alex Ray, Joshua Achiam, and Dario Amodei.
-\newblock Benchmarking safe exploration in deep reinforcement learning.
-\newblock Technical report, OpenAI, 2019.
-
-\bibitem[Schulman et~al.(2017)Schulman, Wolski, Dhariwal, Radford, and
-  Klimov]{schulman2017ppo}
-John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov.
-\newblock Proximal policy optimization algorithms.
-\newblock \emph{arXiv preprint arXiv:1707.06347}, 2017.
-
-\bibitem[Sha(2001)]{sha2001simplex}
-Lui Sha.
-\newblock Using simplicity to control complexity.
-\newblock \emph{IEEE Software}, 18\penalty0 (4):\penalty0 20--28, 2001.
-
-\bibitem[Shi et~al.(2023)Shi, Liang, and Shroff]{shi2023instantaneous}
-Ming Shi, Yingbin Liang, and Ness Shroff.
-\newblock A near-optimal algorithm for safe reinforcement learning under
-  instantaneous hard constraints.
-\newblock In \emph{Proceedings of the 40th International Conference on Machine
-  Learning (ICML)}, 2023.
-
-\bibitem[Sinha and Vaze(2024)]{sinha2024ocoadv}
-Abhishek Sinha and Rahul Vaze.
-\newblock Optimal algorithms for online convex optimization with adversarial
-  constraints.
-\newblock In \emph{Advances in Neural Information Processing Systems
-  (NeurIPS)}, volume~37, pages 41274--41302, 2024.
-
-\bibitem[Sootla et~al.(2022)Sootla, Cowen-Rivers, Jafferjee, Wang, Mguni, Wang,
-  and Bou~Ammar]{sootla2022saute}
-Aivar Sootla, Alexander~I. Cowen-Rivers, Taher Jafferjee, Ziyan Wang, David~H.
-  Mguni, Jun Wang, and Haitham Bou~Ammar.
-\newblock Saut\'e {RL}: Almost surely safe reinforcement learning using state
-  augmentation.
-\newblock In \emph{Proceedings of the 39th International Conference on Machine
-  Learning (ICML)}, volume 162 of \emph{PMLR}, pages 20423--20443, 2022.
-
-\bibitem[Steiner and Yeomans(1996)]{steiner1996linear}
-George Steiner and Julian~Scott Yeomans.
-\newblock A linear time algorithm for maximum matchings in convex, bipartite
-  graphs.
-\newblock \emph{Computers \& Mathematics with Applications}, 31\penalty0
-  (12):\penalty0 91--96, 1996.
-
-\bibitem[Stooke et~al.(2020)Stooke, Achiam, and Abbeel]{stooke2020pid}
-Adam Stooke, Joshua Achiam, and Pieter Abbeel.
-\newblock Responsive safety in reinforcement learning by {PID} {L}agrangian
-  methods.
-\newblock In \emph{Proceedings of the 37th International Conference on Machine
-  Learning (ICML)}, volume 119 of \emph{PMLR}, pages 9133--9143, 2020.
-
-\bibitem[Tzoumas et~al.(2017)Tzoumas, Gatsis, Jadbabaie, and
-  Pappas]{tzoumas2017resilient}
-Vasileios Tzoumas, Konstantinos Gatsis, Ali Jadbabaie, and George~J. Pappas.
-\newblock Resilient monotone submodular function maximization.
-\newblock In \emph{IEEE 56th Conference on Decision and Control (CDC)}, 2017.
-
-\bibitem[Wabersich and Zeilinger(2021)]{wabersich2021psf}
-Kim~P. Wabersich and Melanie~N. Zeilinger.
-\newblock A predictive safety filter for learning-based control of constrained
-  nonlinear dynamical systems.
-\newblock \emph{Automatica}, 129:\penalty0 109597, 2021.
-\newblock \doi{10.1016/j.automatica.2021.109597}.
-
-\bibitem[Wachi et~al.(2024)Wachi, Shen, and Sui]{wachi2024survey}
-Akifumi Wachi, Xun Shen, and Yanan Sui.
-\newblock A survey of constraint formulations in safe reinforcement learning.
-\newblock In \emph{Proceedings of the 33rd International Joint Conference on
-  Artificial Intelligence (IJCAI)}, 2024.
-\newblock \doi{10.24963/ijcai.2024/913}.
-
-\bibitem[Wang and Gombolay(2020)]{wang2020gat}
-Zheyuan Wang and Matthew Gombolay.
-\newblock Learning scheduling policies for multi-robot coordination with graph
-  attention networks.
-\newblock \emph{IEEE Robotics and Automation Letters}, 5\penalty0 (3):\penalty0
-  4509--4516, 2020.
-
-\bibitem[Wu et~al.(2022)Wu, Li, Huang, Vorobeychik, Zhao, and Li]{wu2022crop}
-Fan Wu, Linyi Li, Zijian Huang, Yevgeniy Vorobeychik, Ding Zhao, and Bo~Li.
-\newblock {CROP}: Certifying robust policies for reinforcement learning through
-  functional smoothing.
-\newblock In \emph{International Conference on Learning Representations
-  (ICLR)}, 2022.
-
-\bibitem[Xiao et~al.(2023)Xiao, Lyu, and Dolan]{xiao2023dynamicshield}
-Wenli Xiao, Yiwei Lyu, and John~M. Dolan.
-\newblock Model-based dynamic shielding for safe and efficient multi-agent
-  reinforcement learning.
-\newblock \emph{arXiv preprint arXiv:2304.06281}, 2023.
-
-\bibitem[Xu et~al.(2021)Xu, Liang, and Lan]{xu2021crpo}
-Tengyu Xu, Yingbin Liang, and Guanghui Lan.
-\newblock {CRPO}: A new approach for safe reinforcement learning with
-  convergence guarantee.
-\newblock In \emph{Proceedings of the 38th International Conference on Machine
-  Learning (ICML)}, volume 139 of \emph{PMLR}, 2021.
-
-\bibitem[Yang et~al.(2024)Yang, Anderson, and Chaudhuri]{yang2024carol}
-Chenxi Yang, Greg Anderson, and Swarat Chaudhuri.
-\newblock {CAROL}: Certifiably robust reinforcement learning through
-  model-based abstract interpretation.
-\newblock In \emph{IEEE Conference on Secure and Trustworthy Machine Learning
-  (SaTML)}, 2024.
-
-\bibitem[Yu et~al.(2022{\natexlab{a}})Yu, Velu, Vinitsky, Gao, Wang, Bayen, and
-  Wu]{yu2022mappo}
-Chao Yu, Akash Velu, Eugene Vinitsky, Jiaxuan Gao, Yu~Wang, Alexandre Bayen,
-  and Yi~Wu.
-\newblock The surprising effectiveness of {PPO} in cooperative multi-agent
-  games.
-\newblock In \emph{Advances in Neural Information Processing Systems (NeurIPS),
-  Datasets and Benchmarks Track}, 2022{\natexlab{a}}.
-
-\bibitem[Yu et~al.(2022{\natexlab{b}})Yu, Ma, Li, and Chen]{yu2022rcrl}
-Dongjie Yu, Haitong Ma, Shengbo Li, and Jianyu Chen.
-\newblock Reachability constrained reinforcement learning.
-\newblock In \emph{Proceedings of the 39th International Conference on Machine
-  Learning (ICML)}, volume 162 of \emph{PMLR}, pages 25636--25655,
-  2022{\natexlab{b}}.
-
-\bibitem[Zhang et~al.(2020{\natexlab{a}})Zhang, Chen, Xiao, Li, Liu, Boning,
-  and Hsieh]{zhang2020samdp}
-Huan Zhang, Hongge Chen, Chaowei Xiao, Bo~Li, Mingyan Liu, Duane Boning, and
-  Cho-Jui Hsieh.
-\newblock Robust deep reinforcement learning against adversarial perturbations
-  on state observations.
-\newblock In \emph{Advances in Neural Information Processing Systems
-  (NeurIPS)}, volume~33, 2020{\natexlab{a}}.
-
-\bibitem[Zhang et~al.(2025)Zhang, So, Garg, and Fan]{zhang2025gcbfplus}
-Songyuan Zhang, Oswin So, Kunal Garg, and Chuchu Fan.
-\newblock {GCBF+}: A neural graph control barrier function framework for
-  distributed safe multiagent control.
-\newblock \emph{IEEE Transactions on Robotics}, 41:\penalty0 1533--1552, 2025.
-\newblock \doi{10.1109/TRO.2025.3530348}.
-
-\bibitem[Zhang et~al.(2020{\natexlab{b}})Zhang, Vuong, and
-  Ross]{zhang2020focops}
-Yiming Zhang, Quan Vuong, and Keith~W. Ross.
-\newblock First order constrained optimization in policy space.
-\newblock In \emph{Advances in Neural Information Processing Systems
-  (NeurIPS)}, volume~33, 2020{\natexlab{b}}.
-
-\bibitem[Zhao et~al.(2023)Zhao, He, Chen, Wei, and Liu]{zhao2023statewise}
-Weiye Zhao, Tairan He, Rui Chen, Tianhao Wei, and Changliu Liu.
-\newblock State-wise safe reinforcement learning: A survey.
-\newblock In \emph{Proceedings of the 32nd International Joint Conference on
-  Artificial Intelligence (IJCAI)}, pages 6814--6822, 2023.
-\newblock \doi{10.24963/ijcai.2023/763}.
-
-\bibitem[Zhao et~al.(2024)Zhao, Chen, Sun, Wei, and Liu]{zhao2024scpo}
-Weiye Zhao, Rui Chen, Yifan Sun, Tianhao Wei, and Changliu Liu.
-\newblock State-wise constrained policy optimization.
-\newblock \emph{Transactions on Machine Learning Research}, 2024.
-
-\bibitem[Zhou et~al.(2019)Zhou, Tzoumas, Pappas, and
-  Tokekar]{zhou2019resilienttracking}
-Lifeng Zhou, Vasileios Tzoumas, George~J. Pappas, and Pratap Tokekar.
-\newblock Resilient active target tracking with multiple robots.
-\newblock \emph{IEEE Robotics and Automation Letters}, 4\penalty0 (1):\penalty0
-  129--136, 2019.
-
-\bibitem[Zhou et~al.(2022)Zhou, Tzoumas, Pappas, and
-  Tokekar]{zhou2022attackrobust}
-Lifeng Zhou, Vasileios Tzoumas, George~J. Pappas, and Pratap Tokekar.
-\newblock Distributed attack-robust submodular maximization for multirobot
-  planning.
-\newblock \emph{IEEE Transactions on Robotics}, 38\penalty0 (5):\penalty0
+% Generated by IEEEtran.bst, version: 1.14 (2015/08/26)
+\begin{thebibliography}{100}
+\providecommand{\url}[1]{#1}
+\csname url@samestyle\endcsname
+\providecommand{\newblock}{\relax}
+\providecommand{\bibinfo}[2]{#2}
+\providecommand{\BIBentrySTDinterwordspacing}{\spaceskip=0pt\relax}
+\providecommand{\BIBentryALTinterwordstretchfactor}{4}
+\providecommand{\BIBentryALTinterwordspacing}{\spaceskip=\fontdimen2\font plus
+\BIBentryALTinterwordstretchfactor\fontdimen3\font minus
+  \fontdimen4\font\relax}
+\providecommand{\BIBforeignlanguage}[2]{{%
+\expandafter\ifx\csname l@#1\endcsname\relax
+\typeout{** WARNING: IEEEtran.bst: No hyphenation pattern has been}%
+\typeout{** loaded for the language `#1'. Using the pattern for}%
+\typeout{** the default language instead.}%
+\else
+\language=\csname l@#1\endcsname
+\fi
+#2}}
+\providecommand{\BIBdecl}{\relax}
+\BIBdecl
+
+\bibitem{humphreys2008spoofer}
+T.~E. Humphreys, B.~M. Ledvina, M.~L. Psiaki, B.~W. O'Hanlon, and P.~M.
+  Kintner, ``Assessing the spoofing threat: Development of a portable {GPS}
+  civilian spoofer,'' in \emph{ION GNSS}, 2008.
+
+\bibitem{tippenhauer2011spoofing}
+N.~O. Tippenhauer, C.~P{\"o}pper, K.~B. Rasmussen, and S.~{\v{C}}apkun, ``On
+  the requirements for successful {GPS} spoofing attacks,'' in \emph{ACM
+  Conference on Computer and Communications Security (CCS)}, 2011.
+
+\bibitem{kerns2014capture}
+A.~J. Kerns, D.~P. Shepard, J.~A. Bhatti, and T.~E. Humphreys, ``Unmanned
+  aircraft capture and control via {GPS} spoofing,'' \emph{Journal of Field
+  Robotics}, vol.~31, no.~4, pp. 617--636, 2014.
+
+\bibitem{parentpaper}
+Anonymous, ``From wire to flight: A conditional mission-completion guarantee
+  for {UAVs},'' 2026, under review; artifact released with this submission.
+
+\bibitem{paperI}
+------, ``What authenticity costs in metres: A certified budget for
+  cryptography and sensing in {UAV} navigation,'' 2026, companion paper, under
+  review.
+
+\bibitem{paperII}
+------, ``{SoK}: The quantifier gap between certified robustness and
+  airworthiness assurance,'' 2026, companion paper, under review.
+
+\bibitem{huang2017adversarialpolicies}
+S.~Huang, N.~Papernot, I.~Goodfellow, Y.~Duan, and P.~Abbeel, ``Adversarial
+  attacks on neural network policies,'' in \emph{International Conference on
+  Learning Representations (ICLR), Workshop Track}, 2017.
+
+\bibitem{gleave2020adversarial}
+A.~Gleave, M.~Dennis, C.~Wild, N.~Kant, S.~Levine, and S.~Russell,
+  ``Adversarial policies: Attacking deep reinforcement learning,'' in
+  \emph{International Conference on Learning Representations (ICLR)}, 2020.
+
+\bibitem{kiourti2020trojdrl}
+P.~Kiourti, K.~Wardega, S.~Jha, and W.~Li, ``{TrojDRL}: Evaluation of backdoor
+  attacks on deep reinforcement learning,'' in \emph{Design Automation
+  Conference (DAC)}, 2020.
+
+\bibitem{wang2021backdoorl}
+L.~Wang, Z.~Javed, X.~Wu, W.~Guo, X.~Xing, and D.~Song, ``{BACKDOORL}: Backdoor
+  attack against competitive reinforcement learning,'' in \emph{International
+  Joint Conference on Artificial Intelligence (IJCAI)}, 2021.
+
+\bibitem{altman1999cmdp}
+E.~Altman, \emph{Constrained {M}arkov Decision Processes}.\hskip 1em plus 0.5em
+  minus 0.4em\relax Chapman \& Hall/CRC, 1999.
+
+\bibitem{achiam2017cpo}
+J.~Achiam, D.~Held, A.~Tamar, and P.~Abbeel, ``Constrained policy
+  optimization,'' in \emph{Proceedings of the 34th International Conference on
+  Machine Learning (ICML)}, ser. PMLR, vol.~70, 2017, pp. 22--31.
+
+\bibitem{stooke2020pid}
+A.~Stooke, J.~Achiam, and P.~Abbeel, ``Responsive safety in reinforcement
+  learning by {PID} {L}agrangian methods,'' in \emph{Proceedings of the 37th
+  International Conference on Machine Learning (ICML)}, ser. PMLR, vol. 119,
+  2020, pp. 9133--9143.
+
+\bibitem{gu2023macpo}
+S.~Gu, J.~G. Kuba, Y.~Chen, Y.~Du, L.~Yang, A.~Knoll, and Y.~Yang, ``Safe
+  multi-agent reinforcement learning for multi-robot control,''
+  \emph{Artificial Intelligence}, vol. 319, p. 103905, 2023.
+
+\bibitem{alshiekh2018shielding}
+M.~Alshiekh, R.~Bloem, R.~Ehlers, B.~K{\"o}nighofer, S.~Niekum, and U.~Topcu,
+  ``Safe reinforcement learning via shielding,'' in \emph{Proceedings of the
+  AAAI Conference on Artificial Intelligence}, vol.~32, no.~1, 2018, pp.
+  2669--2678.
+
+\bibitem{elsayedaly2021marlshield}
+I.~ElSayed-Aly, S.~Bharadwaj, C.~Amato, R.~Ehlers, U.~Topcu, and L.~Feng,
+  ``Safe multi-agent reinforcement learning via shielding,'' in
+  \emph{Proceedings of the 20th International Conference on Autonomous Agents
+  and Multiagent Systems (AAMAS)}, 2021, pp. 483--491.
+
+\bibitem{dalal2018safety}
+G.~Dalal, K.~Dvijotham, M.~Vecerik, T.~Hester, C.~Paduraru, and Y.~Tassa,
+  ``Safe exploration in continuous action spaces,'' \emph{arXiv preprint
+  arXiv:1801.08757}, 2018.
+
+\bibitem{ames2019cbf}
+A.~D. Ames, S.~Coogan, M.~Egerstedt, G.~Notomista, K.~Sreenath, and P.~Tabuada,
+  ``Control barrier functions: Theory and applications,'' in \emph{18th
+  European Control Conference (ECC)}, 2019, pp. 3420--3431.
+
+\bibitem{anderson1972planning}
+J.~P. Anderson, ``Computer security technology planning study,'' Electronic
+  Systems Division, Air Force Systems Command, Tech. Rep. ESD-TR-73-51, 1972.
+
+\bibitem{sha2001simplex}
+L.~Sha, ``Using simplicity to control complexity,'' \emph{IEEE Software},
+  vol.~18, no.~4, pp. 20--28, 2001.
+
+\bibitem{astm2021f3269}
+{ASTM International}, ``Standard practice for methods to safely bound behavior
+  of aircraft systems containing complex functions using run-time assurance,''
+  ASTM International, Tech. Rep. F3269-21, 2021.
+
+\bibitem{hammer1990difference}
+P.~L. Hammer, U.~N. Peled, and X.~Sun, ``Difference graphs,'' \emph{Discrete
+  Applied Mathematics}, vol.~28, no.~1, pp. 35--44, 1990.
+
+\bibitem{ore1955}
+O.~Ore, ``Graphs and matching theorems,'' \emph{Duke Mathematical Journal},
+  vol.~22, no.~4, pp. 625--639, 1955.
+
+\bibitem{laroche2014interdiction}
+P.~Laroche, F.~Marchetti, S.~Martin, and Z.~R{\'o}ka, ``Bipartite complete
+  matching vertex interdiction problem: Application to robust nurse
+  assignment,'' in \emph{International Conference on Control, Decision and
+  Information Technologies (CoDIT)}, 2014, pp. 182--187.
+
+\bibitem{krasowski2023provably}
+H.~Krasowski, J.~Thumm, M.~M{\"u}ller, L.~Sch{\"a}fer, X.~Wang, and M.~Althoff,
+  ``Provably safe reinforcement learning: Conceptual analysis, survey, and
+  benchmarking,'' \emph{Transactions on Machine Learning Research}, 2023.
+
+\bibitem{rtca2016do229}
+``Minimum operational performance standards for global positioning
+  system/satellite-based augmentation system airborne equipment,'' RTCA, Inc.,
+  Tech. Rep. DO-229E, 2016.
+
+\bibitem{mahadev1995threshold}
+N.~V.~R. Mahadev and U.~N. Peled, \emph{Threshold Graphs and Related Topics},
+  ser. Annals of Discrete Mathematics.\hskip 1em plus 0.5em minus 0.4em\relax
+  North-Holland, 1995, vol.~56.
+
+\bibitem{zhao2024scpo}
+W.~Zhao, R.~Chen, Y.~Sun, T.~Wei, and C.~Liu, ``State-wise constrained policy
+  optimization,'' \emph{Transactions on Machine Learning Research}, 2024.
+
+\bibitem{zhao2023statewise}
+W.~Zhao, T.~He, R.~Chen, T.~Wei, and C.~Liu, ``State-wise safe reinforcement
+  learning: A survey,'' in \emph{Proceedings of the 32nd International Joint
+  Conference on Artificial Intelligence (IJCAI)}, 2023, pp. 6814--6822.
+
+\bibitem{sootla2022saute}
+A.~Sootla, A.~I. Cowen-Rivers, T.~Jafferjee, Z.~Wang, D.~H. Mguni, J.~Wang, and
+  H.~Bou~Ammar, ``Saut\'e {RL}: Almost surely safe reinforcement learning using
+  state augmentation,'' in \emph{Proceedings of the 39th International
+  Conference on Machine Learning (ICML)}, ser. PMLR, vol. 162, 2022, pp.
+  20\,423--20\,443.
+
+\bibitem{mcmahan2024anytime}
+J.~McMahan and X.~Zhu, ``Anytime-constrained reinforcement learning,'' in
+  \emph{Proceedings of the 27th International Conference on Artificial
+  Intelligence and Statistics (AISTATS)}, ser. PMLR, vol. 238, 2024, pp.
+  4321--4329.
+
+\bibitem{cortes2004coverage}
+J.~Cort{\'e}s, S.~Mart{\'\i}nez, T.~Karata{\c{s}}, and F.~Bullo, ``Coverage
+  control for mobile sensing networks,'' \emph{IEEE Transactions on Robotics
+  and Automation}, vol.~20, no.~2, pp. 243--255, 2004.
+
+\bibitem{zhou2019resilienttracking}
+L.~Zhou, V.~Tzoumas, G.~J. Pappas, and P.~Tokekar, ``Resilient active target
+  tracking with multiple robots,'' \emph{IEEE Robotics and Automation Letters},
+  vol.~4, no.~1, pp. 129--136, 2019.
+
+\bibitem{zhou2022attackrobust}
+------, ``Distributed attack-robust submodular maximization for multirobot
+  planning,'' \emph{IEEE Transactions on Robotics}, vol.~38, no.~5, pp.
   3097--3112, 2022.
+
+\bibitem{markgraf2025actionprojection}
+H.~Markgraf, S.~Sawant, H.~Krasowski, L.~Sch{\"a}fer, S.~Gros, and M.~Althoff,
+  ``Safe reinforcement learning using action projection: Safeguard the policy
+  or the environment?'' \emph{Transactions on Machine Learning Research}, 2025,
+  arXiv:2509.12833.
+
+\bibitem{huang2022masking}
+S.~Huang and S.~Onta{\~n}{\'o}n, ``A closer look at invalid action masking in
+  policy gradient algorithms,'' in \emph{Proceedings of the International
+  FLAIRS Conference}, vol.~35, 2022.
+
+\bibitem{boutilier2018sas}
+C.~Boutilier, A.~Cohen, A.~Daniely, A.~Hassidim, Y.~Mansour, O.~Meshi,
+  M.~Mladenov, and D.~Schuurmans, ``Planning and learning with stochastic
+  action sets,'' in \emph{Proceedings of the 27th International Joint
+  Conference on Artificial Intelligence (IJCAI)}, 2018, pp. 4674--4682.
+
+\bibitem{leblanc2013wmsr}
+H.~J. LeBlanc, H.~Zhang, X.~Koutsoukos, and S.~Sundaram, ``Resilient asymptotic
+  consensus in robust networks,'' \emph{IEEE Journal on Selected Areas in
+  Communications}, vol.~31, no.~4, pp. 766--781, 2013.
+
+\bibitem{dolev1986approximate}
+D.~Dolev, N.~A. Lynch, S.~S. Pinter, E.~W. Stark, and W.~E. Weihl, ``Reaching
+  approximate agreement in the presence of faults,'' \emph{Journal of the ACM},
+  vol.~33, no.~3, pp. 499--516, 1986.
+
+\bibitem{clopper1934}
+C.~J. Clopper and E.~S. Pearson, ``The use of confidence or fiducial limits
+  illustrated in the case of the binomial,'' \emph{Biometrika}, vol.~26, no.~4,
+  pp. 404--413, 1934.
+
+\bibitem{hanley1983ruleofthree}
+J.~A. Hanley and A.~Lippman-Hand, ``If nothing goes wrong, is everything all
+  right? interpreting zero numerators,'' \emph{JAMA}, vol. 249, no.~13, pp.
+  1743--1745, 1983.
+
+\bibitem{jarus2019sora}
+``{JARUS} guidelines on specific operations risk assessment ({SORA}),'' Joint
+  Authorities for Rulemaking of Unmanned Systems, Tech. Rep. JAR-DEL-WG6-D.04,
+  Edition 2.0, 2019.
+
+\bibitem{hopcroft1973}
+J.~E. Hopcroft and R.~M. Karp, ``An $n^{5/2}$ algorithm for maximum matchings
+  in bipartite graphs,'' \emph{SIAM Journal on Computing}, vol.~2, no.~4, pp.
+  225--231, 1973.
+
+\bibitem{adjiashvili2017vulnerable}
+D.~Adjiashvili, V.~Bindewald, and D.~Michaels, ``Robust assignments with
+  vulnerable nodes,'' \emph{arXiv preprint arXiv:1703.06074}, 2017.
+
+\bibitem{schulman2017ppo}
+J.~Schulman, F.~Wolski, P.~Dhariwal, A.~Radford, and O.~Klimov, ``Proximal
+  policy optimization algorithms,'' \emph{arXiv preprint arXiv:1707.06347},
+  2017.
+
+\bibitem{yu2022mappo}
+C.~Yu, A.~Velu, E.~Vinitsky, J.~Gao, Y.~Wang, A.~Bayen, and Y.~Wu, ``The
+  surprising effectiveness of {PPO} in cooperative multi-agent games,'' in
+  \emph{Advances in Neural Information Processing Systems (NeurIPS), Datasets
+  and Benchmarks Track}, 2022.
+
+\bibitem{ray2019safetygym}
+A.~Ray, J.~Achiam, and D.~Amodei, ``Benchmarking safe exploration in deep
+  reinforcement learning,'' OpenAI, Tech. Rep., 2019.
+
+\bibitem{ji2023safetygymnasium}
+J.~Ji, B.~Zhang, J.~Zhou, X.~Pan, W.~Huang, R.~Sun, Y.~Geng, Y.~Zhong, J.~Dai,
+  and Y.~Yang, ``Safety-gymnasium: A unified safe reinforcement learning
+  benchmark,'' in \emph{Advances in Neural Information Processing Systems
+  (NeurIPS), Datasets and Benchmarks Track}, 2023.
+
+\bibitem{rashid2020qmix}
+T.~Rashid, M.~Samvelyan, C.~S. de~Witt, G.~Farquhar, J.~Foerster, and
+  S.~Whiteson, ``Monotonic value function factorisation for deep multi-agent
+  reinforcement learning,'' \emph{Journal of Machine Learning Research},
+  vol.~21, no. 178, pp. 1--51, 2020.
+
+\bibitem{choi2009cbba}
+H.-L. Choi, L.~Brunet, and J.~P. How, ``Consensus-based decentralized auctions
+  for robust task allocation,'' \emph{IEEE Transactions on Robotics}, vol.~25,
+  no.~4, pp. 912--926, 2009.
+
+\bibitem{agarwal2021precipice}
+R.~Agarwal, M.~Schwarzer, P.~S. Castro, A.~Courville, and M.~G. Bellemare,
+  ``Deep reinforcement learning at the edge of the statistical precipice,'' in
+  \emph{Advances in Neural Information Processing Systems (NeurIPS)}, vol.~34,
+  2021.
+
+\bibitem{whelan2020uavattack}
+J.~Whelan, T.~Sangarapillai, O.~Minawi, A.~Almehmadi, and K.~El-Khatib, ``{UAV}
+  attack dataset,'' IEEE Dataport, 2020.
+
+\bibitem{wu2022crop}
+F.~Wu, L.~Li, Z.~Huang, Y.~Vorobeychik, D.~Zhao, and B.~Li, ``{CROP}:
+  Certifying robust policies for reinforcement learning through functional
+  smoothing,'' in \emph{International Conference on Learning Representations
+  (ICLR)}, 2022.
+
+\bibitem{kumar2022policysmoothing}
+A.~Kumar, A.~Levine, and S.~Feizi, ``Policy smoothing for provably robust
+  reinforcement learning,'' in \emph{International Conference on Learning
+  Representations (ICLR)}, 2022.
+
+\bibitem{lamport1982byzantine}
+L.~Lamport, R.~Shostak, and M.~Pease, ``The {Byzantine} generals problem,''
+  \emph{ACM Transactions on Programming Languages and Systems}, vol.~4, no.~3,
+  pp. 382--401, 1982.
+
+\bibitem{gu2024review}
+S.~Gu, L.~Yang, Y.~Du, G.~Chen, F.~Walter, J.~Wang, and A.~Knoll, ``A review of
+  safe reinforcement learning: Methods, theories and applications,'' \emph{IEEE
+  Transactions on Pattern Analysis and Machine Intelligence}, 2024.
+
+\bibitem{wachi2024survey}
+A.~Wachi, X.~Shen, and Y.~Sui, ``A survey of constraint formulations in safe
+  reinforcement learning,'' in \emph{Proceedings of the 33rd International
+  Joint Conference on Artificial Intelligence (IJCAI)}, 2024.
+
+\bibitem{zhang2020focops}
+Y.~Zhang, Q.~Vuong, and K.~W. Ross, ``First order constrained optimization in
+  policy space,'' in \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, vol.~33, 2020.
+
+\bibitem{xu2021crpo}
+T.~Xu, Y.~Liang, and G.~Lan, ``{CRPO}: A new approach for safe reinforcement
+  learning with convergence guarantee,'' in \emph{Proceedings of the 38th
+  International Conference on Machine Learning (ICML)}, ser. PMLR, vol. 139,
+  2021.
+
+\bibitem{paternain2019zeroduality}
+S.~Paternain, L.~F.~O. Chamon, M.~Calvo-Fullana, and A.~Ribeiro, ``Constrained
+  reinforcement learning has zero duality gap,'' in \emph{Advances in Neural
+  Information Processing Systems (NeurIPS)}, vol.~32, 2019.
+
+\bibitem{mondal2024pdanpg}
+W.~U. Mondal and V.~Aggarwal, ``Sample-efficient constrained reinforcement
+  learning with general parameterization,'' in \emph{Advances in Neural
+  Information Processing Systems (NeurIPS)}, vol.~37, 2024, pp.
+  68\,380--68\,405.
+
+\bibitem{yu2022rcrl}
+D.~Yu, H.~Ma, S.~Li, and J.~Chen, ``Reachability constrained reinforcement
+  learning,'' in \emph{Proceedings of the 39th International Conference on
+  Machine Learning (ICML)}, ser. PMLR, vol. 162, 2022, pp. 25\,636--25\,655.
+
+\bibitem{mcmahan2024anytimemarl}
+J.~McMahan and X.~Zhu, ``Anytime-constrained multi-agent reinforcement
+  learning,'' \emph{arXiv preprint arXiv:2410.23637}, 2024.
+
+\bibitem{shi2023instantaneous}
+M.~Shi, Y.~Liang, and N.~Shroff, ``A near-optimal algorithm for safe
+  reinforcement learning under instantaneous hard constraints,'' in
+  \emph{Proceedings of the 40th International Conference on Machine Learning
+  (ICML)}, 2023.
+
+\bibitem{pham2018optlayer}
+T.-H. Pham, G.~De~Magistris, and R.~Tachibana, ``{OptLayer} -- practical
+  constrained optimization for deep reinforcement learning in the real world,''
+  in \emph{IEEE International Conference on Robotics and Automation (ICRA)},
+  2018.
+
+\bibitem{agrawal2019cvxpylayers}
+A.~Agrawal, B.~Amos, S.~Barratt, S.~Boyd, S.~Diamond, and J.~Z. Kolter,
+  ``Differentiable convex optimization layers,'' in \emph{Advances in Neural
+  Information Processing Systems (NeurIPS)}, vol.~32, 2019.
+
+\bibitem{gros2020projection}
+S.~Gros, M.~Zanon, and A.~Bemporad, ``Safe reinforcement learning via
+  projection on a safe set: How to achieve optimality?''
+  \emph{IFAC-PapersOnLine}, vol.~53, no.~2, pp. 8076--8081, 2020.
+
+\bibitem{xiao2023dynamicshield}
+W.~Xiao, Y.~Lyu, and J.~M. Dolan, ``Model-based dynamic shielding for safe and
+  efficient multi-agent reinforcement learning,'' \emph{arXiv preprint
+  arXiv:2304.06281}, 2023.
+
+\bibitem{cheng2019endtoend}
+R.~Cheng, G.~Orosz, R.~M. Murray, and J.~W. Burdick, ``End-to-end safe
+  reinforcement learning through barrier functions for safety-critical
+  continuous control tasks,'' in \emph{Proceedings of the AAAI Conference on
+  Artificial Intelligence}, vol.~33, 2019.
+
+\bibitem{qin2021macbf}
+Z.~Qin, K.~Zhang, Y.~Chen, J.~Chen, and C.~Fan, ``Learning safe multi-agent
+  control with decentralized neural barrier certificates,'' in
+  \emph{International Conference on Learning Representations (ICLR)}, 2021.
+
+\bibitem{zhang2025gcbfplus}
+S.~Zhang, O.~So, K.~Garg, and C.~Fan, ``{GCBF+}: A neural graph control barrier
+  function framework for distributed safe multiagent control,'' \emph{IEEE
+  Transactions on Robotics}, vol.~41, pp. 1533--1552, 2025.
+
+\bibitem{wabersich2021psf}
+K.~P. Wabersich and M.~N. Zeilinger, ``A predictive safety filter for
+  learning-based control of constrained nonlinear dynamical systems,''
+  \emph{Automatica}, vol. 129, p. 109597, 2021.
+
+\bibitem{hsu2024safetyfilter}
+K.-C. Hsu, H.~Hu, and J.~F. Fisac, ``The safety filter: A unified view of
+  safety-critical control in autonomous systems,'' \emph{Annual Review of
+  Control, Robotics, and Autonomous Systems}, vol.~7, pp. 47--72, 2024.
+
+\bibitem{bansal2017hj}
+S.~Bansal, M.~Chen, S.~Herbert, and C.~J. Tomlin, ``{H}amilton--{J}acobi
+  reachability: A brief overview and recent advances,'' in \emph{IEEE 56th
+  Conference on Decision and Control (CDC)}, 2017.
+
+\bibitem{ji2024omnisafe}
+J.~Ji, J.~Zhou, B.~Zhang, J.~Dai, X.~Pan, R.~Sun, W.~Huang, Y.~Geng, M.~Liu,
+  and Y.~Yang, ``{OmniSafe}: An infrastructure for accelerating safe
+  reinforcement learning research,'' \emph{Journal of Machine Learning
+  Research}, 2024.
+
+\bibitem{lowe2017maddpg}
+R.~Lowe, Y.~Wu, A.~Tamar, J.~Harb, P.~Abbeel, and I.~Mordatch, ``Multi-agent
+  actor-critic for mixed cooperative-competitive environments,'' in
+  \emph{Advances in Neural Information Processing Systems (NeurIPS)}, vol.~30,
+  2017.
+
+\bibitem{kuba2022happo}
+J.~G. Kuba, R.~Chen, M.~Wen, Y.~Wen, F.~Sun, J.~Wang, and Y.~Yang, ``Trust
+  region policy optimisation in multi-agent reinforcement learning,'' in
+  \emph{International Conference on Learning Representations (ICLR)}, 2022.
+
+\bibitem{yang2024carol}
+C.~Yang, G.~Anderson, and S.~Chaudhuri, ``{CAROL}: Certifiably robust
+  reinforcement learning through model-based abstract interpretation,'' in
+  \emph{IEEE Conference on Secure and Trustworthy Machine Learning (SaTML)},
+  2024.
+
+\bibitem{zhang2020samdp}
+H.~Zhang, H.~Chen, C.~Xiao, B.~Li, M.~Liu, D.~Boning, and C.-J. Hsieh, ``Robust
+  deep reinforcement learning against adversarial perturbations on state
+  observations,'' in \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, vol.~33, 2020.
+
+\bibitem{liu2023robustsafe}
+Z.~Liu, Z.~Guo, Z.~Cen, H.~Zhang, J.~Tan, B.~Li, and D.~Zhao, ``On the
+  robustness of safe reinforcement learning under observational
+  perturbations,'' in \emph{International Conference on Learning
+  Representations (ICLR)}, 2023.
+
+\bibitem{pinto2017rarl}
+L.~Pinto, J.~Davidson, R.~Sukthankar, and A.~Gupta, ``Robust adversarial
+  reinforcement learning,'' in \emph{Proceedings of the 34th International
+  Conference on Machine Learning (ICML)}, 2017.
+
+\bibitem{chandak2020changingactions}
+Y.~Chandak, G.~Theocharous, C.~Nota, and P.~S. Thomas, ``Lifelong learning with
+  a changing action set,'' in \emph{Proceedings of the AAAI Conference on
+  Artificial Intelligence}, vol.~34, 2020.
+
+\bibitem{kleinberg2010sleeping}
+R.~Kleinberg, A.~Niculescu-Mizil, and Y.~Sharma, ``Regret bounds for sleeping
+  experts and bandits,'' \emph{Machine Learning}, vol.~80, pp. 245--272, 2010.
+
+\bibitem{sinha2024ocoadv}
+A.~Sinha and R.~Vaze, ``Optimal algorithms for online convex optimization with
+  adversarial constraints,'' in \emph{Advances in Neural Information Processing
+  Systems (NeurIPS)}, vol.~37, 2024, pp. 41\,274--41\,302.
+
+\bibitem{mahdavi2012oco}
+M.~Mahdavi, R.~Jin, and T.~Yang, ``Trading regret for efficiency: Online convex
+  optimization with long term constraints,'' \emph{Journal of Machine Learning
+  Research}, vol.~13, pp. 2503--2528, 2012.
+
+\bibitem{hall1935}
+P.~Hall, ``On representatives of subsets,'' \emph{Journal of the London
+  Mathematical Society}, vol.~10, pp. 26--30, 1935.
+
+\bibitem{lovasz1986matching}
+L.~Lov{\'a}sz and M.~D. Plummer, \emph{Matching Theory}, ser. Annals of
+  Discrete Mathematics.\hskip 1em plus 0.5em minus 0.4em\relax North-Holland,
+  1986, vol.~29.
+
+\bibitem{glover1967convex}
+F.~Glover, ``Maximum matching in a convex bipartite graph,'' \emph{Naval
+  Research Logistics Quarterly}, vol.~14, no.~3, pp. 313--316, 1967.
+
+\bibitem{steiner1996linear}
+G.~Steiner and J.~S. Yeomans, ``A linear time algorithm for maximum matchings
+  in convex, bipartite graphs,'' \emph{Computers \& Mathematics with
+  Applications}, vol.~31, no.~12, pp. 91--96, 1996.
+
+\bibitem{brodal2007dynamic}
+G.~S. Brodal, L.~Georgiadis, K.~A. Hansen, and I.~Katriel, ``Dynamic matchings
+  in convex bipartite graphs,'' in \emph{Mathematical Foundations of Computer
+  Science (MFCS)}, ser. LNCS, vol. 4708, 2007, pp. 406--417.
+
+\bibitem{katriel2008weighted}
+I.~Katriel, ``Matchings in node-weighted convex bipartite graphs,''
+  \emph{INFORMS Journal on Computing}, vol.~20, no.~2, pp. 205--211, 2008.
+
+\bibitem{edmonds1965transversal}
+J.~Edmonds and D.~R. Fulkerson, ``Transversals and matroid partition,''
+  \emph{Journal of Research of the National Bureau of Standards}, vol. 69B, pp.
+  147--153, 1965.
+
+\bibitem{adjiashvili2016robust}
+D.~Adjiashvili, V.~Bindewald, and D.~Michaels, ``Robust assignments via ear
+  decompositions and randomized rounding,'' in \emph{43rd International
+  Colloquium on Automata, Languages, and Programming (ICALP)}, ser. LIPIcs,
+  vol.~55, 2016, pp. 71:1--71:14.
+
+\bibitem{hommelsheim2019edge}
+F.~Hommelsheim, M.~M{\"u}hlenthaler, and O.~Schaudt, ``How to secure matchings
+  against edge failures,'' in \emph{36th International Symposium on Theoretical
+  Aspects of Computer Science (STACS)}, ser. LIPIcs, 2019.
+
+\bibitem{bertsimas2004price}
+D.~Bertsimas and M.~Sim, ``The price of robustness,'' \emph{Operations
+  Research}, vol.~52, no.~1, pp. 35--53, 2004.
+
+\bibitem{gerkey2004taxonomy}
+B.~P. Gerkey and M.~J. Matari{\'c}, ``A formal analysis and taxonomy of task
+  allocation in multi-robot systems,'' \emph{The International Journal of
+  Robotics Research}, vol.~23, no.~9, pp. 939--954, 2004.
+
+\bibitem{korsah2013taxonomy}
+G.~A. Korsah, A.~Stentz, and M.~B. Dias, ``A comprehensive taxonomy for
+  multi-robot task allocation,'' \emph{The International Journal of Robotics
+  Research}, vol.~32, no.~12, pp. 1495--1512, 2013.
+
+\bibitem{bertsekas1988auction}
+D.~P. Bertsekas, ``The auction algorithm: A distributed relaxation method for
+  the assignment problem,'' \emph{Annals of Operations Research}, vol.~14, pp.
+  105--123, 1988.
+
+\bibitem{wang2020gat}
+Z.~Wang and M.~Gombolay, ``Learning scheduling policies for multi-robot
+  coordination with graph attention networks,'' \emph{IEEE Robotics and
+  Automation Letters}, vol.~5, no.~3, pp. 4509--4516, 2020.
+
+\bibitem{notomista2019heterogeneous}
+G.~Notomista, S.~Mayya, S.~Hutchinson, and M.~Egerstedt, ``An optimal task
+  allocation strategy for heterogeneous multi-robot systems,'' in \emph{18th
+  European Control Conference (ECC)}, 2019.
+
+\bibitem{tzoumas2017resilient}
+V.~Tzoumas, K.~Gatsis, A.~Jadbabaie, and G.~J. Pappas, ``Resilient monotone
+  submodular function maximization,'' in \emph{IEEE 56th Conference on Decision
+  and Control (CDC)}, 2017.
+
+\bibitem{easa2024mlguidance}
+``{EASA} concept paper: Guidance for level 1 \& 2 machine learning
+  applications, issue 02,'' European Union Aviation Safety Agency, Tech. Rep.,
+  2024.
 
 \end{thebibliography}
