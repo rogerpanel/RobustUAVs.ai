@@ -15,6 +15,8 @@ pypdf; the PDFs themselves are deleted after conversion.
 Outputs  corpus/fulltext/<cid>.txt            (not committed: third-party text)
          corpus/fulltext_status.csv           cid, stratum, order, status, source, chars
 Usage    python3 fetch_fulltext.py            (resumable: done cids are skipped)
+         python3 fetch_fulltext.py --iter 1   (snowballing iteration 1: corpus/snowball/iter1_*,
+                                               texts to corpus/fulltext_snowball1/)
 """
 from __future__ import annotations
 
@@ -87,16 +89,28 @@ def to_text(pdf: Path) -> str:
 
 
 def main() -> int:
+    import argparse
+    ap = argparse.ArgumentParser(); ap.add_argument("--iter", type=int, default=0)
+    it = ap.parse_args().iter
     csv.field_size_limit(10 ** 9)
+    global OUT
+    if it:
+        S = C / "snowball"
+        OUT = C / f"fulltext_snowball{it}"
+        cand = {r["cid"]: r for r in csv.DictReader((S / f"iter{it}_candidates.csv").open())}
+        sample = list(csv.DictReader((S / f"iter{it}_coding_sample.csv").open()))
+        strata = (f"snowball{it}",)
+        sp = S / f"iter{it}_fulltext_status.csv"
+    else:
+        cand = {r["cid"]: r for r in csv.DictReader((C / "candidates.csv").open())}
+        sample = list(csv.DictReader((C / "coding_sample.csv").open()))
+        strata = ("core", "remainder")
+        sp = C / "fulltext_status.csv"
     OUT.mkdir(exist_ok=True)
-    cand = {r["cid"]: r for r in csv.DictReader((C / "candidates.csv").open())}
-    sample = list(csv.DictReader((C / "coding_sample.csv").open()))
-    quota = {s: sum(1 for r in sample if r["stratum"] == s and r["in_first_300"] == "1")
-             for s in ("core", "remainder")}
-    sp = C / "fulltext_status.csv"
+    quota = {s: sum(1 for r in sample if r["stratum"] == s and r["in_first_300"] == "1") for s in strata}
     status = {r["cid"]: r for r in csv.DictReader(sp.open())} if sp.exists() else {}
     fields = ["cid", "stratum", "order", "status", "source", "chars"]
-    for stratum in ("core", "remainder"):
+    for stratum in strata:
         rows = sorted((r for r in sample if r["stratum"] == stratum), key=lambda r: int(r["order"]))
         got = sum(1 for r in rows if status.get(r["cid"], {}).get("status") == "retrieved")
         for r in rows:
