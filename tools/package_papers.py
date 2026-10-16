@@ -72,7 +72,7 @@ bash paperII/manuscript/build.sh
 ```
 
 `run_all.sh` regenerates every result and number macro from the committed codes (~30 s,
-Python 3 with numpy). The protocol and its five dated amendments are in
+Python 3 with numpy and scipy). The protocol and its six dated amendments are in
 `paperII/corpus/SCREENING_PROCEDURE.md`; the codebook in `paperII/corpus/CODEBOOK.md`.
 
 What is where (`paperII/corpus/`):
@@ -83,6 +83,9 @@ What is where (`paperII/corpus/`):
 - `codes_full_C1.csv`, `codes_full_C2.csv`: both coders' codes; `coding/adjudication_log.csv`:
   every adjudicated value with its rationale; `codes_full_final.csv`: the final codes.
 - `new_class_map.csv`: how guarantee types outside the pilot classes were grouped.
+- `snowball/iter{1,2,3}_*`: the three snowballing iterations (candidates, screening decisions,
+  coding samples, both coders' codes, final codes); `results/snowball_iter*_status.csv`: the
+  stop-rule check per iteration; `results/field_*.csv`: the expanded-field estimates (amendment 6).
 
 The search and snowballing (`experiments/search_corpus.py`, `run_s1_full.sh`,
 `run_snowball.sh`) need internet access and an OpenAlex API key, and are not needed to
