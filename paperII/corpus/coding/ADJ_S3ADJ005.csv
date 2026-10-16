@@ -1,0 +1,7 @@
+cid,field,value,rationale
+O3049066126,lifts,L_conc,"Population adversarial risk is reached from n i.i.d. training samples via probabilistic convergence (w.p. tending to 1): a concentration argument from samples."
+O3049066126,evidence,modelled,"Headline is an analytic asymptotic theorem under Gaussian linear data model (4); simulations only illustrate it, so analytical model is the strongest evidence."
+O3082124241,perturbation,distribution,"Process/measurement noise and inputs are i.i.d. Gaussian (unbounded); codebook 'disturbance' requires bounded additive term, so this is natural sampling variation."
+O3093887912,modality,E,"Bounded quantity is the policy value gap, an expected discounted return (Theorem 1, Lemma 1); the 1-delta sample confidence is captured by the L_conc lift."
+O3105933917,perturbation,distribution,"Noise xi, eta are i.i.d. Gaussian, not a bounded additive disturbance; the w.p. 1-delta bound ranges over sampling variation."
+O3107394536,class,CRL,"Coded guarantee is delta-safety: C-UCRL policy satisfies CMDP cost constraints at all steps during learning (Theorem 3), a safety certificate for RL, not merely regret."

@@ -1,0 +1,101 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,resolved_by
+O1678450113,1,,NEW:Fundamental adversarial robustness upper bounds,B,perception,pop,E,norm,none,S,modelled,ADJ
+O208468569,1,,ALG,B,control,pop,P,distribution,L_conc,S,modelled,ADJ
+O2592542720,1,,ALG,B,control,tr,A,none,none,S,modelled,C1=C2
+O2626994141,1,,ALG,B,estimation,pop,P,distribution,none,S,modelled,ADJ
+O2709553318,1,,GEN,B,perception,pop,P,distribution,L_conc,S,modelled,C1=C2
+O2733092977,1,,NEW:Finite-sample system-identification confidence regions,B,estimation,pop,P,distribution,L_conc,S,modelled,ADJ
+O2754770961,1,,ALG,B,control,tr,E,distribution,none,S,modelled,ADJ
+O2789122432,1,,GEN,B,perception,pop,E,distribution,none,S,modelled,C1=C2
+O2804470424,1,,ALG,B,control,pop,P,distribution,L_conc,S,modelled,C1=C2
+O2807299122,1,,GEN,B,perception,pop,P,distribution,L_conc,U,simulated,ADJ
+O2808958252,1,,ALG,B,estimation,pop,P,distribution,L_conc,S,modelled,C1=C2
+O2850875954,1,,ALG,B,control,tr,P,disturbance,L_conc;L_dyn,S,modelled,ADJ
+O2899434523,1,,GEN,B,perception,in,A,norm,none,S,modelled,C1=C2
+O2903088609,1,,GEN,B,estimation,pop,P,distribution,L_conc,S,modelled,C1=C2
+O2906427034,1,,GEN,B,perception,pop,P,distribution,L_conc,S,modelled,C1=C2
+O2910718468,1,,ALG,B,control,tr,A,none,none,S,modelled,ADJ
+O2913004909,1,,GEN,B,perception,pop,P,norm,L_conc,S,modelled,C1=C2
+O2914897181,0,Empirical adversarial-example detector; no formal or statistical guarantee on a stated object.,,,,,,,,,,C1=C2
+O2914920107,1,,ALG,B,control,pop,E,none,none,S,modelled,C1=C2
+O2939888044,1,,GEN,B,estimation,pop,P,disturbance,L_conc,SE,simulated,ADJ
+O2945007002,1,,NEW:robustness impossibility bound,B,perception,pop,P,norm,none,S,modelled,ADJ
+O2953334130,1,,RS,B,perception,in,Ac,norm,none,S,proof,C1=C2
+O2969946283,0,"Review restating results proved elsewhere (""proof is in (25)""); headline is an approximation-existence theorem over function classes, not a guarantee about a learned component; generalization part conjectural/cited.",,,,,,,,,,ADJ
+O2970241199,1,,GEN,B,estimation,pop,E,distribution,L_conc,S,modelled,ADJ
+O2970857099,1,,ALG,B,control,tr,E,disturbance,L_dyn,S,modelled,ADJ
+O2970864518,1,,NEW:Adversarial-risk lower bound (optimal transport),B,perception,pop,E,norm,none,S,modelled,ADJ
+O2974095354,1,,CP,B,estimation,pop,P,distribution,L_conc,SE,measured,ADJ
+O2996319422,1,,NEW:Network compression approximation bound,B,perception,in,Ac,none,none,S,modelled,ADJ
+O2998050631,1,,ALG,B,control,pop,P,distribution,L_conc,S,modelled,C1=C2
+O3007684729,1,,GEN,B,perception,pop,P,distribution,L_conc,S,modelled,ADJ
+O3009043942,1,,ALG,B,perception,pop,E,none,none,S,modelled,C1=C2
+O3012552881,0,"Dropout uncertainty estimates for molecular potentials; empirical, no guarantee, not an autonomous system.",,,,,,,,,,C1=C2
+O3023885224,0,"Empirical training/evaluation framework for NN-MPC; feasibility guarantee only cited, not proved.",,,,,,,,,,C1=C2
+O3033617045,1,,NEW:architectural equivariance,B,estimation,in,A,semantic,none,S,proof,ADJ
+O3034039613,1,,ALG,B,control,pop,P,distribution,L_conc,S,modelled,C1=C2
+O3034840734,1,,LUC,A,planning,op,P,distribution,L_conc;L_dyn,S,simulated,ADJ
+O3036320002,1,,GEN,B,estimation,pop,P,disturbance,L_conc,S,modelled,C1=C2
+O3036393886,1,,PACB,B,perception,pop,P,distribution,L_conc,S,simulated,C1=C2
+O3041070598,1,,ALG,B,control,tr,P,distribution,L_conc,S,modelled,ADJ
+O3046187644,1,,GEN,B,estimation,pop,E,distribution,L_conc,S,modelled,C1=C2
+O3049066126,1,,GEN,B,estimation,pop,E,norm,L_conc,S,modelled,ADJ
+O3082124241,1,,GEN,B,estimation,pop,P,distribution,L_conc,S,modelled,ADJ
+O3085735333,1,,GEN,B,control,pop,P,distribution,L_conc,S,modelled,C1=C2
+O3093887912,1,,GEN,B,control,pop,E,distribution,L_conc,S,modelled,ADJ
+O3100532071,1,,ALG,B,control,pop,P,distribution,L_conc,S,modelled,C1=C2
+O3105933917,1,,GEN,B,estimation,pop,P,distribution,L_conc,S,modelled,ADJ
+O3107394536,1,,CRL,B,control,pop,P,distribution,L_conc,S,modelled,ADJ
+O3111740750,1,,GEN,B,perception,pop,P,distribution,L_conc,S,modelled,C1=C2
+O3111808837,0,"Excluded: guarantee concerns regularized DeePC on Hankel data matrices of an LTI system; no learned (ML) component, power converter only.",,,,,,,,,,ADJ
+O3118640283,1,,CP,B,perception,pop,P,distribution,L_conc,S,measured,ADJ
+O3119404651,0,Scenario bound on sampled optimization for black-box switched linear systems; no learned component.,,,,,,,,,,C1=C2
+O3127643357,1,,CRL,B,control,pop,E,poisoning,none,S,proof,C1=C2
+O3129820173,1,,CP,B,estimation,pop,P,distribution,L_conc,S,simulated,ADJ
+O3130196891,1,,GEN,B,control,pop,E,distribution,L_conc,S,modelled,C1=C2
+O3134221632,0,Approximation-error bound for an uncertainty estimator; no guarantee on classifier behaviour or reliability.,,,,,,,,,,C1=C2
+O3135766489,1,,NEW:Differential-privacy poisoning certification,B,perception,in,E,poisoning,none,S,proof,ADJ
+O3141676405,1,,GEN,B,control,pop,P,distribution,L_conc,S,modelled,C1=C2
+O3167479696,1,,GEN,B,control,pop,P,distribution,L_conc,S,modelled,ADJ
+O3168158992,1,,GEN,B,perception,pop,P,poisoning,L_conc,S,modelled,C1=C2
+O3170402103,1,,GEN,B,control,pop,P,distribution,L_conc,S,modelled,C1=C2
+O3170764772,1,,NEW:Differential privacy of training,B,perception,in,A,poisoning,none,S,proof,ADJ
+O3173397148,1,,GEN,B,estimation,pop,P,distribution,L_conc,S,modelled,C1=C2
+O3174145161,1,,GEN,B,estimation,pop,P,distribution,L_conc,S,modelled,ADJ
+O3176644734,1,,ALG,B,control,tr,Ac,disturbance,none,S,modelled,C1=C2
+O3180887884,1,,GEN,B,control,pop,P,distribution,L_conc,S,modelled,C1=C2
+O3201284918,1,,LUC,B,control,tr,P,distribution,L_conc,S,simulated,ADJ
+O3202850137,1,,ALG,B,perception,pop,E,none,none,S,modelled,ADJ
+O3202898482,1,,GEN,B,control,pop,P,distribution,L_conc,S,modelled,C1=C2
+O3203873475,1,,ALG,B,perception,pop,E,poisoning,none,S,modelled,C1=C2
+O3205066395,1,,ALG,B,perception,pop,E,poisoning,none,S,modelled,C1=C2
+O3206607673,1,,GEN,B,control,pop,E,distribution,L_conc,S,modelled,C1=C2
+O3209195293,1,,ALG,B,estimation,pop,P,distribution,L_conc,S,modelled,ADJ
+O3212552393,1,,ALG,B,control,pop,E,distribution,L_conc,S,modelled,C1=C2
+O3214448813,1,,ALG,B,control,tr,P,distribution,L_conc,S,modelled,C1=C2
+O3216653328,1,,LIP,B,perception,in,A,norm,none,S,proof,C1=C2
+O4210444978,0,Thesis duplicating published papers; attack-focused; no guarantee in provided text.,,,,,,,,,,C1=C2
+O4281974197,1,,CP,B,estimation,pop,P,distribution,L_conc,S,measured,ADJ
+O4283791235,1,,GEN,B,control,pop,P,distribution,L_conc,S,modelled,ADJ
+O4286858784,1,,GEN,B,perception,pop,E,distribution,L_conc,S,modelled,ADJ
+O4313644371,1,,NEW:data-driven Lyapunov control synthesis,B,control,tr,A,disturbance,none,S,proof,ADJ
+O4315489011,0,Data-driven DRO for power scheduling; no guarantee on a learned component's behaviour.,,,,,,,,,,C1=C2
+O4318718938,1,,ALG,B,control,pop,E,distribution,L_conc,S,modelled,ADJ
+O4322576871,1,,NEW:Data-driven behavioural predictor error bound,B,estimation,tr,A,disturbance,L_dyn,SE,simulated,ADJ
+O4362577180,0,Thesis on RL poisoning attacks and empirical resilience mechanism; no formal guarantee stated.,,,,,,,,,,C1=C2
+O4382936152,0,"Linear-system data parametrization lemma; no learned component, no guarantee about learned model.",,,,,,,,,,C1=C2
+O4385127973,0,Plant-property identifiability from data (stabilizability); no learned component or learning guarantee.,,,,,,,,,,C1=C2
+O4386488250,1,,CP,B,estimation,pop,P,distribution,L_conc,S,modelled,C1=C2
+O4391607289,1,,CP,B,estimation,pop,P,distribution,L_conc,S,measured,ADJ
+O4391692590,1,,NEW:Output hard-constraint layer,B,perception,in,A,none,none,S,proof,ADJ
+O4392931599,1,,NEW:Approximation-error to cost-loss bound (learned MPC),B,control,in,A,none,none,S,modelled,ADJ
+O4399554721,1,,ALG,A,control,pop,P,distribution,L_conc;L_dyn,S,simulated,ADJ
+O4401358101,1,,ALG,B,control,tr,E,distribution,none,S,modelled,ADJ
+O4401726295,1,,ALG,B,estimation,pop,P,poisoning,L_conc,S,modelled,C1=C2
+O4403017775,1,,GEN,B,estimation,pop,E,distribution,none,S,modelled,C1=C2
+O4405182729,1,,GEN,B,estimation,pop,P,distribution,L_conc,S,modelled,C1=C2
+O4407949669,0,No learned component: Hankel-matrix data-driven SMPC; Theorem 7 proves equivalence to model-based SMPC. Excluded as guarantee about non-learned component.,,,,,,,,,,ADJ
+O4407950169,1,,LUC,B,control,tr,A,disturbance,L_dyn,S,simulated,C1=C2
+O4413924993,1,,RTA,A,control,op,A,none,L_mon,U,simulated,ADJ
+O4416251183,1,,RS,B,perception,in,Ac,norm,none,S,proof,C1=C2
+O7133189980,0,"Propositions 1-2 prove identifiability of the true FN-MDP causal graph (data-generating process), not a guarantee on the learned FN-VAE or policy; RL results empirical.",,,,,,,,,,ADJ

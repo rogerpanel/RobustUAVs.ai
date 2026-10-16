@@ -1,0 +1,5 @@
+cid,field,value,rationale
+O4401358101,perturbation,distribution,"Noise W_t, V_t is iid Gaussian (unbounded), not a bounded additive disturbance; codebook 'disturbance' requires bounded, so natural sampling variation = distribution."
+O4407949669,eligible,0,"No learned component: Hankel-matrix data-driven SMPC; Theorem 7 proves equivalence to model-based SMPC. Excluded as guarantee about non-learned component."
+O4413924993,assumption,U,"Main lift L_mon needs the fallback full MPC to be feasible/constraint-satisfying; the paper never states this; Lemma 1 concerns reduced-problem equivalence, not the monitor."
+O7133189980,eligible,0,"Propositions 1-2 prove identifiability of the true FN-MDP causal graph (data-generating process), not a guarantee on the learned FN-VAE or policy; RL results empirical."

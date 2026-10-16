@@ -1,0 +1,7 @@
+cid,field,value,rationale
+O2969946283,eligible,0,"Review restating results proved elsewhere (""proof is in (25)""); headline is an approximation-existence theorem over function classes, not a guarantee about a learned component; generalization part conjectural/cited."
+O2970241199,modality,E,"Theorem 1 bounds expected population risk (E over D and SGD) by OPT+eps; probability is over random initialization, not data distribution; E per codebook."
+O2970857099,lifts,L_dyn,"Lemma 5.1 carries surrogate policy regret to true trajectory cost via (kappa,gamma)-strong-stability contraction of the LDS plant model; matches L_dyn definition."
+O2970864518,class,NEW:Adversarial-risk lower bound (optimal transport),"Headline (abstract) is OT characterization of minimum adversarial 0-1 loss for any classifier, not a generalisation/sample-complexity bound; no classes.csv class fits."
+O2974095354,assumption,SE,"Exchangeability/consistency assumptions stated; held-out real-data tests (Table 1, Fig. 3) supply evidence of coverage, but no confidence level enters the guarantee."
+O2974095354,evidence,measured,"Strongest evidence: empirical coverage measured on real-world CRSP stock-return and CPS wage data (Sec. 5), beyond the analytical theorems."
