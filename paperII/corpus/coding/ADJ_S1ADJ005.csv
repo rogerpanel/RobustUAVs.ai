@@ -1,0 +1,11 @@
+cid,field,value,rationale
+O3125588313,assumption,SEC,"Scenario lift assumes i.i.d. uniform samples on the ball; K drawn samples supply evidence and confidence 1-eta enters the final PAC-model robustness claim."
+O3125588313,evidence,simulated,"Headline radii are sampled estimates (not sound proofs) on MNIST/CIFAR/ImageNet benchmark models with synthetic perturbations; codebook: simulated covers benchmark environments."
+O3132066662,scope,tr,"Expected regret over a bounded horizon T of one learning run; tr versus op is doubtful, so rule 6 picks the smaller scope."
+O3132066662,lifts,none,"Theorem 3 regret bound is proved directly; concentration is an internal proof step, not an argument carrying a guarantee to larger scope or modality."
+O3167942312,class,GEN,"Agreed scope pop matches the abstract's generalization and sample-complexity claim (Theorem 4, linear in dimension), a learning-theoretic bound, not PAC-Bayes."
+O3167942312,modality,P,"Theorem 4 holds with probability at least 1-delta over the training sample drawn from the data distribution: modality P."
+O3167942312,perturbation,distribution,"Generalization from empirical to underlying distribution covers natural sampling variation; codebook defines this as distribution."
+O3167942312,lifts,L_conc,"Concentration bound from n samples carries the empirical objective and gradient guarantee to the population: L_conc."
+O3168112450,eligible,0,"Proven headline claims are complexity and duality results for computing explanations (a non-learned explainer), not a robustness or safety guarantee about the decision tree."
+O3175104376,class,NEW:Structure-preserving learned dynamics,"Both coders propose the same NEW concept; energy conservation and SE(3) constraints by construction fit no classes.csv code."

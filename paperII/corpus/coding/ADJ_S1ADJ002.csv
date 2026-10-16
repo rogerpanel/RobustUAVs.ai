@@ -1,0 +1,6 @@
+cid,field,value,rationale
+O2913266441,evidence,modelled,"Headline Thm 3.1 is an analytical bound over all distributions and predictors; MNIST tightness check uses PGD attacks, not a certificate. Codebook: analytical model only."
+O2915008147,evidence,proof,"95%-confidence PAC-Bayes bound (<96.5% top-1) is computed on the actual compressed MobileNet from its measured effective size; a sound certificate on the actual model."
+O2924630351,assumption,S,"lifts=none, so code main modelling assumption: PLNN/ReLU network and general-position parameters are explicitly stated (Notations and Assumptions, Cor. 4.3) but not evidenced."
+O2955833779,eligible,0,"Supplied full text is a different paper (arXiv 1907.02509, validating heuristic explanations); the titled record's guarantee and its object cannot be identified from it."
+O2963582321,evidence,modelled,"Uniform-PAC Thm 4 is an analytical bound over all tabular episodic MDPs; not computed on a specific model, experiments only compare returns. Codebook: modelled."

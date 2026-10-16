@@ -1,0 +1,10 @@
+cid,field,value,rationale
+O2964164993,modality,Ac,"SPRT error bounds alpha,beta are over randomly generated model mutants, i.e. the certifier's own randomness, not the data distribution; Ac per modality definition."
+O2964164993,lifts,none,"SPRT confidence is the per-input certifier randomness already captured by Ac; no domain certificate checked by sampling (rule 3) nor lift to larger scope."
+O2964164993,evidence,simulated,"Headline detection rates come from MNIST/CIFAR10 benchmarks with attack-generated adversarial samples; benchmark evaluation, not real-world deployment data."
+O2970142535,scope,pop,"Guarantee bounds infinite-horizon average cost J = lim E over x0 and Gaussian noise wt, i.e. an expectation over a distribution of operations."
+O2970142535,perturbation,distribution,"Robust to parameter estimation error from finite data (statistical rate); noise wt is unbounded Gaussian, so not a bounded additive disturbance."
+O2972923195,class,OPREL,"Headline is post-training zero-failure randomized testing (Tempo bound N >= ln(1/beta)/ln(1/(1-eps))), an operational-testing failure probability, not learning-theoretic generalisation."
+O2982312195,assumption,S,"lifts=none: main modelling assumption, the l_inf perturbation set S(x,delta) and greedy decoding, is explicitly stated but not evidenced."
+O3007985585,scope,pop,"Lemma 1 bounds probability that a new i.i.d. trajectory (random initial condition and setpoint) satisfies criterion: a distribution of operations."
+O3007985585,assumption,S,"Main lift L_conc needs Assumption 3 (deterministic map, i.i.d. trajectories), stated but not evidenced; validation reached only about 90%."
