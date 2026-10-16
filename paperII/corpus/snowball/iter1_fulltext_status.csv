@@ -1,0 +1,190 @@
+cid,stratum,order,status,source,chars
+O4412374002,snowball1,1,not retrieved,,0
+O4402264222,snowball1,2,retrieved,https://arxiv.org/pdf/2408.09781,47871
+O3017318049,snowball1,3,retrieved,https://arxiv.org/pdf/2004.09477,121248
+O4407950103,snowball1,4,not retrieved,,0
+O3137096785,snowball1,5,retrieved,https://arxiv.org/pdf/2103.10834,117779
+O3200538762,snowball1,6,retrieved,https://ojs.aaai.org/index.php/ICAPS/article/download/19851/19610,69858
+O4392014868,snowball1,7,retrieved,https://biblio.ugent.be/publication/01HQ8SA9C23K1EA9A2QJRD96N7/file/01HQ8TBMP4RH3XA11WN4Y4MG4S.pdf,141802
+O2913266441,snowball1,8,retrieved,https://arxiv.org/pdf/1901.08573,101093
+O3037427931,snowball1,9,retrieved,https://arxiv.org/pdf/2006.04403,48522
+O4414871377,snowball1,10,not retrieved,,0
+O3032731803,snowball1,11,retrieved,https://arxiv.org/pdf/2001.03093,81478
+O2788084076,snowball1,12,retrieved,https://ojs.aaai.org/index.php/AAAI/article/download/12103/11962,53599
+O3199481125,snowball1,13,retrieved,http://export.arxiv.org/pdf/2109.05700,153071
+O7162258359,snowball1,14,not retrieved,,0
+O3128728543,snowball1,15,not retrieved,,0
+O3110140202,snowball1,16,not retrieved,,0
+O7151417700,snowball1,17,not retrieved,,0
+O3125588313,snowball1,18,retrieved,https://arxiv.org/pdf/2101.10102.pdf,113650
+O3167942312,snowball1,19,retrieved,https://arxiv.org/pdf/2106.07537,121312
+O7165777774,snowball1,20,not retrieved,,0
+O2899692219,snowball1,21,retrieved,http://export.arxiv.org/pdf/1811.02625,123651
+O3098493030,snowball1,22,retrieved,https://arxiv.org/pdf/2002.10312,80450
+O4281768543,snowball1,23,retrieved,https://arxiv.org/pdf/2206.02468,151677
+O3007985585,snowball1,24,retrieved,https://arxiv.org/pdf/1912.10360,68663
+O3107520776,snowball1,25,retrieved,https://arxiv.org/pdf/2011.14085,89771
+O2985970291,snowball1,26,not retrieved,,0
+O7152031926,snowball1,27,not retrieved,,0
+O4391302163,snowball1,28,not retrieved,,0
+O4366726364,snowball1,29,retrieved,https://link.springer.com/content/pdf/10.1007/s10009-023-00701-6.pdf,118527
+O3196583636,snowball1,30,retrieved,https://arxiv.org/pdf/2108.13179,50560
+O4379116938,snowball1,31,retrieved,https://arxiv.org/pdf/2303.05607,87950
+O2974147052,snowball1,32,not retrieved,,0
+O7164801066,snowball1,33,not retrieved,,0
+O4408519590,snowball1,34,not retrieved,,0
+O4415566647,snowball1,35,not retrieved,,0
+O7123342507,snowball1,36,not retrieved,,0
+O2970078867,snowball1,37,retrieved,https://www.aclweb.org/anthology/D19-1423.pdf,83963
+O7125828468,snowball1,38,not retrieved,,0
+O4367281679,snowball1,39,retrieved,https://arxiv.org/pdf/2211.00541,245106
+O3046508829,snowball1,40,not retrieved,,0
+O3169913694,snowball1,41,retrieved,https://link.springer.com/content/pdf/10.1007/978-3-030-81685-8_10.pdf,65404
+O3209973676,snowball1,42,retrieved,https://arxiv.org/pdf/2206.11900,79531
+O4386473750,snowball1,43,not retrieved,,0
+O4379165415,snowball1,44,retrieved,https://inria.hal.science/hal-04249934v1/file/nfm2023.pdf,72405
+O2955833779,snowball1,45,retrieved,https://arxiv.org/pdf/1907.02509,63706
+O2962710014,snowball1,46,retrieved,https://arxiv.org/pdf/1712.00673,53744
+O4404030404,snowball1,47,not retrieved,,0
+O3188794522,snowball1,48,retrieved,https://arxiv.org/pdf/2108.05266,65282
+O4385437649,snowball1,49,retrieved,https://proceedings.kr.org/2023/78/kr2023-0078-leofante-et-al.pdf,43586
+O4412353152,snowball1,50,not retrieved,,0
+O7203646292,snowball1,51,not retrieved,,0
+O4401507362,snowball1,52,not retrieved,,0
+O3167492897,snowball1,53,retrieved,https://arxiv.org/pdf/1905.12418,74954
+O3170270116,snowball1,54,retrieved,https://arxiv.org/pdf/2106.07108,69483
+O4385764189,snowball1,55,retrieved,https://www.ijcai.org/proceedings/2023/0779.pdf,44767
+O2799107510,snowball1,56,retrieved,https://arxiv.org/pdf/1804.09699,161104
+O4391549739,snowball1,57,not retrieved,,0
+O7140558218,snowball1,58,not retrieved,,0
+O4362659498,snowball1,59,not retrieved,,0
+O3186186433,snowball1,60,not retrieved,,0
+O7167845061,snowball1,61,not retrieved,,0
+O3170697419,snowball1,62,retrieved,https://arxiv.org/pdf/2106.04895,169637
+O2996308572,snowball1,63,not retrieved,,0
+O2981739602,snowball1,64,not retrieved,,0
+O2917325587,snowball1,65,retrieved,https://arxiv.org/pdf/1902.09866,75529
+O4315472062,snowball1,66,retrieved,https://arxiv.org/pdf/2203.12196,51411
+O3215435727,snowball1,67,retrieved,https://arxiv.org/pdf/2111.13171,114276
+O3088950981,snowball1,68,retrieved,https://arxiv.org/pdf/2009.12733,90424
+O4387123822,snowball1,69,not retrieved,,0
+O4200316166,snowball1,70,not retrieved,,0
+O4411936039,snowball1,71,retrieved,https://arxiv.org/pdf/2405.18251,158282
+O2955171822,snowball1,72,not retrieved,,0
+O3033623677,snowball1,73,not retrieved,,0
+O3205094558,snowball1,74,retrieved,https://arxiv.org/pdf/2106.01350,90054
+O3168112450,snowball1,75,retrieved,https://arxiv.org/pdf/2106.00546,54372
+O7165766273,snowball1,76,not retrieved,,0
+O2852179785,snowball1,77,retrieved,https://www.ijcai.org/proceedings/2018/0811.pdf,36829
+O4379794400,snowball1,78,not retrieved,,0
+O3158016940,snowball1,79,not retrieved,,0
+O3037593164,snowball1,80,retrieved,https://arxiv.org/pdf/2003.08910,48723
+O3025114349,snowball1,81,retrieved,https://arxiv.org/pdf/2005.07073,56707
+O7168543923,snowball1,82,not retrieved,,0
+O2903240769,snowball1,83,not retrieved,,0
+O3124533198,snowball1,84,retrieved,https://arxiv.org/pdf/2101.05844,202260
+O2912816250,snowball1,85,retrieved,https://arxiv.org/pdf/1902.05983,32700
+O4390534955,snowball1,86,not retrieved,,0
+O7203733420,snowball1,87,not retrieved,,0
+O4323026894,snowball1,88,retrieved,https://arxiv.org/pdf/2212.03287,27577
+O2760733685,snowball1,89,retrieved,https://arxiv.org/pdf/1709.09130,47005
+O2616305530,snowball1,90,retrieved,https://arxiv.org/pdf/1705.05394,66797
+O4408445823,snowball1,91,not retrieved,,0
+O3100287144,snowball1,92,retrieved,https://arxiv.org/pdf/2002.09025,105716
+O2995764727,snowball1,93,not retrieved,,0
+O4205490748,snowball1,94,retrieved,https://arxiv.org/pdf/2010.08036,97784
+O4407320452,snowball1,95,not retrieved,,0
+O2531965955,snowball1,96,retrieved,https://arxiv.org/pdf/1610.06534,80810
+O3029692613,snowball1,97,retrieved,http://export.arxiv.org/pdf/2005.13300,76869
+O4225417590,snowball1,98,not retrieved,,0
+O7152042972,snowball1,99,not retrieved,,0
+O2964164993,snowball1,100,retrieved,https://arxiv.org/pdf/1812.05793,101298
+O4292482260,snowball1,101,retrieved,https://link.springer.com/content/pdf/10.1007/s10849-022-09377-8.pdf,78593
+O2998161546,snowball1,102,retrieved,https://ojs.aaai.org/index.php/AAAI/article/download/6105/5961,72161
+O3116226780,snowball1,103,not retrieved,,0
+O4306928732,snowball1,104,not retrieved,,0
+O4379193103,snowball1,105,retrieved,https://easychair.org/publications/open/Qw1c,77437
+O3132066662,snowball1,106,retrieved,http://export.arxiv.org/pdf/2102.07711,155540
+O3118738365,snowball1,107,retrieved,https://arxiv.org/pdf/2006.15473,73474
+O4390187823,snowball1,108,not retrieved,,0
+O4379256329,snowball1,109,retrieved,https://arxiv.org/pdf/2306.00603,191145
+O7123348845,snowball1,110,retrieved,https://arxiv.org/pdf/2505.03346,64646
+O4399732060,snowball1,111,not retrieved,,0
+O3173645038,snowball1,112,retrieved,https://arxiv.org/pdf/2008.12332,120933
+O3114209678,snowball1,113,not retrieved,,0
+O4384345675,snowball1,114,retrieved,https://ieeexplore.ieee.org/ielx7/10172484/10172342/10172764.pdf,128278
+O3034746922,snowball1,115,retrieved,https://arxiv.org/pdf/2006.09040,70012
+O2785755647,snowball1,116,retrieved,https://arxiv.org/pdf/1802.04034,67852
+O4387171857,snowball1,117,not retrieved,,0
+O7166561521,snowball1,118,not retrieved,,0
+O4391020353,snowball1,119,not retrieved,,0
+O3021481267,snowball1,120,retrieved,https://arxiv.org/pdf/2005.03597,92647
+O4413907679,snowball1,121,not retrieved,,0
+O2798865883,snowball1,122,not retrieved,,0
+O2970884920,snowball1,123,retrieved,https://arxiv.org/pdf/1908.11071,104184
+O4376561457,snowball1,124,retrieved,https://www.ijcai.org/proceedings/2023/0346.pdf,63769
+O4406795208,snowball1,125,retrieved,https://arxiv.org/pdf/2409.15792,98293
+O3007108375,snowball1,126,not retrieved,,0
+O2970142535,snowball1,127,retrieved,https://arxiv.org/pdf/1902.07826,117159
+O7131065791,snowball1,128,not retrieved,,0
+O2963496101,snowball1,129,retrieved,https://arxiv.org/pdf/1711.00851,137257
+O4400151989,snowball1,130,not retrieved,,0
+O3216360614,snowball1,131,not retrieved,,0
+O2915008147,snowball1,132,retrieved,https://arxiv.org/pdf/1804.05862,65308
+O4409311673,snowball1,133,retrieved,https://arxiv.org/pdf/2502.16519,152464
+O2887532679,snowball1,134,not retrieved,,0
+O3130461065,snowball1,135,retrieved,https://arxiv.org/pdf/2102.09479,95953
+O7216032540,snowball1,136,not retrieved,,0
+O3010082790,snowball1,137,retrieved,https://arxiv.org/pdf/2003.01908,140445
+O7133232065,snowball1,138,retrieved,https://arxiv.org/pdf/2208.05740,106744
+O4382935871,snowball1,139,not retrieved,,0
+O2972923195,snowball1,140,retrieved,https://arxiv.org/pdf/1906.08257,52449
+O4311106646,snowball1,141,not retrieved,,0
+O3109216345,snowball1,142,retrieved,https://arxiv.org/pdf/2011.12362,82133
+O7152458725,snowball1,143,not retrieved,,0
+O3045990532,snowball1,144,not retrieved,,0
+O4391055309,snowball1,145,retrieved,https://arxiv.org/pdf/2206.03482,87636
+O2909765152,snowball1,146,not retrieved,,0
+O2943722115,snowball1,147,retrieved,http://export.arxiv.org/pdf/1904.13215,106259
+O3175104376,snowball1,148,retrieved,https://doi.org/10.15607/rss.2021.xvii.086,147925
+O2946912408,snowball1,149,retrieved,https://arxiv.org/pdf/1906.00423,98723
+O4382936258,snowball1,150,not retrieved,,0
+O4392555359,snowball1,151,retrieved,https://arxiv.org/pdf/2309.06166,148613
+O3115737827,snowball1,152,not retrieved,,0
+O3120233333,snowball1,153,not retrieved,,0
+O2952395507,snowball1,154,retrieved,https://arxiv.org/pdf/1906.05819,58694
+O4287075774,snowball1,155,retrieved,https://drops.dagstuhl.de/storage/00lipics/lipics-vol251-itcs2023/LIPIcs.ITCS.2023.41/LIPIcs.ITCS.2023.41.pdf,83477
+O4401159822,snowball1,156,retrieved,https://hal.science/hal-04662536/document,39812
+O2964433888,snowball1,157,not retrieved,,0
+O4388483784,snowball1,158,retrieved,https://arxiv.org/pdf/2308.03330,124854
+O7162461277,snowball1,159,not retrieved,,0
+O7203790979,snowball1,160,not retrieved,,0
+O3046328964,snowball1,161,not retrieved,,0
+O3183838078,snowball1,162,retrieved,https://arxiv.org/pdf/2107.12855,171482
+O4312626912,snowball1,163,retrieved,https://arxiv.org/pdf/2208.03160,69682
+O4409356722,snowball1,164,not retrieved,,0
+O2914473478,snowball1,165,not retrieved,,0
+O2753542656,snowball1,166,not retrieved,,0
+O3034215083,snowball1,167,not retrieved,,0
+O3209343599,snowball1,168,retrieved,https://arxiv.org/pdf/2110.14120,71196
+O7165518715,snowball1,169,not retrieved,,0
+O3182959332,snowball1,170,retrieved,https://arxiv.org/pdf/2107.06379,137713
+O2963582321,snowball1,171,retrieved,https://arxiv.org/pdf/1703.07710,192455
+O4251113929,snowball1,172,not retrieved,,0
+O3168586460,snowball1,173,retrieved,https://aclanthology.org/2021.naacl-main.87.pdf,67274
+O3190946860,snowball1,174,not retrieved,,0
+O7160661670,snowball1,175,not retrieved,,0
+O3171412022,snowball1,176,not retrieved,,0
+O4401504178,snowball1,177,not retrieved,,0
+O4390873449,snowball1,178,retrieved,https://arxiv.org/pdf/2308.05985,115096
+O3106612012,snowball1,179,retrieved,https://arxiv.org/pdf/2008.01913,72844
+O7202027264,snowball1,180,not retrieved,,0
+O4415549797,snowball1,181,retrieved,https://inria.hal.science/hal-05229564/document,74249
+O2982312195,snowball1,182,retrieved,https://arxiv.org/pdf/1904.12004,86555
+O7123346961,snowball1,183,not retrieved,,0
+O3201426548,snowball1,184,not retrieved,,0
+O4413907662,snowball1,185,not retrieved,,0
+O2924630351,snowball1,186,retrieved,https://arxiv.org/pdf/1903.08778,89037
+O4385764466,snowball1,187,retrieved,https://www.ijcai.org/proceedings/2023/0605.pdf,92553
+O4389076377,snowball1,188,not retrieved,,0
+O4408392785,snowball1,189,retrieved,https://arxiv.org/pdf/2411.02075,100853
