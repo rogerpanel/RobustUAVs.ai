@@ -1,0 +1,26 @@
+[07:43:29] theta = 0.2064 s (calibrated for the SITL receiver; parent 0.178 s)
+/home/deploy/paper3-work/paperIII/experiments/r4_sitl_fleet.py:129: FutureWarning: The 'mavsdk' package has been renamed to 'mavsdk-grpc'. This is the last release of the gRPC wrapper under the 'mavsdk' name: that name now refers to the native MAVSDK binding, which has a different API.
+  To carry on with this API, install 'mavsdk-grpc' and use 'import mavsdk_grpc as mavsdk'. The code is identical, development continues there (including releases for MAVSDK v4), and it installs under a separate import name so it cannot collide with the native binding.
+  To freeze instead, pin 'mavsdk<4' (no further updates).
+  To migrate, see https://mavsdk.mavlink.io/main/en/python/migration.html
+  from mavsdk import System
+[07:43:30] vehicle 0: connected
+[07:43:31] vehicle 1: connected
+[07:43:32] vehicle 2: connected
+[07:43:33] vehicle 3: connected
+[07:43:34] vehicle 4: connected
+[07:43:35] vehicle 5: connected
+[07:43:35] vehicle 3: armed, offboard started
+[07:43:36] vehicle 5: armed, offboard started
+[07:43:36] vehicle 2: armed, offboard started
+[07:43:36] vehicle 0: armed, offboard started
+[07:43:41] vehicle 4: armed, offboard started
+[07:43:42] vehicle 1: armed, offboard started
+[07:43:52] rate 5 Hz: flying 240 s
+[07:47:52] rate 5 Hz: done, 6636 rows
+[07:47:52] {'rate_hz': 5.0, 'agent_epochs': 6630, 'held_epochs': 3315, 'executed_violations': 0, 'exposure_total': 0, 'exposure_without_jump': 0, 'certified_coverage': 0.45429864253393665, 'provenance': 'sitl'}
+[07:47:52] rate 2 Hz: flying 240 s
+[07:51:52] rate 2 Hz: done, 2694 rows
+[07:51:52] {'rate_hz': 2.0, 'agent_epochs': 2688, 'held_epochs': 1344, 'executed_violations': 0, 'exposure_total': 0, 'exposure_without_jump': 0, 'certified_coverage': 0.47693452380952384, 'provenance': 'sitl'}
+[07:51:52] {'rate_hz': 5.0, 'agent_epochs': 6630, 'held_epochs': 3315, 'executed_violations': 0, 'exposure_total': 0, 'exposure_without_jump': 0, 'certified_coverage': 0.45429864253393665, 'provenance': 'sitl'}
+[07:51:52] landed; mavsdk_server processes stopped

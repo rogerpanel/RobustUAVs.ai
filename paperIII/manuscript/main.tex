@@ -109,9 +109,11 @@ coverage at deployment. A classical consensus auction under the same monitor out
 every learned allocator: the security guarantee comes from the monitor, not from learning.
 Closed-loop PX4 flight with a ground-truth oracle exposes the one point where the
 certificate premise fails, GNSS reacquisition: the estimate lagged the returning fix by up
-to \nRfPeakErr\,m, at a moment a jammer chooses. In a pre-registered fresh run, measuring
-staleness at the estimator removed every metre-scale violation (worst excess \nRbRecvExcess\ to
-\nRbLatExcess\,m) but not the last centimetres, which trace to the benign floor's calibration.
+to \nRfPeakErr\,m, at a moment a jammer chooses. Two pre-registered fresh runs isolate a
+two-part rule: measure staleness at the estimator, which removes every metre-scale violation,
+and calibrate the benign floor for the receiver in use. With both, the certificate held on all
+\nRcSamples\ checked samples, including a reacquisition where the receiver-based certificate was
+off by \nRcRecvExcess\,m.
 \end{abstract}
 
 % =====================================================================
@@ -193,9 +195,9 @@ composition makes possible.
 \item \textbf{A closed-loop test of the premise} (\cref{sec:rq8}). Software-in-the-loop PX4
   flight with a ground-truth oracle finds the one point at which a sound-looking certificate
   stops being sound, GNSS reacquisition, where the estimate lags the fix by up to \nRfPeakErr\,m.
-  A jammer controls when that window opens. A pre-registered rerun shows that estimator-sourced
-  staleness removes the metre-scale violations, and that the residual comes from the floor's
-  calibration.
+  A jammer controls when that window opens. Two pre-registered reruns establish a two-part
+  design rule, estimator-sourced staleness and a receiver-calibrated floor, under which the
+  certificate held on every sample of a fresh flight.
 \end{enumerate}
 
 % =====================================================================
@@ -989,23 +991,26 @@ theorem.
 \emph{Design rule:} measure staleness at the estimator, not at the receiver, i.e.\ hold
 $\rho_i$ at its pre-reacquisition value until the estimator has fused the fix.
 We implemented the rule as a latch and released it once the estimate agreed with the fix to
-within the floor on three consecutive fixes, using on-board signals only. We then tested it in a
-second run whose rule, outage schedule and pass criterion were committed before the flight:
-fresh outages on other aircraft, all constants unchanged, and zero violations within 10\,s of a
-reacquisition required. The test was informative. On the same flights the receiver certificate
-failed again (\nRbReceiver\ violations, error \nRbRecvErr\,m against $\rho_i<1$\,m), so the
-gap replicates. The latch removed every metre-scale violation, cutting the worst excess from
-\nRbRecvExcess\,m to \nRbLatExcess\,m, at the cost of a raised $\rho_i$ in \nRbLatchEpochs\ of
-\nRbEpochs\ epochs. It still fails the pre-registered criterion: \nRbPrimary\ violations
-remain, all \nRbLatSinceMin--\nRbLatSinceMax\,s after a fix returned, with errors of at most
-\nRbLatErr\,m. They arise after release: the estimate was within the floor of the fix yet up to
-\nRbLatErr\,m from the truth, so the release test inherits the floor's calibration. The
-lesson has two parts: a sound certificate needs staleness from the estimator, and a benign floor
-calibrated for the receiver in use. The replayed traces of R3 already measure staleness at the
-estimator, so their results stand.
+within the floor on three consecutive fixes, using on-board signals only. A second run, with
+rule, fresh outage schedule and zero-violation criterion committed before the flight, failed
+that criterion by centimetres. The receiver certificate failed again (excess \nRbRecvExcess\,m),
+and the latch cut the worst excess to \nRbLatExcess\,m, but \nRbPrimary\ violations remained
+\nRbLatSinceMin--\nRbLatSinceMax\,s after release: the release test inherits the floor's
+calibration, and the floor's $\theta$ had been measured on the parent's hardware receiver.
 
-Run details and caveats (spoofing not exercised, a failsafe landing, a timestamp bug, one
-aircraft without GNSS in the rerun) are in \cref{app:sitl}.
+\emph{The two-part rule, tested.} A sound certificate therefore needs staleness from the
+estimator \emph{and} a benign floor calibrated for the receiver in use. A third pre-registered
+run tested both. The floor was recalibrated by the parent's own definition, the largest benign
+residual, on the \nRcCalLogs\ logs of the two earlier runs only ($\theta=\nRcTheta$\,s, floor
+\nRcFloor\,m), and the outages moved again. The receiver certificate failed \nRcReceiver\ times
+within a second of a fix returning (excess up to \nRcRecvExcess\,m), so the test was
+informative. The two-part rule passed: \nRcPrimary\ violations of the latched certificate over
+\nRcSamples\ samples and \nRcReacq\ reacquisitions, at the cost of a raised $\rho_i$ in
+\nRcLatchEpochs\ of \nRcEpochs\ epochs. One simulator, six aircraft and one run show the rule
+sufficient on these flights, not in general. The replayed traces of R3
+already measure staleness at the estimator, so their results stand.
+
+Run details and caveats are in \cref{app:sitl}.
 
 % =====================================================================
 \section{Related Work}
@@ -1118,10 +1123,8 @@ obligations O1--O2, which we show can fail.
   coverage comparisons depend on the budget, under which an auction beat every learned allocator.
 \item \emph{Simulation.} The learning study runs in simulation. Measured traces replace the
   synthetic jamming onsets in one variant (R3), and closed-loop flight is software in the
-  loop with one simulator and six aircraft (\cref{sec:rq8}), not hardware. The design rule
-  of \cref{sec:rq8} failed its pre-registered zero-violation test by centimetres, and a
-  recalibrated floor has not yet been tested. The relay channel's onset rate remains an
-  assumption.
+  loop with one simulator and six aircraft (\cref{sec:rq8}); its floor must be recalibrated for
+  any other receiver. The relay channel's onset rate remains an assumption.
 \item \emph{Scalar certificates only.} Vector certificates lose the closed forms
   (\cref{rem:frontier}).
 \end{itemize}
@@ -1312,6 +1315,17 @@ certificate grew without bound and it held \nRbNoFixHeld\ tasks, so its outage y
 reacquisition. Both certificates also show \nRbFloorViol\ benign-floor exceedances of at most
 \nRbFloorExcessCm\,cm away from any reacquisition, the same calibration effect as in R4. No
 aircraft was grounded, and no negative staleness occurred.
+
+\emph{Pre-registered third run (R4c).} The protocol fixed the calibration rule (benign samples:
+fresh fix, more than 10\,s after any reacquisition; $\theta$ the largest benign residual, no
+margin), the latch, a third outage schedule and the zero-violation criterion over all samples.
+The calibration was computed once, before any R4c flight, and committed. A first attempt
+aborted before flight when PX4 denied arming one aircraft; it collected no data and is released
+with the artifact, and the repeat added arming retries and reused the committed calibration.
+Over the repeat, the monitor executed \nRcExecViol\ infeasible assignments, certified coverage
+was \nRcCovFive\% at 5\,Hz and \nRcCovTwo\% at 2\,Hz, every aircraft kept GNSS outside its
+scheduled outage, and the receiver certificate's \nRcReceiver\ violations fell in
+\nRcRecvEpisodes\ episodes on one aircraft. Spoofing was again not exercised.
 
 % =====================================================================
 \section{Constants and Provenance}

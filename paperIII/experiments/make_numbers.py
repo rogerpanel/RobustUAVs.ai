@@ -649,10 +649,30 @@ def r4b_sitl(m):
     m["RbNoFixHeld"] = a["vehicles_without_fix_held"]
 
 
+def r4c_sitl(m):
+    """R4c: pre-registered test of the two-part rule (latch + floor calibrated for the SITL receiver)."""
+    a = {r["metric"]: r["value"] for r in rd("r4c_analysis.csv")}
+    if not a:
+        return
+    m["RcPrimary"] = a["primary_latched_transient"]; m["RcLatAll"] = a["latched_all"]
+    m["RcReceiver"] = a["receiver_transient"]; m["RcVerdict"] = a["verdict"]
+    m["RcReacq"] = a["reacquisitions"]; m["RcSamples"] = tex_int(a["samples_checked"])
+    m["RcTheta"] = f(a["theta_sitl_s"], 3); m["RcFloor"] = f(a["floor_sitl_m"], 2)
+    m["RcCalSamples"] = tex_int(a["calibration_samples"]); m["RcCalLogs"] = a["calibration_logs"]
+    m["RcRecvErr"] = f(a["receiver_transient_peak_err_m"], 1)
+    m["RcRecvExcess"] = f(a["receiver_transient_peak_excess_m"], 1)
+    m["RcRecvEpisodes"] = a["receiver_episodes"]
+    m["RcRecvFloor"] = a["receiver_floor_violations"]; m["RcLatFloor"] = a["latched_floor_violations"]
+    m["RcEpochs"] = tex_int(a["agent_epochs"]); m["RcLatchEpochs"] = a["latch_epochs"]
+    m["RcExecViol"] = tex_int(int(a["executed_violations_5hz"]) + int(a["executed_violations_2hz"]))
+    m["RcCovFive"] = f(100 * float(a["coverage_5hz"]), 1); m["RcCovTwo"] = f(100 * float(a["coverage_2hz"]), 1)
+
+
 def extended(m):
     r3_traces(m)
     r4_sitl(m)
     r4b_sitl(m)
+    r4c_sitl(m)
     mn = rd("e6_main.csv")
     if mn:
         r2_table(m, {r["method"]: r for r in mn})

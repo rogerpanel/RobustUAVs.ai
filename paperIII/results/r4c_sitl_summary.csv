@@ -1,0 +1,3 @@
+rate_hz,agent_epochs,held_epochs,executed_violations,exposure_total,exposure_without_jump,certified_coverage,provenance
+2.0,2688,1344,0,0,0,0.47693452380952384,sitl
+5.0,6630,3315,0,0,0,0.45429864253393665,sitl

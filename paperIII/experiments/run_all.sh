@@ -15,5 +15,6 @@ python3 e6_aggregate.py || echo "no MARL runs yet"
 python3 export_figdata.py
 python3 r4_analysis.py > /dev/null || echo "no R4 SITL results yet"   # RQ8, from the committed SITL run
 python3 r4b_analysis.py > /dev/null || echo "no R4b results yet"     # RQ8, pre-registered test (R4B_PROTOCOL.md)
+python3 r4b_analysis.py --run r4c > /dev/null || echo "no R4c results yet"   # RQ8, pre-registered test (R4C_PROTOCOL.md)
 python3 make_numbers.py
 echo "Paper III results regenerated (results/, manuscript/figdata/, manuscript/numbers.tex)"
