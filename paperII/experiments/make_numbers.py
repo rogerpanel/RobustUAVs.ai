@@ -143,7 +143,8 @@ def full_study(N):
     N["fsTtTSixD"] = sum(r["type"] == "T6" and r["verdict"] == "D" for r in ttf)
     N["fsTtAllX"] = sum(all(r["verdict"] == "X" for r in ttf if r["class"] == c) for c in {r["class"] for r in ttf})
     N["fsClassesAdded"] = sum(r["source"] == "full study (added)" for r in rd("class_states_full.csv"))
-    nm = list(csv.DictReader(open(C / "new_class_map.csv")))
+    main_ids = {r["cid"] for r in csv.DictReader(open(C / "codes_full_final.csv"))}
+    nm = [r for r in csv.DictReader(open(C / "new_class_map.csv")) if r["cid"] in main_ids]  # searched corpus only
     N["fsNewCoded"] = len(nm)
     for k in ("GEN", "LUC", "ALG", "GLOB", "IMPL"):
         N["fsNewN" + k.capitalize()] = sum(r["class"] == k for r in nm)

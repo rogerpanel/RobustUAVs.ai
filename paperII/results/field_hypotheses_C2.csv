@@ -1,0 +1,41 @@
+key,description,n_den,estimate,lo,hi,searched
+h1_AB_perc_in,perception guarantees that are per input,179,0.5348,0.4597,0.6135,0.5113
+h1_AB_ctrl_in,control guarantees that are per input,148,0.1568,0.0945,0.2254,0.181
+h1_AB_ctrl_tr,control guarantees that are per trajectory,148,0.3936,0.3057,0.4817,0.4754
+h1_AB_all_in,all guarantees that are per input,433,0.2944,0.2519,0.3395,0.2735
+h1_A_perc_in,tier-A perception guarantees that are per input,22,0.5849,0.3846,0.8,0.5883
+h1_A_ctrl_tr,tier-A control guarantees that are per trajectory,52,0.4513,0.3084,0.5925,0.475
+h2_share_lifted,guarantees that use at least one lift,433,0.6602,0.6115,0.707,0.708
+h2_share_U,lifted: assumption unstated,273,0.0433,0.0162,0.0732,0.0608
+h2_share_S,"lifted: stated, not evidenced",273,0.7206,0.6603,0.7788,0.6369
+h2_share_SE,lifted: evidenced,273,0.2116,0.1595,0.268,0.2725
+h2_share_SEC,lifted: evidenced with confidence carried,273,0.0245,0.0067,0.0469,0.0297
+h2_share_accounted,lifted: accounted (SE or SEC),273,0.2361,0.1821,0.293,0.3023
+h2_accounted_2017,lifted 2017-2021: accounted,129,0.1318,0.0653,0.2068,0.2552
+h2_accounted_2022,lifted 2022-2026: accounted,144,0.2928,0.2186,0.3717,0.3124
+h2_L_dyn_use,guarantees using L_dyn,433,0.1148,0.0822,0.1496,0.1514
+h2_L_dyn_acc,L_dyn users: accounted,43,0.1396,0.0375,0.2644,0.1411
+h2_L_hor_use,guarantees using L_hor,433,0.0239,0.007,0.0424,0.0373
+h2_L_hor_acc,L_hor users: accounted,7,0.436,0.0,0.8675,0.436
+h2_L_gen_use,guarantees using L_gen,433,0.0291,0.012,0.0487,0.0421
+h2_L_gen_acc,L_gen users: accounted,9,0.3042,0.0,0.6521,0.25
+h2_L_op_use,guarantees using L_op,433,0.0102,0.0,0.0235,0.0159
+h2_L_op_acc,L_op users: accounted,3,0.3198,0.0,1.0,0.3198
+h2_L_rate_use,guarantees using L_rate,433,0.0069,0.0,0.0175,0.0108
+h2_L_rate_acc,L_rate users: accounted,2,0.5,0.0,1.0,0.5
+h2_L_conc_use,guarantees using L_conc,433,0.4695,0.421,0.5178,0.4395
+h2_L_conc_acc,L_conc users: accounted,209,0.2457,0.1799,0.3132,0.3541
+h2_L_sup_use,guarantees using L_sup,433,0.0237,0.0091,0.041,0.0312
+h2_L_sup_acc,L_sup users: accounted,9,0.3324,0.0,0.7221,0.3264
+h2_L_mon_use,guarantees using L_mon,433,0.0892,0.059,0.1209,0.1292
+h2_L_mon_acc,L_mon users: accounted,28,0.3892,0.203,0.5796,0.4198
+h3_perception_share_P,perception guarantees with modality P,179,0.359,0.2831,0.4371,0.3837
+h3_control_share_P,control guarantees with modality P,148,0.3726,0.2925,0.4607,0.2637
+h3_estimation_share_P,estimation guarantees with modality P,82,0.7937,0.6956,0.8826,0.8179
+h3_end2end_share_P,end2end guarantees with modality P,8,1.0,1.0,1.0,1.0
+h3_planning_share_P,planning guarantees with modality P,16,0.4947,0.2387,0.7666,0.4
+h3_P_perception,modality-P guarantees that concern perception,204,0.3085,0.2415,0.3783,0.305
+h3_rate_use,guarantees performing the rate lift,433,0.0069,0.0,0.0175,0.0108
+h4_share_RTA,guarantees of class RTA,433,0.0707,0.0447,0.0993,0.1024
+h4_RTA_accounted,RTA guarantees: accounted (SE or SEC),22,0.2946,0.1004,0.5018,0.3178
+h4_RTA_L_mon,RTA guarantees using L_mon,22,0.9509,0.8377,1.0,0.947

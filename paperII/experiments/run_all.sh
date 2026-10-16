@@ -16,5 +16,15 @@ python3 reliability.py full_C1 full_C2 > /dev/null
 python3 corpus_estimates.py    > /dev/null
 for c in codes_full_final.csv codes_full_C1.csv codes_full_C2.csv; do python3 hypotheses_full.py "$c" > /dev/null; done
 python3 transfer_full.py       > /dev/null
+# snowballing (amendment 5) and the expanded field (amendment 6)
+for k in 1 2 3; do
+  python3 snowball_screen.py merge --iter "$k" > /dev/null
+  python3 snowball_sample.py --iter "$k"       > /dev/null
+  python3 coding_merge.py --iter "$k"          > /dev/null
+  python3 adjudication_merge.py --iter "$k"    > /dev/null
+  python3 snowball_stoprule.py --iter "$k"     > /dev/null
+done
+for t in final C1 C2; do python3 field_estimates.py "$t" > /dev/null; done
+python3 transfer_full.py --field > /dev/null
 python3 make_numbers.py
 echo "paperII: all results regenerated"
