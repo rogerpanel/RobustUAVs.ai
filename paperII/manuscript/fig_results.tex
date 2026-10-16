@@ -9,7 +9,7 @@
   width=0.555\columnwidth, height=46mm, ybar stacked,
   symbolic x coords={perception,estimation,control,planning,end2end},
   xtick=data, x tick label style={rotate=40, anchor=east, font=\scriptsize},
-  ymin=0, ymax=1500, scaled y ticks=false, ylabel style={font=\scriptsize}, yticklabel style={font=\scriptsize},
+  ymin=0, ymax=2600, scaled y ticks=false, ylabel style={font=\scriptsize}, yticklabel style={font=\scriptsize},
   title style={font=\scriptsize, yshift=-1ex}, enlarge x limits=0.15,
   legend style={font=\scriptsize, at={(1.0,1.0)}, anchor=north east, draw=none, fill=white, fill opacity=0.85, text opacity=1}]
 \nextgroupplot[title={(a) Tiers A and B}, ylabel={estimated papers}]
@@ -25,8 +25,8 @@
 \legend{$\mathsf{in}$, $\mathsf{tr}$, $\mathsf{op}$, $\mathsf{pop}$}
 \end{groupplot}
 \end{tikzpicture}
-\caption{The estimated field by component and scope: weighted full-study estimates of the
-number of eligible papers. (a)~Across both tiers, perception guarantees are mostly per input or
+\caption{The estimated field by component and scope: weighted estimates of the number of
+eligible papers in the expanded field (searched corpus and three snowballing iterations). (a)~Across both tiers, perception guarantees are mostly per input or
 per population, and control guarantees mostly per trajectory. (b)~Among guarantees evaluated on
 vehicles (tier A), perception is still mostly per input; closed-loop perception through
 surrogates, which dominated the pilot, is rare. Provenance: \prov{full study, LLM coding}.}
