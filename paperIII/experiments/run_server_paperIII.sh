@@ -116,8 +116,11 @@ stage_r4() {
     sleep infinity' > /dev/null
   sleep 25
   say "R4: driving the fleet (5 Hz and 2 Hz, ${R4_DURATION:-240} s each)"
-  (cd "$HERE" && python3 r4_sitl_fleet.py --vehicles "${R4_VEHICLES:-6}" --rate 5 2 \
-     --duration "${R4_DURATION:-240}") > "$LOG/r4_driver.txt" 2>&1 || say "R4: driver error, see r4_driver.txt"
+  # hard cap: two flights plus connection, takeoff and landing; a hang becomes an error
+  (cd "$HERE" && timeout -k 30 $((2 * ${R4_DURATION:-240} + 900)) python3 -u r4_sitl_fleet.py \
+     --vehicles "${R4_VEHICLES:-6}" --rate 5 2 --duration "${R4_DURATION:-240}") > "$LOG/r4_driver.txt" 2>&1 \
+     || say "R4: driver error or timeout, see r4_driver.txt (last lines below)"
+  tail -n 8 "$LOG/r4_driver.txt" | sed 's/^/    /' | tee -a "$LOG/run.txt"
   docker stop px4sitl > /dev/null
   say "R4: closed-loop soundness check from the ULogs"
   (cd "$HERE" && python3 r4_sitl_fleet.py --soundness-only --logs "$PX4/build/px4_sitl_default/rootfs") \

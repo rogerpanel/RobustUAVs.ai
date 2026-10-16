@@ -4,7 +4,8 @@
 Prerequisite: K PX4 SITL instances already running (see run_server_paperIII.sh,
 stage r4), instance i reachable on udp://:14540+i.
 
-Driver (asyncio, MAVSDK-Python < 4, the gRPC API; one mavsdk_server per vehicle):
+Driver (asyncio, MAVSDK-Python < 4, the gRPC API; one mavsdk_server per vehicle,
+connected once and reused for every rate, stopped at the end):
   1. arm, take off to 15 m, start offboard;
   2. every 1/rate s: read each vehicle's GNSS stream (raw_gps timestamps and
      gps_info fix type), compute staleness = time since the last fix with
@@ -56,6 +57,11 @@ ALT = -15.0
 R_CAP = 5.0
 # (vehicle, start_s, duration_s, kind)
 SCHEDULE = [(1, 40, 20, "off"), (3, 90, 30, "off"), (2, 140, 15, "wrong"), (0, 170, 10, "off")]
+T_CONNECT, T_READY = 90.0, 240.0      # s; a stage that exceeds its timeout fails with its name
+
+
+def log(*a):
+    print(time.strftime("[%H:%M:%S]"), *a, flush=True)
 
 
 def rho_now(staleness):
@@ -75,10 +81,17 @@ async def connect(i):
     from mavsdk import System
     v = Vehicle(i)
     v.drone = System(mavsdk_server_address=None, port=50051 + i)
-    await v.drone.connect(system_address=f"udp://:{14540 + i}")
-    async for st in v.drone.core.connection_state():
-        if st.is_connected:
-            break
+    await v.drone.connect(system_address=f"udpin://0.0.0.0:{14540 + i}")
+
+    async def wait():
+        async for st in v.drone.core.connection_state():
+            if st.is_connected:
+                return
+    try:
+        await asyncio.wait_for(wait(), T_CONNECT)
+    except asyncio.TimeoutError:
+        raise RuntimeError(f"vehicle {i}: no MAVLink heartbeat on udp port {14540 + i} within {T_CONNECT:.0f} s")
+    log(f"vehicle {i}: connected")
     return v
 
 
@@ -95,19 +108,26 @@ async def watch(v):
     async def pos():
         async for p in v.drone.telemetry.position_velocity_ned():
             v.ned = np.array([p.position.north_m, p.position.east_m])
-    return [asyncio.ensure_future(x()) for x in (gps(), raw(), pos())]
+    return [asyncio.ensure_future(c) for c in (gps(), raw(), pos())]
 
 
 async def takeoff(v):
     from mavsdk.offboard import PositionNedYaw
     d = v.drone
     await d.param.set_param_int("SYS_FAILURE_EN", 1)
-    async for h in d.telemetry.health():
-        if h.is_global_position_ok and h.is_home_position_ok:
-            break
+
+    async def ready():
+        async for h in d.telemetry.health():
+            if h.is_global_position_ok and h.is_home_position_ok:
+                return
+    try:
+        await asyncio.wait_for(ready(), T_READY)
+    except asyncio.TimeoutError:
+        raise RuntimeError(f"vehicle {v.i}: no global position / home within {T_READY:.0f} s")
     await d.action.arm()
     await d.offboard.set_position_ned(PositionNedYaw(0.0, 0.0, ALT, 0.0))
     await d.offboard.start()
+    log(f"vehicle {v.i}: armed, offboard started")
 
 
 async def inject(v, kind, on):
@@ -128,14 +148,41 @@ async def inject(v, kind, on):
             return f"unsupported:{type(e).__name__},{type(e2).__name__}"
 
 
-async def run(n_veh, rate, duration, tag):
+async def session(n_veh, rates, duration, on_rate_done):
+    """Connect and take off once, fly every rate over the same connections, then land
+    and stop the mavsdk_server processes (they hold UDP and gRPC ports)."""
+    vs, tasks = [], []
+    try:
+        for i in range(n_veh):
+            vs.append(await connect(i))
+        for v in vs:
+            tasks += await watch(v)
+        await asyncio.gather(*(takeoff(v) for v in vs))
+        await asyncio.sleep(10)
+        for rate in rates:
+            log(f"rate {rate:g} Hz: flying {duration:.0f} s")
+            rows, inj = await run(vs, rate, duration, f"rate{rate:g}")
+            log(f"rate {rate:g} Hz: done, {len(rows)} rows")
+            on_rate_done(rate, rows, inj)
+    finally:
+        for v in vs:
+            try:
+                await v.drone.offboard.stop()
+                await v.drone.action.land()
+            except Exception:  # noqa: BLE001
+                pass
+        for tk in tasks:
+            tk.cancel()
+        for v in vs:
+            stop = getattr(v.drone, "_stop_mavsdk_server", None)
+            if stop:
+                stop()
+        log("landed; mavsdk_server processes stopped")
+
+
+async def run(vs, rate, duration, tag):
     from mavsdk.offboard import PositionNedYaw
-    vs = [await connect(i) for i in range(n_veh)]
-    tasks = []
-    for v in vs:
-        tasks += await watch(v)
-    await asyncio.gather(*(takeoff(v) for v in vs))
-    await asyncio.sleep(10)
+    n_veh = len(vs)
     t0 = time.monotonic()
     dt = 1.0 / rate
     assign = np.full(n_veh, C.IDLE)
@@ -180,14 +227,9 @@ async def run(n_veh, rate, duration, tag):
         prev_rho, assign = rho, ex
         k += 1
         await asyncio.sleep(max(0.0, dt - (time.monotonic() - now)))
-    for v in vs:
-        try:
-            await v.drone.offboard.stop()
-            await v.drone.action.land()
-        except Exception:  # noqa: BLE001
-            pass
-    for tk in tasks:
-        tk.cancel()
+    for (vi, s, du, kind) in SCHEDULE:            # leave no failure injected into the next rate
+        if (vi, s) in active:
+            inj_log.append((time.monotonic() - t0, vi, kind, "off", await inject(vs[vi], kind, False)))
     return rows, inj_log
 
 
@@ -264,15 +306,16 @@ def main():
     a = ap.parse_args()
     if not a.soundness_only:
         rows, inj = [], []
-        for rate in a.rate:
-            r, il = asyncio.run(run(a.vehicles, rate, a.duration, f"rate{rate:g}"))
-            rows += r; inj += [(rate,) + x for x in il]
-        write("r4_sitl.csv", rows)
-        write("r4_sitl_summary.csv", summarise(rows))
-        write("r4_injections.csv", [{"rate_hz": x[0], "t_s": round(x[1], 2), "vehicle": x[2], "kind": x[3],
-                                     "phase": x[4], "result": x[5]} for x in inj])
-        for s in summarise(rows):
-            print(s)
+
+        def done(rate, r, il):                    # results are written after every rate
+            rows.extend(r); inj.extend((rate,) + x for x in il)
+            write("r4_sitl.csv", rows)
+            write("r4_sitl_summary.csv", summarise(rows))
+            write("r4_injections.csv", [{"rate_hz": x[0], "t_s": round(x[1], 2), "vehicle": x[2], "kind": x[3],
+                                         "phase": x[4], "result": x[5]} for x in inj])
+            for s in summarise(rows):
+                log(s)
+        asyncio.run(session(a.vehicles, a.rate, a.duration, done))
     if a.logs:
         sr = soundness(a.logs)
         write("r4_soundness.csv", sr or [{"log": "", "samples": 0, "status": "no ULog found",
