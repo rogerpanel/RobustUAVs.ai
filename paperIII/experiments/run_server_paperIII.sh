@@ -114,7 +114,11 @@ stage_r4() {
   # (the directories are owned by the container's root user, so the move runs in the container)
   docker run --rm -v "$PX4":/src "$IMG" bash -c \
     "cd /src/build/px4_sitl_default && [ -d rootfs ] && mv rootfs rootfs_before_${P}_$(date -u +%Y%m%dT%H%M%S) || true"
-  if [ "$REV" = c ]; then
+  if [ "$REV" = c ] && git -C "$HERE" ls-files --error-unmatch ../results/r4c_calibration.csv >/dev/null 2>&1; then
+    # the calibration was made once, on the R4 and R4b logs only, and committed; a repeated attempt
+    # reuses it, so the logs of an aborted R4c attempt can never enter it
+    say "$P: using the committed calibration (R4 and R4b logs): $(grep theta_sitl_s "$RES/r4c_calibration.csv")"
+  elif [ "$REV" = c ]; then
     # R4c: calibrate theta for the SITL receiver on the earlier runs' logs (R4, R4b), never on R4c's own
     say "$P: calibrating theta for the SITL receiver on the R4 and R4b logs"
     (cd "$HERE" && python3 r4_sitl_fleet.py --calibrate "$PX4"/build/px4_sitl_default/rootfs_before_*) \

@@ -68,6 +68,7 @@ SCHEDULE_C = [(3, 30, 18, "off"), (5, 70, 22, "off"), (0, 110, 14, "off"), (2, 1
 GAP_S = 1.0                       # a fix after more than GAP_S of receiver staleness is a reacquisition
 N_CONV = 3                        # consecutive fixes the estimate must agree with to release the latch
 T_CONNECT, T_READY = 90.0, 240.0      # s; a stage that exceeds its timeout fails with its name
+ARM_TRIES = 20                        # arming attempts, 3 s apart
 
 
 def log(*a):
@@ -178,13 +179,24 @@ async def takeoff(v):
 
     async def ready():
         async for h in d.telemetry.health():
-            if h.is_global_position_ok and h.is_home_position_ok:
+            if h.is_global_position_ok and h.is_home_position_ok and getattr(h, "is_armable", True):
                 return
     try:
         await asyncio.wait_for(ready(), T_READY)
     except asyncio.TimeoutError:
-        raise RuntimeError(f"vehicle {v.i}: no global position / home within {T_READY:.0f} s")
-    await d.action.arm()
+        raise RuntimeError(f"vehicle {v.i}: no global position / home / armable within {T_READY:.0f} s")
+    # PX4 can still deny arming for a few seconds after the health flags settle (preflight checks
+    # re-run at 1 Hz); R4c attempt 1 aborted on one such COMMAND_DENIED. Retry, then fail by name.
+    from mavsdk.action import ActionError
+    for k in range(ARM_TRIES):
+        try:
+            await d.action.arm()
+            break
+        except ActionError as e:
+            if k == ARM_TRIES - 1:
+                raise RuntimeError(f"vehicle {v.i}: arming denied {ARM_TRIES} times ({e})")
+            log(f"vehicle {v.i}: arming denied ({e}); retry {k + 1} in 3 s")
+            await asyncio.sleep(3)
     await d.offboard.set_position_ned(PositionNedYaw(0.0, 0.0, ALT, 0.0))
     await d.offboard.start()
     log(f"vehicle {v.i}: armed, offboard started")

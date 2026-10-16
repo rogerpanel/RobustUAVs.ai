@@ -1,0 +1,7 @@
+[04:20:13] {'metric': 'theta_parent_s', 'value': 0.178}
+[04:20:13] {'metric': 'theta_sitl_s', 'value': 0.2064}
+[04:20:13] {'metric': 'theta_sitl_from_log', 'value': 'rootfs_before_r4c_20261016T042002/5/log/2026-10-16/03_20_29.ulg'}
+[04:20:13] {'metric': 'floor_parent_m', 'value': 0.943}
+[04:20:13] {'metric': 'floor_sitl_m', 'value': 1.093}
+[04:20:13] {'metric': 'benign_samples', 'value': 628570}
+[04:20:13] {'metric': 'logs', 'value': 12}

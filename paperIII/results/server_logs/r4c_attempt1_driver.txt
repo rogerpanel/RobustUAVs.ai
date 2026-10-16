@@ -1,0 +1,71 @@
+[04:20:39] theta = 0.2064 s (calibrated for the SITL receiver; parent 0.178 s)
+/home/deploy/paper3-work/paperIII/experiments/r4_sitl_fleet.py:128: FutureWarning: The 'mavsdk' package has been renamed to 'mavsdk-grpc'. This is the last release of the gRPC wrapper under the 'mavsdk' name: that name now refers to the native MAVSDK binding, which has a different API.
+  To carry on with this API, install 'mavsdk-grpc' and use 'import mavsdk_grpc as mavsdk'. The code is identical, development continues there (including releases for MAVSDK v4), and it installs under a separate import name so it cannot collide with the native binding.
+  To freeze instead, pin 'mavsdk<4' (no further updates).
+  To migrate, see https://mavsdk.mavlink.io/main/en/python/migration.html
+  from mavsdk import System
+[04:20:40] vehicle 0: connected
+[04:20:41] vehicle 1: connected
+[04:20:42] vehicle 2: connected
+[04:20:43] vehicle 3: connected
+[04:20:44] vehicle 4: connected
+[04:20:45] vehicle 5: connected
+[04:20:46] vehicle 2: armed, offboard started
+[04:20:46] vehicle 1: armed, offboard started
+[04:20:46] vehicle 4: armed, offboard started
+[04:20:46] vehicle 0: armed, offboard started
+[04:20:46] vehicle 5: armed, offboard started
+[04:20:46] landed; mavsdk_server processes stopped
+Traceback (most recent call last):
+  File "/home/deploy/paper3-work/paperIII/experiments/r4_sitl_fleet.py", line 555, in <module>
+    main()
+    ~~~~^^
+  File "/home/deploy/paper3-work/paperIII/experiments/r4_sitl_fleet.py", line 542, in main
+    asyncio.run(session(a.vehicles, a.rate, a.duration, done, a.revision))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/asyncio/runners.py", line 204, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.14/asyncio/runners.py", line 127, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.14/asyncio/base_events.py", line 719, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/home/deploy/paper3-work/paperIII/experiments/r4_sitl_fleet.py", line 220, in session
+    await asyncio.gather(*(takeoff(v) for v in vs))
+  File "/home/deploy/paper3-work/paperIII/experiments/r4_sitl_fleet.py", line 187, in takeoff
+    await d.action.arm()
+  File "/home/deploy/paper-venv/lib/python3.14/site-packages/mavsdk/action.py", line 359, in arm
+    raise ActionError(result, "arm()")
+mavsdk.action.ActionError: COMMAND_DENIED: 'Command Denied'; origin: arm(); params: ()
+Exception ignored while calling deallocator <function System.__del__ at 0x72c25f877e20>:
+Traceback (most recent call last):
+  File "/home/deploy/paper-venv/lib/python3.14/site-packages/mavsdk/system.py", line 146, in __del__
+  File "/home/deploy/paper-venv/lib/python3.14/site-packages/mavsdk/system.py", line 186, in _stop_mavsdk_server
+ImportError: sys.meta_path is None, Python is likely shutting down
+Exception ignored while calling deallocator <function System.__del__ at 0x72c25f877e20>:
+Traceback (most recent call last):
+  File "/home/deploy/paper-venv/lib/python3.14/site-packages/mavsdk/system.py", line 146, in __del__
+  File "/home/deploy/paper-venv/lib/python3.14/site-packages/mavsdk/system.py", line 186, in _stop_mavsdk_server
+ImportError: sys.meta_path is None, Python is likely shutting down
+Exception ignored while calling deallocator <function System.__del__ at 0x72c25f877e20>:
+Traceback (most recent call last):
+  File "/home/deploy/paper-venv/lib/python3.14/site-packages/mavsdk/system.py", line 146, in __del__
+  File "/home/deploy/paper-venv/lib/python3.14/site-packages/mavsdk/system.py", line 186, in _stop_mavsdk_server
+ImportError: sys.meta_path is None, Python is likely shutting down
+Exception ignored while calling deallocator <function System.__del__ at 0x72c25f877e20>:
+Traceback (most recent call last):
+  File "/home/deploy/paper-venv/lib/python3.14/site-packages/mavsdk/system.py", line 146, in __del__
+  File "/home/deploy/paper-venv/lib/python3.14/site-packages/mavsdk/system.py", line 186, in _stop_mavsdk_server
+ImportError: sys.meta_path is None, Python is likely shutting down
+Exception ignored while calling deallocator <function System.__del__ at 0x72c25f877e20>:
+Traceback (most recent call last):
+  File "/home/deploy/paper-venv/lib/python3.14/site-packages/mavsdk/system.py", line 146, in __del__
+  File "/home/deploy/paper-venv/lib/python3.14/site-packages/mavsdk/system.py", line 186, in _stop_mavsdk_server
+ImportError: sys.meta_path is None, Python is likely shutting down
+Exception ignored while calling deallocator <function System.__del__ at 0x72c25f877e20>:
+Traceback (most recent call last):
+  File "/home/deploy/paper-venv/lib/python3.14/site-packages/mavsdk/system.py", line 146, in __del__
+  File "/home/deploy/paper-venv/lib/python3.14/site-packages/mavsdk/system.py", line 186, in _stop_mavsdk_server
+ImportError: sys.meta_path is None, Python is likely shutting down

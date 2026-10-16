@@ -1,0 +1,8 @@
+metric,value
+theta_parent_s,0.178
+theta_sitl_s,0.2064
+theta_sitl_from_log,rootfs_before_r4c_20261016T042002/5/log/2026-10-16/03_20_29.ulg
+floor_parent_m,0.943
+floor_sitl_m,1.093
+benign_samples,628570
+logs,12
