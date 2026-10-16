@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3168112450",0,"XAI explanation complexity for decision trees; no guarantee on classifier behaviour","","","","","","","","","",""
+"O2852179785",1,"","SMT","B","perception","in","A","norm","none","S","proof","Exact SAT encoding of BNNs certifies local Linf robustness for some MNIST images; overview of authors' prior results."
+"O3037593164",1,"","NCERT","B","control","tr","A","none","none","S","proof","SMT-verified neural Lyapunov function proves asymptotic stability over domain D; certified ODEs contain no learned controller, only learned certificate."
+"O3025114349",1,"","DTMC","B","control","tr","P","distribution","L_dyn","S","proof","MDP abstraction upper-bounds k-step failure probability of DQN controller under stochastic actuator faults; DTMC vs CLR class doubt."
+"O3124533198",1,"","BP","B","perception","in","A","norm","none","S","proof","Sparse dual solvers for Anderson relaxation give sound anytime output bounds certifying Linf robustness; used in branch-and-bound."

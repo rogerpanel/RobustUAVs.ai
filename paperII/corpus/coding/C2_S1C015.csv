@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2963496101",1,"","BP","B","perception","in","A","norm","none","S","proof","LP-dual convex outer polytope certifies no l_inf-bounded adversarial example around each input; MNIST robust error bound 5.8% at eps=0.1."
+"O2915008147",1,"","PACB","B","perception","pop","P","distribution","L_conc","S","proof","PAC-Bayes compression bound on test error of compressed stochastic classifier, 95% confidence, iid assumed; ImageNet top-1 bound <96.5%."
+"O4409311673",1,"","SMT","B","perception","in","A","poisoning","none","S","proof","MILP/BaB computes iDP-DB over whole input domain and all leave-one-out networks; label-only access is eps-iDP. Tabular classifiers; class SMT vs NEW:privacy doubtful."
+"O3130461065",1,"","BP","B","perception","in","A","norm","none","S","proof","Functional-Lagrangian dual soundly bounds expected-softmax specs of BNN/MC-dropout nets over l_inf balls; modality A vs E and class BP vs PROB doubtful."
+"O3010082790",1,"","RS","B","perception","in","Ac","norm","none","S","proof","Denoiser plus randomized smoothing certifies l2 radius for pretrained/black-box classifiers and vision APIs with Monte Carlo confidence 1-alpha."

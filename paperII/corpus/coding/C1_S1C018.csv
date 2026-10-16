@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4401159822",0,"Explanation algorithm for decision trees; no robustness or safety guarantee about system behaviour.","","","","","","","","","",""
+"O4388483784",1,"","BP","B","perception","in","A","norm","none","U","proof","Reduced network is exactly input-output equivalent to original over the input box, so any verifier's verdict carries over; speedup only."
+"O3183838078",1,"","SMT","B","perception","in","A","norm","none","U","proof","Learned-GNN branch-and-bound stays sound and complete: dual-feasible bounds prove robustness over l_inf ball; GNN only speeds search. Class SMT vs BP doubtful."
+"O4312626912",1,"","LIP","B","perception","in","A","norm","none","U","proof","AOL rescaling provably makes each layer 1-Lipschitz (l2), yielding margin-based certified robust accuracy on CIFAR."
+"O3209343599",1,"","SEM","B","perception","in","A","patch","none","S","proof","Certified patch detection: if certify check passes, any patch of bounded size yields correct prediction or alert; modelling assumption on SIN pruning."

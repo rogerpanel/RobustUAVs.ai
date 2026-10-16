@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2913266441","1","","GEN","B","perception","pop","E","norm","none","S","measured","Thm 3.1: robust error minus Bayes natural error bounded by surrogate risk plus boundary term, any classifier and distribution; empirical robustness only attack-based."
+"O3037427931","1","","NEW:global robustness via activation-region enumeration","B","perception","in","A","none","none","S","proof","Sliding Door Network enables enumerating classification regions to verify absence of adversarial regions over whole input space; adjacency and volumes sampled, soundness doubtful."
+"O3032731803","0","Trajectory forecaster; dynamic feasibility by construction only, no safety or robustness guarantee.","","","","","","","","","",""
+"O2788084076","1","","LUC","A","planning","in","P","distribution","L_dyn;L_conc","S","simulated","GP confidence bounds plus Lipschitz keep each visited Mars-rover state safe with high probability; scope in vs op doubtful (per-step, no mission union bound)."
+"O3199481125","1","","ALG","B","estimation","op","P","poisoning","L_conc","S","modelled","Robust Fed-SEL is (0,delta)-PAC: outputs best arm w.p. 1-delta despite Byzantine clients; scope op vs pop doubtful; sims cover non-robust variant only."

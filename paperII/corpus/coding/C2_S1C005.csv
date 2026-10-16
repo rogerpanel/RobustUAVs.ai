@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2970078867",1,"","BP","B","perception","in","A","semantic","none","S","proof","IBP certifies NLP classifiers (IMDB/SNLI) correct on all word-substitution combinations per test input; text classifier coded perception; substitution set coded semantic."
+"O4367281679",0,"Overview/tutorial of formal explainability; no own guarantee about a learned component.","","","","","","","","","",""
+"O3169913694",1,"","BP","B","perception","in","A","norm","none","S","proof","Prover: sound polyhedral (DeepPoly) certification of LSTM speech/MNIST/HAPT classifiers against L-infinity input perturbations, incl. preprocessing pipeline."
+"O3209973676",0,"Explanation method on locally faithful surrogate; no guarantee about the explained learned model.","","","","","","","","","",""
+"O4379165415",1,"","SEM","B","perception","in","A","semantic","none","S","proof","Sound, conditionally complete activation-region traversal certifying classification and saliency-map robustness over brightness/patch/translation parameter regions on MNIST/Fashion-MNIST."

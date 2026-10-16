@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3168112450",1,"","PROB","B","perception","in","P","distribution","none","S","proof","Subset-minimal explanation fixing features keeps decision-tree prediction with prob >=1-delta over uniform inputs; scope in vs pop doubtful (rule 6)."
+"O2852179785",1,"","SMT","B","perception","in","A","norm","none","U","proof","Exact Boolean/ILP encoding of binarized NNs; SAT unsat proves local L-inf robustness on MNIST; overview of own prior results."
+"O3037593164",1,"","NCERT","B","control","tr","A","none","none","S","proof","CEGIS with SMT proves learned Lyapunov network certifies asymptotic stability of polynomial ODE over whole domain; no vehicle task."
+"O3025114349",1,"","DTMC","B","control","tr","P","disturbance","L_dyn","S","proof","Interval-MDP abstraction upper-bounds k-step failure probability of DRL controller under random actuator faults; known deterministic environment model assumed."
+"O3124533198",1,"","BP","B","perception","in","A","norm","none","U","proof","Dual solvers give sound anytime lower bounds on network output over l-inf/l2 input ball (tight relaxation), used for verification on CIFAR."

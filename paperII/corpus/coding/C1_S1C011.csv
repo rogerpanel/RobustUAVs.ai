@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4205490748",1,"","GEN","B","control","tr","P","disturbance","L_conc","S","simulated","State-dependent finite-sample bound, prob 1-delta/2, on kernel-embedding estimate of stochastic reachability safety probability for NN-controlled cart-pole. Class doubt: GEN vs DTMC."
+"O2531965955",0,"Simulation-only racing LMPC; guarantees cited from prior work and void under model mismatch.","","","","","","","","","",""
+"O3029692613",1,"","BP","B","perception","in","A","norm","none","S","proof","Sound DeepPoly-style polyhedral certificate of LSTM classifier robustness within L-inf ball (speech, MNIST, HAPT); sampling made sound by exact offset."
+"O2964164993",1,"","MON","B","perception","in","P","norm","L_conc","SE","simulated","SPRT over random DNN mutants flags adversarial inputs with type-I/II error alpha,beta on the sensitivity test, not on adversariality itself; scope in doubtful."
+"O4292482260",0,"Symbolic theory of explanations for abstract Boolean classifiers; no learned component analysed.","","","","","","","","","",""

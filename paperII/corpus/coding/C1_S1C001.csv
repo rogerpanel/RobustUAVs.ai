@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4402264222",1,"","LUC","B","control","tr","A","none","none","S","modelled","Recursive feasibility of NN-tail MPC if NN error bound gamma holds (Assumption 1, unevidenced); pendulum only. Rule-6 doubt: tr vs op."
+"O3017318049",1,"","GEN","B","estimation","pop","P","distribution","L_conc","S","modelled","Distribution-free 1-alpha CI for conditional label probability: n-independent length lower bound plus matching construction. Learned-component link weak; class doubt."
+"O3137096785",1,"","RS","B","perception","in","A","norm","none","S","proof","Deterministic L1 smoothing (DSSN): exact, non-probabilistic L1 radius via 1/(2 lambda)-Lipschitz smoothed classifier; assumes quantized inputs."
+"O3200538762",0,"Empirical GNN planning study; expressivity theorems cited from prior work, no own guarantee.","","","","","","","","","",""
+"O4392014868",0,"Wind forecasting application; authors state no coverage guarantees hold; not an autonomous-system guarantee.","","","","","","","","","",""

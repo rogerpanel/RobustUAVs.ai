@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2998161546",1,"","BP","B","perception","in","A","norm","none","S","proof","Certified lower bound on l-inf weight-perturbation radius keeping a ReLU MLP's top-1 label at an input; perturbation is on weights not inputs."
+"O4379193103",0,"Defines differentiable-logic semantics and proves soundness of loss translation; no guarantee about a learned component.","","","","","","","","","",""
+"O3132066662",1,"","ALG","B","control","tr","E","poisoning","L_conc","S","modelled","Secure-UCB: O(log T) expected regret and O(log T) verifications against any reward-contamination attacker; scope tr vs pop doubtful, chose smaller."
+"O3118738365",0,"Interpretable deepfake detector evaluated empirically; temporal-logic checks are trace percentages, not a guarantee.","","","","","","","","","",""
+"O4379256329",1,"","CRL","B","planning","tr","P","distribution","L_conc;L_sup","S","modelled","TREBI diffusion planner: w.p. 1-delta, trajectory cost <= budget + count-based concentration term, given in-distribution and data-support condition; tr vs pop doubtful."

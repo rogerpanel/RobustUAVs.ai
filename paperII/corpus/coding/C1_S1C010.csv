@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2912816250",1,"","PROB","B","perception","pop","P","distribution","L_conc","S","modelled","Pr over D that delta-close input pairs are Lipschitz-robust is at least 1-eps, checked by abstract interpretation plus importance sampling; no evaluation yet."
+"O4323026894",0,"Defines consistency specification only; no guarantee proved, certified or evaluated.","","","","","","","","","",""
+"O2760733685",1,"","SMT","B","control","in","A","norm","none","S","proof","Sound output interval of ReLU network over a polyhedral input set, tight within delta, via local search plus MILP; control plant and MNIST examples."
+"O2616305530",1,"","CRL","B","control","pop","E","distribution","none","S","measured","Expected damage stays below Dsafe at every policy-update iteration via adaptive torque limit; scope pop vs tr doubtful; PR2 manipulator, not a vehicle."
+"O3100287144",1,"","CP","B","estimation","pop","P","distribution","L_conc","S","proof","Jackknife+-after-bootstrap interval for ensemble regressors covers new response with probability at least 1-2alpha under exchangeability, any model."

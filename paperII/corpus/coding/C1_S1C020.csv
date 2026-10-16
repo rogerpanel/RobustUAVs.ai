@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4415549797","0","Runtime enforcement of automaton properties; no learned component involved.","","","","","","","","","",""
+"O2982312195","1","","SMT","B","perception","in","A","norm","none","U","proof","MIP proves a CNN-RNN captioner emits at most K tokens for all inputs in an l_inf ball (Multi-MNIST); not tied to a vehicle."
+"O2924630351","1","","SMT","B","perception","in","A","norm","none","U","proof","GeoCert computes exact l_p pointwise robustness of ReLU classifiers (MNIST) with anytime lower bounds; complete verifier, not SMT/MILP proper."
+"O4385764466","1","","SMT","B","planning","tr","A","none","L_dyn","S","proof","MIP-checked minimal partial-state explanation: policy yields same n-action sequence for all completions, via symbolic model progression. Rule-6 doubt: scope in vs tr."
+"O4408392785","1","","CP","B","estimation","pop","P","distribution","L_conc;L_sup","SE","simulated","Bootstrapped residual-quantile prediction interval claimed to cover at least 90% of true values for an aerostructure stress surrogate. Rule-6 doubt: class CP vs PROB."

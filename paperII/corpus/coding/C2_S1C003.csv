@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3125588313","1","","PROB","B","perception","in","P","norm","L_conc","SEC","measured","DeepPAC: scenario-learned affine PAC model gives (eta,epsilon)-PAC-model robustness in Linf ball; probability over uniform sampling of the ball, not strictly forall."
+"O3167942312","1","","GEN","B","estimation","pop","P","distribution","L_conc","S","modelled","WMLR mixed linear regression: w.p. 1-delta generalization bound, sample complexity linear in dimension; GDA convergence (ALG) is co-headline."
+"O2899692219","1","","BP","B","perception","in","A","norm","none","S","proof","MixTrain: verifiably robust training; symbolic linear relaxation certifies Linf robustness per test input (VRA up to 95.2%); VRA aggregate is test-set rate."
+"O3098493030","1","","SMT","B","perception","in","A","semantic","none","S","proof","LCIFR: MILP certifies individual fairness, all similar individuals (attribute/noise similarity set) get same label; tabular classifier coded perception, doubtful."
+"O4281768543","1","","GEN","B","perception","pop","P","distribution","L_conc","S","modelled","FedOT: w.p. 1-delta generalization bound for personalized federated classifier under client distribution shifts; GDA convergence (ALG) also proved."

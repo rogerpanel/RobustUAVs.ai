@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3182959332",0,"Optimality theorem assumes information state already learned; no guarantee on any learned component; toy example.","","","","","","","","","",""
+"O2963582321",1,"","ALG","B","control","pop","P","distribution","L_conc","S","modelled","Uniform-PAC: w.p. 1-delta, number of epsilon-suboptimal episodes bounded for all epsilon (UBEV, tabular episodic MDP); implies regret bound."
+"O3168586460",1,"","RS","B","perception","in","Ac","semantic","none","S","proof","WordDP: certified text-classifier prediction invariant to L synonym substitutions, via DP exponential mechanism, Hoeffding confidence eta on MC estimate."
+"O4390873449",1,"","PROB","A","estimation","in","P","norm","L_conc","S","simulated","TrajPAC: learned affine PAC model bounds ADE of pedestrian predictor over L-inf ball, error rate epsilon, confidence 1-eta; scope in vs pop doubt."
+"O3106612012",1,"","PACB","A","end2end","pop","P","distribution","L_conc","SE","simulated","PAC-Bayes bound on expected cost of imitation-learned vision policy over novel environments from D, w.p. 1-delta; tier A via indoor navigation."
