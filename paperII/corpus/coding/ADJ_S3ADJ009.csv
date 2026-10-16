@@ -1,0 +1,11 @@
+cid,field,value,rationale
+O4322576871,class,"NEW:Data-driven behavioural predictor error bound","Bound on data-based simulation/output-matching error; not safe control, so LUC (learned-uncertainty safe control) does not fit any listed class."
+O4322576871,component,estimation,"Headline Theorem 3 bounds error of data-based output-trajectory prediction (simulation), illustrated in example; COMP-1: learned trajectory predictor counts as estimation."
+O4322576871,assumption,SE,"Lipschitz lift needs Assumption 5 bound eps*; paper supplies evidence: eps*=0.7296 obtained by gridding Omega and solving (9) (footnote 9)."
+O4391607289,evidence,measured,"Coverage/CI experiments include real-world data (Stanford HIV drug resistance, LIBSVM bodyfat); measured means real-world data, the strongest class present."
+O4391692590,class,"NEW:Output hard-constraint layer","Ray-based layer guaranteeing f(z) in convex set for all z fits no classes.csv code; both coders' NEW labels equivalent, C1 wording adopted."
+O4392931599,class,"NEW:Approximation-error to cost-loss bound (learned MPC)","Theorem 1 bounds NN-MPC Lagrangian optimality loss via fitting error; no classes.csv code fits; coders' NEW labels equivalent, C1 wording adopted."
+O4399554721,tier,A,"Simulation studies include System 3, flying-robot problem from Tsiamis et al.; tier A covers control tasks of air vehicles."
+O4399554721,perturbation,distribution,"Noise w_t is i.i.d. Gaussian (unbounded); disturbance requires bounded term (CLR-1, codebook); probability is over natural sampling variation."
+O4399554721,lifts,L_conc;L_dyn,"Bernstein/self-normalized concentration for estimates (L_conc); Riccati perturbation propagates estimation error through plant model to episode cost (L_dyn)."
+O4399554721,evidence,simulated,"Regret behaviour supported by simulation studies (150 runs on three LEQR systems); no real-world data; simulated exceeds analytical-only modelled."
