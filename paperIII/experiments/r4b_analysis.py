@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""R4b analysis: the pre-registered outcomes of R4B_PROTOCOL.md, from the committed R4b results.
+"""R4b / R4c analysis: the pre-registered outcomes of R4B_PROTOCOL.md and R4C_PROTOCOL.md.
+
+R4b primary  latched violations within 10 s after a reacquisition = 0.
+R4c primary  latched violations anywhere (the floor is now calibrated) = 0, with theta from
+             r4c_calibration.csv; informative if the receiver certificate (same theta) violates
+             within 10 s after a reacquisition.
 
 Primary      violations of Assumption 1(a) under the latched certificate within 10 s after a
              reacquisition, summed over logs; the rule passes only if this is 0.
@@ -10,7 +15,7 @@ Episodes     violations within 10 s after a reacquisition, grouped per log and r
              (gap > 60 s between samples starts a new episode), reported per variant.
 Nothing is re-estimated or filtered; the verdict is the protocol's, applied mechanically.
 
-Usage:  python3 r4b_analysis.py      -> results/r4b_analysis.csv
+Usage:  python3 r4b_analysis.py [--run r4c]   -> results/<run>_analysis.csv
 """
 from __future__ import annotations
 
@@ -44,16 +49,26 @@ def episodes(rows):
 
 
 def main() -> int:
-    snd = [r for r in rd("r4b_soundness.csv") if r["status"] == "checked"]
-    vio = [r for r in rd("r4b_soundness_violations.csv") if r.get("log")]
-    ep = rd("r4b_sitl.csv")
-    sm = rd("r4b_sitl_summary.csv")
+    import argparse
+    ap = argparse.ArgumentParser(); ap.add_argument("--run", choices=("r4b", "r4c"), default="r4b")
+    run = ap.parse_args().run
+    snd = [r for r in rd(f"{run}_soundness.csv") if r["status"] == "checked"]
+    vio = [r for r in rd(f"{run}_soundness_violations.csv") if r.get("log")]
+    ep = rd(f"{run}_sitl.csv")
+    sm = rd(f"{run}_sitl_summary.csv")
     if not (snd and ep):
-        print("R4b results missing"); return 1
-    M = {}
+        print(f"{run} results missing"); return 1
+    M = {"run": run}
     M["primary_latched_transient"] = sum(int(r["violations_10s_after_reacq_latched"]) for r in snd)
+    M["latched_all"] = sum(int(r["violations_latched"]) for r in snd)
     M["receiver_transient"] = sum(int(r["violations_10s_after_reacq"]) for r in snd)
-    M["verdict"] = "pass" if M["primary_latched_transient"] == 0 else "fail"
+    M["receiver_all"] = sum(int(r["violations"]) for r in snd)
+    primary = M["latched_all"] if run == "r4c" else M["primary_latched_transient"]
+    M["verdict"] = "pass" if primary == 0 else "fail"
+    if run == "r4c":
+        cal = {r["metric"]: r["value"] for r in rd("r4c_calibration.csv")}
+        M["theta_sitl_s"] = cal.get("theta_sitl_s", ""); M["floor_sitl_m"] = cal.get("floor_sitl_m", "")
+        M["calibration_samples"] = cal.get("benign_samples", ""); M["calibration_logs"] = cal.get("logs", "")
     M["informative"] = int(M["receiver_transient"] > 0)
     M["reacquisitions"] = sum(int(r["reacquisitions"]) for r in snd)
     M["samples_checked"] = sum(int(r["samples"]) for r in snd)
@@ -73,7 +88,7 @@ def main() -> int:
                                 f"{max(float(r['err_m']) for r in e):.2f} m, peak excess "
                                 f"{max(float(r['excess_m']) for r in e):.2f} m, since reacq "
                                 f"{min(float(r['since_reacq_s']) for r in e):.2f}-{max(float(r['since_reacq_s']) for r in e):.2f} s")
-    M["floor_m"] = round(KAPPA * THETA_BENIGN, 3)
+    M["floor_m"] = float(M["floor_sitl_m"]) if run == "r4c" else round(KAPPA * THETA_BENIGN, 3)
     for r in sm:
         k = "5" if float(r["rate_hz"]) == 5 else "2"
         M[f"executed_violations_{k}hz"] = r["executed_violations"]
@@ -92,7 +107,7 @@ def main() -> int:
     M["vehicles_without_fix_held"] = sum(int(r["held"]) for r in ep if r["vehicle"] in set(nofix))
     short = [r for r in snd if float(r["duration_s"]) < 0.5 * max(float(x["duration_s"]) for x in snd)]
     M["short_logs"] = ";".join(r["log"].split("/")[0] for r in short)
-    with (OUT / "r4b_analysis.csv").open("w", newline="") as fh:
+    with (OUT / f"{run}_analysis.csv").open("w", newline="") as fh:
         w = csv.writer(fh, lineterminator="\n"); w.writerow(["metric", "value"])
         for k, v in M.items():
             w.writerow([k, v])

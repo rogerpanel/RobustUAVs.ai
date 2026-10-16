@@ -62,6 +62,9 @@ SCHEDULE = [(1, 40, 20, "off"), (3, 90, 30, "off"), (2, 140, 15, "wrong"), (0, 1
 # R4b (pre-registered in paperIII/R4B_PROTOCOL.md before the run): fresh outages on other
 # vehicles, at other times and lengths; spoofing is omitted because SIH rejects it.
 SCHEDULE_B = [(2, 35, 15, "off"), (4, 75, 25, "off"), (5, 120, 12, "off"), (0, 160, 20, "off"), (1, 200, 8, "off")]
+# R4c (pre-registered in paperIII/R4C_PROTOCOL.md before the run): the latched certificate with
+# theta calibrated for the SITL receiver on the R4 and R4b logs, and a third, fresh outage schedule.
+SCHEDULE_C = [(3, 30, 18, "off"), (5, 70, 22, "off"), (0, 110, 14, "off"), (2, 150, 26, "off"), (4, 195, 10, "off")]
 GAP_S = 1.0                       # a fix after more than GAP_S of receiver staleness is a reacquisition
 N_CONV = 3                        # consecutive fixes the estimate must agree with to release the latch
 T_CONNECT, T_READY = 90.0, 240.0      # s; a stage that exceeds its timeout fails with its name
@@ -71,11 +74,16 @@ def log(*a):
     print(time.strftime("[%H:%M:%S]"), *a, flush=True)
 
 
+THETA = THETA_BENIGN    # benign residual ceiling, s; R4c replaces it by the SITL receiver's calibrated value
+
+
 def rho_now(staleness):
-    return KAPPA * (THETA_BENIGN + staleness)
+    return KAPPA * (THETA + staleness)
 
 
-CONV_M = KAPPA * THETA_BENIGN     # the benign floor: agreement threshold between estimate and fix
+def conv_m():
+    """The benign floor: agreement threshold between estimate and fix for releasing the latch."""
+    return KAPPA * THETA
 
 
 class Latch:
@@ -96,7 +104,7 @@ class Latch:
             self.value = max(self.value or 0.0, rho_now(stale_before))
             self.n = 0
         if self.value is not None:
-            self.n = self.n + 1 if innov_m <= CONV_M else 0
+            self.n = self.n + 1 if innov_m <= conv_m() else 0
             if self.n >= N_CONV:
                 self.value, self.n = None, 0
 
@@ -235,7 +243,7 @@ async def session(n_veh, rates, duration, on_rate_done, revision="a"):
 async def run(vs, rate, duration, tag, revision="a"):
     from mavsdk.offboard import PositionNedYaw
     n_veh = len(vs)
-    schedule = SCHEDULE_B if revision == "b" else SCHEDULE
+    schedule = {"b": SCHEDULE_B, "c": SCHEDULE_C}.get(revision, SCHEDULE)
     t0 = time.monotonic()
     dt = 1.0 / rate
     assign = np.full(n_veh, C.IDLE)
@@ -255,7 +263,7 @@ async def run(vs, rate, duration, tag, revision="a"):
         t_obs = time.monotonic()            # after the injection calls, which can take seconds
         stale = np.array([max(0.0, t_obs - v.last_fix_t) if v.last_fix_t else 1e3 for v in vs])
         rho_rx = rho_now(stale)
-        if revision == "b":                 # latched certificate; a disarmed aircraft holds nothing
+        if revision in ("b", "c"):         # latched certificate; a disarmed aircraft holds nothing
             rho = np.array([np.inf if not v.armed else v.latch.rho(r) for v, r in zip(vs, rho_rx)])
         else:
             rho = rho_rx
@@ -426,6 +434,63 @@ def soundness(log_root: Path):
     return rows, samples, events
 
 
+CAL_STALE, CAL_REACQ = 1.0, 10.0   # benign: fresh fix (staleness < 1 s), more than 10 s after any reacquisition
+
+
+def calibrate(dirs):
+    """R4c calibration of the benign floor for the SITL receiver, from earlier runs' ULogs.
+
+    A sample is benign when its staleness is below CAL_STALE s and it lies more than CAL_REACQ s
+    after any GNSS reacquisition. theta_sitl is the largest benign residual err / KAPPA - staleness,
+    i.e. the smallest theta for which every benign sample satisfies err <= KAPPA (theta + staleness).
+    This is the parent's definition of theta (the measured benign ceiling), applied to the SITL
+    receiver. Logs without ground truth or without any fix contribute nothing."""
+    from pyulog import ULog
+    rows, best = [], (-np.inf, "")
+    for d in dirs:
+        for f in sorted(Path(d).rglob("*.ulg")):
+            u = ULog(str(f))
+            D = {x.name: x.data for x in u.data_list if x.multi_id == 0}
+            gp, gt = D.get("vehicle_global_position"), D.get("vehicle_global_position_groundtruth")
+            gps = D.get("vehicle_gps_position") or D.get("sensor_gps")
+            if gp is None or gt is None or gps is None:
+                continue
+            t = gp["timestamp"] * 1e-6
+            tg = gt["timestamp"] * 1e-6
+            err = latlon_dist(gp["lat"], gp["lon"], np.interp(t, tg, gt["lat"]), np.interp(t, tg, gt["lon"]))
+            tgps = gps["timestamp"] * 1e-6
+            fix = gps["fix_type"] >= 3
+            tf = tgps[fix]
+            if not len(tf):
+                continue
+            idx = np.searchsorted(tf, t, side="right") - 1
+            stale = np.where(idx >= 0, t - tf[np.maximum(idx, 0)], np.inf)
+            reacq = tgps[1:][fix[1:] & ~fix[:-1]]
+            if len(reacq):
+                ir = np.searchsorted(reacq, t, side="right") - 1
+                since = np.where(ir >= 0, t - reacq[np.maximum(ir, 0)], np.inf)
+            else:
+                since = np.full_like(t, np.inf)
+            ok = (stale < CAL_STALE) & (since > CAL_REACQ)
+            if not ok.any():
+                continue
+            res = err[ok] / KAPPA - stale[ok]
+            name = f"{Path(d).name}/{f.relative_to(d)}"
+            rows.append({"log": name, "benign_samples": int(ok.sum()), "max_residual_s": round(float(res.max()), 4),
+                         "q999_residual_s": round(float(np.quantile(res, 0.999)), 4),
+                         "max_err_m": round(float(err[ok].max()), 3)})
+            if res.max() > best[0]:
+                best = (float(res.max()), name)
+    out = [{"metric": "theta_parent_s", "value": THETA_BENIGN},
+           {"metric": "theta_sitl_s", "value": round(best[0], 4)},
+           {"metric": "theta_sitl_from_log", "value": best[1]},
+           {"metric": "floor_parent_m", "value": round(KAPPA * THETA_BENIGN, 3)},
+           {"metric": "floor_sitl_m", "value": round(KAPPA * best[0], 3)},
+           {"metric": "benign_samples", "value": sum(r["benign_samples"] for r in rows)},
+           {"metric": "logs", "value": len(rows)}]
+    return out, rows
+
+
 def write(name, rows):
     if not rows:
         return
@@ -440,11 +505,29 @@ def main():
     ap.add_argument("--duration", type=float, default=240.0)
     ap.add_argument("--logs", type=Path, default=None, help="PX4 rootfs dir holding the instance logs")
     ap.add_argument("--soundness-only", action="store_true")
-    ap.add_argument("--revision", choices=("a", "b"), default="a",
+    ap.add_argument("--revision", choices=("a", "b", "c"), default="a",
                     help="a: receiver certificate, first schedule (R4); b: latched certificate, "
-                         "arming check, fresh schedule (R4b, R4B_PROTOCOL.md)")
+                         "arming check, fresh schedule (R4b, R4B_PROTOCOL.md); c: as b with theta "
+                         "calibrated for the SITL receiver and a third schedule (R4c, R4C_PROTOCOL.md)")
+    ap.add_argument("--calibrate", type=Path, nargs="+", default=None,
+                    help="R4c: calibrate theta for the SITL receiver from these rootfs dirs and exit")
+    ap.add_argument("--theta-file", type=Path, default=None, help="use theta_sitl_s from this calibration CSV")
     a = ap.parse_args()
-    pre = "r4b" if a.revision == "b" else "r4"
+    if a.calibrate:
+        out, rows = calibrate(a.calibrate)
+        write("r4c_calibration.csv", out)
+        write("r4c_calibration_logs.csv", rows or [{"log": "", "benign_samples": 0}])
+        for r in out:
+            log(r)
+        return
+    global THETA
+    if a.revision == "c":
+        if not a.theta_file:
+            raise SystemExit("revision c needs --theta-file (the R4c calibration)")
+        cal = {r["metric"]: r["value"] for r in csv.DictReader(a.theta_file.open())}
+        THETA = float(cal["theta_sitl_s"])
+        log(f"theta = {THETA} s (calibrated for the SITL receiver; parent {THETA_BENIGN} s)")
+    pre = {"b": "r4b", "c": "r4c"}.get(a.revision, "r4")
     if not a.soundness_only:
         rows, inj = [], []
 

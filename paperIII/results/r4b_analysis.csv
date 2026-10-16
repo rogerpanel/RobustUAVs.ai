@@ -1,6 +1,9 @@
 metric,value
+run,r4b
 primary_latched_transient,70
+latched_all,182
 receiver_transient,138
+receiver_all,250
 verdict,fail
 informative,1
 reacquisitions,8
