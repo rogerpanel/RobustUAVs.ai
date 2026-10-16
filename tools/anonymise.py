@@ -113,6 +113,13 @@ RULES: list[tuple[str, str]] = [
     (r"RUNBOOK_CLAUDE_CODE\.md", "RUNBOOK.md"),
     (r"\bClaude Code\b", "the coding assistant"),
     (r"\bCLAUDE\.md\b", "docs/PROJECT_CONTEXT.md"),
+    # Working paths and branch names the assistant's sandbox stamped into
+    # prompts and runbooks: a worktree path becomes repository-relative, any
+    # other sandbox path a placeholder, and the branch prefix a neutral one.
+    (r"/tmp/claude-\d+/[^/\s]+/[0-9a-f-]{36}/scratchpad/wt\d+/", ""),
+    (r"/tmp/claude-\d+/[^/\s]+/[0-9a-f-]{36}/scratchpad/", "<workdir>/"),
+    (r"https://claude\.ai/code/\S*", ""),
+    (r"\bclaude/(?=[\w.-])", "dev/"),
     # Contact details.
     (r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.(?:com|org|net|edu|ru|it|ai)\b",
      "anonymous@example.org"),
@@ -134,6 +141,7 @@ SKIP_FILES = {
     "paper/response_to_supervisor.tex", "paper/response_to_supervisor.pdf",
     "docs/paperD_v3_response_to_supervisor.md",
     ".gitignore.local",
+    "paperII/experiments/screening_page.html",  # runs only inside the hosted page runtime it was built for
 }
 # Suffixes we rewrite in place. Anything else is copied byte-for-byte and
 # reported, because a silent binary copy is how a name reaches a reviewer.
@@ -161,7 +169,7 @@ SKIP_SUFFIXES = {".aux", ".log", ".out", ".bbl", ".blg", ".toc", ".synctex",
 # author-identity rule still is.
 VERBATIM_DATA = ("paperII/corpus/",)
 TOOLING = {r"Co-Authored-By: Claude[^\n]*\n?", r"Claude-Session: [^\n]*\n?", r"\bClaude Code\b",
-           r"RUNBOOK_CLAUDE_CODE\.md"}
+           r"RUNBOOK_CLAUDE_CODE\.md", r"\bclaude/(?=[\w.-])"}
 
 
 def is_verbatim(rel: Path) -> bool:
@@ -292,6 +300,7 @@ def verify(dst: Path) -> list[tuple[Path, int, str]]:
         r"(?i:robustuavs)", r"(?i:robustidps)", r"10\.34740", r"Mauro Conti",
         r"Cor\\`o", r"Corò", r"SPRITZ", r"Padova", r"Padua", r"Missouri S",
         r"CLAUDE\.md", r"(?i:claude[_ ]code)", r"Co-Authored-By", r"Claude-Session",
+        r"/tmp/claude-", r"\bclaude/", r"claude\.ai/code", r"\bclaude\.use\(", r"claude:viewport",
         r"[A-Za-z0-9._%+-]+@(?!example\.org)[A-Za-z0-9.-]+\.(?:com|org|net|edu|ru|it|ai)\b",
     ]
     rx = re.compile("|".join(tokens))

@@ -47,7 +47,9 @@ SUBSETS = {
 # Large or irrelevant artefacts left out of the reviewer copy.
 EXCLUDE = [re.compile(p) for p in (r"\.pt$", r"/logs_r/", r"/server_logs/", r"/__pycache__/",
                                    r"\.pyc$", r"/_smoke", r"/node_modules/", r"\.pdf$",
-                                   r"/paperIV/results/logs/")]
+                                   r"/paperIV/results/logs/",
+                                   # runs only inside the hosted page runtime it was built for
+                                   r"/paperII/experiments/screening_page\.html$")]
 
 REVIEWERS = {
     "I": """# Artifact for Paper I (anonymised)
