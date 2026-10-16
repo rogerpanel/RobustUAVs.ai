@@ -241,3 +241,46 @@ stop rule of the manuscript is applied to a sampled corpus).
   (20261025). `snowball_sample.py` now refuses to sample while any screening
   batch is pending or invalid. L1 gave a single generic exclusion reason in 15
   of 18 batches; its decisions remain per record.
+
+## Amendment 6 (2026-10-16): field estimates over the searched corpus and the snowball strata, disclosed
+
+Fixed after the screening of all three snowballing iterations and the coding
+and adjudication of iterations 1-2, before iteration 3 was adjudicated and
+before any estimate was computed with snowball strata. It is not blind: the
+iteration 1-2 stop-rule results (16 % and 23 % new eligible papers, no new
+type-plane cell, a falling tier-A share among the snowball papers) were seen
+first. It changes no screening, coding or adjudication rule.
+
+- **Why**: amendment 4 estimates shares of the searched corpus. Snowballing
+  found an estimated 43 % more eligible papers after two iterations, so "share
+  of the field" must cover them, or say that it does not.
+- **Strata**: main core, main remainder (amendments 3-4); snowball1;
+  snowball2_core and snowball2_remainder; snowball3. Strata are disjoint by
+  construction (every snowball candidate was de-duplicated against the
+  candidates and all earlier iterations). Each coded paper of stratum s stands
+  for N_s / n_s records, N_s the stratum's estimated includes (screened in
+  full: the count; sampled: N_rem x p_hat) and n_s its papers coded, eligible
+  or not, exactly as amendment 4 weighs the main strata.
+- **Intervals**: the stratified percentile bootstrap of `corpus_estimates.py`
+  and `hypotheses_full.py` (B = 4000, their seeds 20261020 and 20261021),
+  extended to all six strata: coded papers resampled within each stratum, and
+  the include count of every sampled stratum redrawn as N_rem x Binomial(m,
+  p_hat) / m.
+- **What is reported**: every corpus-level share and every hypothesis quantity
+  is reported on the expanded field (primary) and on the searched corpus
+  (amendment 4, kept unchanged as a labelled column). A conclusion that differs
+  between the two is reported as differing; neither is chosen after the fact.
+  The C1-only and C2-only sensitivity runs are repeated on the expanded field.
+- **What the expanded field is**: the searched corpus plus the citation
+  neighbourhood reached by three snowballing iterations from coded seeds. The
+  snowball strata are probability samples of that neighbourhood, not of the
+  literature as a whole; the paper says so, and that the corpus is not
+  saturated (amendment 5's stop rule was not met).
+- **New classes**: the `NEW:` labels of iterations 1-3 are grouped label by
+  label into classes as amendment 5 prescribes (an existing class, including
+  the five added in the full study, when its grouping rule fits; otherwise a
+  new added class), from the coded label and note only, before any estimate is
+  recomputed; `new_class_map.csv` is extended and the transfer table covers
+  any new class.
+
+- 2026-10-16: amendment 6 (this section).
