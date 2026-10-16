@@ -35,6 +35,10 @@ def main() -> int:
     csv.field_size_limit(10 ** 9)
     S = C / "snowball"
     cand = {r["cid"]: r for r in csv.DictReader((S / f"iter{k}_candidates.csv").open())}
+    st0 = {r["metric"]: r["value"] for r in csv.DictReader((S / f"iter{k}_screening_status.csv").open())}
+    if int(st0["batches_pending"]) or int(st0["batches_invalid"]):
+        raise SystemExit(f"iteration {k}: screening incomplete ({st0['batches_pending']} pending, "
+                         f"{st0['batches_invalid']} invalid batches); not sampling")
     dec = list(csv.DictReader((S / f"iter{k}_decisions.csv").open()))
     rng = np.random.default_rng(20261023 + k)
     if "stratum" not in dec[0]:
