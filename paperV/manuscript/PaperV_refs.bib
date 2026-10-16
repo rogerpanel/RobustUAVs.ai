@@ -1,0 +1,580 @@
+% =====================================================================
+%  PaperV_refs.bib -- bibliography for Paper V (RobustUAVs.ai programme)
+%  "Keep Flying Whatever the Model Says"
+%
+%  Every entry below was taken from the research notes in
+%  paperV/docs/research_notes/
+%  (lit_*.md BibTeX blocks) or from the programme's own bib files
+%  (Paper III / Paper IV refs.bib).  No entry was added from memory.
+%
+%  Verification flags are preserved from the notes:
+%    [V]   verified against the primary source during the research session
+%    [K]   bibliographic details (volume/pages/DOI) from prior knowledge,
+%          NOT re-fetched; resolve the DOI before submission
+%    [M]   bibliographic details from prior knowledge, NOT re-verified;
+%          spot-check before camera-ready
+%    [R]   arXiv id / venue recalled, not re-fetched; check before camera-ready
+%    [R?]  recalled with lower confidence; MUST be checked
+%    [P]   programme entry copied verbatim from Paper III/IV refs.bib
+%  Entries flagged [K], [M], [R] or [R?] must be checked before submission.
+% =====================================================================
+
+% ---------------------------------------------------------------------
+% Programme (own work; anonymised for double-blind review)
+% ---------------------------------------------------------------------
+% [P] identical in Paper I, II, IV refs.bib
+@misc{parentpaper,
+  author = {{Anonymous}},
+  title  = {From Wire to Flight: A Conditional Mission-Completion Guarantee for {UAVs}},
+  note   = {Under submission; anonymised for double-blind review},
+  year   = {2026}}
+% [P] Paper IV refs.bib
+@misc{paperI,
+  author = {{Anonymous}},
+  title  = {What Authenticity Costs in Metres: A Certified Budget for Cryptography and Sensing in {UAV} Navigation},
+  note   = {Under submission},
+  year   = {2026}}
+% [P] Paper IV refs.bib
+@misc{paperII,
+  author = {{Anonymous}},
+  title  = {{SoK}: The Quantifier Gap Between Certified Robustness and Airworthiness Assurance},
+  note   = {Under submission},
+  year   = {2026}}
+% [P] Paper IV refs.bib
+@misc{paperIII,
+  author = {{Anonymous}},
+  title  = {Certificates as Constraints: Feasibility-Preserving Multi-Agent Reinforcement Learning for {UAV} Swarms Whose Guarantees Degrade},
+  note   = {Under submission},
+  year   = {2026}}
+% [P] title from Paper IV main.tex; entry pattern from Paper II/IV refs.bib
+@misc{paperIV,
+  author = {{Anonymous}},
+  title  = {When the Attacker Is Indistinguishable from the Weather: A Cross-Layer Benchmark and a Unified Perturbation Budget for Certified {UAV} Autonomy},
+  note   = {Under submission},
+  year   = {2026}}
+
+% ---------------------------------------------------------------------
+% Statistics and search (programme bibs)
+% ---------------------------------------------------------------------
+% [P] Paper IV refs.bib
+@article{clopper1934,
+  author  = {Clopper, C. J. and Pearson, E. S.},
+  title   = {The Use of Confidence or Fiducial Limits Illustrated in the Case of the Binomial},
+  journal = {Biometrika}, volume = {26}, number = {4}, pages = {404--413}, year = {1934},
+  doi     = {10.1093/biomet/26.4.404}}
+% [P] Paper IV refs.bib (no DOI)
+@article{holm1979,
+  author  = {Holm, Sture},
+  title   = {A Simple Sequentially Rejective Multiple Test Procedure},
+  journal = {Scandinavian J. Statistics}, volume = {6}, number = {2}, pages = {65--70}, year = {1979}}
+% [P] Paper IV refs.bib
+@inproceedings{agarwal2021rliable,
+  author    = {Agarwal, Rishabh and Schwarzer, Max and Castro, Pablo Samuel and Courville, Aaron C. and Bellemare, Marc G.},
+  title     = {Deep Reinforcement Learning at the Edge of the Statistical Precipice},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)}, volume = {34}, pages = {29304--29320}, year = {2021}}
+% [P] Paper IV refs.bib (standard textbook; verify ISBN)
+@book{rubinstein2004cem,
+  author    = {Rubinstein, Reuven Y. and Kroese, Dirk P.},
+  title     = {The Cross-Entropy Method: A Unified Approach to Combinatorial Optimization, {Monte-Carlo} Simulation and Machine Learning},
+  publisher = {Springer}, year = {2004}}
+% [P] Paper IV refs.bib
+@misc{hansen2016cma,
+  author       = {Hansen, Nikolaus},
+  title        = {The {CMA} Evolution Strategy: A Tutorial},
+  howpublished = {arXiv:1604.00772}, year = {2016}}
+% [P] Paper III refs.bib
+@article{markgraf2025actionprojection,
+  author  = {Markgraf, Hannah and Sawant, Shamburaj and Krasowski, Hanna and Sch{\"a}fer, Lukas and Gros, S{\'e}bastien and Althoff, Matthias},
+  title   = {Safe Reinforcement Learning using Action Projection: Safeguard the Policy or the Environment?},
+  journal = {Transactions on Machine Learning Research}, note = {arXiv:2509.12833}, year = {2025}}
+
+% ---------------------------------------------------------------------
+% Safety filters, MPC, RTA, CBF (lit_safety_filters_mpc.md)
+% ---------------------------------------------------------------------
+% [K] DOI from prior knowledge; listed in ETH Research Collection [V existence]
+@article{wabersich2021psf,
+  author  = {Wabersich, Kim P. and Zeilinger, Melanie N.},
+  title   = {A predictive safety filter for learning-based control of constrained nonlinear dynamical systems},
+  journal = {Automatica}, volume = {129}, pages = {109597}, year = {2021},
+  doi     = {10.1016/j.automatica.2021.109597}, eprint = {1812.05506}, archivePrefix = {arXiv}}
+% [K]
+@inproceedings{wabersich2018linear,
+  author    = {Wabersich, Kim P. and Zeilinger, Melanie N.},
+  title     = {Linear model predictive safety certification for learning-based control},
+  booktitle = {Proc. 57th IEEE Conf. Decision and Control (CDC)}, pages = {7130--7135}, year = {2018},
+  doi       = {10.1109/CDC.2018.8619829}, eprint = {1803.08552}, archivePrefix = {arXiv}}
+% [V for content via arXiv abs] / [K] for TAC volume, pages, DOI
+@article{wabersich2023pcbf,
+  author  = {Wabersich, Kim P. and Zeilinger, Melanie N.},
+  title   = {Predictive control barrier functions: Enhanced safety mechanisms for learning-based control},
+  journal = {IEEE Trans. Automatic Control}, volume = {68}, number = {5}, pages = {2638--2651}, year = {2023},
+  doi     = {10.1109/TAC.2022.3175628}, eprint = {2105.10241}, archivePrefix = {arXiv}}
+% [V for content via NSF PAR preprint of the CSM survey] / [K] for bibliographic fields
+@article{wabersich2023datadriven,
+  author  = {Wabersich, Kim P. and Taylor, Andrew J. and Choi, Jason J. and Sreenath, Koushil and Tomlin, Claire J. and Ames, Aaron D. and Zeilinger, Melanie N.},
+  title   = {Data-driven safety filters: {Hamilton-Jacobi} reachability, control barrier functions, and predictive methods for uncertain systems},
+  journal = {IEEE Control Systems Magazine}, volume = {43}, number = {5}, pages = {137--177}, year = {2023},
+  doi     = {10.1109/MCS.2023.3291885}}
+% [K] (venue corrected: Annual Review of Control, Robotics, and Autonomous Systems)
+@article{hewing2020mpclearning,
+  author  = {Hewing, Lukas and Wabersich, Kim P. and Menner, Marcel and Zeilinger, Melanie N.},
+  title   = {Learning-based model predictive control: Toward safe learning in control},
+  journal = {Annual Review of Control, Robotics, and Autonomous Systems}, volume = {3}, pages = {269--296}, year = {2020},
+  doi     = {10.1146/annurev-control-090419-075625}}
+% [K]
+@book{rawlings2017mpc,
+  author    = {Rawlings, James B. and Mayne, David Q. and Diehl, Moritz M.},
+  title     = {Model Predictive Control: Theory, Computation, and Design}, edition = {2nd},
+  publisher = {Nob Hill Publishing}, address = {Madison, WI}, year = {2017}, isbn = {978-0-9759377-3-0}}
+% [K]
+@inproceedings{seto1998simplex,
+  author    = {Seto, Danbing and Krogh, Bruce and Sha, Lui and Chutinan, Alongkrit},
+  title     = {The {Simplex} architecture for safe online control system upgrades},
+  booktitle = {Proc. American Control Conf. (ACC)}, volume = {6}, pages = {3504--3508}, year = {1998},
+  doi       = {10.1109/ACC.1998.703255}}
+% [K]; also in Paper I/II refs.bib [P]
+@article{sha2001simplex,
+  author  = {Sha, Lui}, title = {Using simplicity to control complexity},
+  journal = {IEEE Software}, volume = {18}, number = {4}, pages = {20--28}, year = {2001}, doi = {10.1109/MS.2001.936213}}
+% [V existence via arXiv] / [K] for NFM volume, pages, DOI
+@inproceedings{mehmood2022bbsimplex,
+  author    = {Mehmood, Usama and Sheikhi, Sanaz and Bak, Stanley and Smolka, Scott A. and Stoller, Scott D.},
+  title     = {The Black-Box {Simplex} Architecture for Runtime Assurance of Autonomous {CPS}},
+  booktitle = {NASA Formal Methods (NFM)}, series = {LNCS}, volume = {13260}, pages = {231--250}, year = {2022},
+  doi       = {10.1007/978-3-031-06773-0_12}, eprint = {2102.12981}, archivePrefix = {arXiv}}
+% [V content via arXiv:2110.03506] / [K] for CSM volume, pages, DOI
+@article{hobbs2023rta,
+  author  = {Hobbs, Kerianne L. and Mote, Mark L. and Abate, Matthew C. L. and Coogan, Samuel D. and Feron, Eric M.},
+  title   = {Runtime assurance for safety-critical systems: An introduction to safety filtering approaches for complex control systems},
+  journal = {IEEE Control Systems Magazine}, volume = {43}, number = {2}, pages = {28--65}, year = {2023},
+  doi     = {10.1109/MCS.2022.3234380}, eprint = {2110.03506}, archivePrefix = {arXiv}}
+% [V] (ASTM store page, active standard, 2021)
+@techreport{astm2021f3269,
+  author      = {{ASTM International}},
+  title       = {{ASTM F3269-21}: Standard Practice for Methods to Safely Bound Behavior of Aircraft Systems Containing Complex Functions Using Run-Time Assurance},
+  institution = {ASTM International}, address = {West Conshohocken, PA}, year = {2021}, doi = {10.1520/F3269-21}}
+% [K]
+@inproceedings{gurriet2018online,
+  author    = {Gurriet, Thomas and Mote, Mark and Ames, Aaron D. and Feron, Eric},
+  title     = {An online approach to active set invariance},
+  booktitle = {Proc. IEEE CDC}, pages = {3592--3599}, year = {2018}, doi = {10.1109/CDC.2018.8619139}}
+% [K]
+@inproceedings{chen2021backupcbf,
+  author    = {Chen, Yuxiao and Jankovic, Mrdjan and Santillo, Mario and Ames, Aaron D.},
+  title     = {Backup control barrier functions: Formulation and comparative study},
+  booktitle = {Proc. IEEE CDC}, pages = {6835--6841}, year = {2021},
+  doi       = {10.1109/CDC45484.2021.9683111}, eprint = {2104.11332}, archivePrefix = {arXiv}}
+% [K]
+@article{ames2017cbf,
+  author  = {Ames, Aaron D. and Xu, Xiangru and Grizzle, Jessy W. and Tabuada, Paulo},
+  title   = {Control barrier function based quadratic programs for safety critical systems},
+  journal = {IEEE Trans. Automatic Control}, volume = {62}, number = {8}, pages = {3861--3876}, year = {2017},
+  doi     = {10.1109/TAC.2016.2638961}}
+% [K]
+@inproceedings{ames2019cbf,
+  author    = {Ames, Aaron D. and Coogan, Samuel and Egerstedt, Magnus and Notomista, Gennaro and Sreenath, Koushil and Tabuada, Paulo},
+  title     = {Control barrier functions: Theory and applications},
+  booktitle = {Proc. European Control Conf. (ECC)}, pages = {3420--3431}, year = {2019}, doi = {10.23919/ECC.2019.8796030}}
+% [K]
+@article{kolathaya2019issf,
+  author  = {Kolathaya, Shishir and Ames, Aaron D.},
+  title   = {Input-to-state safety with control barrier functions},
+  journal = {IEEE Control Systems Letters}, volume = {3}, number = {1}, pages = {108--113}, year = {2019}, doi = {10.1109/LCSYS.2018.2853698}}
+% [K]
+@inproceedings{zeng2021mpccbf,
+  author    = {Zeng, Jun and Zhang, Bike and Sreenath, Koushil},
+  title     = {Safety-critical model predictive control with discrete-time control barrier function},
+  booktitle = {Proc. American Control Conf. (ACC)}, pages = {3882--3889}, year = {2021},
+  doi       = {10.23919/ACC50511.2021.9483029}, eprint = {2007.11718}, archivePrefix = {arXiv}}
+% [K]
+@article{wang2017multirobot,
+  author  = {Wang, Li and Ames, Aaron D. and Egerstedt, Magnus},
+  title   = {Safety barrier certificates for collisions-free multirobot systems},
+  journal = {IEEE Trans. Robotics}, volume = {33}, number = {3}, pages = {661--674}, year = {2017}, doi = {10.1109/TRO.2017.2659727}}
+% [K]
+@article{mayne2005tube,
+  author  = {Mayne, David Q. and Seron, Mar{\'\i}a M. and Rakovi{\'c}, Sa{\v s}a V.},
+  title   = {Robust model predictive control of constrained linear systems with bounded disturbances},
+  journal = {Automatica}, volume = {41}, number = {2}, pages = {219--224}, year = {2005}, doi = {10.1016/j.automatica.2004.08.019}}
+% [K]
+@article{chisci2001,
+  author  = {Chisci, Luigi and Rossiter, J. Anthony and Zappa, Giovanni},
+  title   = {Systems with persistent disturbances: predictive control with restricted constraints},
+  journal = {Automatica}, volume = {37}, number = {7}, pages = {1019--1028}, year = {2001}, doi = {10.1016/S0005-1098(01)00051-6}}
+% [K]
+@inproceedings{limon2002iss,
+  author    = {Lim{\'o}n Marruedo, Daniel and {\'A}lamo, Teodoro and Camacho, Eduardo F.},
+  title     = {Input-to-state stable {MPC} for constrained discrete-time nonlinear systems with bounded additive uncertainties},
+  booktitle = {Proc. 41st IEEE CDC}, pages = {4619--4624}, year = {2002}, doi = {10.1109/CDC.2002.1185106}}
+% [V content via arXiv:1910.12081] / [K] for TAC volume, pages, DOI
+@article{kohler2021robust,
+  author  = {K{\"o}hler, Johannes and Soloperto, Raffaele and M{\"u}ller, Matthias A. and Allg{\"o}wer, Frank},
+  title   = {A computationally efficient robust model predictive control framework for uncertain nonlinear systems},
+  journal = {IEEE Trans. Automatic Control}, volume = {66}, number = {2}, pages = {794--801}, year = {2021},
+  doi     = {10.1109/TAC.2020.2982585}, eprint = {1910.12081}, archivePrefix = {arXiv}}
+% [K]
+@inproceedings{herbert2017fastrack,
+  author    = {Herbert, Sylvia L. and Chen, Mo and Han, SooJean and Bansal, Somil and Fisac, Jaime F. and Tomlin, Claire J.},
+  title     = {{FaSTrack}: A modular framework for fast and guaranteed safe motion planning},
+  booktitle = {Proc. IEEE CDC}, pages = {1517--1522}, year = {2017}, doi = {10.1109/CDC.2017.8263867}}
+% [K]
+@article{fisac2019general,
+  author  = {Fisac, Jaime F. and Akametalu, Anayo K. and Zeilinger, Melanie N. and Kaynama, Shahab and Gillula, Jeremy and Tomlin, Claire J.},
+  title   = {A general safety framework for learning-based control in uncertain robotic systems},
+  journal = {IEEE Trans. Automatic Control}, volume = {64}, number = {7}, pages = {2737--2752}, year = {2019}, doi = {10.1109/TAC.2018.2876389}}
+% [V existence] / [K] volume 7 pp. 47-72
+@article{hsu2024safetyfilter,
+  author  = {Hsu, Kai-Chieh and Hu, Haimin and Fisac, Jaime F.},
+  title   = {The safety filter: A unified view of safety-critical control in autonomous systems},
+  journal = {Annual Review of Control, Robotics, and Autonomous Systems}, volume = {7}, pages = {47--72}, year = {2024},
+  doi     = {10.1146/annurev-control-071723-102940}, eprint = {2309.05837}, archivePrefix = {arXiv}}
+% [V content via arXiv:2003.07819] / [K] volume, pages
+@article{reis2021undesired,
+  author  = {Reis, Matheus F. and Aguiar, A. Pedro and Tabuada, Paulo},
+  title   = {Control barrier function-based quadratic programs introduce undesirable asymptotically stable equilibria},
+  journal = {IEEE Control Systems Letters}, volume = {5}, number = {2}, pages = {731--736}, year = {2021},
+  doi     = {10.1109/LCSYS.2020.3004797}, eprint = {2003.07819}, archivePrefix = {arXiv}}
+% [V existence via arXiv:1911.09146 and CMU RI page]
+@inproceedings{grover2020deadlock,
+  author    = {Grover, Jaskaran Singh and Liu, Changliu and Sycara, Katia},
+  title     = {Deadlock analysis and resolution for multi-robot systems},
+  booktitle = {Algorithmic Foundations of Robotics XIV (WAFR 2020)}, series = {Springer Proc. Advanced Robotics}, volume = {17}, year = {2021},
+  eprint    = {1911.09146}, archivePrefix = {arXiv}}
+% [V content via arXiv:2403.17861]; venue inferred (ECC 2024) -- verify
+@inproceedings{arnstrom2024stealthy,
+  author    = {Arnstr{\"o}m, Daniel and Teixeira, Andr{\'e} M. H.},
+  title     = {Stealthy deactivation of safety filters},
+  booktitle = {Proc. European Control Conf. (ECC)}, year = {2024}, eprint = {2403.17861}, archivePrefix = {arXiv}, note = {Venue inferred; verify}}
+% [V] arXiv:2505.06845 (preprint)
+@misc{tan2025securesf,
+  author = {Tan, Xiao and Sundar, Junior and Bruzzone, Renzo and Ong, Pio and Lunardi, Willian T. and Andreoni, Martin and Tabuada, Paulo and Ames, Aaron D.},
+  title  = {Secure safety filter: Towards safe flight control under sensor attacks}, year = {2025}, eprint = {2505.06845}, archivePrefix = {arXiv}}
+% [K]
+@article{fawzi2014secure,
+  author  = {Fawzi, Hamza and Tabuada, Paulo and Diggavi, Suhas},
+  title   = {Secure estimation and control for cyber-physical systems under adversarial attacks},
+  journal = {IEEE Trans. Automatic Control}, volume = {59}, number = {6}, pages = {1454--1467}, year = {2014}, doi = {10.1109/TAC.2014.2303233}}
+% [K]
+@inproceedings{alshiekh2018shielding,
+  author    = {Alshiekh, Mohammed and Bloem, Roderick and Ehlers, R{\"u}diger and K{\"o}nighofer, Bettina and Niekum, Scott and Topcu, Ufuk},
+  title     = {Safe reinforcement learning via shielding},
+  booktitle = {Proc. AAAI Conf. Artificial Intelligence}, volume = {32}, number = {1}, year = {2018}, doi = {10.1609/aaai.v32i1.11797}}
+% [K]
+@article{stellato2020osqp,
+  author  = {Stellato, Bartolomeo and Banjac, Goran and Goulart, Paul and Bemporad, Alberto and Boyd, Stephen},
+  title   = {{OSQP}: an operator splitting solver for quadratic programs},
+  journal = {Mathematical Programming Computation}, volume = {12}, number = {4}, pages = {637--672}, year = {2020}, doi = {10.1007/s12532-020-00179-2}}
+% [V] content from PDF; DOI and pages not retrieved
+@article{schuck2025swarmgpt,
+  author  = {Schuck, Martin and Dahanaggamaarachchi, Dinushka Orrin and Sprenger, Ben and Vyas, Vedant and Zhou, Siqi and Schoellig, Angela P.},
+  title   = {{SwarmGPT}: Combining large language models with safe motion planning for drone swarm choreography},
+  journal = {IEEE Robotics and Automation Letters}, volume = {10}, number = {11}, year = {2025}, note = {DOI/pages to verify}}
+
+% ---------------------------------------------------------------------
+% LLM robot / UAV agents, attacks and guardrails (lit_llm_robot_agents.md)
+% ---------------------------------------------------------------------
+% [R]
+@inproceedings{ahn2022saycan,
+  title = {Do As I Can, Not As I Say: Grounding Language in Robotic Affordances},
+  author = {Ahn, Michael and Brohan, Anthony and Brown, Noah and others},
+  booktitle = {Conference on Robot Learning (CoRL)}, year = {2022}, eprint = {2204.01691}, archivePrefix = {arXiv}}
+% [R]
+@inproceedings{liang2023cap,
+  title = {Code as Policies: Language Model Programs for Embodied Control},
+  author = {Liang, Jacky and Huang, Wenlong and Xia, Fei and Xu, Peng and Hausman, Karol and Ichter, Brian and Florence, Pete and Zeng, Andy},
+  booktitle = {IEEE International Conference on Robotics and Automation (ICRA)}, year = {2023}, eprint = {2209.07753}, archivePrefix = {arXiv}}
+% [R]
+@article{vemprala2024chatgpt,
+  title = {{ChatGPT} for Robotics: Design Principles and Model Abilities},
+  author = {Vemprala, Sai H. and Bonatti, Rogerio and Bucker, Arthur and Kapoor, Ashish},
+  journal = {IEEE Access}, volume = {12}, year = {2024}, eprint = {2306.17582}, archivePrefix = {arXiv}}
+% [R]
+@inproceedings{brohan2023rt2,
+  title = {{RT-2}: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control},
+  author = {Brohan, Anthony and others},
+  booktitle = {CoRL}, year = {2023}, eprint = {2307.15818}, archivePrefix = {arXiv}}
+% [V] preprint
+@article{chen2023typefly,
+  title = {{TypeFly}: Flying Drones with Large Language Model},
+  author = {Chen, Guojun and Yu, Xiaojing and Zhong, Lin},
+  journal = {arXiv preprint arXiv:2312.14950}, year = {2023}}
+% [V] (CoRL 2023 per arXiv comment; confirm main track vs workshop)
+@inproceedings{tagliabue2023real,
+  title = {{REAL}: Resilience and Adaptation using Large Language Models on Autonomous Aerial Robots},
+  author = {Tagliabue, Andrea and Kondo, Kota and Zhao, Tong and Peterson, Mason and Tewari, Claudius T. and How, Jonathan P.},
+  booktitle = {CoRL}, year = {2023}, eprint = {2311.01403}, archivePrefix = {arXiv}}
+% [V] preprint
+@article{zhao2026sagellm,
+  title = {{SAGE-LLM}: Towards Safe and Generalizable {LLM} Controller with Fuzzy-{CBF} Verification and Graph-Structured Knowledge Retrieval for {UAV} Decision},
+  author = {Zhao, Wenzhe and Zhao, Yang and Liu, Ganchao and Jiang, Zhiyu and Ma, Dandan and Li, Zihao and Li, Xuelong},
+  journal = {arXiv preprint arXiv:2602.23719}, year = {2026}}
+% [R] (IEEE OJVT 2024 per memory)
+@article{javaid2024llmuav,
+  title = {Large Language Models for {UAVs}: Current State and Pathways to the Future},
+  author = {Javaid, Shumaila and others},
+  journal = {arXiv preprint arXiv:2405.01745}, year = {2024}}
+% [R] fetch blocked; RoboGuard's re-run of RoboPAIR is [V]
+@inproceedings{robey2025robopair,
+  title = {Jailbreaking {LLM}-Controlled Robots},
+  author = {Robey, Alexander and Ravichandran, Zachary and Kumar, Vijay and Hassani, Hamed and Pappas, George J.},
+  booktitle = {ICRA}, year = {2025}, eprint = {2410.13691}, archivePrefix = {arXiv}}
+% [R]
+@inproceedings{zhang2025badrobot,
+  title = {{BadRobot}: Jailbreaking Embodied {LLMs} in the Physical World},
+  author = {Zhang, Hangtao and others},
+  booktitle = {ICLR}, year = {2025}, eprint = {2407.20242}, archivePrefix = {arXiv}}
+% [R]
+@article{lu2024poex,
+  title = {{POEX}: Policy Executable Embodied {AI} Jailbreak Attacks},
+  author = {Lu, Xuancun and others},
+  journal = {arXiv preprint arXiv:2412.16633}, year = {2024}}
+% [V] (author order may differ; SaTML 2026 presentation found, venue unconfirmed)
+@article{burbano2025chai,
+  title = {{CHAI}: Command Hijacking against Embodied {AI}},
+  author = {Burbano, Luis and Ortiz, Diego and Sun, Qi and Yang, Siwei and Tu, Haoqin and Xie, Cihang and Cao, Yinzhi and Cardenas, Alvaro A.},
+  journal = {arXiv preprint arXiv:2510.00181}, year = {2025}}
+% [V] preprint
+@article{tang2024physicalsafety,
+  title = {Defining and Evaluating Physical Safety for Large Language Models},
+  author = {Tang, Yung-Chen and Chen, Pin-Yu and Ho, Tsung-Yi},
+  journal = {arXiv preprint arXiv:2411.02317}, year = {2024}}
+% [V] accepted to IEEE RA-L, Feb 2026
+@article{ravichandran2026roboguard,
+  title = {Safety Guardrails for {LLM}-Enabled Robots},
+  author = {Ravichandran, Zachary and Robey, Alexander and Kumar, Vijay and Pappas, George J. and Hassani, Hamed},
+  journal = {IEEE Robotics and Automation Letters}, year = {2026}, eprint = {2503.07885}, archivePrefix = {arXiv}}
+% [V]
+@article{hafez2025reachllm,
+  title = {Safe {LLM}-Controlled Robots with Formal Guarantees via Reachability Analysis},
+  author = {Hafez, Ahmad and Naderi Akhormeh, Alireza and Hegazy, Amr and Alanwar, Amr},
+  journal = {arXiv preprint arXiv:2503.03911}, year = {2025}}
+% [V]
+@article{lin2025sandra,
+  title = {{SanDRA}: Safe Large-Language-Model-Based Decision Making for Automated Vehicles Using Reachability Analysis},
+  author = {Lin, Yuanfei and Illing, Sebastian and Althoff, Matthias},
+  journal = {arXiv preprint arXiv:2510.06717}, year = {2025}}
+% [V]
+@article{khan2025safer,
+  title = {Safety Aware Task Planning via Large Language Models in Robotics},
+  author = {Khan, Azal Ahmad and Andrev, Michael and Murtaza, Muhammad Ali and Aguilera, Sergio and Zhang, Rui and Ding, Jie and Hutchinson, Seth and Anwar, Ali},
+  journal = {arXiv preprint arXiv:2503.15707}, year = {2025}}
+% [V]
+@article{zhang2025unified,
+  title = {Enhancing Reliability in {LLM}-Integrated Robotic Systems: A Unified Approach to Security and Safety},
+  author = {Zhang, Wenxiao and Kong, Xiangrui and Dewitt, Conan and Br{\"a}unl, Thomas and Hong, Jin B.},
+  journal = {arXiv preprint arXiv:2509.02163}, year = {2025}}
+% [R]
+@inproceedings{yang2024safetychip,
+  title = {Plug in the Safety Chip: Enforcing Constraints for {LLM}-Driven Robot Agents},
+  author = {Yang, Ziyi and Raman, Shreyas S. and Shah, Ankit and Tellex, Stefanie},
+  booktitle = {ICRA}, year = {2024}, eprint = {2309.09919}, archivePrefix = {arXiv}}
+% [R]
+@inproceedings{ren2023knowno,
+  title = {Robots That Ask For Help: Uncertainty Alignment for Large Language Model Planners},
+  author = {Ren, Allen Z. and others},
+  booktitle = {CoRL}, year = {2023}, eprint = {2307.01928}, archivePrefix = {arXiv}}
+% [V] (first names partly inferred; check)
+@article{huang2025trustsurvey,
+  title = {Trust in {LLM}-controlled Robotics: a Survey of Security Threats, Defenses and Challenges},
+  author = {Huang, Xinyu and Karthick V B, Shyam and Chen, Taozhao and Bryson, Mitch and Chaffey, Thomas and Chen, Huaming and Choo, Kim-Kwang Raymond and Manchester, Ian R.},
+  journal = {arXiv preprint arXiv:2601.02377}, year = {2025}}
+
+% ---------------------------------------------------------------------
+% Prompt injection, defences, adaptive evaluation (lit_prompt_injection_adaptive_eval.md)
+% ---------------------------------------------------------------------
+% [M] bibliographic; arXiv id [V] via search ecosystem
+@inproceedings{greshake2023injection,
+  author    = {Greshake, Kai and Abdelnabi, Sahar and Mishra, Shailesh and Endres, Christoph and Holz, Thorsten and Fritz, Mario},
+  title     = {Not What You've Signed Up For: Compromising Real-World {LLM}-Integrated Applications with Indirect Prompt Injection},
+  booktitle = {Proceedings of the 16th ACM Workshop on Artificial Intelligence and Security (AISec)},
+  pages     = {79--90}, year = {2023}, doi = {10.1145/3605764.3623985}, eprint = {2302.12173}, archivePrefix = {arXiv}}
+% [M]
+@inproceedings{perez2022ignore,
+  author = {Perez, F{\'a}bio and Ribeiro, Ian},
+  title  = {Ignore Previous Prompt: Attack Techniques For Language Models},
+  booktitle = {NeurIPS ML Safety Workshop}, year = {2022}, eprint = {2211.09527}, archivePrefix = {arXiv}}
+% [M]
+@inproceedings{liu2024formalizing,
+  author = {Liu, Yupei and Jia, Yuqi and Geng, Runpeng and Jia, Jinyuan and Gong, Neil Zhenqiang},
+  title  = {Formalizing and Benchmarking Prompt Injection Attacks and Defenses},
+  booktitle = {33rd USENIX Security Symposium}, year = {2024}, eprint = {2310.12815}, archivePrefix = {arXiv}}
+% [M] preprint
+@misc{liu2023houyi,
+  author = {Liu, Yi and Deng, Gelei and Li, Yuekang and Wang, Kailong and Wang, Zihao and Wang, Xiaofeng and Zhang, Tianwei and Liu, Yepang and Wang, Haoyu and Zheng, Yan and Liu, Yang},
+  title  = {Prompt Injection attack against {LLM}-integrated Applications},
+  year = {2023}, eprint = {2306.05499}, archivePrefix = {arXiv}, note = {Preprint}}
+% [M]
+@misc{zou2023universal,
+  author = {Zou, Andy and Wang, Zifan and Carlini, Nicholas and Nasr, Milad and Kolter, J. Zico and Fredrikson, Matt},
+  title  = {Universal and Transferable Adversarial Attacks on Aligned Language Models},
+  year = {2023}, eprint = {2307.15043}, archivePrefix = {arXiv}}
+% [V] preprint
+@misc{wen2025rlhammer,
+  author = {Wen, Yuxin and Zharmagambetov, Arman and Evtimov, Ivan and Kokhlikyan, Narine and Goldstein, Tom and Chaudhuri, Kamalika and Guo, Chuan},
+  title  = {{RL} Is a Hammer and {LLMs} Are Nails: A Simple Reinforcement Learning Recipe for Strong Prompt Injection},
+  year = {2025}, eprint = {2510.04885}, archivePrefix = {arXiv}, note = {Preprint}}
+% [V]
+@inproceedings{debenedetti2024agentdojo,
+  author = {Debenedetti, Edoardo and Zhang, Jie and Balunovi{\'c}, Mislav and Beurer-Kellner, Luca and Fischer, Marc and Tram{\`e}r, Florian},
+  title  = {{AgentDojo}: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for {LLM} Agents},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS) Datasets and Benchmarks Track}, year = {2024},
+  eprint = {2406.13352}, archivePrefix = {arXiv}}
+% [V] numbers; venue from ACL Anthology listing
+@inproceedings{zhan2024injecagent,
+  author = {Zhan, Qiusi and Liang, Zhixiang and Ying, Zifan and Kang, Daniel},
+  title  = {{InjecAgent}: Benchmarking Indirect Prompt Injections in Tool-Integrated Large Language Model Agents},
+  booktitle = {Findings of the Association for Computational Linguistics: ACL 2024}, year = {2024},
+  eprint = {2403.02691}, archivePrefix = {arXiv}}
+% [V] numbers; venue [M] (ICLR 2025 per prior knowledge) -- verify
+@inproceedings{zhang2025asb,
+  author = {Zhang, Hanrong and Huang, Jingyuan and Mei, Kai and Yao, Yifei and Wang, Zhenting and Zhan, Chenlu and Wang, Hongwei and Zhang, Yongfeng},
+  title  = {Agent Security Bench ({ASB}): Formalizing and Benchmarking Attacks and Defenses in {LLM}-based Agents},
+  booktitle = {International Conference on Learning Representations (ICLR)}, year = {2025},
+  eprint = {2410.02644}, archivePrefix = {arXiv}, note = {Venue to verify}}
+% [V] preprint
+@misc{debenedetti2025camel,
+  author = {Debenedetti, Edoardo and Shumailov, Ilia and Fan, Tianqi and Hayes, Jamie and Carlini, Nicholas and Fabian, Daniel and Kern, Christoph and Shi, Chongyang and Terzis, Andreas and Tram{\`e}r, Florian},
+  title  = {Defeating Prompt Injections by Design},
+  year = {2025}, eprint = {2503.18813}, archivePrefix = {arXiv}, note = {Preprint}}
+% [M] blog post
+@misc{willison2023dualllm,
+  author = {Willison, Simon},
+  title  = {The Dual {LLM} Pattern for Building {AI} Assistants That Can Resist Prompt Injection},
+  year = {2023}, howpublished = {\url{https://simonwillison.net/2023/Apr/25/dual-llm-pattern/}}}
+% [M] preprint
+@misc{beurerkellner2025patterns,
+  author = {Beurer-Kellner, Luca and Buesser, Beat and Cre{\c{t}}u, Ana-Maria and Debenedetti, Edoardo and Dobos, Daniel and Fabian, Daniel and Fischer, Marc and Froelicher, David and Grosse, Kathrin and Naeff, Daniel and Ozoani, Ezinwanne and Paverd, Andrew and Tram{\`e}r, Florian and Volhejn, V{\'a}clav},
+  title  = {Design Patterns for Securing {LLM} Agents against Prompt Injections},
+  year = {2025}, eprint = {2506.08837}, archivePrefix = {arXiv}, note = {Preprint}}
+% [V] preprint
+@misc{costa2025fides,
+  author = {Costa, Manuel and K{\"o}pf, Boris and Kolluri, Aashish and Paverd, Andrew and Russinovich, Mark and Salem, Ahmed and Tople, Shruti and Wutschitz, Lukas and Zanella-B{\'e}guelin, Santiago},
+  title  = {Securing {AI} Agents with Information-Flow Control},
+  year = {2025}, eprint = {2505.23643}, archivePrefix = {arXiv}, note = {Preprint}}
+% [M]
+@inproceedings{wu2025isolategpt,
+  author = {Wu, Yuhao and Roesner, Franziska and Kohno, Tadayoshi and Zhang, Ning and Iqbal, Umar},
+  title  = {{IsolateGPT}: An Execution Isolation Architecture for {LLM}-Based Agentic Systems},
+  booktitle = {Network and Distributed System Security Symposium (NDSS)}, year = {2025},
+  eprint = {2403.04960}, archivePrefix = {arXiv}}
+% [M] preprint
+@misc{shi2025progent,
+  author = {Shi, Tianneng and He, Jingxuan and Wang, Zhun and Wu, Linyu and Li, Hongwei and Guo, Wenbo and Song, Dawn},
+  title  = {Progent: Programmable Privilege Control for {LLM} Agents},
+  year = {2025}, eprint = {2504.11703}, archivePrefix = {arXiv}, note = {Preprint}}
+% [M]
+@inproceedings{zhu2025melon,
+  author = {Zhu, Kaijie and Yang, Xianjun and Wang, Jindong and Guo, Wenbo and Wang, William Yang},
+  title  = {{MELON}: Provable Defense Against Indirect Prompt Injection Attacks in {AI} Agents},
+  booktitle = {International Conference on Machine Learning (ICML)}, year = {2025},
+  eprint = {2502.05174}, archivePrefix = {arXiv}}
+% [M]
+@inproceedings{chen2025struq,
+  author = {Chen, Sizhe and Piet, Julien and Sitawarin, Chawin and Wagner, David},
+  title  = {{StruQ}: Defending Against Prompt Injection with Structured Queries},
+  booktitle = {34th USENIX Security Symposium}, year = {2025},
+  eprint = {2402.06363}, archivePrefix = {arXiv}}
+% [M]
+@inproceedings{chen2025secalign,
+  author = {Chen, Sizhe and Zharmagambetov, Arman and Mahloujifar, Saeed and Chaudhuri, Kamalika and Wagner, David and Guo, Chuan},
+  title  = {{SecAlign}: Defending Against Prompt Injection with Preference Optimization},
+  booktitle = {ACM Conference on Computer and Communications Security (CCS)}, year = {2025},
+  eprint = {2410.05451}, archivePrefix = {arXiv}}
+% [M] preprint
+@misc{hines2024spotlighting,
+  author = {Hines, Keegan and Lopez, Gary and Hall, Matthew and Zarfati, Federico and Zunger, Yonatan and K{\i}c{\i}man, Emre},
+  title  = {Defending Against Indirect Prompt Injection Attacks With Spotlighting},
+  year = {2024}, eprint = {2403.14720}, archivePrefix = {arXiv}, note = {Preprint}}
+% [M] preprint
+@misc{wallace2024hierarchy,
+  author = {Wallace, Eric and Xiao, Kai and Leike, Reimar and Weng, Lilian and Heidecke, Johannes and Beutel, Alex},
+  title  = {The Instruction Hierarchy: Training {LLMs} to Prioritize Privileged Instructions},
+  year = {2024}, eprint = {2404.13208}, archivePrefix = {arXiv}, note = {Preprint}}
+% [M]
+@inproceedings{liu2025datasentinel,
+  author = {Liu, Yupei and Jia, Yuqi and Jia, Jinyuan and Song, Dawn and Gong, Neil Zhenqiang},
+  title  = {{DataSentinel}: A Game-Theoretic Detection of Prompt Injection Attacks},
+  booktitle = {IEEE Symposium on Security and Privacy (S\&P)}, year = {2025},
+  eprint = {2504.11358}, archivePrefix = {arXiv}}
+% [M]
+@inproceedings{carlini2017towards,
+  author = {Carlini, Nicholas and Wagner, David},
+  title  = {Towards Evaluating the Robustness of Neural Networks},
+  booktitle = {IEEE Symposium on Security and Privacy (S\&P)}, pages = {39--57}, year = {2017},
+  doi = {10.1109/SP.2017.49}, eprint = {1608.04644}, archivePrefix = {arXiv}}
+% [M]
+@inproceedings{athalye2018obfuscated,
+  author = {Athalye, Anish and Carlini, Nicholas and Wagner, David},
+  title  = {Obfuscated Gradients Give a False Sense of Security: Circumventing Defenses to Adversarial Examples},
+  booktitle = {International Conference on Machine Learning (ICML)}, pages = {274--283}, year = {2018},
+  eprint = {1802.00420}, archivePrefix = {arXiv}}
+% [M] preprint
+@misc{carlini2019evaluating,
+  author = {Carlini, Nicholas and Athalye, Anish and Papernot, Nicolas and Brendel, Wieland and Rauber, Jonas and Tsipras, Dimitris and Goodfellow, Ian and Madry, Aleksander and Kurakin, Alexey},
+  title  = {On Evaluating Adversarial Robustness},
+  year = {2019}, eprint = {1902.06705}, archivePrefix = {arXiv}}
+% [M]
+@inproceedings{tramer2020adaptive,
+  author = {Tram{\`e}r, Florian and Carlini, Nicholas and Brendel, Wieland and Madry, Aleksander},
+  title  = {On Adaptive Attacks to Adversarial Example Defenses},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)}, year = {2020},
+  eprint = {2002.08347}, archivePrefix = {arXiv}}
+% [V]
+@inproceedings{zhan2025adaptive,
+  author = {Zhan, Qiusi and Fang, Richard and Panchal, Henil Shalin and Kang, Daniel},
+  title  = {Adaptive Attacks Break Defenses Against Indirect Prompt Injection Attacks on {LLM} Agents},
+  booktitle = {Findings of the Association for Computational Linguistics: NAACL 2025}, year = {2025},
+  eprint = {2503.00061}, archivePrefix = {arXiv}}
+% [V] (listed as USENIX Security 2026 presentation)
+@inproceedings{nasr2026attacker,
+  author = {Nasr, Milad and Carlini, Nicholas and Sitawarin, Chawin and Schulhoff, Sander V. and Hayes, Jamie and Ilie, Michael and Pluto, Juliette and Song, Shuang and Chaudhari, Harsh and Shumailov, Ilia and Thakurta, Abhradeep and Xiao, Kai Yuanqing and Terzis, Andreas and Tram{\`e}r, Florian},
+  title  = {The Attacker Moves Second: Stronger Adaptive Attacks Bypass Defenses Against {LLM} Jailbreaks and Prompt Injections},
+  booktitle = {35th USENIX Security Symposium}, year = {2026},
+  eprint = {2510.09023}, archivePrefix = {arXiv}}
+% [M] (published SaTML 2025 per notes)
+@inproceedings{chao2025pair,
+  author = {Chao, Patrick and Robey, Alexander and Dobriban, Edgar and Hassani, Hamed and Pappas, George J. and Wong, Eric},
+  title  = {Jailbreaking Black Box Large Language Models in Twenty Queries},
+  booktitle = {IEEE Conference on Secure and Trustworthy Machine Learning (SaTML)}, year = {2025},
+  eprint = {2310.08419}, archivePrefix = {arXiv}}
+% [M]
+@inproceedings{mehrotra2024tap,
+  author = {Mehrotra, Anay and Zampetakis, Manolis and Kassianik, Paul and Nelson, Blaine and Anderson, Hyrum and Singer, Yaron and Karbasi, Amin},
+  title  = {Tree of Attacks: Jailbreaking Black-Box {LLMs} Automatically},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)}, year = {2024},
+  eprint = {2312.02119}, archivePrefix = {arXiv}}
+% [M]
+@inproceedings{shumailov2021sponge,
+  author = {Shumailov, Ilia and Zhao, Yiren and Bates, Daniel and Papernot, Nicolas and Mullins, Robert and Anderson, Ross},
+  title  = {Sponge Examples: Energy-Latency Attacks on Neural Networks},
+  booktitle = {IEEE European Symposium on Security and Privacy (EuroS\&P)}, year = {2021},
+  eprint = {2006.03463}, archivePrefix = {arXiv}}
+% [M] venue not verified; check for published version
+@misc{zhang2024breakingagents,
+  author = {Zhang, Boyang and Tan, Yicong and Shen, Yun and Salem, Ahmed and Backes, Michael and Zannettou, Savvas and Zhang, Yang},
+  title  = {Breaking Agents: Compromising Autonomous {LLM} Agents Through Malfunction Amplification},
+  year = {2024}, eprint = {2407.20859}, archivePrefix = {arXiv}, note = {Check for published version}}
+% [M]
+@article{lamport1977proving,
+  author = {Lamport, Leslie},
+  title  = {Proving the Correctness of Multiprocess Programs},
+  journal = {IEEE Transactions on Software Engineering}, volume = {SE-3}, number = {2}, pages = {125--143}, year = {1977},
+  doi = {10.1109/TSE.1977.229904}}
+% [M]
+@article{alpern1985liveness,
+  author = {Alpern, Bowen and Schneider, Fred B.},
+  title  = {Defining Liveness},
+  journal = {Information Processing Letters}, volume = {21}, number = {4}, pages = {181--185}, year = {1985},
+  doi = {10.1016/0020-0190(85)90056-0}}
+% [M]
+@article{gligor1984dos,
+  author = {Gligor, Virgil D.},
+  title  = {A Note on Denial-of-Service in Operating Systems},
+  journal = {IEEE Transactions on Software Engineering}, volume = {SE-10}, number = {3}, pages = {320--324}, year = {1984},
+  doi = {10.1109/TSE.1984.5010241}}
+% [M]
+@article{kerns2014gps,
+  author = {Kerns, Andrew J. and Shepard, Daniel P. and Bhatti, Jahshan A. and Humphreys, Todd E.},
+  title  = {Unmanned Aircraft Capture and Control Via {GPS} Spoofing},
+  journal = {Journal of Field Robotics}, volume = {31}, number = {4}, pages = {617--636}, year = {2014},
+  doi = {10.1002/rob.21513}}

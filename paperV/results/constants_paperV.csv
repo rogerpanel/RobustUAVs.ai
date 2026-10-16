@@ -1,0 +1,25 @@
+name,value,provenance
+gamma_sup_m_s,1.625,parent
+L_loc,1.1814,parent
+T_c_s,1.0,parent
+amp_eLT,3.25893351754929,derived
+L_rho_m_per_s,5.295766966017596,derived
+rho_floor_m,0.942646519951132,derived (hop_ledger benign max 0.178 s)
+rho_bar_m,4.99920401592061,model: L_rho * DELTA_BAR_S
+delta_adv_m,4.371,P4 e4_delta_adv.csv
+net_tube_theta025_m,2.647883483008798,P4 net_tube
+hidden_residual_median_s,3.942,parent hop_ledger
+max_fleet,12.0,platform
+T_mission_s,70.0,platform
+kappa_sched,0.1,parent
+kappa_sched_alt,0.25,platform
+dt_s,0.1,model
+Ts_filter_s,0.5,model
+Np,10.0,model
+u_max,4.0,P4
+v_max,12.0,model
+kp,1.2,P4
+kd,1.8,P4
+w_bar_nom,0.5,model
+d_sep_m,5.0,model
+delta_bar_s,0.944,model
