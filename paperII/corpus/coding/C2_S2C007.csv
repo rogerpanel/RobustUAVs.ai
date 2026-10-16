@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4391020152",0,"Reachability of linear ARMAX models; no learned component in the guarantee","","","","","","","","","",""
+"O4382449344",1,"","RS","B","perception","in","Ac","norm","none","S","proof","CAT-RS training; certified l2 radius of smoothed classifier via Monte Carlo CERTIFY (alpha=0.001) on CIFAR-10/ImageNet."
+"O2946660403",0,"Implicit ResNet architecture; stability analysed, robustness only shown empirically, no certificate","","","","","","","","","",""
+"O3008591962",1,"","NEW:intrinsic robustness limit","B","perception","pop","P","norm","L_gen","SE","modelled","Upper bound on intrinsic l2 robustness for any classifier, data modelled by conditional GAN; local Lipschitz sampled. Limit, not certificate (eligibility doubt)."
+"O4400877915",1,"","CP","B","perception","pop","P","distribution","L_conc","S","measured","SpikeCP: conformal set coverage >= p_targ at adaptive stopping time for SNN classifiers, Bonferroni over checkpoints; i.i.d. assumption."

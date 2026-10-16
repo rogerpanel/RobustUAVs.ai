@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3082256455",1,"","ALG","B","control","pop","P","distribution","L_conc","S","modelled","High-probability regret bound for FMDP-BF RL in factored MDPs, plus lower bound and RLwK extension; theory only, no experiments."
+"O2949505878",1,"","GEN","B","estimation","pop","P","poisoning","L_conc","S","modelled","W.h.p. estimation-error bound for Byzantine-robust clustered federated learning; component assignment (generic regression model) doubtful."
+"O3097068942",1,"","PACB","B","perception","pop","P","distribution","L_conc","S","measured","MDL/data-dependent PAC-Bayes generalisation bounds for compressed genomics classifiers; bounds used as normalised proxy scores, component doubtful."
+"O4396227895",0,"Guarantee (CBF force bound) concerns non-learned controller; learned search only selects positions.","","","","","","","","","",""
+"O3194200810",1,"","ALG","B","control","pop","P","distribution","L_conc","S","modelled","High-probability regret (online) and optimality-gap (offline) bounds for GAIL with linear function approximation; theory only."

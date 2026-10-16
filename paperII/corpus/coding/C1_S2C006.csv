@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3129335991",1,"","PACB","B","perception","pop","P","distribution","L_conc","S","simulated","Disintegrated PAC-Bayes bound on true risk of one sampled NN; i.i.d. data assumed; MNIST/CIFAR only."
+"O3033405017",1,"","LUC","A","control","tr","P","disturbance","L_conc","S","simulated","w.p. 1-beta over data, DeePC optimum upper-bounds out-of-sample cost and CVaR constraint holds, finite horizon; quadcopter sim. Rule-6: tr over pop."
+"O3035827960",0,"Analytic Gaussian moments of small ReLU net plus attack construction; no robustness guarantee stated.","","","","","","","","","",""
+"O4372262625",1,"","NEW:Architectural constraint enforcement (provably affine on region)","B","perception","in","A","none","none","S","proof","Bias projection provably makes DNN exactly affine on a convex polytope input region; needs CPA activations; toy 2D demos only."
+"O2777012514",0,"MILP encoding of DNN for feature visualization and adversarial search; no guarantee claimed.","","","","","","","","","",""

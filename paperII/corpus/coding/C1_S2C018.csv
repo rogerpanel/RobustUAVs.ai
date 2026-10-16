@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+O3013816534,1,,CRL,B,control,in,A,poisoning,none,S,proof,"Q-learning provably converges to optimal policy for any reward poisoning with |delta|<Delta1 (infeasibility certificate). Scope in vs tr doubtful; a.s. convergence coded A."
+O3214770989,1,,CRL,B,control,pop,P,distribution,L_conc,S,modelled,"DOPE: w.p. 1-5delta every exploration policy satisfies expected cost constraint, plus sqrt(K) regret. Needs known safe baseline policy. ALG also plausible."
+O4405785279,1,,RTA,B,control,op,A,none,L_mon,S,simulated,"Predictive safety filter around imitation-learned NMPC enforces constraints on every run if model accurate. No theorem; violations remain under model mismatch."
+O3044126222,1,,GEN,B,control,pop,P,distribution,L_conc,S,modelled,"RF-Express is (eps,delta)-PAC: w.p. 1-delta returned model gives eps-optimal policy for any reward, with sample complexity bound in tabular episodic MDP."
+O4382318267,1,,ALG,B,control,pop,P,distribution,L_conc,S,modelled,"BEF-RLSVI regret R(K) <~ d^3 H^3 sqrt(K) w.p. 1-delta under smoothness assumptions on bilinear exponential family MDP; no vehicle evaluation."

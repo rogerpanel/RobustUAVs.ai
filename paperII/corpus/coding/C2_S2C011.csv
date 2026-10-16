@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3212610018",1,"","ALG","B","control","tr","P","distribution","L_conc","S","proof","W.p. 1-delta, certainty-equivalent adaptive MJS-LQR achieves O(sqrt T) regret; martingale identification bound. Synthetic MJS only. Doubt tr vs pop (chose smaller)."
+"O4390421907",1,"","LUC","A","control","in","P","distribution","L_conc","S","proof","Per-state feasibility of sample-based Wasserstein DR CBF/CLF SOCP w.p. 1-eps_bar (light-tailed); unicycle robot sim. Learned part is data-driven uncertainty only."
+"O2962862931",0,"Interpretability scoring method for degradation models; no guarantee stated.","","","","","","","","","",""
+"O3040161731",1,"","CRL","B","control","op","P","distribution","L_conc","S","proof","ASE is Safe-PAC-MDP: w.p. 1-delta no unsafe action over entire exploration run, PAC sample complexity. Gridworld/platformer. Doubt op vs pop (chose smaller)."
+"O2965721472",1,"","NEW:DP poisoning resistance","B","perception","in","E","poisoning","none","S","proof","eps-DP learner: expected attack cost J lower-bounded by e^{-k eps}J(D) for any k-item poisoned set; tabular classifiers/regression, not image."

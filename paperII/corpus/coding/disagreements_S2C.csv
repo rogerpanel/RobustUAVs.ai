@@ -1,0 +1,64 @@
+cid,field,C1,C2
+O2777012514,eligible,0,1
+O2890075623,scope,in,tr
+O2890075623,perturbation,disturbance,distribution
+O2905146218,class,NEW:compositional resilience,NEW:compositional robustness
+O2947562989,modality,A,Ac
+O2965721472,class,NEW:Differential-privacy poisoning robustness,NEW:DP poisoning resistance
+O3008591962,class,NEW:Intrinsic robustness limit (isoperimetric bound),NEW:intrinsic robustness limit
+O3008591962,lifts,L_conc;L_gen,L_gen
+O3008591962,assumption,S,SE
+O3008591962,evidence,simulated,modelled
+O3014860839,component,planning,control
+O3014860839,scope,tr,pop
+O3017595567,scope,tr,op
+O3028525609,lifts,L_conc,none
+O3033405017,perturbation,disturbance,distribution
+O3034772830,class,NEW:Distributionally robust optimization duality bound,NEW:Distributionally robust worst-case risk bound
+O3035441470,class,NEW:Input-encoding bottleneck exact robustness,SEM
+O3040161731,evidence,simulated,proof
+O3092718793,class,ALG,GEN
+O3097068942,evidence,modelled,measured
+O3102590949,evidence,simulated,modelled
+O3109575026,evidence,modelled,simulated
+O3119651376,eligible,1,0
+O3127950324,scope,in,tr
+O3127950324,modality,A,E
+O3127950324,lifts,none,L_conc
+O3129335991,evidence,simulated,proof
+O3131311588,scope,tr,op
+O3131791785,component,estimation,perception
+O3134374554,eligible,1,0
+O3166951700,class,NEW:Regularizer-based expected-sensitivity bound,NEW:HSIC sensitivity bound
+O3168834527,class,GEN,CP
+O3182348021,evidence,simulated,modelled
+O3184908869,scope,pop,in
+O3184908869,modality,E,A
+O3187326931,class,GEN,ALG
+O3192782817,class,ALG,GEN
+O3192782817,perturbation,none,distribution
+O3209563920,eligible,1,0
+O3212610018,perturbation,disturbance,distribution
+O3212610018,evidence,simulated,proof
+O3214770989,class,CRL,ALG
+O3214770989,evidence,modelled,simulated
+O3216734817,scope,tr,pop
+O3216734817,lifts,L_conc,none
+O4320460176,evidence,modelled,simulated
+O4372262625,class,NEW:Architectural constraint enforcement (provably affine on region),NEW:constraint-enforcing architecture
+O4379522721,evidence,simulated,proof
+O4382449344,assumption,U,S
+O4382464632,component,planning,control
+O4382464632,modality,P,E
+O4382464632,perturbation,distribution,none
+O4385806592,scope,in,pop
+O4387322853,evidence,modelled,measured
+O4388756775,assumption,S,SE
+O4388756775,evidence,simulated,measured
+O4390421907,evidence,simulated,proof
+O4393159987,component,end2end,estimation
+O4396214268,perturbation,norm,semantic
+O4400877915,evidence,simulated,measured
+O4403405723,assumption,S,SE
+O4405486670,perturbation,none,distribution
+O4405489636,assumption,SE,S

@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4387868700","1","","BP","B","perception","in","A","norm","none","S","proof","Sound worst-case bound on output error between MNIST ReLU net and its polynomial approximation over l-inf balls around 1000 inputs; FastLin plus Lipschitz bounds."
+"O3033193189","1","","RS","B","perception","in","Ac","norm","none","S","proof","Generalized-Gaussian randomized smoothing certifies l_p radii (p in N) around each input w.p. 1-gamma; CIFAR-10/ImageNet; radius vanishes as p grows."
+"O2787881900","0","Interpretability exactness theorem (PLNN equals local linear classifiers); no behavioural guarantee.","","","","","","","","","",""
+"O2991265233","1","","GEN","B","perception","pop","P","distribution","L_conc","S","modelled","Rademacher/covering-number margin bound on CNN misclassification probability, w.p. 1-delta over iid sample; class-size free, weight-sharing aware; no experiments."
+"O3187326931","1","","ALG","B","control","pop","P","distribution","L_conc","S","modelled","Moca returns epsilon-optimal tabular-MDP policy w.p. 1-delta within instance-dependent episode count; GEN also plausible (sample complexity)."

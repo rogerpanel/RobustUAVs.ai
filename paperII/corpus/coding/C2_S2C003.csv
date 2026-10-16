@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2941105184",1,"","BP","B","perception","in","A","norm","none","S","proof","Sound interval/RAF abstract-interpretation verifier proves SVM classifier robust on L-inf ball (and frame perturbation) per test input; MNIST/Fashion-MNIST."
+"O4385806592",1,"","ALG","B","perception","pop","E","norm","none","S","modelled","Convergence bound for adversarial training on coreset vs full-data adversarial loss, under convex Lipschitz loss; scope pop over training set flagged (rule 6)."
+"O4405058108",0,"Stability analysis explaining adversarial examples; no guarantee stated or certified.","","","","","","","","","",""
+"O3092397959",1,"","RS","B","perception","in","A","norm","none","S","proof","Deterministic Gaussian-smoothed model certified l2 radius per input; soundness assumes trained model equals Gaussian convolution (doubt: modality A vs Ac, evidence proof)."
+"O3166951700",1,"","NEW:HSIC sensitivity bound","B","perception","pop","E","norm","none","S","modelled","HSIC(X,Z) bounds expected output change under any l-inf perturbation, assuming Gaussian inputs and universal kernels; no class fits (PROB considered)."

@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2941105184",1,"","BP","B","perception","in","A","norm","none","S","proof","Sound interval/RAF abstract SVM verifier: no L-inf or framing perturbation of an image changes class; MNIST/F-MNIST; assumption is the stated adversarial region."
+"O4385806592",1,"","ALG","B","perception","in","E","norm","none","S","modelled","Convergence bound for adversarial training on a weighted coreset, in idealised convex Lipschitz setting; scope could be pop (training distribution), smaller chosen per rule 6."
+"O4405058108",0,"Analysis explaining instabilities via low-rank expansion; no robustness guarantee; empirical tsunami case.","","","","","","","","","",""
+"O3092397959",1,"","RS","B","perception","in","A","norm","none","S","proof","Deterministic Gaussian-smoothed model, L2 certified radius plus Lipschitz L-bound; relies on the trained net approximating the Gaussian average, unverified (evidence doubt)."
+"O3166951700",1,"","NEW:Regularizer-based expected-sensitivity bound","B","perception","pop","E","norm","none","S","modelled","HSIC(X,Z) bounds expected output change under any bounded L-inf perturbation, assuming Gaussian inputs, bounded continuous nets, universal kernels."

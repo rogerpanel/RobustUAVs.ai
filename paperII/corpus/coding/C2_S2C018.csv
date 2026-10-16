@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3013816534","1","","CRL","B","control","in","A","poisoning","none","S","proof","Infeasibility certificate: reward poisoning below Delta1 cannot stop Q-learning converging to optimal policy (a.s.). Mostly attack paper; ALG class and scope doubt."
+"O3214770989","1","","ALG","B","control","pop","P","distribution","L_conc","S","simulated","DOPE: w.p. 1-5delta every exploration policy satisfies expected CMDP constraint, regret O~(sqrt K); needs known safe baseline policy."
+"O4405785279","1","","RTA","B","control","op","A","none","L_mon","S","simulated","NMPC safety filter over imitation-learned NN controller claimed to guarantee constraint satisfaction on flexible arm; no theorem proven, eligibility doubtful."
+"O3044126222","1","","GEN","B","control","pop","P","distribution","L_conc","S","modelled","RF-Express/BPI-UCBVI are (eps,delta)-PAC: eps-optimal policy w.p. 1-delta after O~(H^3SA/eps^2) episodes; theory only, ALG plausible."
+"O4382318267","1","","ALG","B","control","pop","P","distribution","L_conc","S","modelled","BEF-RLSVI frequentist regret O~(sqrt(d^3H^3K)) w.p. 1-delta under smoothness assumption; no experiments."

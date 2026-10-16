@@ -27,8 +27,10 @@ def main() -> int:
     S = C / "snowball"
     cand = {r["cid"]: r for r in csv.DictReader((S / f"iter{k}_candidates.csv").open())}
     st = {r["cid"]: r for r in csv.DictReader((S / f"iter{k}_fulltext_status.csv").open())}
-    order = [r["cid"] for r in sorted(csv.DictReader((S / f"iter{k}_coding_sample.csv").open()),
-                                       key=lambda r: int(r["order"])) if st.get(r["cid"], {}).get("status") == "retrieved"]
+    sample = list(csv.DictReader((S / f"iter{k}_coding_sample.csv").open()))
+    strata = list(dict.fromkeys(r["stratum"] for r in sample))      # sample order within each stratum
+    order = [r["cid"] for r in sorted(sample, key=lambda r: (strata.index(r["stratum"]), int(r["order"])))
+             if st.get(r["cid"], {}).get("status") == "retrieved"]
     a.out.mkdir(parents=True, exist_ok=True)
     (C / "coding").mkdir(exist_ok=True)
     for b in range(0, len(order), PER):

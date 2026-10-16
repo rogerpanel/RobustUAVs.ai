@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3017595567",1,"","ALG","B","control","tr","P","distribution","L_conc","S","modelled","UCRL3 finite-time regret bound w.p. 1-4δ for tabular average-reward MDP; scope tr vs pop doubtful (chose smaller); communicating-MDP assumption stated."
+"O3131311588",1,"","ALG","B","control","tr","E","distribution","L_conc","S","modelled","PSRL-POMDP Bayesian expected regret O(log T) for finite parameter set under KL-separation assumption; Õ(T^2/3) general case; tr vs pop doubtful."
+"O4382458334",0,"Empirical adversarial-training defense for skeleton HAR; no formal or statistical guarantee.","","","","","","","","","",""
+"O2972852682",1,"","ALG","B","estimation","in","P","distribution","L_conc","S","modelled","GP level-set estimation under input uncertainty: w.p. 1-δ misclassification loss ≤ ε on finite Ω (Thm 1); manufacturing task, learned-component status and in-vs-pop doubtful."
+"O3209563920",1,"","GEN","B","perception","pop","P","distribution","none","S","modelled","Statistical-query hardness: no poly-query active student attains (A,µ,ε)-adversarial robustness for parity teachers; negative result, d+1 queries suffice with active teacher; doubtful as guarantee."

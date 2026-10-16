@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4405489636",1,"","CP","B","estimation","pop","P","distribution","L_conc","SE","measured","Normalized split-conformal intervals give marginal coverage >=1-alpha under exchangeability; coverage checked on CCLE drug data. Guarantee is standard CP; paper's gain is efficiency."
+"O4382202987",1,"","ALG","B","control","pop","E","none","none","S","modelled","Thm 4.3 lower-bounds per-update expected-cost improvement of GCPO (eta->0). Not a feasibility guarantee; rule-6 doubt on class and tier (SafetyGym point robot)."
+"O3169618399",0,"Empirical attack/evaluation study of NLP models; no formal guarantee stated.","","","","","","","","","",""
+"O3192782817",1,"","ALG","B","control","pop","P","none","L_conc","S","modelled","UCB-Clip: with prob 1-delta, eps-optimal policy after O(H^3SA/(rho*eps)) exploration episodes given known gap rho; matching lower bound. Tabular MDP, no vehicle."
+"O4405486670",1,"","ALG","B","control","pop","E","none","none","S","modelled","Expected cumulative Sharpe-ratio regret of model-free continuous-time RL is O(sqrt(N) polylog N) in Black-Scholes market; portfolio task, no vehicle."

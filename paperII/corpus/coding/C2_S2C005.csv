@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3132401297",1,"","BP","B","perception","in","A","norm","none","S","proof","LP-dual (Wong-Kolter) certificate of tabular DNN classifiers against non-uniform weighted/Mahalanobis-norm perturbations; RS variant also given; tabular classifier coded perception."
+"O2898631838",1,"","LIP","B","perception","in","A","none","none","SE","proof","i-ResNet provably invertible and bi-Lipschitz for all inputs if block Lip<1, checked post-training by SVD; doubt: invertibility not a robustness/safety guarantee."
+"O3127950324",1,"","ALG","B","control","tr","E","none","L_conc","S","modelled","Finite-time last-iterate convergence of decentralized OGDA policies to Nash set in tabular Markov games; tr vs pop doubt (rule 6)."
+"O3126416674",1,"","PACB","B","perception","pop","P","distribution","L_conc","S","simulated","Meta-learning PAC-Bayes bounds (lambda, quadratic, variational, data-dependent prior) on transfer error to new tasks; MNIST permuted environments."
+"O4310633502",1,"","CP","B","estimation","pop","P","distribution","L_conc","SE","simulated","Split conformal coverage >=1-alpha for NN force-field energy predictions using latent distance score; i.i.d. assumed, tested and violated OOD."

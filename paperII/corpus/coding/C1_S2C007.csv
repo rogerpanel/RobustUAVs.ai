@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4391020152",0,"Reachability of linear ARMAX models; no learned component or learned-component guarantee.","","","","","","","","","",""
+"O4382449344",1,"","RS","B","perception","in","Ac","norm","none","U","proof","CAT-RS training raises Cohen-style l2 certified radius (ACR) of smoothed classifiers, with 1-alpha Monte Carlo confidence; CIFAR-10/ImageNet only."
+"O2946660403",0,"Stability analysis on linear test equation; robustness claims empirical, no certificate for learned network.","","","","","","","","","",""
+"O3008591962",1,"","NEW:Intrinsic robustness limit (isoperimetric bound)","B","perception","pop","P","norm","L_gen;L_conc","S","simulated","Upper bound on robust accuracy of any classifier with risk>=alpha, given Lipschitz conditional generator and Gaussian isoperimetry; checked on GAN-generated MNIST/ImageNet10."
+"O4400877915",1,"","CP","B","perception","pop","P","distribution","L_conc","S","simulated","SpikeCP: Bonferroni-corrected split conformal gives Pr(true label in set) >= p_targ at input-dependent stopping time; iid calibration data assumed; MNIST-DVS, CIFAR-10."
