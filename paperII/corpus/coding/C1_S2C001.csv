@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3119651376",1,"","GEN","B","perception","pop","P","norm","L_conc","S","modelled","Thm1: any classifier fitting label-noisy data has adversarial error >= c1 w.p. 1-delta given m samples (lower bound); rule 6: could be norm-scope"
+"O2999913149",1,"","GEN","B","perception","pop","P","distribution","L_conc","S","simulated","Compression-based generalization bound for CNNs with CP layers, via covering numbers; bound computed on CIFAR networks; not PAC-Bayes"
+"O2892358082",1,"","LIP","B","perception","pop","E","distribution","none","S","modelled","Wasserstein-ball distributionally robust risk upper-bounded by empirical risk plus Lipschitz-constant regulariser; also upper-bounds adversarial risk; purely theoretical"
+"O3154580345",1,"","LIP","B","perception","in","A","norm","none","S","proof","1-Lipschitz nets give robustness radius >= |f(x)| per input; paper also has PAC/VC results (rule 6: chose smaller scope in)"
+"O4379539742",1,"","PACB","B","perception","pop","P","norm","L_conc","S","modelled","PAC-Bayes robust generalization bound for PGD-AT via SDE stationary distribution; DEAT gets tighter bound; locally quadratic, Gaussian-noise assumptions"

@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4387868700",1,"","BP","B","perception","in","A","norm","none","S","proof","Sound bound on max output error of polynomial-activation net vs original over L-inf balls around sampled MNIST inputs; claimed 'global', coded in (rule 6)."
+"O3033193189",1,"","RS","B","perception","in","Ac","norm","none","S","proof","Randomized smoothing with generalized Gaussian noise certifies l_p radii (any integer p) with Clopper-Pearson confidence; certified radius vanishes as p grows."
+"O2787881900",0,"Interpretability method; exact piecewise-linear equivalence is not a robustness, safety or performance guarantee.","","","","","","","","","",""
+"O2991265233",1,"","GEN","B","perception","pop","P","distribution","L_conc","S","modelled","Rademacher/covering-number generalisation bound for multi-class CNNs, class-size free and counting shared filters once; theory only, iid data assumed."
+"O3187326931",1,"","GEN","B","control","pop","P","distribution","L_conc","S","modelled","Moca returns epsilon-optimal policy w.p. 1-delta within instance-dependent episode count in tabular MDP; GEN vs ALG doubt, scope pop vs tr."

@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3082256455",1,"",ALG,B,control,pop,P,distribution,L_conc,S,modelled,"High-probability regret bound for FMDP-BF in tabular factored episodic MDPs (Thm 2). Scope pop vs tr is doubtful; chose pop. Assumes known factor scopes."
+"O2949505878",1,"",GEN,B,estimation,pop,P,poisoning,L_conc,S,modelled,"High-probability estimation-error bound for Byzantine-robust clustered federated learning, near-oracle rate (Thm 1-2). Assumes convexity, sub-Gaussian ERMs, separation; alpha fraction Byzantine."
+"O3097068942",1,"",PACB,B,perception,pop,P,distribution,L_conc,S,modelled,"MDL/data-dependent PAC-Bayes generalisation bound for compressed networks (Thm 1); genomics classifiers, no vehicle task. Prior form assumed."
+"O4396227895",0,"Safety filter bounds force of non-learned controller; no guarantee on learned component.","","","","","","","","","",""
+"O3194200810",1,"",ALG,B,control,pop,P,distribution,L_conc,S,modelled,"High-probability regret and optimality-gap bounds for OGAP/PGAP imitation learning under linear kernel MDP assumption (Thm 4.1). Offline coverage assumption needed for rate."

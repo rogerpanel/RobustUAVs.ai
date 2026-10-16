@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3119651376",0,"Theoretical/empirical analysis of adversarial vulnerability causes; lower bounds on error, no guarantee",,,,,,,,,,
+"O2999913149",1,,"GEN","B","perception","pop","P","distribution","L_conc","S","simulated","Compression-based (CP-tensor) generalization bound on expected margin error of compressed CNN, i.i.d. samples; bound trend evaluated on CIFAR."
+"O2892358082",1,,"LIP","B","perception","pop","E","distribution","none","S","modelled","Wasserstein-ball distributionally robust risk of Lipschitz DNN bounded by empirical risk plus Lipschitz term; theory only, no experiments."
+"O3154580345",1,,"LIP","B","perception","in","A","norm","none","S","proof","1-Lipschitz nets give certified l2 radius |f(x)|; loss tunes certified robustness on CIFAR. Doubt: GEN (PAC/VC generalization) also headline; chose smaller scope."
+"O4379539742",1,,"PACB","B","perception","pop","P","norm","L_conc","S","modelled","PAC-Bayes robust generalization bound for PGD-AT via SDE stationary distribution; DEAT tighter. Assumes locally quadratic risk, Gaussian gradient noise."

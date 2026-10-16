@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3202331133",0,"Bounds concern LID statistic of perturbed data points, not a learned component","","","","","","","","","",""
+"O2803117117",1,"","ALG","B","perception","pop","E","none","none","S","modelled","SGD on Sinkhorn/regularized-OT GAN objective converges to approximate stationarity; expected gradient-norm bound. Doubt: GAN generator mapped to perception for lack of fit."
+"O4393159987",1,"","SMT","B","estimation","in","A","norm","none","S","proof","MILP exactly certifies worst-case task cost of NN load forecaster plus affine-parametric QP under l-inf input budget; power system, not vehicle."
+"O3184908869",1,"","NEW:robust detection-classification reduction","B","perception","in","A","norm","none","S","modelled","Detector robust at eps implies inefficient classifier robust at eps/2, and converse. Rule-6: per-input implication chosen over pop robust-risk statement."
+"O4387322853",1,"","CP","B","estimation","pop","E","distribution","L_conc","S","measured","Non-exchangeable conformal risk control bounds expected monotone loss by alpha plus weighted TV term; doubt E vs P; mixed classification/regression tasks."

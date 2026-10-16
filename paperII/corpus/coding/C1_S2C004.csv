@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3182348021",1,"",GEN,B,perception,pop,P,distribution,L_conc,S,simulated,"Wasserstein-ball worst-case expected-loss certificate for ARKS-trained classifier, holds w.p. 1-delta over samples (McDiarmid/Rademacher). Modality P vs E doubtful."
+"O3130937369",1,"",SMT,B,perception,in,A,none,none,S,proof,"MILP identifies all stable ReLU neurons, giving exact compression: compressed net equals original for every input in domain X."
+"O3102590949",1,"",GEN,B,perception,pop,P,distribution,L_conc,S,simulated,"Generalization-error bound sup_w|R_hat-R| for SGD trajectories, controlled by Hausdorff dimension, w.p. 1-gamma over S; assumes Feller-process proxy for SGD."
+"O4379522721",1,"",PACB,B,perception,pop,P,distribution,L_conc,S,simulated,"PAC-Bayes high-confidence bound on generalization loss of aggregated binary activated networks (ABNet), iid data, data-independent prior; MNIST/UCI only."
+"O3213126186",1,"",ALG,B,control,pop,P,distribution,L_conc,S,modelled,"High-probability regret bound for preference-based RL under logistic linear preference model; policy learned from trajectory preferences. Theory only, no vehicle task."

@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3127015406",1,"","GEN","B","perception","pop","P","norm","L_conc","S","modelled","Robust PAC sample/oracle complexity bounds w.p. 1-delta for learning under unknown perturbation set via attack oracle; perturbation set arbitrary, norm chosen closest."
+"O4320460176",1,"","GEN","B","perception","pop","P","distribution","L_conc","S","modelled","Rate-distortion generalization-error bound w.p. 1-delta for distributed learning (K clients, DSVM); needs subgaussian loss; experiments only illustrate."
+"O3159401323",0,"Empirical study of frequency constraints and adversarial accuracy; no guarantee stated.","","","","","","","","","",""
+"O4386065850",0,"Exact decision-boundary visualization tool; no robustness, safety or statistical guarantee about model behaviour.","","","","","","","","","",""
+"O3034772830",1,"","NEW:Distributionally robust optimization duality bound","B","perception","pop","E","distribution","none","S","modelled","Strong duality gives computable upper bound on worst-case expected loss over RKHS ambiguity set; MNIST/least-squares only illustrative; scope pop vs in doubtful."

@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3017595567",1,"","ALG","B","control","op","P","distribution","L_conc","S","modelled","UCRL3 high-probability (1-4delta) regret bound over a learning run in any communicating MDP; RiverSwim/gridworld. Rule-6: op vs pop."
+"O3131311588",1,"","ALG","B","control","op","E","distribution","L_conc","S","modelled","PSRL-POMDP expected regret O(log T) finite-parameter case, O~(T^2/3) general; no experiments. Rule-6: op vs pop."
+"O4382458334",0,"Empirical adversarial-training defense for skeleton HAR; no formal or statistical guarantee.","","","","","","","","","",""
+"O2972852682",1,"","ALG","B","estimation","in","P","distribution","L_conc","S","modelled","GP level-set estimation under input uncertainty: w.p. 1-delta misclassification loss <= eps over finite Omega; a.s. finite termination. Rule-6: in vs pop."
+"O3209563920",0,"Conceptual framework; headline theorem is learnability impossibility, not a guarantee.","","","","","","","","","",""

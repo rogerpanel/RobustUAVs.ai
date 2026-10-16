@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2905146218",1,"","NEW:compositional robustness","B","perception","in","A","norm","none","S","modelled","Serial/parallel composition of lambda-resilient feature extractors yields lambda-resilient classifier; no evaluation, traffic-sign example illustrative only (tier doubt)."
+"O2890075623",1,"","LUC","A","planning","tr","P","distribution","L_conc","S","simulated","Spatio-temporal GP safe exploration: rover visits only safe states w.p. >=1-delta under RKHS/Lipschitz assumptions. Doubt tr vs op; lunar grid tier doubt."
+"O3131791785",1,"","ALG","B","perception","pop","P","distribution","L_conc","S","modelled","FedRep linearly converges to ground-truth representation w.h.p. with near-optimal per-client sample complexity, linear regression setting only; component doubtful."
+"O3168834527",1,"","CP","B","estimation","pop","P","distribution","L_conc","S","modelled","Distribution-free (1-alpha) confidence interval for conditional mean around any fitted regressor, plus width lower bound; CP class fit doubtful."
+"O3134374554",0,"Theoretical characterization of accuracy effects of spurious features; no guarantee","","","","","","","","","",""

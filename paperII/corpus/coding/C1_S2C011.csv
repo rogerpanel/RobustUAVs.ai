@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3212610018",1,"","ALG","B","control","tr","P","disturbance","L_conc","S","simulated","Adaptive MJS-LQR regret O(sqrt T) w.p. 1-delta from identified model; synthetic sims only. Scope tr over horizon T, pop doubtful."
+"O4390421907",1,"","LUC","A","control","in","P","distribution","L_conc","S","simulated","Sample-based DRO CBF/CLF-SOCP feasible w.p. 1-eps_bar for Wasserstein radius; controller point-Lipschitz. Per-state certificate, so in; tr doubtful."
+"O2962862931",0,"Interpretability score for models; no formal, statistical or architectural guarantee.","","","","","","","","","",""
+"O3040161731",1,"","CRL","B","control","op","P","distribution","L_conc","S","simulated","ASE is Safe-PAC-MDP: w.p. 1-delta every action on whole training trajectory safe and near-optimal; gridworld/platformer only."
+"O2965721472",1,"","NEW:Differential-privacy poisoning robustness","B","perception","in","E","poisoning","none","S","proof","DP learner: expected attack cost under k poisoned items bounded below by e^{-eps k} J(D); logistic/ridge regression, generic data."

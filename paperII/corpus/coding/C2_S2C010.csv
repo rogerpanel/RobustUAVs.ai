@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2996578286",1,"","GEN","B","perception","pop","P","distribution","L_conc","S","modelled","All-layer-margin generalization bound for deep nets w.p. 1-delta over training sample; robust-error variant also in abstract (Thm 4.1); headline taken as clean bound."
+"O3092718793",1,"","GEN","B","control","pop","P","distribution","L_conc","S","modelled","Reward-free RL (tabular MDP): eps-optimal policy for any reward w.p. 1-delta after O~(S^2A/eps^2) episodes; no experiments; could be ALG."
+"O4226143119",0,"Guarantee covers supervisor queue and kinematic reachability; no learned component analysed.","","","","","","","","","",""
+"O3034638213",1,"","GEN","B","perception","pop","P","distribution","L_conc","S","modelled","PAC constrained learning: ECRM/empirical dual is (near-)PACC, approximately optimal and feasible w.p. 1-delta; Adult and FMNIST illustrations only."
+"O3145970646",1,"","GEN","B","estimation","pop","P","distribution","L_conc","S","modelled","Least-squares linear system identification: ||A-A_hat||<=eps w.p. 1-delta with sample complexity exponential in controllability index; lower bounds are hardness; learned-component status doubtful."

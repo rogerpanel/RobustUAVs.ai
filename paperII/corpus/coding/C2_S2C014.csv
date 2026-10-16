@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4403405723",1,"","CP","B","estimation","pop","P","distribution","L_conc","SE","measured","Conformalized quantile XGBoost gives PI coverage over test stations (90.5% at 90%). Doubt: non-vehicle application, off-the-shelf CQR, coverage only checked empirically."
+"O4388756775",1,"","CP","B","estimation","pop","P","distribution","L_conc","SE","measured","Theorem 1: QCP set predictor covers true output with prob >=1-alpha under iid calibration/test, despite correlated/drifting quantum noise; checked on IBM hardware."
+"O3014860839",1,"","GEN","B","control","pop","P","distribution","L_conc","S","modelled","Plug-in model-based planning with N samples per state-action yields epsilon-optimal policy w.p. 1-delta; minimax sample complexity. Purely theoretical, tabular MDP."
+"O4394717730",0,"LDP guarantee concerns the non-learned data randomizer; GNN only inherits it via post-processing.","","","","","","","","","",""
+"O3216734817",1,"","ALG","B","control","pop","E","distribution","none","S","modelled","Bayesian expected regret of Thompson-sampling SPEDE is O~(H^2 sqrt(T) ...) under realizability, bounded eluder dimension; MuJoCo experiments do not test the bound."
