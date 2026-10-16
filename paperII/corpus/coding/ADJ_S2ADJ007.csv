@@ -1,0 +1,9 @@
+cid,field,value,rationale
+O3212610018,perturbation,distribution,"Process noise is i.i.d. Gaussian (unbounded), not a bounded disturbance; the w.p. 1-delta bound is over the noise and mode sampling distribution."
+O3212610018,evidence,simulated,"Regret theorem is analytic, not a certificate computed on an actual model, so not proof; strongest support is synthetic-MJS numerical simulations (Sec. 7)."
+O3214770989,class,CRL,"The coded guarantee is safety: w.p. 1-5delta every exploration policy satisfies the CMDP constraint (Prop. 5, Thm 3). That is a certified-safe RL claim."
+O3214770989,evidence,simulated,"Theorem is analytic, not a computed certificate; simulated CMDP environments (factored, media streaming) show zero constraint regret (Sec. 5)."
+O3216734817,scope,pop,"Bound is E_P(f)[Regret(K)], an expectation over a prior distribution of environments (dynamics f), which matches pop rather than tr."
+O3216734817,lifts,L_conc,"Proof builds sample-based confidence sets (UCB surrogate, covering/eluder concentration, Lemma 18) to bound regret, which is a concentration argument from samples."
+O4320460176,evidence,simulated,"Theorem 5 bound is computed and compared with empirical generalization error on the MNIST DSVM benchmark (Sec. 6, Fig. 2); benchmark counts as simulated."
+O4372262625,class,NEW:Architectural constraint enforcement,"No classes.csv code fits exact affine-on-polytope enforcement by bias projection (Thm 1, Prop 1); both coders chose NEW; C1's label kept, shortened."

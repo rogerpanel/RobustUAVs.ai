@@ -1,0 +1,8 @@
+cid,field,value,rationale
+O4379522721,evidence,proof,"Headline number is the Theorem 2 PAC-Bayes bound value computed on the trained ABNet (Table 1); no simulator involved, so not simulated."
+O4382449344,assumption,S,"lifts=none: main modelling assumption (l2-bounded adversary, Monte Carlo CERTIFY with alpha=0.001) is explicitly stated in Sec. 2 and Sec. 4."
+O4382464632,component,control,"Guarantee is regret of the learned RL agent's policy mapping state to action; codebook: learned state-to-action part counts as control."
+O4382464632,modality,P,"Theorem 1: regret bound holds with probability at least 1-delta over stochastic transitions/data, i.e. probability over environment."
+O4382464632,perturbation,distribution,"Uncertainty covered is natural sampling variation of stochastic MNL transitions; codebook: distribution is natural sampling variation."
+O4385806592,scope,pop,"Theorem 1 bounds adversarial loss summed over the entire training set V, not one input neighbourhood; quantifies over empirical data distribution."
+O4387322853,evidence,measured,"Theorem 1 validated on real-world ELEC2 electricity data and Natural Questions QA, beyond synthetic data; measured means real-world data."

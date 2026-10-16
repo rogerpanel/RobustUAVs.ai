@@ -1,0 +1,101 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,resolved_by
+O2777012514,0,MILP used only for feature visualization and constructing targeted adversarial examples; no robustness bound claimed. Screening rule excludes attack studies without a guarantee.,,,,,,,,,,ADJ
+O2787881900,0,"Interpretability method; exact piecewise-linear equivalence is not a robustness, safety or performance guarantee.",,,,,,,,,,C1=C2
+O2803117117,1,,ALG,B,perception,pop,E,none,none,S,modelled,C1=C2
+O2890075623,1,,LUC,A,planning,in,P,distribution,L_conc,S,simulated,ADJ
+O2892358082,1,,LIP,B,perception,pop,E,distribution,none,S,modelled,C1=C2
+O2898631838,1,,LIP,B,perception,in,A,none,none,SE,proof,C1=C2
+O2905146218,1,,NEW:compositional robustness,B,perception,in,A,norm,none,S,modelled,ADJ
+O2941105184,1,,BP,B,perception,in,A,norm,none,S,proof,C1=C2
+O2946660403,0,"Stability analysis on linear test equation; robustness claims empirical, no certificate for learned network.",,,,,,,,,,C1=C2
+O2947562989,1,,GLOB,B,perception,in,Ac,norm,L_conc,SE,simulated,ADJ
+O2949505878,1,,GEN,B,estimation,pop,P,poisoning,L_conc,S,modelled,C1=C2
+O2962862931,0,"Interpretability score for models; no formal, statistical or architectural guarantee.",,,,,,,,,,C1=C2
+O2965721472,1,,NEW:DP poisoning robustness,B,perception,in,E,poisoning,none,S,proof,ADJ
+O2970615870,1,,LIP,B,perception,in,A,norm,none,S,proof,C1=C2
+O2972852682,1,,ALG,B,estimation,in,P,distribution,L_conc,S,modelled,C1=C2
+O2981925314,1,,RTA,A,control,op,A,none,L_mon,S,proof,C1=C2
+O2991265233,1,,GEN,B,perception,pop,P,distribution,L_conc,S,modelled,C1=C2
+O2996578286,1,,GEN,B,perception,pop,P,distribution,L_conc,S,modelled,C1=C2
+O2999913149,1,,GEN,B,perception,pop,P,distribution,L_conc,S,simulated,C1=C2
+O3008591962,1,,NEW:Intrinsic robustness limit (isoperimetric bound),B,perception,pop,P,norm,L_conc;L_gen,S,simulated,ADJ
+O3013816534,1,,CRL,B,control,in,A,poisoning,none,S,proof,C1=C2
+O3014860839,1,,GEN,B,control,pop,P,distribution,L_conc,S,modelled,ADJ
+O3017595567,1,,ALG,B,control,tr,P,distribution,L_conc,S,modelled,ADJ
+O3028525609,1,,GEN,B,perception,pop,P,norm,L_conc,S,modelled,ADJ
+O3033193189,1,,RS,B,perception,in,Ac,norm,none,S,proof,C1=C2
+O3033405017,1,,LUC,A,control,tr,P,distribution,L_conc,S,simulated,ADJ
+O3034638213,1,,GEN,B,perception,pop,P,distribution,L_conc,S,modelled,C1=C2
+O3034772830,1,,NEW:Distributionally robust worst-case risk bound,B,perception,pop,E,distribution,none,S,modelled,ADJ
+O3035441470,1,,SEM,B,perception,in,A,semantic,none,S,proof,ADJ
+O3035827960,0,Analytic Gaussian moments of small ReLU net plus attack construction; no robustness guarantee stated.,,,,,,,,,,C1=C2
+O3040161731,1,,CRL,B,control,op,P,distribution,L_conc,S,simulated,ADJ
+O3044126222,1,,GEN,B,control,pop,P,distribution,L_conc,S,modelled,C1=C2
+O3082256455,1,,ALG,B,control,pop,P,distribution,L_conc,S,modelled,C1=C2
+O3092397959,1,,RS,B,perception,in,A,norm,none,S,proof,C1=C2
+O3092718793,1,,GEN,B,control,pop,P,distribution,L_conc,S,modelled,ADJ
+O3093342379,1,,CP,B,estimation,pop,P,distribution,L_conc,S,measured,C1=C2
+O3097068942,1,,PACB,B,perception,pop,P,distribution,L_conc,S,measured,ADJ
+O3102590949,1,,GEN,B,perception,pop,P,distribution,L_conc,S,modelled,ADJ
+O3109575026,1,,GEN,B,control,tr,P,disturbance,L_conc,S,modelled,ADJ
+O3119651376,1,,GEN,B,perception,pop,P,norm,L_conc,S,modelled,ADJ
+O3126416674,1,,PACB,B,perception,pop,P,distribution,L_conc,S,simulated,C1=C2
+O3127015406,1,,GEN,B,perception,pop,P,norm,L_conc,S,modelled,C1=C2
+O3127248914,1,,GEN,B,perception,pop,P,distribution,L_conc,S,modelled,C1=C2
+O3127950324,1,,ALG,B,control,in,E,none,L_conc,S,modelled,ADJ
+O3129335991,1,,PACB,B,perception,pop,P,distribution,L_conc,S,proof,ADJ
+O3130937369,1,,SMT,B,perception,in,A,none,none,S,proof,C1=C2
+O3131311588,1,,ALG,B,control,tr,E,distribution,L_conc,S,modelled,ADJ
+O3131791785,1,,ALG,B,estimation,pop,P,distribution,L_conc,S,modelled,ADJ
+O3132401297,1,,BP,B,perception,in,A,norm,none,S,proof,C1=C2
+O3134374554,1,,GEN,B,estimation,pop,E,distribution,none,S,modelled,ADJ
+O3137534975,1,,ALG,B,control,tr,E,disturbance,none,S,modelled,C1=C2
+O3145970646,1,,GEN,B,estimation,pop,P,distribution,L_conc,S,modelled,C1=C2
+O3154580345,1,,LIP,B,perception,in,A,norm,none,S,proof,C1=C2
+O3159401323,0,Empirical study of frequency constraints and adversarial accuracy; no guarantee stated.,,,,,,,,,,C1=C2
+O3166951700,1,,NEW:Regularizer-based expected-sensitivity bound,B,perception,pop,E,norm,none,S,modelled,ADJ
+O3168834527,1,,GEN,B,estimation,pop,P,distribution,L_conc,S,modelled,ADJ
+O3169618399,0,Empirical attack/evaluation study of NLP models; no formal guarantee stated.,,,,,,,,,,C1=C2
+O3182348021,1,,GEN,B,perception,pop,P,distribution,L_conc,S,modelled,ADJ
+O3184908869,1,,NEW:robust detection-classification reduction,B,perception,pop,E,norm,none,S,modelled,ADJ
+O3187326931,1,,GEN,B,control,pop,P,distribution,L_conc,S,modelled,ADJ
+O3192782817,1,,GEN,B,control,pop,P,distribution,L_conc,S,modelled,ADJ
+O3194200810,1,,ALG,B,control,pop,P,distribution,L_conc,S,modelled,C1=C2
+O3202331133,0,"Bounds a data-geometry statistic (LID), not a guarantee on a learned component.",,,,,,,,,,C1=C2
+O3207297971,1,,RS,B,perception,in,Ac,norm,none,SE,proof,C1=C2
+O3209563920,0,Headline Theorem 2 is an SQ learnability impossibility within a conceptual framework; no guarantee about a learned component; Theorem 3 is trivial parity identification.,,,,,,,,,,ADJ
+O3212610018,1,,ALG,B,control,tr,P,distribution,L_conc,S,simulated,ADJ
+O3213126186,1,,ALG,B,control,pop,P,distribution,L_conc,S,modelled,C1=C2
+O3214770989,1,,CRL,B,control,pop,P,distribution,L_conc,S,simulated,ADJ
+O3216734817,1,,ALG,B,control,pop,E,distribution,L_conc,S,modelled,ADJ
+O4226143119,0,AV supervision queueing/reachability analysis; no learned component is guaranteed.,,,,,,,,,,C1=C2
+O4310633502,1,,CP,B,estimation,pop,P,distribution,L_conc,SE,simulated,C1=C2
+O4320460176,1,,GEN,B,perception,pop,P,distribution,L_conc,S,simulated,ADJ
+O4372262625,1,,NEW:Architectural constraint enforcement,B,perception,in,A,none,none,S,proof,ADJ
+O4379522721,1,,PACB,B,perception,pop,P,distribution,L_conc,S,proof,ADJ
+O4379539742,1,,PACB,B,perception,pop,P,norm,L_conc,S,modelled,C1=C2
+O4382202987,1,,ALG,B,control,pop,E,none,none,S,modelled,C1=C2
+O4382203289,1,,GEN,B,planning,pop,P,distribution,L_conc,S,simulated,C1=C2
+O4382318267,1,,ALG,B,control,pop,P,distribution,L_conc,S,modelled,C1=C2
+O4382449344,1,,RS,B,perception,in,Ac,norm,none,S,proof,ADJ
+O4382458334,0,Empirical adversarial-training defense for skeleton HAR; no formal or statistical guarantee.,,,,,,,,,,C1=C2
+O4382464632,1,,ALG,B,control,pop,P,distribution,L_conc,S,simulated,ADJ
+O4385806592,1,,ALG,B,perception,pop,E,norm,none,S,modelled,ADJ
+O4386065850,0,"Exact decision-boundary visualization tool; no robustness, safety or statistical guarantee about model behaviour.",,,,,,,,,,C1=C2
+O4386075838,1,,BP,B,perception,in,A,norm,none,S,proof,C1=C2
+O4387322853,1,,CP,B,estimation,pop,E,distribution,L_conc,S,measured,ADJ
+O4387868700,1,,BP,B,perception,in,A,norm,none,S,proof,C1=C2
+O4388756775,1,,CP,B,estimation,pop,P,distribution,L_conc,S,measured,ADJ
+O4390421907,1,,LUC,A,control,in,P,distribution,L_conc,S,simulated,ADJ
+O4391020152,0,Reachability of linear ARMAX models; no learned component or learned-component guarantee.,,,,,,,,,,C1=C2
+O4393159987,1,,SMT,B,estimation,in,A,norm,none,S,proof,ADJ
+O4394717730,0,LDP guarantee is on the non-learned randomizer; no guarantee about the learned GNN.,,,,,,,,,,C1=C2
+O4396214268,1,,SMT,B,perception,in,A,semantic,none,S,proof,ADJ
+O4396227895,0,Safety filter bounds force of non-learned controller; no guarantee on learned component.,,,,,,,,,,C1=C2
+O4400877915,1,,CP,B,perception,pop,P,distribution,L_conc,S,simulated,ADJ
+O4403405723,1,,CP,B,estimation,pop,P,distribution,L_conc,SE,measured,ADJ
+O4405058108,0,Analysis explaining instabilities via low-rank expansion; no robustness guarantee; empirical tsunami case.,,,,,,,,,,C1=C2
+O4405486670,1,,ALG,B,control,pop,E,none,none,S,modelled,ADJ
+O4405489636,1,,CP,B,estimation,pop,P,distribution,L_conc,SE,measured,ADJ
+O4405785279,1,,RTA,B,control,op,A,none,L_mon,S,simulated,C1=C2
+O4410731478,1,,CP,B,estimation,pop,P,distribution,L_conc,S,measured,C1=C2
