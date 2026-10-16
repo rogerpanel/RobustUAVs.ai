@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2789122432","1","","GEN","B","perception","pop","E","distribution","none","S","modelled","Instance-dependent bound: expected error <= empirical error + V[f]*D*(discrepancy), no statistical assumption; CIFAR/SVHN only test regulariser, bound not computed."
+"O3119404651","0","Scenario JSR bound for black-box switched linear systems; no learned component.","","","","","","","","","",""
+"O2910718468","1","","ALG","B","control","pop","E","none","none","S","modelled","GAIL alternating gradient on known LQR converges Q-linearly to optimal policy (expected cost over x0~D0); iterates stay stabilizing. Doubt: pop vs tr scope."
+"O3174145161","1","","GEN","B","control","pop","P","distribution","L_conc","S","simulated","Variance-reduced Q-learning: w.p. 1-delta, l_inf Q-estimation error matches instance-dependent local minimax bound; toy 2-state MDP check. Doubt: GEN vs ALG."
+"O3007684729","1","","GEN","B","perception","pop","P","distribution","L_conc","S","modelled","W.p. 1-delta, target-task excess risk O(C(Phi)/(n1 T)+k/n2) for learned shared representation; generic regression, component label uncertain."

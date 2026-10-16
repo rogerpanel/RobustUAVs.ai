@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3202850137",1,"","ALG","B","perception","pop","E","none","none","S","modelled","L2(mu) error of learned OT generator bounded by duality gaps (Thm 4.3). Doubt: ALG vs NEW optimisation-gap bound; generative model as perception."
+"O3214448813",1,"","ALG","B","control","tr","P","distribution","L_conc","S","modelled","Regret of SLF-UCRL in factored MDP with unknown structure is O~(sqrt T) w.p. 1-delta. Rule-6: tr chosen over op/pop."
+"O2709553318",1,"","GEN","B","perception","pop","P","distribution","L_conc","S","modelled","Spectrally-normalized margin bound: test misclassification <= empirical margin loss + complexity term, w.p. 1-delta over iid sample."
+"O2626994141",1,"","ALG","B","estimation","pop","P","distribution","none","S","modelled","Alternating gradient descent NMF recovers ground-truth feature matrix to epsilon under GCC and initialization. Doubt: theorem states no explicit probability; modality P assumed."
+"O2754770961",1,"","ALG","B","control","tr","E","distribution","none","S","modelled","Thompson sampling LQ controller has expected Bayesian regret O~(sqrt T) under prior and stability assumptions. Rule-6: tr chosen over pop."

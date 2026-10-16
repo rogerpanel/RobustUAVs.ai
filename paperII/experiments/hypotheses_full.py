@@ -24,22 +24,8 @@ R = C.parent / "results"
 B, SEED = 4000, 20261021
 
 
-def main() -> int:
-    csv.field_size_limit(10 ** 9)
-    codes = sys.argv[1] if len(sys.argv) > 1 else "codes_full_final.csv"
-    tag = "" if codes == "codes_full_final.csv" else "_" + codes.replace("codes_full_", "").replace(".csv", "")
-    st = {r["metric"]: r["value"] for r in csv.DictReader((R / "screening_status.csv").open())}
-    n_core, n_samp = int(st["core_included"]), int(st["sample_included"])
-    m_samp, pool = int(st["sample_screened"]), int(st["remainder_size"])
-    stratum = {r["cid"]: r["stratum"] for r in csv.DictReader((C / "coding_sample.csv").open())}
-    year = {r["cid"]: r["year"] for r in csv.DictReader((C / "candidates.csv").open())}
-    pilot = {r["key"]: r["value"] for r in csv.DictReader((R / "hypotheses.csv").open())}
-    rows = [r for r in csv.DictReader((C / codes).open()) if r["eligible"] == "1"]
-    S = np.array([stratum[r["cid"]] == "core" for r in rows])
-    n_c, n_r = S.sum(), (~S).sum()
-    # the weights use papers coded per stratum (eligible or not), as in corpus_estimates
-    k_c = sum(stratum[r["cid"]] == "core" for r in csv.DictReader((C / codes).open()))
-    k_r = sum(1 for _ in csv.DictReader((C / codes).open())) - k_c
+def quantities(rows, year):
+    """(key, description, numerator, denominator, pilot key) over eligible coded rows."""
     lifts = [set(r["lifts"].split(";")) - {"none"} for r in rows]
     a = lambda f, v: np.array([r[f] == v for r in rows])  # noqa: E731
     lifted = np.array([bool(x) for x in lifts])
@@ -88,6 +74,27 @@ def main() -> int:
            | (a("class", "RTA") & ~lifted & (a("assumption", "SE") | a("assumption", "SEC"))), a("class", "RTA"), ""),
           ("h4_RTA_L_mon", "RTA guarantees using L_mon", a("class", "RTA") & np.array(["L_mon" in x for x in lifts]),
            a("class", "RTA"), "")]
+
+    return Q
+
+
+def main() -> int:
+    csv.field_size_limit(10 ** 9)
+    codes = sys.argv[1] if len(sys.argv) > 1 else "codes_full_final.csv"
+    tag = "" if codes == "codes_full_final.csv" else "_" + codes.replace("codes_full_", "").replace(".csv", "")
+    st = {r["metric"]: r["value"] for r in csv.DictReader((R / "screening_status.csv").open())}
+    n_core, n_samp = int(st["core_included"]), int(st["sample_included"])
+    m_samp, pool = int(st["sample_screened"]), int(st["remainder_size"])
+    stratum = {r["cid"]: r["stratum"] for r in csv.DictReader((C / "coding_sample.csv").open())}
+    year = {r["cid"]: r["year"] for r in csv.DictReader((C / "candidates.csv").open())}
+    pilot = {r["key"]: r["value"] for r in csv.DictReader((R / "hypotheses.csv").open())}
+    rows = [r for r in csv.DictReader((C / codes).open()) if r["eligible"] == "1"]
+    S = np.array([stratum[r["cid"]] == "core" for r in rows])
+    n_c, n_r = S.sum(), (~S).sum()
+    # the weights use papers coded per stratum (eligible or not), as in corpus_estimates
+    k_c = sum(stratum[r["cid"]] == "core" for r in csv.DictReader((C / codes).open()))
+    k_r = sum(1 for _ in csv.DictReader((C / codes).open())) - k_c
+    Q = quantities(rows, year)
 
     def ratio(num, den, w):
         d = (w * den).sum()

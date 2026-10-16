@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3203873475",1,"","ALG","B","perception","pop","E","poisoning","none","S","modelled","Convergence bound on expected gradient norm of SHARE federated training with q Byzantine clients (CIFAR-10 CNN); smoothness/bounded-variance assumptions stated."
+"O3127643357",1,"","CRL","B","control","pop","E","poisoning","none","S","proof","Defense policy certified: true-reward score >= poisoned-reward score, plus attack-influence bounds, for tabular MDPs under minimal reward poisoning."
+"O4392931599",1,"","NEW:approximate-MPC optimality-loss bound","B","control","in","A","none","none","S","modelled","NN-approximated MPC Lagrangian loss bounded by cost-guided loss plus M_H eps^3/6 at sampled states; rule-6 doubt in vs pop (sample average)."
+"O4382936152",0,"No learned component; data-driven LTI persistence-of-excitation proof of Willems' lemma.","","","","","","","","","",""
+"O4318718938",1,"","ALG","B","control","pop","E","none","L_conc","S","modelled","Expected regret upper bound for OCE-VI risk-sensitive tabular RL over K episodes, plus minimax lower bound; Hoeffding-based optimism."

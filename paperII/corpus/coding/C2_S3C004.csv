@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4315489011",0,"Kernel DRO decision method; no formal guarantee on learned component; power-grid application","","","","","","","","","",""
+"O3100532071",1,"","ALG","B","control","pop","P","distribution","L_conc","S","modelled","W.p. 1-delta regret bound for risk-sensitive tabular RL (RSVI/RSQ) over K episodes; no experiments, analytical only."
+"O4399554721",1,"","ALG","A","control","pop","P","distribution","L_conc","S","simulated","W.p. 1-delta log N / sqrt N regret for least-squares adaptive risk-sensitive LQR; tier doubt: flying-robot system only in appendix."
+"O3209195293",1,"","ALG","B","estimation","pop","P","distribution","L_conc","S","simulated","W.p. 1-delta regret bounds for online ridge/forward regression under sub-Gaussian noise; extended to linear bandits; synthetic experiments."
+"O2974095354",1,"","CP","B","estimation","pop","P","distribution","L_conc","SE","measured","Distributional conformal intervals: finite-sample marginal coverage, asymptotic conditional coverage under consistent quantile/distribution regression; stock and wage data."

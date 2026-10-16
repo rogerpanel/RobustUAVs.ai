@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2998050631",1,"","ALG","B","control","pop","P","distribution","L_conc","S","modelled","Sample-based TRPO reaches global optimum at O~(1/sqrt N) w.p. 1-delta in tabular MDPs, given finite concentrability; E vs P modality doubt."
+"O3130196891",1,"","GEN","B","control","pop","E","distribution","L_conc","S","modelled","Imitation learner (Mimic-MD) has expected suboptimality O(|S|H^{3/2}/N) in known-transition tabular MDPs, with matching minimax lower bound."
+"O3141676405",1,"","GEN","B","control","pop","P","distribution","L_conc","S","modelled","Chebyshev tail bound on direct data-driven predictive controller's implicit model error, O(T^2/N), driving suboptimality gap; Gaussian i.i.d. data assumed."
+"O3173397148",1,"","GEN","B","estimation","pop","P","distribution","L_conc","S","modelled","MMD-DRO solution excess risk <= 2KM(1+sqrt(2log(1/delta)))/sqrt(n) w.p. 1-delta, depending only on true loss RKHS norm; component choice generic."
+"O2899434523",1,"","GEN","B","perception","in","A","norm","none","S","modelled","If training set is a delta-cover of the data manifold, nearest-neighbour classifier is correct on the whole eps-tube; scope in chosen over pop."
