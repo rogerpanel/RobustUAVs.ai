@@ -1,0 +1,35 @@
+metric,value
+primary_latched_transient,70
+receiver_transient,138
+verdict,fail
+informative,1
+reacquisitions,8
+samples_checked,316560
+receiver_episodes,2
+receiver_transient_peak_err_m,6.153
+receiver_transient_peak_excess_m,5.19
+receiver_transient_since_min_s,0.004
+receiver_transient_since_max_s,7.124
+receiver_floor_violations,112
+receiver_floor_peak_excess_m,0.15
+receiver_ep1,"log 1, 51 samples, peak err 6.15 m, peak excess 5.19 m, since reacq 0.00-0.41 s"
+receiver_ep2,"log 1, 87 samples, peak err 2.75 m, peak excess 1.78 m, since reacq 0.00-7.12 s"
+latched_episodes,1
+latched_transient_peak_err_m,1.162
+latched_transient_peak_excess_m,0.219
+latched_transient_since_min_s,4.252
+latched_transient_since_max_s,7.124
+latched_floor_violations,112
+latched_floor_peak_excess_m,0.15
+latched_ep1,"log 1, 70 samples, peak err 1.16 m, peak excess 0.22 m, since reacq 4.25-7.12 s"
+floor_m,0.943
+executed_violations_2hz,0
+coverage_2hz,0.481
+executed_violations_5hz,0
+coverage_5hz,0.4578
+agent_epochs,9330
+latch_epochs,10
+disarmed_epochs,0
+vehicles_without_fix,4
+vehicles_without_fix_held,0
+short_logs,4

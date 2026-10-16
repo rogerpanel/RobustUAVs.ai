@@ -1,0 +1,25 @@
+/home/deploy/paper3-work/paperIII/experiments/r4_sitl_fleet.py:120: FutureWarning: The 'mavsdk' package has been renamed to 'mavsdk-grpc'. This is the last release of the gRPC wrapper under the 'mavsdk' name: that name now refers to the native MAVSDK binding, which has a different API.
+  To carry on with this API, install 'mavsdk-grpc' and use 'import mavsdk_grpc as mavsdk'. The code is identical, development continues there (including releases for MAVSDK v4), and it installs under a separate import name so it cannot collide with the native binding.
+  To freeze instead, pin 'mavsdk<4' (no further updates).
+  To migrate, see https://mavsdk.mavlink.io/main/en/python/migration.html
+  from mavsdk import System
+[03:20:54] vehicle 0: connected
+[03:20:55] vehicle 1: connected
+[03:20:56] vehicle 2: connected
+[03:20:57] vehicle 3: connected
+[03:20:58] vehicle 4: connected
+[03:20:59] vehicle 5: connected
+[03:21:00] vehicle 0: armed, offboard started
+[03:21:00] vehicle 4: armed, offboard started
+[03:21:00] vehicle 3: armed, offboard started
+[03:21:00] vehicle 1: armed, offboard started
+[03:21:00] vehicle 2: armed, offboard started
+[03:21:00] vehicle 5: armed, offboard started
+[03:21:10] rate 5 Hz: flying 240 s
+[03:25:10] rate 5 Hz: done, 6636 rows
+[03:25:10] {'rate_hz': 5.0, 'agent_epochs': 6630, 'held_epochs': 3315, 'executed_violations': 0, 'exposure_total': 0, 'exposure_without_jump': 0, 'certified_coverage': 0.4577677224736048, 'provenance': 'sitl'}
+[03:25:10] rate 2 Hz: flying 240 s
+[03:29:10] rate 2 Hz: done, 2694 rows
+[03:29:10] {'rate_hz': 2.0, 'agent_epochs': 2688, 'held_epochs': 1344, 'executed_violations': 0, 'exposure_total': 0, 'exposure_without_jump': 0, 'certified_coverage': 0.4810267857142857, 'provenance': 'sitl'}
+[03:29:10] {'rate_hz': 5.0, 'agent_epochs': 6630, 'held_epochs': 3315, 'executed_violations': 0, 'exposure_total': 0, 'exposure_without_jump': 0, 'certified_coverage': 0.4577677224736048, 'provenance': 'sitl'}
+[03:29:10] landed; mavsdk_server processes stopped
