@@ -1,0 +1,101 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,resolved_by
+O2531965955,0,Simulation-only racing LMPC; guarantees cited from prior work and void under model mismatch.,,,,,,,,,,C1=C2
+O2616305530,1,,CRL,B,control,pop,E,distribution,none,S,measured,C1=C2
+O2760733685,1,,SMT,B,control,in,A,none,none,S,proof,ADJ
+O2785755647,1,,LIP,B,perception,in,Ac,norm,none,S,proof,ADJ
+O2788084076,1,,LUC,A,planning,in,P,distribution,L_conc;L_dyn,S,simulated,ADJ
+O2799107510,1,,BP,B,perception,in,A,norm,none,S,proof,C1=C2
+O2852179785,1,,SMT,B,perception,in,A,norm,none,S,proof,ADJ
+O2899692219,1,,BP,B,perception,in,A,norm,none,S,proof,C1=C2
+O2912816250,1,,PROB,B,perception,pop,P,distribution,L_conc,S,modelled,ADJ
+O2913266441,1,,GEN,B,perception,pop,E,norm,none,S,modelled,ADJ
+O2915008147,1,,PACB,B,perception,pop,P,distribution,L_conc,S,proof,ADJ
+O2917325587,1,,BP,A,perception,in,A,norm,none,S,proof,C1=C2
+O2924630351,1,,SMT,B,perception,in,A,norm,none,S,proof,ADJ
+O2943722115,1,,SMT,A,control,in,A,none,none,S,proof,C1=C2
+O2946912408,1,,GEN,B,control,pop,P,distribution,L_conc,S,modelled,C1=C2
+O2952395507,1,,LUC,A,estimation,tr,P,distribution,L_conc;L_dyn;L_sup,SE,simulated,C1=C2
+O2955833779,0,"Supplied full text is a different paper (arXiv 1907.02509, validating heuristic explanations); the titled record's guarantee and its object cannot be identified from it.",,,,,,,,,,ADJ
+O2962710014,0,Empirical randomized-noise defence; no certificate or formal robustness guarantee.,,,,,,,,,,C1=C2
+O2963496101,1,,BP,B,perception,in,A,norm,none,S,proof,C1=C2
+O2963582321,1,,ALG,B,control,pop,P,distribution,L_conc,S,modelled,ADJ
+O2964164993,1,,MON,B,perception,in,Ac,norm,none,SE,simulated,ADJ
+O2970078867,1,,BP,B,perception,in,A,semantic,none,S,proof,C1=C2
+O2970142535,1,,GEN,B,control,pop,E,distribution,L_dyn,S,modelled,ADJ
+O2970884920,1,,GEN,B,control,pop,P,distribution,L_conc,S,modelled,C1=C2
+O2972923195,1,,OPREL,A,control,pop,P,distribution,L_conc;L_mon,S,simulated,ADJ
+O2982312195,1,,SMT,B,perception,in,A,norm,none,S,proof,ADJ
+O2998161546,1,,BP,B,perception,in,A,norm,none,S,proof,C1=C2
+O3007985585,1,,GEN,B,control,pop,P,disturbance,L_conc;L_dyn,S,simulated,ADJ
+O3010082790,1,,RS,B,perception,in,Ac,norm,none,S,proof,C1=C2
+O3017318049,0,"Exclude: distribution-free CI for population parameter pi_P(X); headline is impossibility bound for any procedure; coverage holds regardless of regressor R, so no learned-component guarantee.",,,,,,,,,,ADJ
+O3021481267,1,,SMT,B,perception,in,A,norm,none,S,proof,C1=C2
+O3025114349,1,,DTMC,B,control,tr,P,disturbance,L_dyn,S,proof,ADJ
+O3029692613,1,,BP,B,perception,in,A,norm,none,S,proof,C1=C2
+O3032731803,0,Empirical forecasting model; no formal or statistical guarantee beyond by-construction dynamic feasibility.,,,,,,,,,,C1=C2
+O3034746922,1,,BP,B,perception,in,A,norm,none,S,proof,C1=C2
+O3037427931,1,,NEW:global robustness via activation-region enumeration,B,perception,in,A,none,L_conc,U,simulated,ADJ
+O3037593164,1,,NCERT,B,control,tr,A,none,none,S,proof,C1=C2
+O3088950981,1,,LUC,A,control,tr,A,none,L_dyn,S,proof,C1=C2
+O3098493030,1,,SMT,B,perception,in,A,semantic,none,S,proof,C1=C2
+O3100287144,1,,CP,B,estimation,pop,P,distribution,L_conc,S,proof,C1=C2
+O3106612012,1,,PACB,A,end2end,pop,P,distribution,L_conc,SE,simulated,C1=C2
+O3107520776,1,,NEW:deterministic Bernstein-polynomial smoothing,B,perception,in,A,norm,none,SE,simulated,ADJ
+O3109216345,1,,LUC,A,control,tr,A,disturbance,L_dyn,S,proof,C1=C2
+O3118738365,0,"Interpretable deepfake detector evaluated empirically; temporal-logic checks are trace percentages, not a guarantee.",,,,,,,,,,C1=C2
+O3124533198,1,,BP,B,perception,in,A,norm,none,S,proof,ADJ
+O3125588313,1,,PROB,B,perception,in,P,norm,L_conc,SEC,simulated,ADJ
+O3130461065,1,,BP,B,perception,in,A,norm,none,S,proof,C1=C2
+O3132066662,1,,ALG,B,control,tr,E,poisoning,none,S,modelled,ADJ
+O3137096785,1,,RS,B,perception,in,A,norm,none,S,proof,C1=C2
+O3167492897,1,,BP,B,perception,in,E,norm,none,SE,modelled,C1=C2
+O3167942312,1,,GEN,B,estimation,pop,P,distribution,L_conc,S,modelled,ADJ
+O3168112450,0,"Proven headline claims are complexity and duality results for computing explanations (a non-learned explainer), not a robustness or safety guarantee about the decision tree.",,,,,,,,,,ADJ
+O3168586460,1,,RS,B,perception,in,Ac,semantic,none,S,proof,C1=C2
+O3169913694,1,,BP,B,perception,in,A,norm,none,S,proof,C1=C2
+O3170270116,1,,LUC,A,control,in,P,disturbance,L_conc,S,simulated,C1=C2
+O3170697419,1,,GEN,B,control,pop,P,distribution,L_conc,S,modelled,C1=C2
+O3173645038,1,,GEN,A,perception,tr,P,distribution,L_conc;L_dyn;L_sup,S,modelled,C1=C2
+O3175104376,1,,NEW:Structure-preserving learned dynamics,A,estimation,tr,A,none,none,S,proof,ADJ
+O3182959332,0,Optimality theorem assumes information state already learned; no guarantee on any learned component; toy example.,,,,,,,,,,C1=C2
+O3183838078,1,,SMT,B,perception,in,A,norm,none,S,proof,ADJ
+O3188794522,0,Complexity and enumeration results for explaining decision trees; no guarantee about learned model behaviour.,,,,,,,,,,C1=C2
+O3196583636,0,NP-hardness complexity result for NN reachability; no guarantee about any network's behaviour.,,,,,,,,,,C1=C2
+O3199481125,1,,ALG,B,estimation,pop,P,poisoning,L_conc,S,modelled,ADJ
+O3200538762,0,"Empirical GNN planning study; expressivity theorems cited from prior work, no own guarantee.",,,,,,,,,,C1=C2
+O3205094558,1,,NEW:formal explanation of decision graphs,B,perception,in,A,none,none,S,proof,ADJ
+O3209343599,1,,SEM,B,perception,in,A,patch,none,S,proof,C1=C2
+O3209973676,0,"Explanation method; symbolic guarantees hold only for empirically fitted surrogate, not the model.",,,,,,,,,,C1=C2
+O3215435727,1,,GEN,B,perception,pop,P,distribution,L_conc,S,modelled,ADJ
+O4205490748,1,,LUC,B,control,tr,P,disturbance,L_conc,S,simulated,ADJ
+O4281768543,1,,GEN,B,perception,pop,P,distribution,L_conc,S,modelled,C1=C2
+O4287075774,1,,ALG,B,estimation,pop,E,distribution,L_conc,S,modelled,ADJ
+O4292482260,0,Symbolic theory of explanations for abstract Boolean classifiers; no learned component analysed.,,,,,,,,,,C1=C2
+O4312626912,1,,LIP,B,perception,in,A,norm,none,S,proof,ADJ
+O4315472062,1,,NEW:Safe-by-construction constrained NN policy,B,control,in,A,disturbance,L_dyn,S,proof,ADJ
+O4323026894,0,"Defines consistency specification only; no guarantee proved, certified or evaluated.",,,,,,,,,,C1=C2
+O4366726364,1,,SMT,B,perception,in,A,norm,none,S,proof,C1=C2
+O4367281679,0,Survey of formal explainability; no own guarantee about a learned component's robustness.,,,,,,,,,,C1=C2
+O4376561457,0,Explanation-function property on samples; no guarantee about a learned component's behaviour.,,,,,,,,,,C1=C2
+O4379116938,1,,GEN,A,control,in,P,none,none,S,simulated,C1=C2
+O4379165415,1,,SEM,B,perception,in,A,semantic,none,S,proof,C1=C2
+O4379193103,0,Defines differentiable-logic semantics and proves soundness of loss translation; no guarantee about a learned component.,,,,,,,,,,C1=C2
+O4379256329,1,,CRL,B,planning,tr,P,distribution,L_conc;L_sup,S,modelled,ADJ
+O4384345675,1,,NEW:ensemble regression-error (negative-flip) reduction,B,perception,pop,E,distribution,none,S,simulated,ADJ
+O4385437649,1,,SMT,B,perception,in,A,none,none,S,proof,C1=C2
+O4385764189,0,Explanation-redundancy study of decision trees; no robustness or safety guarantee; overview duplicating journal version.,,,,,,,,,,C1=C2
+O4385764466,1,,SMT,B,planning,tr,A,none,L_dyn,S,proof,C1=C2
+O4388483784,1,,BP,B,perception,in,A,norm,none,S,proof,ADJ
+O4390873449,1,,PROB,A,estimation,in,P,norm,L_conc,SEC,simulated,ADJ
+O4391055309,1,,BP,B,estimation,in,A,none,none,S,proof,C1=C2
+O4392014868,0,Wind forecasting application; authors state no coverage guarantees hold; not an autonomous-system guarantee.,,,,,,,,,,C1=C2
+O4392555359,1,,LIP,B,perception,in,A,norm,none,S,proof,C1=C2
+O4401159822,0,Explanation algorithm for decision trees; no robustness or safety guarantee about system behaviour.,,,,,,,,,,C1=C2
+O4402264222,1,,LUC,B,control,tr,A,none,none,S,simulated,ADJ
+O4406795208,1,,CLR,B,estimation,tr,A,none,none,S,proof,ADJ
+O4408392785,0,"Empirical validation pipeline (hypothesis tests, bootstrap, XAI); no guarantee stated. The 90% interval is an illustrative heuristic ('supposed to'), not a stated guarantee.",,,,,,,,,,ADJ
+O4409311673,1,,SMT,B,perception,in,A,poisoning,none,S,proof,ADJ
+O4411936039,1,,LUC,A,control,in,P,distribution,L_conc,S,measured,ADJ
+O4415549797,0,Runtime enforcement of automaton properties; no learned component involved.,,,,,,,,,,C1=C2
+O7123348845,0,Fundamental-lemma representation of plant trajectories; no guarantee on a learned component; robustness only empirical.,,,,,,,,,,C1=C2
+O7133232065,1,,BP,B,perception,in,A,norm,none,S,proof,C1=C2

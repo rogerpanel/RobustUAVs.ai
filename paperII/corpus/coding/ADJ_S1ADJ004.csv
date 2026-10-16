@@ -1,0 +1,10 @@
+cid,field,value,rationale
+O3017318049,eligible,0,"Exclude: distribution-free CI for population parameter pi_P(X); headline is impossibility bound for any procedure; coverage holds regardless of regressor R, so no learned-component guarantee."
+O3025114349,perturbation,disturbance,"Uncertainty is an explicit stochastic actuator-fault term (sticky actions, p=0.2) in the dynamics; not natural sampling variation or shift, so not distribution."
+O3037427931,class,"NEW:global robustness via activation-region enumeration","Rule-based back-propagation enumerating SDN activation regions plus sampled radius/volume checks; no SMT/MILP solver is used, so SMT class does not fit."
+O3037427931,lifts,L_conc,"Rule 3: adjacency, limiting-ball radius and region volumes over the input domain are estimated by sampling, and these estimates decide the global-robustness verdict."
+O3037427931,assumption,U,"Main lift is sampling-based estimation; the paper never states assumptions on sample adequacy or accuracy of estimated radius/volume."
+O3037427931,evidence,simulated,"Sampled adjacency and volumes make the verdict unsound, so not proof; results come from MNIST and a synthetic benchmark dataset."
+O3107520776,class,"NEW:deterministic Bernstein-polynomial smoothing","Headline mechanism (abstract) is deterministic Bernstein smoothing with root-finding radius; not randomized (RS), and spectral-norm Lipschitz extractor is only a supporting step."
+O3107520776,assumption,SE,"Root-finding tolerance and spectral-normalization errors are stated; tested against PGD empirical upper bounds (Fig. 5) and discussed in appendix."
+O3124533198,assumption,S,"Paper explicitly states its modelling assumptions: piecewise-linear (ReLU) network and input domain C admitting efficient linear minimization (l_inf, l_2 balls)."

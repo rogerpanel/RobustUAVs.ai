@@ -1,0 +1,10 @@
+cid,field,value,rationale
+O4388483784,assumption,S,"lifts=none, so code main modelling assumption: Lemma 1/Theorem 3 explicitly condition equivalence on neuron stability w.r.t. stated input box I; stated, no separate evidence."
+O4390873449,assumption,SEC,"L_conc needs i.i.d. samples from pi with K per Eq.(3): stated (Thm 1), evidenced by PGD checks, and confidence 1-eta enters the PAC claim."
+O4390873449,evidence,simulated,"PAC-model result from sampling is not a sound certificate, so not proof; headline evaluated on ETH/UCY and SDD benchmark datasets."
+O4402264222,class,LUC,"Constraint satisfaction under an assumed learned-approximation error bound gamma via tightened constraints fits learned-uncertainty safe control; existing class fits, so no NEW."
+O4402264222,evidence,simulated,"Theorem is conditional on unevidenced Assumption 1; strongest evidence is closed-loop inverted-pendulum simulations with trained NNs (Sec. IV)."
+O4406795208,class,CLR,"Quadratic Lyapunov/LMI sector analysis of closed loop containing NN gives invariant ellipsoid basin; not a learned neural certificate, so CLR not NCERT."
+O4406795208,component,estimation,"Learned part is the RNN plant model (state-to-next-state predictor), not a state-to-action policy; controller K is linear, analogous to COMP-1."
+O4406795208,lifts,none,"Lyapunov certificate over ellipsoid is natively tr scope (codebook scope rule); no smaller-scope guarantee is carried through a plant model."
+O4408392785,eligible,0,"Empirical validation pipeline (hypothesis tests, bootstrap, XAI); no guarantee stated. The 90% interval is an illustrative heuristic ('supposed to'), not a stated guarantee."

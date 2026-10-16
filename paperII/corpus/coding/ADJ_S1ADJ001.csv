@@ -1,0 +1,6 @@
+cid,field,value,rationale
+O2760733685,perturbation,none,"Guarantee is output range over a given input polyhedron (controller state space X); no threat or disturbance model, by analogy with CLR-1."
+O2785755647,modality,Ac,"Certified L bound uses power iteration from Gaussian init; Thm 2 holds with probability over certifier's own randomness, so Ac per modality definition."
+O2788084076,lifts,L_conc;L_dyn,"GP confidence bounds give L_conc; Lipschitz extension of safety to unvisited states and reachability/returnability through transition model f give L_dyn."
+O2852179785,assumption,S,"lifts=none so code main modelling assumption; paper explicitly states assumptions (exact encoding, integer inputs, sigma>0, L-inf norm) without evidence."
+O2912816250,perturbation,distribution,"Pairs x,x' drawn from real-world input distribution D, explicitly non-adversarial; codebook: distribution is natural sampling variation, not worst-case norm ball."

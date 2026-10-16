@@ -1,0 +1,15 @@
+metric,value
+papers_coded,100
+papers_to_adjudicate,42
+adj_batches_pending,0
+papers_final,100
+eligible_final,77
+elig_adj_0,4
+elig_adj_1,2
+elig_disagree,6
+elig_field_revised,0
+excluded_agreed,19
+field_choice_C1,20
+field_choice_C2,35
+field_choice_third,3
+field_disagree,58
