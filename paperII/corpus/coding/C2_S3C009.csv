@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3212552393",1,"","ALG","B","control","pop","E","distribution","L_conc","S","modelled","Constrained linear bandit: expected regret O~((K^0.75/delta+d)sqrt(tau)) and zero expected constraint violation after constant tau'; op vs pop arguable."
+"O4283791235",1,"","GEN","B","control","pop","P","distribution","L_conc","S","modelled","Robust MDP with mismatched generative model: with N=O~(S^2AH^4(1+lambda)^2/eps^2) samples, robust-value error <=eps w.p. 1-delta."
+"O2914897181",0,"Empirical adversarial-example detector; propositions are not guarantees about the classifier.","","","","","","","","","",""
+"O3170402103",1,"","GEN","B","control","pop","P","distribution","L_conc","S","modelled","Reward-free RL with kernel/overparameterized NN approximation: O~(1/eps^2) episodes yield eps-suboptimal policy or eps-NE with high probability."
+"O3012552881",0,"Dropout NN potential uncertainty estimates for materials; empirical, no formal guarantee.","","","","","","","","","",""

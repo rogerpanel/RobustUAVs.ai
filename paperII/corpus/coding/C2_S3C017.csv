@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2906427034",1,"","GEN","B","perception","pop","P","distribution","L_conc","S","modelled","W.p. 1-delta generalization bound on expected reconstruction error of learned NN decoders (autoencoder-type coding). Component forced to perception; no experiments; P vs E doubt."
+"O2969946283",0,"Review of approximation, optimization, generalization theory; no own guarantee on a specific component","","","","","","","","","",""
+"O3167479696",1,"","GEN","B","control","pop","P","distribution","L_conc;L_sup","S","modelled","W.p. 1-delta bound on value gap of offline-imitation policy (MILO) under partial-coverage of expert distribution. P vs E doubt (bounds expected cost)."
+"O4413924993",1,"","RTA","A","control","op","A","none","L_mon","U","simulated","Transformer-predicted active set; reduced MPC solution verified against all constraints, fallback to full MPC. Per-step check; rule-6 doubt in vs op; no formal theorem."
+"O3168158992",1,"","GEN","B","perception","pop","P","poisoning","L_conc","S","modelled","W.p. 1-delta population-risk bound for max-margin linear classifier under adversarial label-noise fraction eta. Generic classifier forced to perception."

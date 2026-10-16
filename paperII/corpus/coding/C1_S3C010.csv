@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2789122432",1,"","GEN","B","perception","pop","E","distribution","none","S","modelled","Deterministic instance-wise bound: expected error <= empirical error + variation x star-discrepancy (Thm 1); no statistical assumption needed. Scope pop vs in not in doubt."
+"O3119404651",0,"Scenario bound on sampled optimization for black-box switched linear systems; no learned component.","","","","","","","","","",""
+"O2910718468",1,"","ALG","B","control","tr","A","none","none","S","modelled","Alternating-gradient GAIL for LQR converges Q-linearly to unique saddle point with stable intermediate closed loops. Rule 6: tr chosen over pop (expected cost over D0)."
+"O3174145161",1,"","GEN","B","estimation","pop","P","distribution","L_conc","S","modelled","Variance-reduced Q-learning l_inf error <= instance-dependent functional/sqrt(N) w.p. 1-delta, matching local minimax lower bound; tabular MDP. Class GEN vs ALG doubtful."
+"O3007684729",1,"","GEN","B","estimation","pop","P","distribution","L_conc","S","modelled","Few-shot representation learning: target excess risk <= sigma^2(kd/(n1 T)+k/n2) w.p. 1-delta under diversity and covariance-dominance assumptions; generic benchmarks only."

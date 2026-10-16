@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3009043942",1,"",ALG,B,perception,pop,E,none,none,S,modelled,"Greedy forward-selected pruned two-layer net has loss O(1/n^2) (O(1/n)+L*N in general), beating gradient descent; scope pop vs training-set loss doubtful."
+"O2996319422",1,"",NEW:Network compression approximation bound,B,perception,in,Ac,none,none,S,proof,"Neuron-coreset pruned layer output within additive eps of original for all x in ball B_beta, w.p. 1-delta over sampling; ball not a perturbation set."
+"O3118640283",1,"",CP,B,perception,pop,P,distribution,L_conc,S,simulated,"Risk-controlling prediction sets: calibrated set predictor has expected loss <= alpha with prob >= 1-delta over calibration data, assuming calibration and test i.i.d."
+"O3111808837",1,"",LUC,B,control,in,A,disturbance,none,S,proof,"Quadratic regularization in DeePC equals min-max robustness to Frobenius-bounded disturbance of data matrices; data-driven (non-neural) predictor, LTI assumed; class fit doubtful."
+"O4407949669",1,"",LUC,B,control,tr,P,disturbance,none,S,proof,"Data-driven stochastic predictive control with DR-CVaR constraints yields trajectories identical to model-based SMPC under idealized noise-free-data assumptions; scope tr chosen over op."

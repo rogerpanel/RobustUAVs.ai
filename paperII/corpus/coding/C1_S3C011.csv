@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3034840734",1,"","CRL","A","control","op","P","distribution","L_conc;L_sup","S","simulated","SNO-MDP: safe at all steps w.p. 1-Delta via GP bounds and known safe seed, plus PAC near-optimal return. Scope op vs tr doubtful."
+"O2939888044",1,"","GEN","B","estimation","pop","P","disturbance","L_conc","SE","simulated","Lasso sparse LTI identification from one trajectory: w.p. 1-delta exact sparsity recovery and l_inf error bound once T exceeds k^2 log(n+m) threshold."
+"O2807299122",1,"","GEN","B","perception","pop","P","distribution","L_conc","U","simulated","Rademacher-based generalisation bound for two-layer ReLU classifiers, w.p. 1-delta over iid training set, with unit-wise capacity decreasing in width."
+"O3036320002",1,"","GEN","B","estimation","pop","P","disturbance","L_conc","S","modelled","Active-learning identification of nonlinear dynamics: w.p. 1-delta OLS error scales with noise bound, planning horizon and controllability over T samples."
+"O2914920107",1,"","ALG","B","control","pop","E","none","none","S","modelled","Error-propagation and regret bounds for approximate regularized policy iteration, l_p-norm under state distribution; scope pop vs tr doubtful."

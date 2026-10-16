@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4286858784",1,"","GEN","B","perception","pop","E","distribution","none","S","modelled","CMI bounds expected excess risk of SVM/ERM learners, e.g. E[risk] <= 2(d+1)/n for halfspaces under realizability; generic classifier theory."
+"O4391607289",1,"","CP","B","estimation","pop","P","distribution","L_conc","S","modelled","Exact full-conformal set for sparse high-order interaction regressor gives P(y in C(x)) >= 1-alpha under i.i.d.; tabular data, no vehicle."
+"O3049066126",1,"","GEN","B","estimation","pop","E","norm","none","S","modelled","Adversarial risk of adversarially trained linear/two-layer models converges to minimal adversarial risk (L2 attack), asymptotic; rule-6 doubt: class GEN vs ALG, modality E vs P."
+"O2850875954",1,"","ALG","B","control","tr","P","disturbance","L_conc","S","modelled","Model-free LQ controller has regret O(T^(2/3+xi)) w.h.p. under Gaussian noise; rule-6 doubt: tr chosen over pop."
+"O4416251183",1,"","RS","B","perception","in","Ac","norm","none","S","proof","Certifying adapters on pre-trained extractors give randomized-smoothing L2 certified radius with Monte Carlo confidence; CIFAR-10/ImageNet only."

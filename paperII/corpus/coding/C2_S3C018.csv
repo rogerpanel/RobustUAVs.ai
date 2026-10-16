@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3009043942",1,"","ALG","B","perception","pop","E","none","none","S","modelled","Greedy forward-selection pruned two-layer net attains training loss O(1/n) + L*_N, O(1/n^2) if over-parameterized; doubt: empirical-loss scope coded pop."
+"O2996319422",1,"","NEW:pruning approximation bound","B","perception","in","Ac","none","L_conc","S","modelled","Coreset neuron pruning: w.p. 1-delta over sampling, layer output error <= eps for all inputs in ball B_beta; doubt in vs pop."
+"O3118640283",1,"","CP","B","perception","pop","P","distribution","L_conc","S","measured","RCPS: with prob >= 1-delta over i.i.d. calibration data, expected set-valued loss (risk) <= alpha; ImageNet, COCO, polyp segmentation."
+"O3111808837",0,"No learned component; regularized DeePC equivalence to robust min-max, power converter.","","","","","","","","","",""
+"O4407949669",0,"No learned component; data-driven predictive control equivalence to stochastic MPC.","","","","","","","","","",""

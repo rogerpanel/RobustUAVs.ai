@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2945007002",1,"","NEW:impossibility bound on robust accuracy","B","perception","pop","P","norm","none","S","modelled","Any non-perfect classifier has adversarial accuracy at most exp(-(eps-eps0)^2/2s^2) under T2 class-conditionals; l_q and geodesic threat models; MNIST illustration."
+"O2913004909",1,"","GEN","B","perception","pop","P","norm","L_conc","S","modelled","Margin-based adversarial generalisation bound: with prob 1-delta, l2 adversarial error <= empirical margin loss + O(RKHS norm/(gamma sqrt n)); needs RKHS norm estimate."
+"O4362577180",0,"Thesis on RL poisoning attacks and empirical resilience mechanism; no formal guarantee stated.","","","","","","","","","",""
+"O3134221632",0,"Approximation-error bound for an uncertainty estimator; no guarantee on classifier behaviour or reliability.","","","","","","","","","",""
+"O4313644371",1,"","NEW:data-driven Lyapunov control synthesis","B","control","tr","A","disturbance","none","S","proof","SDP on data returns controller with Lyapunov certificate: stability, ROA/RPI-set estimate under bounded data and process disturbances; inverted pendulum, no vehicle."

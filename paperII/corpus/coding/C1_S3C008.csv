@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2903088609",1,"",GEN,B,estimation,pop,P,distribution,L_conc,S,modelled,"With prob 1-delta, OLS error on LTI dynamics A is O(1/sqrt T) stable, O(log T/T) marginal, exponential explosive; rule-6 doubt: could be scope tr."
+"O4386488250",1,"",CP,B,estimation,pop,P,distribution,L_conc,S,modelled,"K-fold CV+ interval has PAC training-conditional miscoverage <= 2alpha+sqrt(2log(K/delta)/m) w.p. 1-delta; full conformal and jackknife+ provably cannot."
+"O3046187644",1,"",GEN,B,estimation,pop,E,distribution,L_conc,S,modelled,"Joint latent-and-generator Sinkhorn GAN has expected generalisation error <= c/sqrt(n), c depending on latent dimension, not data dimension; synthetic experiments only."
+"O2953334130",1,"",RS,B,perception,in,Ac,norm,none,S,proof,"Tight randomized-smoothing certificate: prediction stays constant within l0 (discrete noise) or other-norm radius, with Clopper-Pearson confidence on p; no vehicle task."
+"O2970857099",1,"",ALG,B,control,tr,E,disturbance,L_dyn,S,modelled,"Online gradient/natural gradient controller has expected regret O(poly log T) vs best strongly stable linear controller under bounded i.i.d. noise; rule-6 doubt: could be pop."

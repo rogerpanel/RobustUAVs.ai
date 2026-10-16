@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3202850137",1,"",ALG,B,perception,pop,E,distribution,none,S,modelled,"Thm 4.3: duality gaps bound L2(mu) error of learned OT generator and FID; needs strong convexity, unique OT plan. Class ALG vs GEN doubtful."
+"O3214448813",1,"",ALG,B,control,tr,P,distribution,L_conc,S,modelled,"SLF-UCRL regret O~(sqrt T) w.p. 1-delta in factored MDP, unknown structure; communicating MDP, scope bound m. Scope tr vs pop doubtful."
+"O2709553318",1,"",GEN,B,perception,pop,P,distribution,L_conc,S,modelled,"Margin-based generalization bound w.p. 1-delta scaling with spectral complexity (Rademacher/covering); iid data assumed. AlexNet MNIST/CIFAR only illustrative."
+"O2626994141",1,"",ALG,B,estimation,pop,P,distribution,L_conc,S,modelled,"AND alternating gradient descent provably recovers NMF ground-truth features within epsilon in poly samples under correlation and initialization conditions. Learned-component status marginal."
+"O2754770961",1,"",ALG,B,control,tr,E,disturbance,none,S,modelled,"TSDE expected Bayesian regret O~(sqrt T) for unknown LQ control; closed-loop stability assumed over prior support. Scope tr vs pop (Bayesian) doubtful."

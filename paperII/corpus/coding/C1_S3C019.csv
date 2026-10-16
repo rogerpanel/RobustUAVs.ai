@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3201284918",0,"Guarantees concern linear MPC with sampled disturbances; no learned component.","","","","","","","","","",""
+"O3093887912",1,"","GEN","B","control","pop","E","distribution","L_conc","S","modelled","Value-gap bounds for BC (quadratic in horizon) vs GAIL (linear), with Rademacher generalisation term; MuJoCo only. Scope pop vs tr doubt."
+"O3033617045",1,"","NEW:Equivariance-by-design architectural invariance","B","estimation","in","A","semantic","none","S","proof","Equivariant flow pushes G-invariant prior to H-invariant density by construction (Thm 1-2); physics benchmarks. Scope in vs pop doubt; learned density estimator."
+"O3041070598",1,"","ALG","B","control","tr","P","distribution","L_conc","S","modelled","UCRL2B cumulative regret O~(sqrt(D*Gamma*S*A*T)) w.p. 1-delta in communicating MDPs; analytic only. Scope tr vs pop doubt."
+"O3085735333",1,"","GEN","B","control","pop","P","distribution","L_conc","S","modelled","W.p. 1-delta suboptimality bound for fixed-dataset policy optimization; pessimism removes need for data informative of all policies; gridworld/MinAtar."

@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3201284918",1,"","LUC","B","control","tr","P","distribution","L_conc","S","simulated","Data-driven Wasserstein DR-MPC: recursive feasibility, hard inputs, predicted chance constraints hold w.p. 1-beta. Doubt: learned part only empirical disturbance distribution; tr vs pop."
+"O3093887912",1,"","GEN","B","control","pop","P","distribution","L_conc","S","modelled","BC/GAIL imitated-policy value gap bounded w.p. 1-delta (quadratic vs linear horizon). Doubt: Theorem 1 is pure expectation bound, could be E."
+"O3033617045",1,"","NEW:architectural equivariance","B","estimation","in","A","semantic","none","S","proof","Equivariant flow yields density invariant under rotations/permutations by construction. Doubt: generative density model coded as estimation; continuous-flow assumption."
+"O3041070598",1,"","ALG","B","control","pop","P","distribution","L_conc","S","modelled","UCRL2B regret bounded by O~(sqrt(D Gamma S A T)) w.p. 1-delta in communicating MDPs; tutorial companion with own new theorem."
+"O3085735333",1,"","GEN","B","control","pop","P","distribution","L_conc","S","modelled","Pessimistic fixed-dataset policy optimization suboptimality bounded w.p. 1-delta via Hoeffding value-uncertainty functions; assumes iid dataset."

@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4391692590",1,"","NEW:Output hard-constraint layer",B,perception,in,A,none,none,S,proof,"Output layer maps any input into convex feasible set (forall z, f(z) in Omega); needs convex bounded set and interior point. Component choice weak (generic NN)."
+"O3206607673",1,"","GEN",B,control,pop,E,distribution,L_conc,S,modelled,"Expected policy value gap of adversarial imitation learning bounded in expert trajectories, tabular MDPs; known transitions; pop vs in-expectation tr doubt."
+"O4210444978",0,"Thesis duplicating published papers; attack-focused; no guarantee in provided text.","","","","","","","","","",""
+"O3107394536",1,"","ALG",B,control,pop,P,distribution,L_conc,S,modelled,"C-UCRL satisfies cost constraints at all steps w.p. 1-delta and has sublinear regret; known transitions, feasible baseline. Alt class LUC; scope pop vs op doubt."
+"O3205066395",1,"","ALG",B,perception,pop,E,poisoning,none,S,modelled,"Distributed DP-SGD with Byzantine workers: min expected squared gradient norm bounded by max(eta^2, O(log T/sqrt T)) under eta-approximated VN condition."

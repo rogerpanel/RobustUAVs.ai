@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4391692590",1,"","NEW:output-constraint-by-construction","B","perception","in","A","none","none","S","proof","Ray-based output layer guarantees f(z) in convex set for all inputs z; doubt on component (optimization and classification demos)."
+"O3206607673",1,"","GEN","B","control","pop","E","distribution","L_conc","S","modelled","Expected policy-value gap of adversarial imitation learning bounded with O(|S|/eps^2) expert trajectories (horizon-free on Reset Cliff); tabular MDPs."
+"O4210444978",0,"PhD thesis of attack studies and empirical defense; duplicates journal papers.","","","","","","","","","",""
+"O3107394536",1,"","CRL","B","control","pop","P","distribution","L_conc","S","modelled","C-UCRL satisfies CMDP cost constraints at every step w.p. 1-delta, plus sublinear regret; class doubt CRL vs ALG, scope doubt pop vs op."
+"O3205066395",1,"","ALG","B","perception","pop","E","poisoning","none","S","modelled","Distributed DP-SGD with Byzantine-resilient aggregation: min expected squared gradient norm <= max(eta^2, O(log T/sqrt T)); under approximate VN condition."

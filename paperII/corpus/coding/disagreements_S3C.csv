@@ -1,0 +1,66 @@
+cid,field,C1,C2
+O1678450113,class,NEW:Fundamental robustness upper bound,NEW:adversarial robustness upper bounds
+O208468569,lifts,L_conc,none
+O2626994141,lifts,L_conc,none
+O2733092977,class,GEN,NEW:finite-sample sysID confidence regions
+O2733092977,lifts,none,L_conc
+O2754770961,perturbation,disturbance,distribution
+O2807299122,assumption,U,S
+O2850875954,lifts,L_conc,L_conc;L_dyn
+O2850875954,evidence,modelled,simulated
+O2910718468,scope,tr,pop
+O2910718468,modality,A,E
+O2939888044,perturbation,disturbance,distribution
+O2945007002,class,NEW:impossibility bound on robust accuracy,NEW:robustness impossibility bound
+O2969946283,eligible,1,0
+O2970241199,modality,P,E
+O2970857099,lifts,L_dyn,none
+O2970864518,class,NEW:Adversarial-risk lower bound (optimal transport),GEN
+O2974095354,assumption,S,SE
+O2974095354,evidence,modelled,measured
+O2996319422,class,NEW:Network compression approximation bound,NEW:pruning approximation bound
+O2996319422,lifts,none,L_conc
+O2996319422,evidence,proof,modelled
+O3007684729,component,estimation,perception
+O3033617045,class,NEW:Equivariance-by-design architectural invariance,NEW:architectural equivariance
+O3034840734,class,CRL,LUC
+O3034840734,component,control,planning
+O3034840734,lifts,L_conc;L_sup,L_conc
+O3041070598,scope,tr,pop
+O3049066126,lifts,none,L_conc
+O3049066126,evidence,modelled,simulated
+O3082124241,perturbation,disturbance,distribution
+O3093887912,modality,E,P
+O3105933917,perturbation,disturbance,distribution
+O3107394536,class,ALG,CRL
+O3111808837,eligible,1,0
+O3118640283,evidence,simulated,measured
+O3129820173,evidence,modelled,proof
+O3135766489,class,NEW:Differential-privacy poisoning certificate,NEW:DP-based poisoning certification
+O3135766489,modality,Ac,E
+O3167479696,lifts,L_conc,L_conc;L_sup
+O3170764772,modality,Ac,A
+O3174145161,component,estimation,control
+O3174145161,evidence,modelled,simulated
+O3201284918,eligible,0,1
+O3202850137,perturbation,distribution,none
+O3209195293,evidence,modelled,simulated
+O4281974197,evidence,modelled,measured
+O4283791235,perturbation,disturbance,distribution
+O4286858784,lifts,none,L_conc
+O4313644371,class,NEW:data-driven Lyapunov control synthesis,NEW:data-driven SDP stabilization
+O4318718938,perturbation,distribution,none
+O4322576871,class,NEW:Data-driven behavioural predictor error bound,LUC
+O4322576871,component,control,estimation
+O4322576871,assumption,S,SE
+O4391607289,evidence,modelled,measured
+O4391692590,class,NEW:Output hard-constraint layer,NEW:output-constraint-by-construction
+O4392931599,class,NEW:Approximation-error to cost-loss bound (learned MPC),NEW:approximate-MPC optimality-loss bound
+O4399554721,tier,B,A
+O4399554721,perturbation,disturbance,distribution
+O4399554721,lifts,L_conc;L_dyn,L_conc
+O4399554721,evidence,modelled,simulated
+O4401358101,perturbation,disturbance,distribution
+O4407949669,eligible,1,0
+O4413924993,assumption,S,U
+O7133189980,eligible,1,0

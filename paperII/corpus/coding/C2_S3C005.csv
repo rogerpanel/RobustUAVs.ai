@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3023885224",0,"Empirical training/evaluation framework for NN-MPC; projection-layer feasibility guarantee is borrowed, not its own","","","","","","","","","",""
+"O3111740750",1,"","GEN","B","perception","pop","P","distribution","L_conc","S","modelled","Thm 2: w.p. 1-delta, In-N-Out OOD excess risk below aux-outputs under arbitrary covariate shift; linear multi-task model only (Thm 1 is expectation)."
+"O2970864518",1,"","GEN","B","perception","pop","E","norm","none","S","modelled","Optimal-transport lower bound on minimum adversarial 0-1 loss of any classifier under norm-bounded adversary; impossibility bound, eligibility doubtful; Gaussian exact."
+"O3176644734",1,"","ALG","B","control","tr","Ac","disturbance","none","S","modelled","High-probability regret bound for black-box online control of unknown LTI under adversarial disturbance; tr vs op doubt; Ac vs A doubt (algorithm randomness)."
+"O3105933917",1,"","GEN","B","estimation","pop","P","distribution","L_conc","S","modelled","W.p. 1-delta, multiscale Hankel-SVD learns LTI impulse response with near-optimal H2 error rate under Gaussian noise; learned model is linear system-ID."
