@@ -17,11 +17,15 @@ and the full-study modal state side by side.
 
 Outputs  results/class_states_full.csv, results/transfer_table_full.csv,
          results/class_state_check.csv
-Usage    python3 transfer_full.py
+Usage    python3 transfer_full.py           (searched corpus, amendments 3-5)
+         python3 transfer_full.py --field   (amendment 6: the expanded field, all six strata, weights as in
+                                             field_estimates.py; adds the classes grouped from the snowballing
+                                             iterations; outputs *_field.csv)
 """
 from __future__ import annotations
 
 import csv
+import sys
 from collections import Counter
 from pathlib import Path
 
@@ -55,19 +59,28 @@ def state(mem, w):
 
 def main() -> int:
     csv.field_size_limit(10 ** 9)
-    st = {r["metric"]: r["value"] for r in csv.DictReader((R / "screening_status.csv").open())}
-    stratum = {r["cid"]: r["stratum"] for r in csv.DictReader((C / "coding_sample.csv").open())}
-    allc = list(csv.DictReader((C / "codes_full_final.csv").open()))
-    kc = sum(stratum[r["cid"]] == "core" for r in allc)
-    N = {"core": int(st["core_included"]) / kc,
-         "remainder": int(st["remainder_size"]) * int(st["sample_included"]) / int(st["sample_screened"]) / (len(allc) - kc)}
-    w = lambda r: N[stratum[r["cid"]]]  # noqa: E731
+    field = "--field" in sys.argv[1:]
+    if field:
+        from field_estimates import strata
+        st, _ = strata("final")
+        wt = {r["cid"]: N / len(rr) for _, rr, N, _ in st for r in rr}
+        allc = [r for _, rr, _, _ in st for r in rr]
+        w = lambda r: wt[r["cid"]]  # noqa: E731
+    else:
+        st = {r["metric"]: r["value"] for r in csv.DictReader((R / "screening_status.csv").open())}
+        stratum = {r["cid"]: r["stratum"] for r in csv.DictReader((C / "coding_sample.csv").open())}
+        allc = list(csv.DictReader((C / "codes_full_final.csv").open()))
+        kc = sum(stratum[r["cid"]] == "core" for r in allc)
+        N = {"core": int(st["core_included"]) / kc,
+             "remainder": int(st["remainder_size"]) * int(st["sample_included"]) / int(st["sample_screened"])
+             / (len(allc) - kc)}
+        w = lambda r: N[stratum[r["cid"]]]  # noqa: E731
     newmap = {r["cid"]: r["class"] for r in csv.DictReader((C / "new_class_map.csv").open())}
     codes = []
     for r in allc:
         if r["eligible"] == "1":
             codes.append({**r, "class": newmap.get(r["cid"], r["class"])})
-    classes = list(csv.DictReader((C / "classes.csv").open()))
+    classes = [c for c in csv.DictReader((C / "classes.csv").open()) if field or c.get("added") != "snowballing"]
     pilot = {r["class"]: r for r in csv.DictReader((R / "class_states.csv").open())}
     objs = list(csv.DictReader((C / "objectives.csv").open()))
 
@@ -97,7 +110,10 @@ def main() -> int:
                                    "evidenced_share": round(full[3], 3), "evidenced_share_full": round(full[3], 3),
                                    "n_coded_full": len(mem), "est_papers_full": est})
         else:
-            rows_state.append({"class": k, "label": c["label"], "source": "full study (added)", "scope": full[0][0],
+            if not full:
+                continue
+            src = "snowballing (added)" if c.get("added") == "snowballing" else "full study (added)"
+            rows_state.append({"class": k, "label": c["label"], "source": src, "scope": full[0][0],
                                "modality": full[0][1], "perturbation": full[1], "intrinsic": ";".join(full[2]) or "none",
                                "evidenced_share": round(full[3], 3), "evidenced_share_full": round(full[3], 3),
                                "n_coded_full": len(mem), "est_papers_full": est})
@@ -117,8 +133,10 @@ def main() -> int:
                          "evidenced_share": s["evidenced_share"], "evidenced_share_full": s["evidenced_share_full"],
                          "est_papers_full": s["est_papers_full"],
                          "n_objectives": nobj})
-    for name, data in (("class_states_full.csv", rows_state), ("transfer_table_full.csv", rows),
-                       ("class_state_check.csv", check)):
+    sfx = "_field" if field else ""
+    for name, data in ((f"class_states{'_field' if field else '_full'}.csv", rows_state),
+                       (f"transfer_table{'_field' if field else '_full'}.csv", rows),
+                       (f"class_state_check{sfx}.csv", check)):
         with (R / name).open("w", newline="") as fh:
             wr = csv.DictWriter(fh, fieldnames=list(data[0]), lineterminator="\n"); wr.writeheader(); wr.writerows(data)
     cols = [t[0] for t in TYPES]

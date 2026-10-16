@@ -21,3 +21,11 @@ LUC,"Learned-uncertainty safe control (GP, chance-constrained, adaptive CBF, lea
 ALG,Learning-algorithm convergence and regret bounds,,full study
 GLOB,Lipschitz global-optimisation robustness estimation,,full study
 IMPL,Implementation and timing verification of ML code,,full study
+ARCH,"Guarantees by architectural construction (constraint layers, equivariance, structure preservation)",,snowballing
+RLIM,"Population-level robustness bounds and limits (DRO risk, sensitivity, impossibility)",,snowballing
+DPG,"Differential-privacy guarantees of training (privacy, poisoning resistance)",,snowballing
+APPROX,"Approximation-error bounds against a reference (compression, approximate MPC, data-driven predictors)",,snowballing
+GREG,Global robustness by activation-region enumeration,,snowballing
+DSM,Deterministic smoothing certification,,snowballing
+XAI,Formally sound explanations of learned models,,snowballing
+COMP,Compositional robustness theorems,,snowballing
