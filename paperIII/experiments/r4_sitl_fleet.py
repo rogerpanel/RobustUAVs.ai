@@ -31,7 +31,8 @@ If the ground-truth topic is not in the log, the check is reported as
 
 Outputs: results/r4_sitl.csv (epoch log, provenance=sitl),
          results/r4_sitl_summary.csv, results/r4_soundness.csv,
-         results/r4_soundness_violations.csv (every violating sample with its GNSS context)
+         results/r4_soundness_violations.csv (every violating sample with its GNSS context),
+         results/r4_px4_events.csv (PX4 warnings, arming, navigation-state and failsafe changes)
 Usage:   python3 r4_sitl_fleet.py --vehicles 6 --rate 5 --duration 240
          python3 r4_sitl_fleet.py --soundness-only --logs <dir with rootfs/*/log>
 """
@@ -264,7 +265,7 @@ def soundness(log_root: Path):
     summary rows and, separately, every violating sample with its GNSS context (time since the
     last fix, since the last reacquisition, fix type), so a violation can be traced to its cause."""
     from pyulog import ULog
-    rows, samples = [], []
+    rows, samples, events = [], [], []
     ulgs = sorted(log_root.rglob("*.ulg"))
     for f in ulgs:
         u = ULog(str(f))
@@ -293,8 +294,25 @@ def soundness(log_root: Path):
         rho = rho_now(stale)
         # reacquisitions: GNSS message with a fix after one without
         reacq = tgps[1:][fix[1:] & ~fix[:-1]]
-        ir = np.searchsorted(reacq, t, side="right") - 1
-        since_reacq = np.where(ir >= 0, t - reacq[np.maximum(ir, 0)], np.inf)
+        if len(reacq):
+            ir = np.searchsorted(reacq, t, side="right") - 1
+            since_reacq = np.where(ir >= 0, t - reacq[np.maximum(ir, 0)], np.inf)
+        else:                                # no GNSS loss in this log
+            since_reacq = np.full_like(t, np.inf)
+        for m in getattr(u, "logged_messages", []):
+            lvl = int(getattr(m, "log_level", 6))
+            if lvl <= 4:                         # emergency .. warning
+                events.append({"log": name, "t_s": round(m.timestamp * 1e-6 - t0, 3), "kind": f"msg{lvl}",
+                               "value": str(m.message)[:200]})
+        vst = D.get("vehicle_status")
+        if vst is not None:
+            for fld in ("arming_state", "nav_state", "failsafe"):
+                if fld in vst:
+                    x = vst[fld]
+                    ch = np.flatnonzero(np.r_[True, x[1:] != x[:-1]])
+                    for j in ch:
+                        events.append({"log": name, "t_s": round(vst["timestamp"][j] * 1e-6 - t0, 3),
+                                       "kind": fld, "value": int(x[j])})
         ok = np.isfinite(rho)
         exc = err - rho
         bad = ok & (exc > 0)
@@ -312,7 +330,7 @@ def soundness(log_root: Path):
                      "violations_10s_after_reacq": int((bad & (since_reacq <= 10.0)).sum()),
                      "reacquisitions": int(len(reacq)), "provenance": "sitl"})
         print(rows[-1], flush=True)
-    return rows, samples
+    return rows, samples, events
 
 
 def write(name, rows):
@@ -343,11 +361,14 @@ def main():
                 log(s)
         asyncio.run(session(a.vehicles, a.rate, a.duration, done))
     if a.logs:
-        sr, samples = soundness(a.logs)
+        sr, samples, events = soundness(a.logs)
         write("r4_soundness.csv", sr or [{"log": "", "samples": 0, "status": "no ULog found",
                                           "violations": "", "max_excess_m": "", "max_err_m": "",
                                           "provenance": "sitl"}])
-        write("r4_soundness_violations.csv", samples)
+        write("r4_soundness_violations.csv", samples or [{"log": "", "t_s": "", "err_m": "", "rho_m": "",
+                                                          "excess_m": "", "staleness_s": "",
+                                                          "since_reacq_s": "", "provenance": "sitl"}])
+        write("r4_px4_events.csv", events or [{"log": "", "t_s": "", "kind": "", "value": ""}])
 
 
 if __name__ == "__main__":
