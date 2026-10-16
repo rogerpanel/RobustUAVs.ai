@@ -1,0 +1,18 @@
+class,pilot_state,pilot_n,full_coded,full_est_papers,full_state,full_state_weights,same
+RS,in/Ac,6,11,130,in/Ac,in/Ac 109; in/A 21,1
+BP,in/A,7,36,525,in/A,in/A 516; in/E 8,1
+SMT,in/A,5,31,469,in/A,in/A 460; tr/A 8,1
+LIP,in/A,3,12,165,in/A,in/A 123; tr/E 20; popd/E 13,1
+SEM,in/A,8,9,153,in/A,in/A 133; in/Ac 20,1
+PIL,tr/A,8,1,22,tr/A,tr/A 22,1
+DTMC,popd/E,1,3,50,tr/P,tr/P 30; popd/P 20,0
+CLR,tr/A,14,11,212,tr/A,tr/A 212,1
+CRL,tr/Ac,4,16,261,tr/A,tr/A 65; tr/P 50; popd/E 36,0
+NCERT,tr/A,2,11,221,tr/A,tr/A 157; tr/P 64,1
+CP,op/P,5,63,1183,popd/P,popd/P 934; popd/E 120; tr/P 65,0
+RTA,op/A,6,24,484,op/A,op/A 419; op/E 22; tr/A 22,1
+MON,in/A,3,3,52,in/A,in/A 22; op/P 22; in/Ac 8,1
+FALS,op/X,3,0,0,,,
+PACB,popd/P,3,18,294,popd/P,popd/P 294,1
+PROB,in/P,3,4,45,in/P,in/P 37; popd/P 8,1
+OPREL,popd/P,5,7,136,popd/P,popd/P 114; popd/E 22,1

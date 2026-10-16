@@ -12,7 +12,10 @@ include count of every sampled stratum redrawn as N_rem x Binomial(m, p_hat) / m
 
 Outputs  results/field_strata.csv                 stratum, N, coded, eligible_coded, sampled
          results/field_estimates.csv              field, value, coded, share [lo, hi], papers [lo, hi],
-                                                  share_searched (amendment 4, for comparison)
+                                                  share_searched (the same estimator on the two searched
+                                                  strata only; equals corpus_estimates.csv where both exist).
+                                                  Field "class_grouped" is the class after new_class_map.csv
+                                                  (NEW: labels grouped, amendments 5-6).
          results/type_plane_field.csv             scope x modality cells on the expanded field
          results/field_hypotheses{_C1,_C2}.csv    key, description, n_den, estimate [lo, hi], searched
 Usage    python3 field_estimates.py [final|C1|C2]   (C1/C2: each coder's codes alone, all strata)
@@ -106,6 +109,10 @@ def main() -> int:
                 w.writerow([name, round(N, 1), len(rr), sum(r["eligible"] == "1" for r in rr), int(bool(rdw))])
         # corpus-level estimates
         ind = indicators(rows)
+        grp = {r["cid"]: r["class"] for r in rd(C / "new_class_map.csv")}
+        gcls = [grp.get(r["cid"], r["class"]) if r["eligible"] == "1" else "" for r in rows]
+        for v in sorted(set(gcls) - {""}):
+            ind[("class_grouped", v)] = np.array([g == v for g in gcls], float)
         keys = sorted(ind, key=lambda k: (k[0], k[1]))
         el = ind[("eligible", "1")]
         bt = Boot(st, 20261020)
@@ -114,19 +121,20 @@ def main() -> int:
             tot, elw = w.sum(), (w * el).sum()
             return {k: ((w * ind[k]).sum(), (w * ind[k]).sum() / (tot if k[0] == "eligible" else elw)) for k in keys}
         e0 = est(bt.point())
+        ws = bt.point(); ws[bt.off[2]:] = 0          # the two searched strata only
+        es = est(ws)
         bp = {k: np.empty(B) for k in keys}; bs = {k: np.empty(B) for k in keys}
         for b in range(B):
             e = est(bt.draw())
             for k in keys:
                 bp[k][b], bs[k][b] = e[k]
-        searched = {(r["field"], r["value"]): r["share"] for r in rd(R / "corpus_estimates.csv")}
         out = []
         for k in keys:
             (sl, sh), (pl, ph) = q(bs[k]), q(bp[k])
             out.append({"field": k[0], "value": k[1], "coded": int(ind[k].sum()),
                         "share": round(e0[k][1], 4), "share_lo": round(sl, 4), "share_hi": round(sh, 4),
                         "papers": round(e0[k][0]), "papers_lo": round(pl), "papers_hi": round(ph),
-                        "share_searched": searched.get(k, "")})
+                        "share_searched": round(es[k][1], 4) if es[k][0] > 0 else 0.0})
         with (R / "field_estimates.csv").open("w", newline="") as fh:
             w = csv.DictWriter(fh, fieldnames=list(out[0]), lineterminator="\n"); w.writeheader(); w.writerows(out)
         tp = [{"scope": r["value"].split("/")[0], "modality": r["value"].split("/")[1], "coded": r["coded"],
@@ -138,7 +146,7 @@ def main() -> int:
             print(f"stratum {name:<20} N={N:8.1f} coded {len(rr):3d}{' (sampled)' if rdw else ''}")
         for r in out:
             if r["field"] in ("eligible", "tier", "scope", "modality", "component", "assumption") or \
-                    (r["field"] == "class" and r["share"] >= 0.04):
+                    (r["field"] == "class_grouped" and r["share"] >= 0.04):
                 print(f"{r['field']:<11} {r['value']:<28} {r['share']:.3f} [{r['share_lo']:.3f},{r['share_hi']:.3f}]"
                       f" ~{r['papers']}  searched {r['share_searched']}")
     # hypothesis quantities on the eligible coded papers of all strata
