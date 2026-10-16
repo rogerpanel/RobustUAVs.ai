@@ -99,7 +99,7 @@ def main() -> int:
         OUT = C / f"fulltext_snowball{it}"
         cand = {r["cid"]: r for r in csv.DictReader((S / f"iter{it}_candidates.csv").open())}
         sample = list(csv.DictReader((S / f"iter{it}_coding_sample.csv").open()))
-        strata = (f"snowball{it}",)
+        strata = tuple(dict.fromkeys(r["stratum"] for r in sample))
         sp = S / f"iter{it}_fulltext_status.csv"
     else:
         cand = {r["cid"]: r for r in csv.DictReader((C / "candidates.csv").open())}
