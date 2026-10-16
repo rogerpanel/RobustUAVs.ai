@@ -630,9 +630,29 @@ def r4_sitl(m):
     m["RfGroundHeld"] = tex_int(a.get("grounded_held_epochs", 0))
 
 
+def r4b_sitl(m):
+    """R4b: pre-registered test of the latched certificate on fresh SITL flights (r4b_analysis.py)."""
+    a = {r["metric"]: r["value"] for r in rd("r4b_analysis.csv")}
+    if not a:
+        return
+    m["RbPrimary"] = a["primary_latched_transient"]; m["RbReceiver"] = a["receiver_transient"]
+    m["RbVerdict"] = a["verdict"]; m["RbReacq"] = a["reacquisitions"]
+    m["RbSamples"] = tex_int(a["samples_checked"])
+    m["RbRecvErr"] = f(a["receiver_transient_peak_err_m"], 1); m["RbRecvExcess"] = f(a["receiver_transient_peak_excess_m"], 1)
+    m["RbLatErr"] = f(a["latched_transient_peak_err_m"], 2); m["RbLatExcess"] = f(a["latched_transient_peak_excess_m"], 2)
+    m["RbLatSinceMin"] = f(a["latched_transient_since_min_s"], 1); m["RbLatSinceMax"] = f(a["latched_transient_since_max_s"], 1)
+    m["RbFloorViol"] = a["latched_floor_violations"]
+    m["RbFloorExcessCm"] = f(100 * float(a["latched_floor_peak_excess_m"]), 0)
+    m["RbEpochs"] = tex_int(a["agent_epochs"]); m["RbLatchEpochs"] = a["latch_epochs"]
+    m["RbExecViol"] = tex_int(int(a["executed_violations_5hz"]) + int(a["executed_violations_2hz"]))
+    m["RbCovFive"] = f(100 * float(a["coverage_5hz"]), 1); m["RbCovTwo"] = f(100 * float(a["coverage_2hz"]), 1)
+    m["RbNoFixHeld"] = a["vehicles_without_fix_held"]
+
+
 def extended(m):
     r3_traces(m)
     r4_sitl(m)
+    r4b_sitl(m)
     mn = rd("e6_main.csv")
     if mn:
         r2_table(m, {r["method"]: r for r in mn})
