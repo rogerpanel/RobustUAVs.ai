@@ -59,6 +59,11 @@ ALT = -15.0
 R_CAP = 5.0
 # (vehicle, start_s, duration_s, kind)
 SCHEDULE = [(1, 40, 20, "off"), (3, 90, 30, "off"), (2, 140, 15, "wrong"), (0, 170, 10, "off")]
+# R4b (pre-registered in paperIII/R4B_PROTOCOL.md before the run): fresh outages on other
+# vehicles, at other times and lengths; spoofing is omitted because SIH rejects it.
+SCHEDULE_B = [(2, 35, 15, "off"), (4, 75, 25, "off"), (5, 120, 12, "off"), (0, 160, 20, "off"), (1, 200, 8, "off")]
+GAP_S = 1.0                       # a fix after more than GAP_S of receiver staleness is a reacquisition
+N_CONV = 3                        # consecutive fixes the estimate must agree with to release the latch
 T_CONNECT, T_READY = 90.0, 240.0      # s; a stage that exceeds its timeout fails with its name
 
 
@@ -70,6 +75,35 @@ def rho_now(staleness):
     return KAPPA * (THETA_BENIGN + staleness)
 
 
+CONV_M = KAPPA * THETA_BENIGN     # the benign floor: agreement threshold between estimate and fix
+
+
+class Latch:
+    """The estimator-sourced staleness rule of RQ8, as a latch on rho (R4b).
+
+    At a reacquisition (a fix after more than GAP_S of receiver staleness) rho is held at its
+    pre-reacquisition value, rho_now(staleness just before the fix). The latch is released once
+    the estimate agrees with the receiver fix to within the benign floor on N_CONV consecutive
+    fixes, i.e. once the estimator has fused the fix. Only signals available on board are used.
+    """
+
+    def __init__(self):
+        self.value = None
+        self.n = 0
+
+    def on_fix(self, stale_before, innov_m):
+        if stale_before > GAP_S:
+            self.value = max(self.value or 0.0, rho_now(stale_before))
+            self.n = 0
+        if self.value is not None:
+            self.n = self.n + 1 if innov_m <= CONV_M else 0
+            if self.n >= N_CONV:
+                self.value, self.n = None, 0
+
+    def rho(self, rho_rx):
+        return max(rho_rx, self.value) if self.value is not None else rho_rx
+
+
 class Vehicle:
     def __init__(self, i):
         self.i = i
@@ -77,6 +111,9 @@ class Vehicle:
         self.fix_type = 0
         self.ned = np.zeros(2)
         self.drone = None
+        self.est_ll = None              # estimator position (lat, lon), deg
+        self.armed = True
+        self.latch = Latch()
 
 
 async def connect(i):
@@ -103,14 +140,27 @@ async def watch(v):
             v.fix_type = int(g.fix_type.value) if hasattr(g.fix_type, "value") else int(g.fix_type)
 
     async def raw():
-        async for _ in v.drone.telemetry.raw_gps():
+        async for g in v.drone.telemetry.raw_gps():
             if v.fix_type >= 3:
-                v.last_fix_t = time.monotonic()
+                now = time.monotonic()
+                if v.est_ll is not None:
+                    stale_before = (now - v.last_fix_t) if v.last_fix_t else 0.0
+                    innov = float(latlon_dist(v.est_ll[0], v.est_ll[1], g.latitude_deg, g.longitude_deg))
+                    v.latch.on_fix(stale_before, innov)
+                v.last_fix_t = now
 
     async def pos():
         async for p in v.drone.telemetry.position_velocity_ned():
             v.ned = np.array([p.position.north_m, p.position.east_m])
-    return [asyncio.ensure_future(c) for c in (gps(), raw(), pos())]
+
+    async def est():
+        async for p in v.drone.telemetry.position():
+            v.est_ll = (p.latitude_deg, p.longitude_deg)
+
+    async def armed():
+        async for a in v.drone.telemetry.armed():
+            v.armed = bool(a)
+    return [asyncio.ensure_future(c) for c in (gps(), raw(), pos(), est(), armed())]
 
 
 async def takeoff(v):
@@ -150,7 +200,7 @@ async def inject(v, kind, on):
             return f"unsupported:{type(e).__name__},{type(e2).__name__}"
 
 
-async def session(n_veh, rates, duration, on_rate_done):
+async def session(n_veh, rates, duration, on_rate_done, revision="a"):
     """Connect and take off once, fly every rate over the same connections, then land
     and stop the mavsdk_server processes (they hold UDP and gRPC ports)."""
     vs, tasks = [], []
@@ -163,7 +213,7 @@ async def session(n_veh, rates, duration, on_rate_done):
         await asyncio.sleep(10)
         for rate in rates:
             log(f"rate {rate:g} Hz: flying {duration:.0f} s")
-            rows, inj = await run(vs, rate, duration, f"rate{rate:g}")
+            rows, inj = await run(vs, rate, duration, f"rate{rate:g}", revision)
             log(f"rate {rate:g} Hz: done, {len(rows)} rows")
             on_rate_done(rate, rows, inj)
     finally:
@@ -182,9 +232,10 @@ async def session(n_veh, rates, duration, on_rate_done):
         log("landed; mavsdk_server processes stopped")
 
 
-async def run(vs, rate, duration, tag):
+async def run(vs, rate, duration, tag, revision="a"):
     from mavsdk.offboard import PositionNedYaw
     n_veh = len(vs)
+    schedule = SCHEDULE_B if revision == "b" else SCHEDULE
     t0 = time.monotonic()
     dt = 1.0 / rate
     assign = np.full(n_veh, C.IDLE)
@@ -193,7 +244,7 @@ async def run(vs, rate, duration, tag):
     k = 0
     while (now := time.monotonic()) - t0 < duration:
         t = now - t0
-        for (vi, s, du, kind) in SCHEDULE:
+        for (vi, s, du, kind) in schedule:
             if vi >= n_veh:
                 continue
             key = (vi, s)
@@ -203,7 +254,11 @@ async def run(vs, rate, duration, tag):
                 active.discard(key); inj_log.append((t, vi, kind, "off", await inject(vs[vi], kind, False)))
         t_obs = time.monotonic()            # after the injection calls, which can take seconds
         stale = np.array([max(0.0, t_obs - v.last_fix_t) if v.last_fix_t else 1e3 for v in vs])
-        rho = rho_now(stale)
+        rho_rx = rho_now(stale)
+        if revision == "b":                 # latched certificate; a disarmed aircraft holds nothing
+            rho = np.array([np.inf if not v.armed else v.latch.rho(r) for v, r in zip(vs, rho_rx)])
+        else:
+            rho = rho_rx
         pos = np.stack([v.ned for v in vs])
         d = np.linalg.norm(pos[:, None, :] - SITES[None, :, :], axis=-1)
         prop = np.where(assign >= 0, assign, d.argmin(1))
@@ -219,10 +274,12 @@ async def run(vs, rate, duration, tag):
             for r in rows[-n_veh:]:
                 i = r["vehicle"]
                 r["infeasible_next"] = int(r["held"] and rho[i] > r["alpha"])
-                r["jump_next"] = int(rho[i] - prev_rho[i] > KAPPA * dt + 1e-6)
+                r["jump_next"] = int(np.isfinite(rho[i]) and rho[i] - prev_rho[i] > KAPPA * dt + 1e-6)
         for i in range(n_veh):
             rows.append({"rate_hz": rate, "epoch": k, "t_s": round(t, 3), "vehicle": i,
-                         "staleness_s": round(float(stale[i]), 3), "rho_m": round(float(rho[i]), 3),
+                         "staleness_s": round(float(stale[i]), 3),
+                         "rho_m": round(float(rho[i]), 3) if np.isfinite(rho[i]) else "inf",
+                         "rho_rx_m": round(float(rho_rx[i]), 3), "armed": int(vs[i].armed),
                          "task": int(ex[i]), "alpha": float(a_exec[i]) if held[i] else "",
                          "held": int(held[i]), "violation": int(viol[i]),
                          "on_site": int(held[i] and np.linalg.norm(pos[i] - SITES[ex[i]]) <= R_CAP),
@@ -230,7 +287,7 @@ async def run(vs, rate, duration, tag):
         prev_rho, assign = rho, ex
         k += 1
         await asyncio.sleep(max(0.0, dt - (time.monotonic() - now)))
-    for (vi, s, du, kind) in SCHEDULE:            # leave no failure injected into the next rate
+    for (vi, s, du, kind) in schedule:            # leave no failure injected into the next rate
         if (vi, s) in active:
             inj_log.append((time.monotonic() - t0, vi, kind, "off", await inject(vs[vi], kind, False)))
     return rows, inj_log
@@ -260,10 +317,34 @@ def latlon_dist(lat1, lon1, lat2, lon2):
     return R * np.hypot(x, y)
 
 
+def _deg(x):
+    """ULog GNSS latitude/longitude: int 1e-7 deg (PX4 v1.14) or float deg (later versions)."""
+    x = np.asarray(x, dtype=float)
+    return x * 1e-7 if np.nanmax(np.abs(x)) > 1000 else x
+
+
+def latched_rho(tgps, fix, gps_lat, gps_lon, t_est, est_lat, est_lon, t, rho_rx):
+    """Replay the Latch rule over the logged GNSS messages and return the latched rho at the
+    estimate timestamps t. Innovation = distance between each fix and the estimate at that time."""
+    lat_e = np.interp(tgps, t_est, est_lat); lon_e = np.interp(tgps, t_est, est_lon)
+    innov = latlon_dist(lat_e, lon_e, gps_lat, gps_lon)
+    L, last, vals = Latch(), None, []
+    for k in range(len(tgps)):
+        if fix[k]:
+            L.on_fix((tgps[k] - last) if last is not None else 0.0, float(innov[k]))
+            last = tgps[k]
+        vals.append(L.value if L.value is not None else 0.0)
+    vals = np.array(vals)
+    j = np.searchsorted(tgps, t, side="right") - 1
+    held = np.where(j >= 0, vals[np.maximum(j, 0)], 0.0)
+    return np.maximum(rho_rx, held)
+
+
 def soundness(log_root: Path):
-    """Per log: every estimate sample against rho from the logged GNSS stream. Writes the
-    summary rows and, separately, every violating sample with its GNSS context (time since the
-    last fix, since the last reacquisition, fix type), so a violation can be traced to its cause."""
+    """Per log: every estimate sample against rho, for two certificates computed from the logged
+    GNSS stream: the receiver certificate (rho from the age of the newest receiver fix) and the
+    latched certificate of R4b (the Latch rule replayed from the log). Writes the summary rows
+    and every violating sample with its variant and GNSS context."""
     from pyulog import ULog
     rows, samples, events = [], [], []
     ulgs = sorted(log_root.rglob("*.ulg"))
@@ -292,6 +373,9 @@ def soundness(log_root: Path):
         idx = np.searchsorted(tf, t, side="right") - 1
         stale = np.where(idx >= 0, t - tf[np.maximum(idx, 0)], np.inf)
         rho = rho_now(stale)
+        rho_l = None
+        if "lat" in gps and "lon" in gps:
+            rho_l = latched_rho(tgps, fix, _deg(gps["lat"]), _deg(gps["lon"]), t, gp["lat"], gp["lon"], t, rho)
         # reacquisitions: GNSS message with a fix after one without
         reacq = tgps[1:][fix[1:] & ~fix[:-1]]
         if len(reacq):
@@ -313,22 +397,29 @@ def soundness(log_root: Path):
                     for j in ch:
                         events.append({"log": name, "t_s": round(vst["timestamp"][j] * 1e-6 - t0, 3),
                                        "kind": fld, "value": int(x[j])})
-        ok = np.isfinite(rho)
-        exc = err - rho
-        bad = ok & (exc > 0)
-        for j in np.flatnonzero(bad):
-            samples.append({"log": name, "t_s": round(float(t[j] - t0), 3), "err_m": round(float(err[j]), 3),
-                            "rho_m": round(float(rho[j]), 3), "excess_m": round(float(exc[j]), 3),
-                            "staleness_s": round(float(stale[j]), 3),
-                            "since_reacq_s": round(float(since_reacq[j]), 3) if np.isfinite(since_reacq[j]) else "",
-                            "provenance": "sitl"})
-        rows.append({"log": name, "duration_s": round(float(t[-1] - t0), 1), "samples": int(ok.sum()),
-                     "status": "checked", "violations": int(bad.sum()),
-                     "max_excess_m": float(exc[ok].max()) if ok.any() else "",
-                     "max_err_m": float(err[ok].max()) if ok.any() else "",
-                     "violations_fresh_fix": int((bad & (stale < 1.0)).sum()),
-                     "violations_10s_after_reacq": int((bad & (since_reacq <= 10.0)).sum()),
-                     "reacquisitions": int(len(reacq)), "provenance": "sitl"})
+        row = {"log": name, "duration_s": round(float(t[-1] - t0), 1), "status": "checked",
+               "reacquisitions": int(len(reacq)), "provenance": "sitl"}
+        for variant, rr in (("receiver", rho), ("latched", rho_l)):
+            sfx = "" if variant == "receiver" else "_latched"
+            if rr is None:
+                row["violations" + sfx] = "not available (no GNSS lat/lon in log)"
+                continue
+            ok = np.isfinite(rr)
+            exc = err - rr
+            bad = ok & (exc > 0)
+            for j in np.flatnonzero(bad):
+                samples.append({"log": name, "variant": variant, "t_s": round(float(t[j] - t0), 3),
+                                "err_m": round(float(err[j]), 3), "rho_m": round(float(rr[j]), 3),
+                                "excess_m": round(float(exc[j]), 3), "staleness_s": round(float(stale[j]), 3),
+                                "since_reacq_s": round(float(since_reacq[j]), 3) if np.isfinite(since_reacq[j]) else "",
+                                "provenance": "sitl"})
+            row["samples" + sfx] = int(ok.sum())
+            row["violations" + sfx] = int(bad.sum())
+            row["max_excess_m" + sfx] = float(exc[ok].max()) if ok.any() else ""
+            row["max_err_m" + sfx] = float(err[ok].max()) if ok.any() else ""
+            row["violations_fresh_fix" + sfx] = int((bad & (stale < 1.0)).sum())
+            row["violations_10s_after_reacq" + sfx] = int((bad & (since_reacq <= 10.0)).sum())
+        rows.append(row)
         print(rows[-1], flush=True)
     return rows, samples, events
 
@@ -347,28 +438,32 @@ def main():
     ap.add_argument("--duration", type=float, default=240.0)
     ap.add_argument("--logs", type=Path, default=None, help="PX4 rootfs dir holding the instance logs")
     ap.add_argument("--soundness-only", action="store_true")
+    ap.add_argument("--revision", choices=("a", "b"), default="a",
+                    help="a: receiver certificate, first schedule (R4); b: latched certificate, "
+                         "arming check, fresh schedule (R4b, R4B_PROTOCOL.md)")
     a = ap.parse_args()
+    pre = "r4b" if a.revision == "b" else "r4"
     if not a.soundness_only:
         rows, inj = [], []
 
         def done(rate, r, il):                    # results are written after every rate
             rows.extend(r); inj.extend((rate,) + x for x in il)
-            write("r4_sitl.csv", rows)
-            write("r4_sitl_summary.csv", summarise(rows))
-            write("r4_injections.csv", [{"rate_hz": x[0], "t_s": round(x[1], 2), "vehicle": x[2], "kind": x[3],
+            write(f"{pre}_sitl.csv", rows)
+            write(f"{pre}_sitl_summary.csv", summarise(rows))
+            write(f"{pre}_injections.csv", [{"rate_hz": x[0], "t_s": round(x[1], 2), "vehicle": x[2], "kind": x[3],
                                          "phase": x[4], "result": x[5]} for x in inj])
             for s in summarise(rows):
                 log(s)
-        asyncio.run(session(a.vehicles, a.rate, a.duration, done))
+        asyncio.run(session(a.vehicles, a.rate, a.duration, done, a.revision))
     if a.logs:
         sr, samples, events = soundness(a.logs)
-        write("r4_soundness.csv", sr or [{"log": "", "samples": 0, "status": "no ULog found",
+        write(f"{pre}_soundness.csv", sr or [{"log": "", "samples": 0, "status": "no ULog found",
                                           "violations": "", "max_excess_m": "", "max_err_m": "",
                                           "provenance": "sitl"}])
-        write("r4_soundness_violations.csv", samples or [{"log": "", "t_s": "", "err_m": "", "rho_m": "",
+        write(f"{pre}_soundness_violations.csv", samples or [{"log": "", "variant": "", "t_s": "", "err_m": "", "rho_m": "",
                                                           "excess_m": "", "staleness_s": "",
                                                           "since_reacq_s": "", "provenance": "sitl"}])
-        write("r4_px4_events.csv", events or [{"log": "", "t_s": "", "kind": "", "value": ""}])
+        write(f"{pre}_px4_events.csv", events or [{"log": "", "t_s": "", "kind": "", "value": ""}])
 
 
 if __name__ == "__main__":

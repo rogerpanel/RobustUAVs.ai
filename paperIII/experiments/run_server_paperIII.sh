@@ -4,6 +4,7 @@
 #   r3   measured-trace replay: stage the Kaggle corpus, extract GNSS staleness
 #        traces, E2 part (c) and E5 with --process trace
 #   r4   PX4 SITL multi-vehicle vignette (Docker; ~1 h first build)
+#   r4b  R4b: pre-registered test of the latched certificate (R4B_PROTOCOL.md), fresh schedule
 #   r8   embedded latency: prints the one command to run on a Pi / Jetson
 # Results come back as one tarball (the server's deploy key is read-only).
 #
@@ -72,7 +73,10 @@ stage_r3() {
 }
 
 stage_r4() {
-  say "R4: PX4 SITL (v1.14.3) in Docker, ${R4_VEHICLES:-6} vehicles"
+  # R4_REV=a: the first run (receiver certificate). R4_REV=b: R4b, the pre-registered test of the
+  # latched certificate with an arming check and a fresh outage schedule (paperIII/R4B_PROTOCOL.md).
+  local REV="${R4_REV:-a}" P="r4"; [ "$REV" = b ] && P="r4b"
+  say "$P: PX4 SITL (v1.14.3) in Docker, ${R4_VEHICLES:-6} vehicles, revision $REV"
   command -v docker >/dev/null || { say "R4: docker not installed; skipped"; return 0; }
   PX4="${PX4_DIR:-$HOME/PX4-Autopilot}"
   if [ ! -d "$PX4" ]; then
@@ -103,6 +107,10 @@ stage_r4() {
       | sed 's/^/    /' | tee -a "$LOG/r4_build_tail.txt"
     return 0
   fi
+  # each run starts from empty PX4 logs; earlier logs are moved aside, never deleted
+  # (the directories are owned by the container's root user, so the move runs in the container)
+  docker run --rm -v "$PX4":/src "$IMG" bash -c \
+    "cd /src/build/px4_sitl_default && [ -d rootfs ] && mv rootfs rootfs_before_${P}_$(date -u +%Y%m%dT%H%M%S) || true"
   # launch N SIH quadrotors; instance i listens on UDP 14540+i for offboard
   docker rm -f px4sitl >/dev/null 2>&1 || true
   docker run -d --name px4sitl --network host -v "$PX4":/src -w /src "$IMG" bash -lc '
@@ -115,19 +123,23 @@ stage_r4() {
     done
     sleep infinity' > /dev/null
   sleep 25
-  say "R4: driving the fleet (5 Hz and 2 Hz, ${R4_DURATION:-240} s each)"
+  say "$P: driving the fleet (5 Hz and 2 Hz, ${R4_DURATION:-240} s each)"
   # hard cap: two flights plus connection, takeoff and landing; a hang becomes an error
   (cd "$HERE" && timeout -k 30 $((2 * ${R4_DURATION:-240} + 900)) python3 -u r4_sitl_fleet.py \
-     --vehicles "${R4_VEHICLES:-6}" --rate 5 2 --duration "${R4_DURATION:-240}") > "$LOG/r4_driver.txt" 2>&1 \
-     || say "R4: driver error or timeout, see r4_driver.txt (last lines below)"
-  tail -n 8 "$LOG/r4_driver.txt" | sed 's/^/    /' | tee -a "$LOG/run.txt"
+     --vehicles "${R4_VEHICLES:-6}" --rate 5 2 --duration "${R4_DURATION:-240}" --revision "$REV") \
+     > "$LOG/${P}_driver.txt" 2>&1 || say "$P: driver error or timeout, see ${P}_driver.txt (last lines below)"
+  tail -n 8 "$LOG/${P}_driver.txt" | sed 's/^/    /' | tee -a "$LOG/run.txt"
   docker stop px4sitl > /dev/null
-  say "R4: closed-loop soundness check from the ULogs"
-  (cd "$HERE" && python3 r4_sitl_fleet.py --soundness-only --logs "$PX4/build/px4_sitl_default/rootfs") \
-     > "$LOG/r4_soundness.txt" 2>&1 || say "R4: soundness check error, see r4_soundness.txt"
+  say "$P: closed-loop soundness check from the ULogs (receiver and latched certificates)"
+  (cd "$HERE" && python3 r4_sitl_fleet.py --soundness-only --revision "$REV" \
+     --logs "$PX4/build/px4_sitl_default/rootfs") > "$LOG/${P}_soundness.txt" 2>&1 \
+     || say "$P: soundness check error, see ${P}_soundness.txt"
+  tail -n 6 "$LOG/${P}_soundness.txt" | cut -c1-200 | sed 's/^/    /' | tee -a "$LOG/run.txt"
   docker rm px4sitl > /dev/null
-  say "R4 done"
+  say "$P done"
 }
+
+stage_r4b() { R4_REV=b stage_r4; }
 
 stage_r8() {
   say "R8 needs the board itself (Raspberry Pi CM4/5, Jetson Orin Nano); the server cannot stand in."
@@ -145,5 +157,5 @@ tar czf "$TGZ" --ignore-failed-read \
   paperIII/results/e3_latency.csv paperIII/results/e3_latency_*.csv \
   paperIII/results/r3_*.csv paperIII/results/e2_lift_trace.csv paperIII/results/e5_marl_trace \
   paperIII/results/e6_main_e5_marl_trace.csv \
-  paperIII/results/r4_*.csv paperIII/results/server_logs 2>/dev/null || true
+  paperIII/results/r4_*.csv paperIII/results/r4b_*.csv paperIII/results/server_logs 2>/dev/null || true
 say "results: $TGZ  (scp it back; R3 traces derive from the staged corpus, no raw data inside)"
