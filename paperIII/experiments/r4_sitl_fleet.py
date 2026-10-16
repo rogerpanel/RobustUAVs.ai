@@ -4,7 +4,7 @@
 Prerequisite: K PX4 SITL instances already running (see run_server_paperIII.sh,
 stage r4), instance i reachable on udp://:14540+i.
 
-Driver (asyncio, MAVSDK-Python, one mavsdk_server per vehicle):
+Driver (asyncio, MAVSDK-Python < 4, the gRPC API; one mavsdk_server per vehicle):
   1. arm, take off to 15 m, start offboard;
   2. every 1/rate s: read each vehicle's GNSS stream (raw_gps timestamps and
      gps_info fix type), compute staleness = time since the last fix with

@@ -36,7 +36,8 @@ venv() {
   # shellcheck disable=SC1091
   source "$VENV/bin/activate"
   pip install -q --upgrade pip
-  pip install -q numpy scipy networkx pandas pyulog kagglehub mavsdk
+  # mavsdk 4 is the native binding with a different API; the R4 driver uses the gRPC API (mavsdk<4)
+  pip install -q numpy scipy networkx pandas pyulog kagglehub 'mavsdk<4'
   python -c "import torch" 2>/dev/null || pip install -q torch --index-url https://download.pytorch.org/whl/cpu || pip install -q torch
 }
 
