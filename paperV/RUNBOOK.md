@@ -37,7 +37,7 @@ What the paper claims, so every phase knows what it is protecting:
 
 ### 0.2 Corrections found while writing this runbook (apply them; they override the research report)
 
-1. **δ_adv headline is 5.463 m, not 4.371 m.** Paper IV's R1 re-pooled the stealth budget: `paperIV/results/r1_delta_adv.csv` gives δ_adv = **5.463 m** at FPR 1% and 5% (argmax TPE-tail, gnss_mimic, ratio 1.25 against the pilot, accepted exactly at the 1.25× limit) and **5.038 m** at 10%. The pilot value 4.371 m (`e4_delta_adv.csv`) survives only as a sensitivity row. The platform's Paper IV page already defaults to the R1 value. **Consequence:** at m ∈ {2, 5} m, b_tot ≥ δ_adv > m, so the tightened corridor is empty. The filter must then refuse dispatch (A5 fails), and that is a result, not a bug. Composition cells (RQ3) are only meaningful at m ∈ {10, 20} m.
+1. **δ_adv headline is 5.463 m, not 4.371 m.** Paper IV's R1 re-pooled the stealth budget: `paperIV/results/r1_delta_adv.csv` gives δ_adv = **5.463 m** at FPR 1% and 5% (argmax TPE-tail, gnss_mimic, ratio 1.25 against the pilot, accepted exactly at the 1.25× limit) and **5.038 m** at 10%. The pilot value 4.371 m (`e4_delta_adv.csv`) survives only as a sensitivity row. The platform's Paper IV page already defaults to the R1 value. **Consequence:** at m ∈ {2, 5} m, b_tot ≥ δ_adv > m, so the tightened corridor is empty. The filter must then refuse dispatch (A5 fails), and that is a result, not a bug. Composition cells (RQ3) are only meaningful at m = 20 m (see item 6).
 2. **The platform smoke test blocks Paper V.** `platform/backend/tests_smoke.py` L129 asserts `GET /api/papers/V/results` returns **404**. Adding `"V": "paperV"` to `PAPERS` breaks it. Change that assertion to an unused id (e.g. `VI`) in the same commit.
 3. **Module-name collision.** Paper I, Paper IV and Paper V all have a flat `constants.py`. `paperIV/experiments/sim.py` and `run_pilot.py` do `from constants import *`. Paper V must therefore **never** put `paperIV/experiments` on `sys.path` in its own process:
    - Load `depbounds.py` (self-contained) with `importlib.util.spec_from_file_location("p4_depbounds", …)`.
@@ -45,6 +45,7 @@ What the paper claims, so every phase knows what it is protecting:
    - Run anything that needs `sim.py` in a **subprocess** with `cwd=paperIV/experiments`.
    - Inside `paperV/experiments`, sibling imports use `try: from . import constants as C` / `except ImportError: import constants as C`. Scripts then run directly, and the platform can import `paperV.experiments.filter` as a namespace package without clashing with Paper I's or Paper IV's `constants`.
 4. **Seed namespace.** Paper IV R1/E4r already occupy 1700+, 6000–8999, 9200+ and 92000+ (`paperIV/results/run_meta.json`). Paper V keeps the role partition but in a **five-digit 1xxxx namespace** (§1.2), so no integer seed is ever shared with Paper IV when Paper IV code is called for A7.
+6. **Headline corridor is m = 20 m (owner's decision, 16 Oct 2026).** Dispatchability is decided by the tightened *terminal* half-width m − β_∞ = m − ρ̄ − ε_∞ − b, not by m − ρ_0 − b: the look-ahead saturates at the declared envelope ρ̄ = L_ρ·Δ̄ = 5.0 m (Δ̄ = 0.944 s, as in the manuscript) and the tube adds ε_∞ = 1.88 m at the calibrated w̄ = 2.219 m/s². `results/budget_levels.csv` then gives: m = 10 dispatchable only at b0 (3.12 m); m = 20 dispatchable at b0–b3 (13.12, 7.66, 6.60, 0.37 m); m ∈ {2, 5} never; γ = 15 m/s at no m. Therefore every cell listed below at "m = 10, b0–b3" runs at **m = 20**; m = 10 is kept as a b0-only row and its b1–b3 cells are logged once as `infeasible_t0`. The substitution is recorded in `run_meta.json` (`headline_m`). Episode and call counts stay unchanged. The γ = 15 m/s companion rows are all non-dispatchable and are reported as such.
 5. **The server runs CPython 3.14** (see the comment in `platform/backend/requirements.txt`). If `cvxpy`, `osqp` or `clarabel` have no wheel for it, create the Paper V venv with Python 3.12 or 3.13 (`uv venv -p 3.12`) instead of compiling from source.
 
 ### 0.3 Weak points, in the order a SaTML reviewer will raise them
@@ -379,8 +380,8 @@ Write `paperV/experiments/constants.py` and `results/constants_paperV.csv` (colu
   - **b1 = δ_adv**;
   - **b2 = δ_adv + net_tube(0.1)**;
   - **b3 = b2 + s*(0.05)**.
-- For each (level, m) the CSV records the tightened half-width `m − ρ_0 − b` and a `dispatchable` flag.
-- **b3 may not be dispatchable at m = 10.** Paper IV's p̄ is still ≈ 0.5 at s = 4 m, so s*(0.05) is large. If b3 is not dispatchable at m = 10, every LLM cell listed as "4 b_tot at m = 10" in P3–P5 runs its b3 slice at m = 20 instead. Record that substitution in `run_meta.json`. Episode and call counts stay unchanged.
+- For each (level, m) the CSV records the runbook half-width `m − ρ_0 − b`, the terminal half-width `m − β_∞` and a `dispatchable` flag (terminal half-width > 0; see 0.2 item 6).
+- **Only b0 is dispatchable at m = 10** (0.2 item 6), so every LLM cell listed as "4 b_tot at m = 10" in P3–P5 runs at m = 20 instead. Record that substitution in `run_meta.json`. Episode and call counts stay unchanged.
 
 **`stats.py`** contains `cp_upper(k, n)`, `cp_interval`, `holm(ps)`, `iqm`, `strat_boot`, `cochran_armitage(counts, n, scores)`, Page's L (`scipy.stats.page_trend_test`), and the denial attribution of §8. These are re-implemented following Paper III `e6_aggregate.py` and Paper IV `run_pilot.py`. A test checks `cp_upper(0, 3e6) ≈ 1.0e-6`.
 
@@ -481,7 +482,7 @@ python3 plant.py --check-wbar --seeds 14000-14199                    # results/w
 ### P2.2 Grid and commands
 
 - **Headline grid.** m ∈ {10, 20}; b_tot ∈ {b0, b1, b2, b3}; goals G1–G4; γ ∈ {1.625, 15} (companion row); κ_sched ∈ {0.10, 0.25} computed post hoc.
-- **Dispatch rule.** Cells with `dispatchable=0` in `budget_levels.csv` (all of m ∈ {2, 5} at b ≥ b1) are logged once as `infeasible_t0` and **not** run.
+- **Dispatch rule.** Cells with `dispatchable=0` in `budget_levels.csv` (m ∈ {2, 5} everywhere, m = 10 at b ≥ b1, γ = 15 everywhere) are logged once as `infeasible_t0` and **not** run.
 
 ```bash
 cd paperV/experiments
@@ -518,7 +519,7 @@ Run `p1_timing.csv` first and rescale these estimates.
 | 10⁷ aircraft-steps | ≈ 950 episodes ≈ 3–4 core-h |
 | A6 search per cell | 12 × 25 × 16 = 4,800 single-aircraft episodes ≈ 1–1.5 core-h, plus CMA-ES ≈ same |
 | Full grid (4 goals × 4 b_tot × 2 m × 2 searches) | ≈ 60–100 core-h → **server**, ≈ 2–3 h at 32 cores |
-| Container reduced grid (G1–G4 × {b0, b1} × m = 10, CEM only, 300 eval missions) | ≈ 10–14 core-h ≈ 5–8 h on 2 cores, `--par 2`, < 2.5 GB RAM |
+| Container reduced grid (G1–G4 × {b0, b1} × m ∈ {10, 20} with m = 10 at b0 only, CEM only, 100 eval missions; baseline filters for A0 and A6-best only, 30 missions) | ≈ 10–14 core-h ≈ 5–8 h on 2 cores, `--par 2`, < 2.5 GB RAM |
 | LLM budget | **0 calls** |
 
 ### P2.4 Exit gate and decision gate
@@ -611,11 +612,11 @@ python3 run_campaign.py --phase p3 --planner api --provider anthropic --missions
 
 ```bash
 set -a; source ~/.config/robustuavs/paperV.env; set +a
-# A0 core cells: 2 models x 4 b_tot x 100 missions at m = 10 (b0..b3 that are dispatchable), PSF on
+# A0 core cells: 2 models x 4 b_tot x 100 missions at m = 20 (0.2 item 6), PSF on
 python3 run_campaign.py --phase p3 --planner api --roles planner_frontier_1,planner_frontier_2 \
-   --attacker A0 --btot b0,b1,b2,b3 --margins 10 --missions 100 --seed-block 18000 \
+   --attacker A0 --btot b0,b1,b2,b3 --margins 20 --missions 100 --seed-block 18000 \
    --filters psf --log-steps all --campaign-id p3_a0 --resume --concurrency 8
-# RQ4 defence configurations: 2 models x {psf, none, simplex, cbf1} x 100 missions at b1, m = 10
+# RQ4 defence configurations: 2 models x {psf, none, simplex, cbf1} x 100 missions at b1, m = 20
 python3 run_campaign.py --phase p3 ... --btot b1 --filters psf,none,simplex,cbf1 --campaign-id p3_rq4 --resume
 # Nondeterminism: 2 models x 40 missions x 3 repeats (repeat_idx 0..2), b1, PSF
 python3 run_campaign.py --phase p3 ... --missions 40 --repeats 3 --campaign-id p3_nondet --resume
@@ -719,7 +720,7 @@ vLLM:
 .venv-vllm/bin/vllm serve <hf_model_id> --revision <hash> --port 8000 --max-model-len 8192 \
     --gpu-memory-utilization 0.90 --seed 0 --enable-prefix-caching
 python3 agent.py --ping --role open_weights        # through PAPERV_OPENAI_COMPAT_BASE_URL
-python3 adaptive.py --attacker A3 --planner open_weights --goals G1,G2,G3,G4 --btot b1,b3 --margins 10 \
+python3 adaptive.py --attacker A3 --planner open_weights --goals G1,G2,G3,G4 --btot b1,b3 --margins 20 \
     --opt tpe,cma --cand 12 --gens 20 --missions 16 --seed-block 12000 --out ../results/a3_search.csv
 python3 adaptive.py ... --seed-block 13000 --out ../results/a3_search_heldout.csv
 ```
@@ -735,7 +736,7 @@ python3 adaptive.py ... --seed-block 13000 --out ../results/a3_search_heldout.cs
 ```bash
 # A1 static (2 models x 4 b_tot x 100), PSF on
 python3 run_campaign.py --phase p4 --planner api --roles planner_frontier_1,planner_frontier_2 \
-   --attacker A1 --btot b0,b1,b2,b3 --margins 10 --missions 100 --seed-block 14000 \
+   --attacker A1 --btot b0,b1,b2,b3 --margins 20 --missions 100 --seed-block 14000 \
    --filters psf --campaign-id p4_a1 --resume --concurrency 8
 # Filter-off sanity: 2 models x {A1, A3-best} x 100, filter none
 python3 run_campaign.py --phase p4 ... --attacker A1,A3:best --filters none --campaign-id p4_off --resume
@@ -1068,6 +1069,6 @@ Paper V is built in seven gated phases on `claude/whelan-uavcas-ingest-u00isn`, 
 - **P6 turns the CSVs into `numbers.tex`, pgfplots data and the platform page.**
 
 Three corrections to the research plan are binding:
-- δ_adv is now 5.463 m (Paper IV R1), so m ∈ {2, 5} is non-dispatchable under composition.
+- δ_adv is now 5.463 m (Paper IV R1); with ρ̄ and the tube term, m ∈ {2, 5} is never dispatchable and m = 10 only at b0, so the headline corridor is m = 20 (0.2 item 6).
 - Paper IV code must not be imported into Paper V's process (the `constants` collision).
 - The platform smoke test that expects `/api/papers/V` to 404 must change.

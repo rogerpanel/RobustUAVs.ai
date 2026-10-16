@@ -11,5 +11,13 @@
    "host": "vm",
    "git_sha": "48fb6de8ad5a9dc3619a99e9a5529c8f4b3238e7"
   }
- }
+ },
+ "headline_m": {
+  "value": 20.0,
+  "decided": "2026-10-16, owner",
+  "reason": "m - beta_inf <= 0 at m = 10 for b1-b3 (budget_levels.csv); m = 10 kept as a b0-only row",
+  "substitution": "every 'm = 10, b0-b3' cell of P3-P5 runs at m = 20"
+ },
+ "delta_bar_s": 0.944,
+ "w_bar": 2.218963
 }

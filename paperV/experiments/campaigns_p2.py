@@ -105,19 +105,22 @@ def evaluate(a):
             continue
         for planner in a.planners.split(","):
             for flt in a.filters.split(","):
+                if flt != "psf" and a.baseline_planners and planner not in a.baseline_planners.split(","):
+                    continue
+                nm = a.missions if flt == "psf" else (a.baseline_missions or a.missions)
                 if planner.startswith("oracle"):
                     src = C.RESULTS / ("a6_search.csv" if planner.endswith("best") else "a6_search_heldout.csv")
                     for goal in a.goals.split(","):
                         th = best_theta(src, goal, level, m)
                         if th is None:
                             continue
-                        for j in range(a.missions):
+                        for j in range(nm):
                             pl = OracleAdversarialPlanner(th, b_att=14, n_hijack=C.N_UAV, name=planner)
                             cfgs.append(EpisodeCfg(m=m, b_tot_level=level, b_tot_m=b, gamma=gamma, filter=flt,
                                                    planner=planner, planner_obj=pl, attacker="A6", goal=goal,
                                                    mission_seed=a.seed_block + j, campaign_id=cid, **NATURE))
                 else:
-                    for j in range(a.missions):
+                    for j in range(nm):
                         cfgs.append(EpisodeCfg(m=m, b_tot_level=level, b_tot_m=b, gamma=gamma, filter=flt,
                                                planner=planner, attacker="A0" if planner == "scripted" else "random",
                                                mission_seed=a.seed_block + j, campaign_id=cid, **NATURE))
@@ -131,7 +134,8 @@ def evaluate(a):
                            status="infeasible_t0", m=c["m"], b_tot_level=c["level"], b_tot_m=lv[c["level"]],
                            gamma=c["gamma"], note="tightened terminal half-width <= 0: dispatch refused (A5 fails)"))
     execute(cfgs, cid, a.par, a.resume, a.shard)
-    meta_update(cid, dict(missions=a.missions, seed_block=a.seed_block, planners=a.planners, filters=a.filters,
+    meta_update(cid, dict(missions=a.missions, baseline_missions=a.baseline_missions,
+                          baseline_planners=a.baseline_planners, seed_block=a.seed_block, planners=a.planners, filters=a.filters,
                           margins=a.margins, btot=a.btot, gamma=a.gamma, infeasible_cells=infeasible,
                           nature=NATURE, env=env_meta()))
 

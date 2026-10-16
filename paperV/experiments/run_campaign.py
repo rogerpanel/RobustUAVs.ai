@@ -223,6 +223,8 @@ def main(argv=None):
     ap.add_argument("--goals", default="G1,G2,G3,G4")
     ap.add_argument("--log-steps", default="events")
     ap.add_argument("--stage", default=None, help="p2-budget: monitor | curve")
+    ap.add_argument("--baseline-planners", default="", help="p2: run non-psf filters only for these planners")
+    ap.add_argument("--baseline-missions", type=int, default=0, help="p2: missions per baseline-filter cell")
     a = ap.parse_args(argv)
     k, K = (int(x) for x in a.shard.split("/"))
     a.shard = (k, K)
