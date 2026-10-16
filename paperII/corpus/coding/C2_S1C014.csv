@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3021481267",1,"","SMT","B","perception","in","A","norm","none","S","proof","Exact SAT-based verification of l_inf robustness of binarized NNs on MNIST/CIFAR10 test points; sound and complete, no floating-point error."
+"O2970884920",1,"","GEN","B","control","pop","P","distribution","L_conc","S","modelled","With prob 1-delta, learned strategy is epsilon-optimal for stochastic game using O~(|S||A|(1-gamma)^-3 eps^-2) generative-model samples; theory only."
+"O4376561457",0,"Guarantees concern explanation-function properties (coherence/success), not a learned component's behaviour.","","","","","","","","","",""
+"O4406795208",1,"","CLR","B","estimation","tr","A","none","L_dyn","S","proof","LMI sector conditions certify regional exponential stability and invariant ellipsoid basin for linear feedback on learned RNN plant model; component doubt: estimation vs control."
+"O2970142535",1,"","GEN","B","control","pop","E","distribution","L_dyn","S","modelled","Certainty-equivalent LQR/LQG controller from estimated model has expected-cost suboptimality gap O(eps^2) in parameter error; theory only, class doubt GEN vs ALG."

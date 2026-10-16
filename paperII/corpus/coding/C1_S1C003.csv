@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3125588313",1,"","PROB","B","perception","in","P","norm","L_conc","S","simulated","DeepPAC: affine PAC-model gives (eta,eps)-probabilistic local robustness in L-inf ball via scenario optimisation; MNIST/CIFAR/ImageNet."
+"O3167942312",1,"","ALG","B","estimation","pop","A","none","none","S","modelled","WMLR: GDA converges to approximate stationary point for mixed linear regression; also generalisation bounds. Scope pop is doubtful (convergence of training)."
+"O2899692219",1,"","BP","B","perception","in","A","norm","none","S","proof","MixTrain: verified robust accuracy under L-inf balls via sound symbolic interval analysis on trained MNIST/CIFAR/ImageNet-200 networks."
+"O3098493030",1,"","SMT","B","perception","in","A","semantic","none","S","proof","LCIFR: MILP-certified individual fairness; all inputs similar under logical constraint get same label. Tabular classifier coded perception (doubt)."
+"O4281768543",1,"","GEN","B","perception","pop","P","distribution","L_conc","S","modelled","FedOT: covering-number generalisation bound with prob 1-delta for personalised federated classifier under heterogeneous client distributions; also GDA convergence."

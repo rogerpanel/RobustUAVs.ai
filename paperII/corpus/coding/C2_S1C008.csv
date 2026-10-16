@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4315472062","1","","NEW:Constraint-enforcing NN policy architecture (gauge map)","B","control","in","A","disturbance","L_dyn","S","proof","Gauge-map NN outputs always in MPC feasible set; RCI set gives robust constraint satisfaction under bounded disturbance. Rule-6: per-step in chosen over tr (invariance)."
+"O3215435727","1","","GEN","B","perception","pop","P","distribution","L_conc","S","simulated","Generalisation gap bounded by persistent-homology dimension of training trajectory w.p. 1-gamma over i.i.d. samples; assumption H1 not evidenced."
+"O3088950981","1","","LUC","A","control","tr","A","none","L_dyn","S","proof","Sound reach-set over-approximation of unknown dynamics from one trajectory via Lipschitz differential inclusion; doubt: data-driven model, not ML; component could be estimation."
+"O4411936039","1","","LUC","A","control","in","P","distribution","L_conc","S","measured","DR-CBF QP gives pointwise CBF chance constraint w.p. (1-eps)(1-epsbar) via Wasserstein ball from sensor samples; light-tailed assumption stated only."
+"O3205094558","0","Formal XAI explanation algorithms and complexity; no safety or robustness guarantee claimed.","","","","","","","","","",""

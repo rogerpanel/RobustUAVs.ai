@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4205490748","1","","LUC","B","control","tr","P","disturbance","L_conc","S","simulated","With prob. 1-delta over samples, kernel-embedding estimate of N-step safety probability of NN-controlled cart-pole is within N*B(x,u). Doubt: LUC vs GEN/DTMC."
+"O2531965955","0","Simulation-only LMPC racing study; cited guarantees assume no model mismatch, not proven here.","","","","","","","","","",""
+"O3029692613","1","","BP","B","perception","in","A","norm","none","S","proof","Prover: sound DeepPoly-based certificate that LSTM speech/MNIST/HAPT classifiers keep label under L-inf input perturbation."
+"O2964164993","1","","MON","B","perception","in","Ac","norm","none","SE","measured","Runtime adversarial detector: SPRT over random model mutants bounds per-input error (alpha,beta) of label-change-rate test. Doubt: guarantee covers LCR proxy only."
+"O4292482260","0","XAI theory of reasons for Boolean classifiers; no guarantee on learned component evaluated.","","","","","","","","","",""

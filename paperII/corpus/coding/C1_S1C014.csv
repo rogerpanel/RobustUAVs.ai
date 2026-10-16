@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3021481267",1,"","SMT","B","perception","in","A","norm","none","S","proof","Exact (sound, complete) SAT-based verification of l-inf robustness of binarized NNs on MNIST/CIFAR10 test images."
+"O2970884920",1,"","GEN","B","control","pop","P","distribution","L_conc","S","modelled","With probability 1-delta, outputs eps-optimal game strategy from O~(|S||A|(1-gamma)^-3 eps^-2) generative-model samples; no vehicle task."
+"O4376561457",0,"Explanation-function property on samples; no guarantee about a learned component's behaviour.","","","","","","","","","",""
+"O4406795208",1,"","NCERT","B","control","tr","A","none","none","S","proof","LMI Lyapunov certificate of local exponential stability with ellipsoidal basin estimate for RNN plant model under state feedback; component control vs estimation doubtful."
+"O2970142535",1,"","GEN","B","control","op","E","disturbance","L_dyn","S","modelled","Certainty-equivalent LQR/LQG cost gap to optimal is O(eps^2) in model error eps; scope op vs pop doubtful."

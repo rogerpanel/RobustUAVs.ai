@@ -1,0 +1,65 @@
+cid,field,C1,C2
+O2760733685,perturbation,norm,none
+O2785755647,modality,A,Ac
+O2788084076,lifts,L_conc,L_conc;L_dyn
+O2852179785,assumption,U,S
+O2912816250,perturbation,distribution,norm
+O2913266441,evidence,modelled,measured
+O2915008147,evidence,simulated,proof
+O2924630351,assumption,U,S
+O2955833779,eligible,1,0
+O2963582321,evidence,modelled,proof
+O2964164993,modality,P,Ac
+O2964164993,lifts,L_conc,none
+O2964164993,evidence,simulated,measured
+O2970142535,scope,op,pop
+O2970142535,perturbation,disturbance,distribution
+O2972923195,class,GEN,OPREL
+O2982312195,assumption,U,S
+O3007985585,scope,tr,pop
+O3007985585,assumption,SE,S
+O3017318049,eligible,1,0
+O3025114349,perturbation,disturbance,distribution
+O3037427931,class,SMT,NEW:global robustness via activation-region enumeration
+O3037427931,lifts,L_conc,none
+O3037427931,assumption,U,S
+O3037427931,evidence,simulated,proof
+O3107520776,class,NEW:Deterministic smoothing (Bernstein polynomial),LIP
+O3107520776,assumption,SE,S
+O3124533198,assumption,U,S
+O3125588313,assumption,S,SEC
+O3125588313,evidence,simulated,measured
+O3132066662,scope,tr,op
+O3132066662,lifts,L_conc,none
+O3167942312,class,ALG,GEN
+O3167942312,modality,A,P
+O3167942312,perturbation,none,distribution
+O3167942312,lifts,none,L_conc
+O3168112450,eligible,1,0
+O3175104376,class,NEW:Structure-preserving (Hamiltonian) learned dynamics,NEW:structure-preserving learned dynamics
+O3183838078,assumption,U,S
+O3199481125,scope,pop,op
+O3199481125,perturbation,distribution,poisoning
+O3205094558,eligible,1,0
+O3215435727,evidence,modelled,simulated
+O4205490748,class,GEN,LUC
+O4287075774,class,NEW:Multicalibration (s-happy),ALG
+O4287075774,lifts,L_conc;L_sup,L_conc
+O4312626912,assumption,U,S
+O4315472062,class,NEW:safe-by-construction constrained NN policy,NEW:Constraint-enforcing NN policy architecture (gauge map)
+O4379256329,class,CRL,GEN
+O4379256329,scope,tr,op
+O4379256329,lifts,L_conc;L_sup,L_conc
+O4379256329,evidence,modelled,measured
+O4384345675,eligible,1,0
+O4388483784,assumption,U,S
+O4390873449,assumption,S,SEC
+O4390873449,evidence,simulated,proof
+O4402264222,class,LUC,NEW:learning-supported MPC recursive feasibility
+O4402264222,evidence,modelled,simulated
+O4406795208,class,NCERT,CLR
+O4406795208,component,control,estimation
+O4406795208,lifts,none,L_dyn
+O4408392785,eligible,1,0
+O4409311673,class,NEW:Training-data privacy (iDP) verification,SMT
+O4411936039,evidence,modelled,measured

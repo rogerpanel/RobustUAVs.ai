@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7133232065",1,"","BP","B","perception","in","A","norm","none","S","proof","GCP-CROWN: sound (complete with BaB) bound propagation with MIP cutting planes certifies l-inf robustness on CIFAR/MNIST; BaB completeness edges toward SMT."
+"O2972923195",1,"","OPREL","A","control","pop","P","distribution","L_conc;L_mon","S","simulated","With confidence 1-beta, learned MPC policy feasible and gamma-suboptimal w.p. >=1-eps over parameter distribution; online dual certificate triggers backup. Class doubt: OPREL vs GEN."
+"O3109216345",1,"","LUC","A","control","tr","A","disturbance","L_dyn","S","proof","Fixed-time parameter adaptation plus robust adaptive CBF-QP guarantees forward invariance of shrunken safe set under bounded parametric uncertainty. Component doubt: estimation vs control."
+"O4391055309",1,"","BP","B","estimation","in","A","none","none","S","proof","Chordal-DeepSDP: sound SDP relaxation certifies quadratic specs over input set of learned cart-pole dynamics NN; scope doubt in vs tr (unrolled reach-sets)."
+"O2943722115",1,"","SMT","A","control","in","A","none","none","S","proof","Activation-pattern preconditions proven with Reluplex to imply output properties (e.g., ACAS Xu COC advisory) over convex input regions; MNIST also used."

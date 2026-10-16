@@ -1,0 +1,101 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note,batch
+O2531965955,0,"Simulation-only LMPC racing study; cited guarantees assume no model mismatch, not proven here.",,,,,,,,,,,S1C011
+O2616305530,1,,CRL,B,control,pop,E,distribution,none,S,measured,"Adaptive torque limit keeps expected damage below Dsafe each learning iteration; heuristic bound from empirical unsafety rate, no confidence; eligibility doubtful.",S1C010
+O2760733685,1,,SMT,B,control,in,A,none,none,S,proof,Sound output range within tolerance delta over input polyhedron via local search plus MILP; demos on NN controller and MNIST patch; component doubt.,S1C010
+O2785755647,1,,LIP,B,perception,in,Ac,norm,none,S,proof,"Lipschitz-margin certified L2 guarded radius per input (MNIST, SVHN). Ac because power-iteration Lipschitz bound holds w.h.p. over certifier randomness; else A.",S1C013
+O2788084076,1,,LUC,A,planning,in,P,distribution,L_conc;L_dyn,S,simulated,"GP confidence bounds plus Lipschitz keep each visited Mars-rover state safe with high probability; scope in vs op doubtful (per-step, no mission union bound).",S1C002
+O2799107510,1,,BP,B,perception,in,A,norm,none,S,proof,Fast-Lin/Fast-Lip certified lower bound on minimum lp adversarial distortion for ReLU classifiers; MNIST/CIFAR.,S1C007
+O2852179785,1,,SMT,B,perception,in,A,norm,none,S,proof,Exact SAT encoding of BNNs certifies local Linf robustness for some MNIST images; overview of authors' prior results.,S1C009
+O2899692219,1,,BP,B,perception,in,A,norm,none,S,proof,MixTrain: verifiably robust training; symbolic linear relaxation certifies Linf robustness per test input (VRA up to 95.2%); VRA aggregate is test-set rate.,S1C003
+O2912816250,1,,PROB,B,perception,pop,P,norm,L_conc,S,modelled,"Pr over D of delta-close pairs satisfying Lipschitz bound >= 1-eps via abstract interpretation plus importance sampling; unevaluated NIER, eligibility and component doubtful.",S1C010
+O2913266441,1,,GEN,B,perception,pop,E,norm,none,S,measured,"Thm 3.1: robust error minus Bayes natural error bounded by surrogate risk plus boundary term, any classifier and distribution; empirical robustness only attack-based.",S1C002
+O2915008147,1,,PACB,B,perception,pop,P,distribution,L_conc,S,proof,"PAC-Bayes compression bound on test error of compressed stochastic classifier, 95% confidence, iid assumed; ImageNet top-1 bound <96.5%.",S1C015
+O2917325587,1,,BP,A,perception,in,A,norm,none,S,proof,Abstract interpretation with symbolic propagation soundly certifies local robustness; MNIST plus ACAS Xu (Reluplex speedup). Doubt: tier A via ACAS Xu only; component perception vs control.,S1C007
+O2924630351,1,,SMT,B,perception,in,A,norm,none,S,proof,GeoCert: exact/anytime lower bound on Lp pointwise robustness radius of ReLU classifiers via polyhedral-complex search (MNIST).,S1C020
+O2943722115,1,,SMT,A,control,in,A,none,none,S,proof,"Activation-pattern preconditions proven with Reluplex to imply output properties (e.g., ACAS Xu COC advisory) over convex input regions; MNIST also used.",S1C016
+O2946912408,1,,GEN,B,control,pop,P,distribution,L_conc,S,modelled,W.p. 1-delta feature-based two-player Q-learning outputs epsilon-optimal strategy with O~(K/(eps^2(1-gamma)^4)) samples; theory only; ALG also plausible.,S1C017
+O2952395507,1,,LUC,A,estimation,tr,P,distribution,L_conc;L_dyn;L_sup,SE,simulated,"Covariate-shift generalisation bound on learned residual dynamics, lifted to exponential tracking-error ball for safe drone landing exploration; density ratio checked in simulation.",S1C017
+O2955833779,0,"Full text is a different paper (validating heuristic explanations), not the titled one",,,,,,,,,,,S1C006
+O2962710014,0,Empirical adversarial defense (noise-layer ensemble); no certified or statistical robustness guarantee,,,,,,,,,,,S1C006
+O2963496101,1,,BP,B,perception,in,A,norm,none,S,proof,LP-dual convex outer polytope certifies no l_inf-bounded adversarial example around each input; MNIST robust error bound 5.8% at eps=0.1.,S1C015
+O2963582321,1,,ALG,B,control,pop,P,distribution,L_conc,S,proof,"With prob 1-delta, UBEV policy epsilon-optimal in all but polynomially many episodes, for all epsilon jointly; tabular episodic MDPs.",S1C019
+O2964164993,1,,MON,B,perception,in,Ac,norm,none,SE,measured,"Runtime adversarial detector: SPRT over random model mutants bounds per-input error (alpha,beta) of label-change-rate test. Doubt: guarantee covers LCR proxy only.",S1C011
+O2970078867,1,,BP,B,perception,in,A,semantic,none,S,proof,IBP certifies NLP classifiers (IMDB/SNLI) correct on all word-substitution combinations per test input; text classifier coded perception; substitution set coded semantic.,S1C005
+O2970142535,1,,GEN,B,control,pop,E,distribution,L_dyn,S,modelled,"Certainty-equivalent LQR/LQG controller from estimated model has expected-cost suboptimality gap O(eps^2) in parameter error; theory only, class doubt GEN vs ALG.",S1C014
+O2970884920,1,,GEN,B,control,pop,P,distribution,L_conc,S,modelled,"With prob 1-delta, learned strategy is epsilon-optimal for stochastic game using O~(|S||A|(1-gamma)^-3 eps^-2) generative-model samples; theory only.",S1C014
+O2972923195,1,,OPREL,A,control,pop,P,distribution,L_conc;L_mon,S,simulated,"With confidence 1-beta, learned MPC policy feasible and gamma-suboptimal w.p. >=1-eps over parameter distribution; online dual certificate triggers backup. Class doubt: OPREL vs GEN.",S1C016
+O2982312195,1,,SMT,B,perception,in,A,norm,none,S,proof,MIP proves CNN-RNN captioner output length stays below bound for all inputs in Linf ball (Multi-MNIST); also attack (X) part.,S1C020
+O2998161546,1,,BP,B,perception,in,A,norm,none,S,proof,"Certified lower bound on l-inf weight-perturbation radius preserving top-1 class at input x via linear bound propagation; perturbation is in weight space, coded norm.",S1C012
+O3007985585,1,,GEN,B,control,pop,P,disturbance,L_conc;L_dyn,S,simulated,"NN approximate MPC: Hoeffding bound, w.p. 1-delta new i.i.d. trajectory inherits RMPC safety. Manipulator, not vehicle; class GEN vs OPREL doubtful; pop vs op.",S1C004
+O3010082790,1,,RS,B,perception,in,Ac,norm,none,S,proof,Denoiser plus randomized smoothing certifies l2 radius for pretrained/black-box classifiers and vision APIs with Monte Carlo confidence 1-alpha.,S1C015
+O3017318049,0,Statistical theory of distribution-free confidence intervals; no guarantee specific to learned component.,,,,,,,,,,,S1C001
+O3021481267,1,,SMT,B,perception,in,A,norm,none,S,proof,"Exact SAT-based verification of l_inf robustness of binarized NNs on MNIST/CIFAR10 test points; sound and complete, no floating-point error.",S1C014
+O3025114349,1,,DTMC,B,control,tr,P,distribution,L_dyn,S,proof,MDP abstraction upper-bounds k-step failure probability of DQN controller under stochastic actuator faults; DTMC vs CLR class doubt.,S1C009
+O3029692613,1,,BP,B,perception,in,A,norm,none,S,proof,Prover: sound DeepPoly-based certificate that LSTM speech/MNIST/HAPT classifiers keep label under L-inf input perturbation.,S1C011
+O3032731803,0,"Trajectory forecaster; dynamic feasibility by construction only, no safety or robustness guarantee.",,,,,,,,,,,S1C002
+O3034746922,1,,BP,B,perception,in,A,norm,none,S,proof,Decoupled symbolic bound propagation (Neurify refinement) proves absence of L-inf adversarial examples around MNIST/CIFAR inputs.,S1C013
+O3037427931,1,,NEW:global robustness via activation-region enumeration,B,perception,in,A,none,none,S,proof,"Sliding Door Network enables enumerating classification regions to verify absence of adversarial regions over whole input space; adjacency and volumes sampled, soundness doubtful.",S1C002
+O3037593164,1,,NCERT,B,control,tr,A,none,none,S,proof,"SMT-verified neural Lyapunov function proves asymptotic stability over domain D; certified ODEs contain no learned controller, only learned certificate.",S1C009
+O3088950981,1,,LUC,A,control,tr,A,none,L_dyn,S,proof,"Sound reach-set over-approximation of unknown dynamics from one trajectory via Lipschitz differential inclusion; doubt: data-driven model, not ML; component could be estimation.",S1C008
+O3098493030,1,,SMT,B,perception,in,A,semantic,none,S,proof,"LCIFR: MILP certifies individual fairness, all similar individuals (attribute/noise similarity set) get same label; tabular classifier coded perception, doubtful.",S1C003
+O3100287144,1,,CP,B,estimation,pop,P,distribution,L_conc,S,proof,"J+aB prediction interval has distribution-free marginal coverage >= 1-2alpha under exchangeability, any ensemble regressor; validated on real data.",S1C010
+O3106612012,1,,PACB,A,end2end,pop,P,distribution,L_conc,SE,simulated,"PAC-Bayes bound on expected cost of imitation-learned visuomotor policy over novel environments from D; tier A doubtful (Fetch indoor navigation, manipulation).",S1C019
+O3107520776,1,,LIP,B,perception,in,A,norm,none,S,simulated,Deterministic Bernstein-smoothed classifier certified lp radius via 1-Lipschitz feature extractor and root-finding (CIFAR); root-finding not provably sound; class could be NEW.,S1C004
+O3109216345,1,,LUC,A,control,tr,A,disturbance,L_dyn,S,proof,Fixed-time parameter adaptation plus robust adaptive CBF-QP guarantees forward invariance of shrunken safe set under bounded parametric uncertainty. Component doubt: estimation vs control.,S1C016
+O3118738365,0,Only empirical percentages of test traces satisfying TQTL specs; no guarantee.,,,,,,,,,,,S1C012
+O3124533198,1,,BP,B,perception,in,A,norm,none,S,proof,Sparse dual solvers for Anderson relaxation give sound anytime output bounds certifying Linf robustness; used in branch-and-bound.,S1C009
+O3125588313,1,,PROB,B,perception,in,P,norm,L_conc,SEC,measured,"DeepPAC: scenario-learned affine PAC model gives (eta,epsilon)-PAC-model robustness in Linf ball; probability over uniform sampling of the ball, not strictly forall.",S1C003
+O3130461065,1,,BP,B,perception,in,A,norm,none,S,proof,Functional-Lagrangian dual soundly bounds expected-softmax specs of BNN/MC-dropout nets over l_inf balls; modality A vs E and class BP vs PROB doubtful.,S1C015
+O3132066662,1,,ALG,B,control,op,E,poisoning,none,S,modelled,Secure-UCB: O(log T) expected regret with O(log T) verifications under any reward poisoning; scope op vs pop doubt; bandit learner coded control.,S1C012
+O3137096785,1,,RS,B,perception,in,A,norm,none,S,proof,"Derandomized splitting-noise smoothing gives exact, deterministic l1 certified radius per input on CIFAR-10/ImageNet; assumes quantized inputs.",S1C001
+O3167492897,1,,BP,B,perception,in,E,norm,none,SE,modelled,ETB interval bounds over l_inf input box are supersets of true bounds in expectation over Gaussian weights; tighter than IBP. Doubt: not sound per-model.,S1C006
+O3167942312,1,,GEN,B,estimation,pop,P,distribution,L_conc,S,modelled,"WMLR mixed linear regression: w.p. 1-delta generalization bound, sample complexity linear in dimension; GDA convergence (ALG) is co-headline.",S1C003
+O3168112450,0,XAI explanation complexity for decision trees; no guarantee on classifier behaviour,,,,,,,,,,,S1C009
+O3168586460,1,,RS,B,perception,in,Ac,semantic,none,S,proof,Exponential-mechanism DP smoothing certifies text classifier against L-word synonym substitutions with Monte Carlo confidence eta; RS vs SEM class doubt.,S1C019
+O3169913694,1,,BP,B,perception,in,A,norm,none,S,proof,"Prover: sound polyhedral (DeepPoly) certification of LSTM speech/MNIST/HAPT classifiers against L-infinity input perturbations, incl. preprocessing pipeline.",S1C005
+O3170270116,1,,LUC,A,control,in,P,disturbance,L_conc,S,simulated,GP-CBF chance constraint ensures true CBF condition holds w.p. 1-delta pointwise in time; N&S feasibility conditions; ACC sim. Doubt: perturbation (model uncertainty) disturbance vs distribution.,S1C007
+O3170697419,1,,GEN,B,control,pop,P,distribution,L_conc,S,modelled,PEVI-Adv returns epsilon-optimal policy w.p. 1-delta in O(H^3SC*/eps^2) episodes under single-policy concentrability. Doubt: class GEN vs ALG; modality P vs E.,S1C007
+O3173645038,1,,GEN,A,perception,tr,P,distribution,L_conc;L_dyn;L_sup,S,modelled,"W.p. 1-delta, kernel-regression perception error uniformly bounded; certainty-equivalent tracking suboptimality bound over references/initial states. Rule-6: tr vs op (infinite-horizon tracking).",S1C013
+O3175104376,1,,NEW:structure-preserving learned dynamics,A,estimation,tr,A,none,none,S,proof,"Hamiltonian SE(3) neural ODE guarantees by construction energy conservation and SE(3) constraints on all rollouts; doubt: structural property, not safety; tr vs in.",S1C017
+O3182959332,0,Optimality theorem assumes information state exactly known; no guarantee on learned component,,,,,,,,,,,S1C019
+O3183838078,1,,SMT,B,perception,in,A,norm,none,S,proof,Learned GNN branching and dual bounding inside complete BaB; valid dual bounds keep Linf CIFAR-10 verification sound. Doubt: SMT vs BP class.,S1C018
+O3188794522,0,Complexity results for computing decision-tree explanations; no guarantee on model behaviour,,,,,,,,,,,S1C006
+O3196583636,0,Complexity result (NP-completeness) on verification problem; no guarantee on a learned component.,,,,,,,,,,,S1C004
+O3199481125,1,,ALG,B,estimation,op,P,poisoning,L_conc,S,modelled,"Robust Fed-SEL is (0,delta)-PAC: outputs best arm w.p. 1-delta despite Byzantine clients; scope op vs pop doubtful; sims cover non-robust variant only.",S1C002
+O3200538762,0,"Empirical GNN policy learning study; expressivity theorems cited, no own guarantee.",,,,,,,,,,,S1C001
+O3205094558,0,Formal XAI explanation algorithms and complexity; no safety or robustness guarantee claimed.,,,,,,,,,,,S1C008
+O3209343599,1,,SEM,B,perception,in,A,patch,none,S,proof,"Certified patch detection: for certified inputs, any square patch up to given size yields correct label or alert (ImageNet, CIFAR-10).",S1C018
+O3209973676,0,Explanation method on locally faithful surrogate; no guarantee about the explained learned model.,,,,,,,,,,,S1C005
+O3215435727,1,,GEN,B,perception,pop,P,distribution,L_conc,S,simulated,Generalisation gap bounded by persistent-homology dimension of training trajectory w.p. 1-gamma over i.i.d. samples; assumption H1 not evidenced.,S1C008
+O4205490748,1,,LUC,B,control,tr,P,disturbance,L_conc,S,simulated,"With prob. 1-delta over samples, kernel-embedding estimate of N-step safety probability of NN-controlled cart-pole is within N*B(x,u). Doubt: LUC vs GEN/DTMC.",S1C011
+O4281768543,1,,GEN,B,perception,pop,P,distribution,L_conc,S,modelled,FedOT: w.p. 1-delta generalization bound for personalized federated classifier under client distribution shifts; GDA convergence (ALG) also proved.,S1C003
+O4287075774,1,,ALG,B,estimation,pop,E,distribution,L_conc,S,modelled,"HappyMap converges in O(1/alpha^2) iterations to predictor with E[c(f,x)s(f,y)]<=alpha for all auditors; covariate-shift conformal; theory only.",S1C017
+O4292482260,0,XAI theory of reasons for Boolean classifiers; no guarantee on learned component evaluated.,,,,,,,,,,,S1C011
+O4312626912,1,,LIP,B,perception,in,A,norm,none,S,proof,AOL rescaling provably makes each layer 1-Lipschitz; margin yields certified L2 robust accuracy on CIFAR-10/100.,S1C018
+O4315472062,1,,NEW:Constraint-enforcing NN policy architecture (gauge map),B,control,in,A,disturbance,L_dyn,S,proof,Gauge-map NN outputs always in MPC feasible set; RCI set gives robust constraint satisfaction under bounded disturbance. Rule-6: per-step in chosen over tr (invariance).,S1C008
+O4323026894,0,"Short position paper: consistency specification proposed, no verification result reported.",,,,,,,,,,,S1C010
+O4366726364,1,,SMT,B,perception,in,A,norm,none,S,proof,"Exact TADS (piecewise-affine) verification of local Linf robustness on MNIST, incl. PCA-built-in nets with robustness lifted to full input.",S1C004
+O4367281679,0,Overview/tutorial of formal explainability; no own guarantee about a learned component.,,,,,,,,,,,S1C005
+O4376561457,0,"Guarantees concern explanation-function properties (coherence/success), not a learned component's behaviour.",,,,,,,,,,,S1C014
+O4379116938,1,,GEN,A,control,in,P,none,none,S,simulated,"Learned MPC policy error bounded by r(p) for all p in P, in probability as M grows, assuming realizability; quadcopter example.",S1C004
+O4379165415,1,,SEM,B,perception,in,A,semantic,none,S,proof,"Sound, conditionally complete activation-region traversal certifying classification and saliency-map robustness over brightness/patch/translation parameter regions on MNIST/Fashion-MNIST.",S1C005
+O4379193103,0,Soundness of differentiable-logic loss semantics; no guarantee about a trained network.,,,,,,,,,,,S1C012
+O4379256329,1,,GEN,B,planning,op,P,distribution,L_conc,S,measured,"W.p. 1-delta, per-trajectory cost <= budget + count-based concentration term for diffusion planner; scope op vs pop doubt (return bound is expectation).",S1C012
+O4384345675,0,"Empirical model-upgrade regression-error study; propositions rely on approximations, no identifiable guarantee.",,,,,,,,,,,S1C013
+O4385437649,1,,SMT,B,perception,in,A,none,none,S,proof,MILP-verified counterfactual valid for every ReLU net in a model set (tabular classifiers). Doubt: explanation-validity guarantee; multiplicity not in perturbation vocabulary; component nearest fit.,S1C006
+O4385764189,0,Explanation-redundancy results for decision trees; no safety guarantee; extended abstract of journal version,,,,,,,,,,,S1C007
+O4385764466,1,,SMT,B,planning,tr,A,none,L_dyn,S,proof,"MIP-certified abductive explanation: all states completing z yield same n-step ASNet policy action sequence; eligibility doubt (explanation, not safety); tr vs in doubt.",S1C020
+O4388483784,1,,BP,B,perception,in,A,norm,none,S,proof,"Proved equivalence-preserving stable-ReLU network reduction speeds sound/complete Linf local robustness verification (alpha-beta-CROWN, PRIMA, VeriNet) on MNIST/CIFAR.",S1C018
+O4390873449,1,,PROB,A,estimation,in,P,norm,L_conc,SEC,proof,"PAC-model robustness of pedestrian trajectory predictors in L-inf ball via scenario sampling (eps,eta); tier A doubtful (ETH/UCY, SDD pedestrian data).",S1C019
+O4391055309,1,,BP,B,estimation,in,A,none,none,S,proof,Chordal-DeepSDP: sound SDP relaxation certifies quadratic specs over input set of learned cart-pole dynamics NN; scope doubt in vs tr (unrolled reach-sets).,S1C016
+O4392014868,0,Empirical forecasting study; authors state their pipeline has no coverage guarantee.,,,,,,,,,,,S1C001
+O4392555359,1,,LIP,B,perception,in,A,norm,none,S,proof,Calibrated Lipschitz-margin loss; certified L2 robust accuracy via global Lipschitz bound on CIFAR/Tiny-ImageNet; Lipschitz bound via power iteration.,S1C017
+O4401159822,0,"Explainability algorithm for decision trees; empirical evaluation, no robustness or safety guarantee.",,,,,,,,,,,S1C018
+O4402264222,1,,NEW:learning-supported MPC recursive feasibility,B,control,tr,A,none,none,S,simulated,"Neural-horizon MPC recursively feasible, constraints satisfied for all t, conditional on assumed uniform NN error bound; tr vs op doubt, chose tr.",S1C001
+O4406795208,1,,CLR,B,estimation,tr,A,none,L_dyn,S,proof,LMI sector conditions certify regional exponential stability and invariant ellipsoid basin for linear feedback on learned RNN plant model; component doubt: estimation vs control.,S1C014
+O4408392785,0,Empirical statistical validation pipeline; no formal or statistical guarantee on the model,,,,,,,,,,,S1C020
+O4409311673,1,,SMT,B,perception,in,A,poisoning,none,S,proof,MILP/BaB computes iDP-DB over whole input domain and all leave-one-out networks; label-only access is eps-iDP. Tabular classifiers; class SMT vs NEW:privacy doubtful.,S1C015
+O4411936039,1,,LUC,A,control,in,P,distribution,L_conc,S,measured,DR-CBF QP gives pointwise CBF chance constraint w.p. (1-eps)(1-epsbar) via Wasserstein ball from sensor samples; light-tailed assumption stated only.,S1C008
+O4415549797,0,Runtime enforcement of automaton properties; no learned component in the guarantee,,,,,,,,,,,S1C020
+O7123348845,0,Data-driven trajectory representation lemma; no guarantee about a learned component; empirical control comparison.,,,,,,,,,,,S1C013
+O7133232065,1,,BP,B,perception,in,A,norm,none,S,proof,GCP-CROWN: sound (complete with BaB) bound propagation with MIP cutting planes certifies l-inf robustness on CIFAR/MNIST; BaB completeness edges toward SMT.,S1C016

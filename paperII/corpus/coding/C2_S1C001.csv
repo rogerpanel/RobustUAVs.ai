@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4402264222",1,"","NEW:learning-supported MPC recursive feasibility","B","control","tr","A","none","none","S","simulated","Neural-horizon MPC recursively feasible, constraints satisfied for all t, conditional on assumed uniform NN error bound; tr vs op doubt, chose tr."
+"O3017318049",0,"Statistical theory of distribution-free confidence intervals; no guarantee specific to learned component.","","","","","","","","","",""
+"O3137096785",1,"","RS","B","perception","in","A","norm","none","S","proof","Derandomized splitting-noise smoothing gives exact, deterministic l1 certified radius per input on CIFAR-10/ImageNet; assumes quantized inputs."
+"O3200538762",0,"Empirical GNN policy learning study; expressivity theorems cited, no own guarantee.","","","","","","","","","",""
+"O4392014868",0,"Empirical forecasting study; authors state their pipeline has no coverage guarantee.","","","","","","","","","",""

@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4401159822",0,"Explainability algorithm for decision trees; empirical evaluation, no robustness or safety guarantee.","","","","","","","","","",""
+"O4388483784",1,"","BP","B","perception","in","A","norm","none","S","proof","Proved equivalence-preserving stable-ReLU network reduction speeds sound/complete Linf local robustness verification (alpha-beta-CROWN, PRIMA, VeriNet) on MNIST/CIFAR."
+"O3183838078",1,"","SMT","B","perception","in","A","norm","none","S","proof","Learned GNN branching and dual bounding inside complete BaB; valid dual bounds keep Linf CIFAR-10 verification sound. Doubt: SMT vs BP class."
+"O4312626912",1,"","LIP","B","perception","in","A","norm","none","S","proof","AOL rescaling provably makes each layer 1-Lipschitz; margin yields certified L2 robust accuracy on CIFAR-10/100."
+"O3209343599",1,"","SEM","B","perception","in","A","patch","none","S","proof","Certified patch detection: for certified inputs, any square patch up to given size yields correct label or alert (ImageNet, CIFAR-10)."

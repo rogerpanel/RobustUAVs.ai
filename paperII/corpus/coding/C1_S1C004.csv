@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3007985585","1","","GEN","B","control","tr","P","disturbance","L_dyn;L_conc","SE","simulated","Hoeffding-validated NN copy of robust MPC inherits safety/stability w.h.p.; validation reached only ~90%; manipulator not vehicle; rule-6 doubt tr vs pop."
+"O3107520776","1","","NEW:Deterministic smoothing (Bernstein polynomial)","B","perception","in","A","norm","none","SE","simulated","Deterministic certified radius for Bernstein-smoothed classifier via numerical root-finding; solver tolerance makes soundness doubtful; CIFAR-10 only."
+"O4366726364","1","","SMT","B","perception","in","A","norm","none","S","proof","TADS exact l-inf robustness verification of ReLU net on MNIST; PCA-modified network gets provable radius delta/sqrt(n)."
+"O3196583636","0","NP-hardness complexity result for NN reachability; no guarantee about any network's behaviour.","","","","","","","","","",""
+"O4379116938","1","","GEN","A","control","in","P","none","none","S","simulated","Predictor-corrector augmented data gives learned MPC policy error bounded by user residual r(p), in probability as M to infinity; quadcopter example."

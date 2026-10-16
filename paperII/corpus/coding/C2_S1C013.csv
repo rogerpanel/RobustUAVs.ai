@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+O7123348845,0,"Data-driven trajectory representation lemma; no guarantee about a learned component; empirical control comparison.",,,,,,,,,,
+O3173645038,1,,"GEN",A,perception,tr,P,distribution,"L_conc;L_dyn;L_sup",S,modelled,"W.p. 1-delta, kernel-regression perception error uniformly bounded; certainty-equivalent tracking suboptimality bound over references/initial states. Rule-6: tr vs op (infinite-horizon tracking)."
+O4384345675,0,"Empirical model-upgrade regression-error study; propositions rely on approximations, no identifiable guarantee.",,,,,,,,,,
+O3034746922,1,,"BP",B,perception,in,A,norm,"none",S,proof,"Decoupled symbolic bound propagation (Neurify refinement) proves absence of L-inf adversarial examples around MNIST/CIFAR inputs."
+O2785755647,1,,"LIP",B,perception,in,Ac,norm,"none",S,proof,"Lipschitz-margin certified L2 guarded radius per input (MNIST, SVHN). Ac because power-iteration Lipschitz bound holds w.h.p. over certifier randomness; else A."
