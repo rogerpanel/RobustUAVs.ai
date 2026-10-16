@@ -1,0 +1,774 @@
+stratum,order,cid,doi,title,year,venue,in_first_300,weight
+snowball2_core,1,O4387624000,10.1109/lra.2023.3324590,Trade-Off Between Robustness and Rewards Adversarial Training for Deep Reinforcement Learning Under Large Perturbations,2023,IEEE Robotics and Automation Letters,1,13.0652
+snowball2_core,2,O3119651376,10.48550/arxiv.2007.04028,How benign is benign overfitting?,2020,arXiv (Cornell University),1,13.0652
+snowball2_core,3,O4406481300,10.1007/s11390-023-2703-2,Qualitative and Quantitative Model Checking Against Recurrent Neural Networks,2024,Journal of Computer Science and Technology,1,13.0652
+snowball2_core,4,O2999913149,10.48550/arxiv.2001.05070,Understanding Generalization in Deep Learning via Tensor Methods,2020,arXiv (Cornell University),1,13.0652
+snowball2_core,5,O2892358082,10.48550/arxiv.1809.01129,Lipschitz Networks and Distributional Robustness,2018,arXiv (Cornell University),1,13.0652
+snowball2_core,6,O3154580345,,The Many Faces of 1-Lipschitz Neural Networks.,2021,arXiv (Cornell University),1,13.0652
+snowball2_core,7,O7165667113,10.1029/2025jh001103,Data‐Driven Reduced Order Modeling for Warm Rain Microphysics,2026,Journal of Geophysical Research Machine Learning and Computation,1,13.0652
+snowball2_core,8,O4379539742,10.1145/3580305.3599333,Enhance Diffusion to Improve Robust Generalization,2023,ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD),1,13.0652
+snowball2_core,9,O3137534975,10.23919/acc53348.2022.9867458,Adaptive Gradient Online Control,2022,Proceedings of the ... American Control Conference/Proceedings of the American Control Conference,1,13.0652
+snowball2_core,10,O4410792350,10.1093/imamci/dnaf014,Error analysis for approximate CVaR-optimal control with a maximum cost,2025,IMA Journal of Mathematical Control and Information,1,13.0652
+snowball2_core,11,O3028525609,10.1109/focs52979.2021.00098,Feature Purification: How Adversarial Training Performs Robust Deep Learning,2022,Annual Symposium on Foundations of Computer Science,1,13.0652
+snowball2_core,12,O4417260596,10.1021/acs.analchem.5c04616,Calibrated Uncertainty Estimation for Soil Organic Carbon from Raman Spectra,2025,Analytical Chemistry,1,13.0652
+snowball2_core,13,O4385730980,10.1109/icaa58325.2023.00025,Assured Point Cloud Perception,2023,,1,13.0652
+snowball2_core,14,O3196251561,10.1109/icip42928.2021.9506540,Rethinking Training Schedules For Verifiably Robust Networks,2021,Proceedings - International Conference on Image Processing,1,13.0652
+snowball2_core,15,O2981925314,10.1016/j.automatica.2021.109947,Large scale model predictive control with neural networks and primal active sets,2021,Automatica,1,13.0652
+snowball2_core,16,O3175238725,10.1145/3410308,Replication Package for Robustness Certification with Generative Models,2021,Artifact Digital Object Group,1,13.0652
+snowball2_core,17,O3025311475,,Invariance vs. Robustness Trade-Off in Neural Networks,2020,,1,13.0652
+snowball2_core,18,O7123370103,10.1109/cdc57313.2025.11312030,Scalable Decomposition for Stability Analysis of Feedback Systems with High-Dimensional Neural Network Components,2025,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",1,13.0652
+snowball2_core,19,O3102961483,10.1109/issre5003.2020.00023,Probabilistic Symbolic Analysis of Neural Networks,2020,IEEE International Symposium on Software Reliability Engineering (ISSRE),1,13.0652
+snowball2_core,20,O3127248914,10.48550/arxiv.2110.05667,Why Lottery Ticket Wins? A Theoretical Perspective of Sample Complexity on Pruned Neural Networks,2021,arXiv (Cornell University),1,13.0652
+snowball2_core,21,O4386075838,10.1109/cvpr52729.2023.01559,Boosting Verified Training for Robust Image Classifications via Abstraction,2023,IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings,1,13.0652
+snowball2_core,22,O2941105184,10.1007/978-3-030-32304-2_14,Robustness Verification of Support Vector Machines,2019,Lecture notes in computer science,1,13.0652
+snowball2_core,23,O4385806592,10.1007/s11263-023-01860-4,Adversarial Coreset Selection for Efficient Robust Training,2023,International Journal of Computer Vision,1,13.0652
+snowball2_core,24,O4405058108,10.1029/2024jh000223,A Stability Analysis of Neural Networks and Its Application to Tsunami Early Warning,2024,Journal of Geophysical Research Machine Learning and Computation,1,13.0652
+snowball2_core,25,O3092397959,10.48550/arxiv.2010.02508,Adversarial Boot Camp: label free certified robustness in one epoch,2020,arXiv (Cornell University),1,13.0652
+snowball2_core,26,O3166951700,10.48550/arxiv.2106.02734,Revisiting Hilbert-Schmidt Information Bottleneck for Adversarial Robustness,2021,arXiv (Cornell University),1,13.0652
+snowball2_core,27,O4313160026,10.1109/ojcsys.2022.3221063,Convex Neural Network-Based Cost Modifications for Learning Model Predictive Control,2022,IEEE Open Journal of Control Systems,1,13.0652
+snowball2_core,28,O4205971810,10.1109/lcsys.2021.3134914,Lyapunov-Derived Control and Adaptive Update Laws for Inner and Outer Layer Weights of a Deep Neural Network,2021,IEEE Control Systems Letters,1,13.0652
+snowball2_core,29,O3182348021,10.48550/arxiv.2102.08474,Adversarially Robust Kernel Smoothing,2021,arXiv (Cornell University),1,13.0652
+snowball2_core,30,O3130937369,10.48550/arxiv.2102.07804,Scaling Up Exact Neural Network Compression by ReLU Stability,2021,arXiv (Cornell University),1,13.0652
+snowball2_core,31,O3102590949,10.1088/1742-5468/ac3ae7,"Hausdorff dimension, heavy tails, and generalization in neural networks*",2021,Journal of Statistical Mechanics Theory and Experiment,1,13.0652
+snowball2_core,32,O4379522721,10.21428/594757db.4cec07db,PAC-Bayesian Learning of Aggregated Binary Activated Neural Networks with Probabilities over Representations,2023,,1,13.0652
+snowball2_core,33,O3213126186,10.48550/arxiv.2111.04850,Dueling RL: Reinforcement Learning with Trajectory Preferences,2021,arXiv (Cornell University),1,13.0652
+snowball2_core,34,O4406948984,10.1109/tmech.2025.3526648,Deep Neural Network-Based Jacobian Control of Robot Manipulators: Offline Regression and Online Adaptation,2025,IEEE/ASME Transactions on Mechatronics,1,13.0652
+snowball2_core,35,O4385757486,10.1109/tnnls.2023.3267460,Improving Robustness of Intent Detection Under Adversarial Attacks: A Geometric Constraint Perspective,2023,IEEE Transactions on Neural Networks and Learning Systems,1,13.0652
+snowball2_core,36,O3132401297,10.48550/arxiv.2102.12002,Adversarial Robustness with Non-uniform Perturbations,2021,arXiv (Cornell University),1,13.0652
+snowball2_core,37,O2898631838,10.48550/arxiv.1811.00995,Invertible Residual Networks,2018,arXiv (Cornell University),1,13.0652
+snowball2_core,38,O3127950324,10.48550/arxiv.2102.04540,Last-iterate Convergence of Decentralized Optimistic Gradient Descent/Ascent in Infinite-horizon Competitive Markov Games,2021,arXiv (Cornell University),1,13.0652
+snowball2_core,39,O4322763609,10.1007/s12555-021-0972-5,Disturbance Observer-based Neural Network Integral Sliding Mode Control for a Constrained Flexible Joint Robotic Manipulator,2023,International Journal of Control Automation and Systems,1,13.0652
+snowball2_core,40,O3126416674,10.48550/arxiv.2102.03748,PAC-Bayes Bounds for Meta-learning with Data-Dependent Prior,2021,arXiv (Cornell University),1,13.0652
+snowball2_core,41,O4310633502,10.1088/2632-2153/aca7b1,Robust and scalable uncertainty estimation with conformal prediction for machine-learned interatomic potentials,2022,Machine Learning Science and Technology,1,13.0652
+snowball2_core,42,O3129335991,,A General Framework for the Derandomization of PAC-Bayesian Bounds,2021,arXiv (Cornell University),1,13.0652
+snowball2_core,43,O7162445311,10.1002/mma.70811,Incorporating Deep Neural Networks with LMI Constraints for Nonlinear Model Predictive Control Optimization,2026,Mathematical Methods in the Applied Sciences,1,13.0652
+snowball2_core,44,O3033405017,10.1109/tac.2021.3097706,Distributionally Robust Chance Constrained Data-Enabled Predictive Control,2021,IEEE Transactions on Automatic Control,1,13.0652
+snowball2_core,45,O4400147242,10.58286/29744,Stochastic estimation of wake-induced loads in wind farms using conformalized graph neural networks,2024,e-Journal of Nondestructive Testing,1,13.0652
+snowball2_core,46,O3035827960,10.48550/arxiv.2006.11776,Network Moments: Extensions and Sparse-Smooth Attacks,2020,arXiv (Cornell University),1,13.0652
+snowball2_core,47,O4372262625,10.1109/icassp49357.2023.10096520,Police: Provably Optimal Linear Constraint Enforcement For Deep Neural Networks,2023,IEEE International Conference on Acoustics Speech and Signal Processing,0,13.0652
+snowball2_core,48,O4402212857,10.1587/transinf.2023edp7229,Deterministic and Probabilistic Certified Defenses for Content-Based Image Retrieval,2024,IEICE Transactions on Information and Systems,0,13.0652
+snowball2_core,49,O4399727328,10.1117/1.jei.33.3.033029,Reconstructing images with attention generative adversarial network against adversarial attacks,2024,Journal of Electronic Imaging,0,13.0652
+snowball2_core,50,O2777012514,10.48550/arxiv.1712.06174,Deep Neural Networks as 0-1 Mixed Integer Linear Programs: A Feasibility Study,2017,arXiv (Cornell University),0,13.0652
+snowball2_core,51,O2592969750,10.1016/j.automatica.2017.01.037,Data-driven and model-based verification via Bayesian identification and reachability analysis,2017,Automatica,0,13.0652
+snowball2_core,52,O4312912725,10.1109/jiot.2022.3222439,Robust Monitor for Industrial IoT Condition Prediction,2022,IEEE Internet of Things Journal,0,13.0652
+snowball2_core,53,O4391020152,10.1109/cdc49753.2023.10383972,Reachability Analysis of ARMAX Models,2023,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",0,13.0652
+snowball2_core,54,O4312863222,10.1007/978-3-031-17715-6_28,Towards a Unifying Logical Framework for Neural Networks,2022,Lecture notes in computer science,0,13.0652
+snowball2_core,55,O3093162949,10.48550/arxiv.2010.07532,Certifying Neural Network Robustness to Random Input Noise from Samples,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,56,O4382449344,10.1609/aaai.v37i7.25968,Confidence-Aware Training of Smoothed Classifiers for Certified Robustness,2023,Proceedings of the AAAI Conference on Artificial Intelligence,0,13.0652
+snowball2_core,57,O2946660403,10.3390/make3010003,Robust Learning with Implicit Residual Networks,2020,Machine Learning and Knowledge Extraction,0,13.0652
+snowball2_core,58,O3008591962,10.48550/arxiv.2003.00378,Understanding the Intrinsic Robustness of Image Distributions using Conditional Generative Models,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,59,O4402570069,10.23919/ccc63176.2024.10662142,Neural Lyapunov Control for Interconnected Systems with Unknown Dynamics,2024,Chinese Control Conference (CCC),0,13.0652
+snowball2_core,60,O4400877915,10.1109/jstsp.2024.3431996,Knowing When to Stop: Delay-Adaptive Spiking Neural Network Classifiers With Reliability Guarantees,2024,IEEE Journal of Selected Topics in Signal Processing,0,13.0652
+snowball2_core,61,O4387868700,10.29007/59w3,Certified Private Inference on Neural Networks via Lipschitz-Guided Abstraction Refinement,2023,Kalpa publications in computing,0,13.0652
+snowball2_core,62,O3033193189,10.1109/cvprw50498.2020.00401,Extensions and limitations of randomized smoothing for robustness guarantees,2020,IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW),0,13.0652
+snowball2_core,63,O2787881900,10.48550/arxiv.1802.06259,Exact and Consistent Interpretation for Piecewise Linear Neural Networks: A Closed Form Solution,2018,arXiv (Cornell University),0,13.0652
+snowball2_core,64,O2991265233,10.48550/arxiv.1905.12430,Norm-based generalisation bounds for multi-class convolutional neural networks,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,65,O4382365113,10.1109/itw55543.2023.10161648,Generalization Properties of Adversarial Training for -ℓ0 Bounded Adversarial Attacks,2023,IEEE Information Theory Workshop (ITW),0,13.0652
+snowball2_core,66,O3187326931,10.48550/arxiv.2108.02717,Beyond No Regret: Instance-Dependent PAC Reinforcement Learning,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,67,O3207297971,10.48550/arxiv.2110.05365,Intriguing Properties of Input-dependent Randomized Smoothing,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,68,O4385324848,10.1109/smartworld-uic-atc-scalcom-digitaltwin-pricomp-metaverse56740.2022.00028,Detecting and Classifying Adversarial Examples Based on DCT Transform,2022,,0,13.0652
+snowball2_core,69,O4200475690,10.1360/sst-2021-0233,Robustness analysis for compact neural networks,2021,Scientia Sinica Technologica,0,13.0652
+snowball2_core,70,O2970615870,10.48550/arxiv.1911.00937,Preventing Gradient Attenuation in Lipschitz Constrained Convolutional Networks,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,71,O2947562989,10.1016/j.mlwa.2020.100017,Scaleable input gradient regularization for adversarial robustness,2020,Machine Learning with Applications,0,13.0652
+snowball2_core,72,O3195825825,10.1109/icip42928.2021.9506048,Provable Translational Robustness For Object Detection With Convolutional Neural Networks,2021,Proceedings - International Conference on Image Processing,0,13.0652
+snowball2_core,73,O4396214268,10.1145/3649847,Verification of Neural Networks’ Global Robustness,2024,Proceedings of the ACM on Programming Languages,0,13.0652
+snowball2_core,74,O3013568554,,Random Smoothing Might be Unable to Certify L∞ Robustness for High-Dimensional Images,2020,Journal of Machine Learning Research,0,13.0652
+snowball2_core,75,O3109575026,10.48550/arxiv.2011.10674,Data-Driven System Level Synthesis,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,76,O2996578286,,Improved Sample Complexities for Deep Neural Networks and Robust Classification via an All-Layer Margin,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,77,O4396571418,10.1145/3641513.3650134,TOOL LyZNet: A Lightweight Python Tool for Learning and Verifying Neural Lyapunov Functions and Regions of Attraction,2024,ACM International Conference on Hybrid Systems: Computation and Control (HSCC),0,13.0652
+snowball2_core,78,O3131748146,10.48550/arxiv.2102.08452,Globally-Robust Neural Networks,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,79,O3104020063,,A quantum active learning algorithm for sampling against adversarial attacks,2020,Docta Complutense (Universidad Complutense de Madrid),0,13.0652
+snowball2_core,80,O4317383145,10.1109/robio55434.2022.10011834,Robust Model-based Reinforcement Learning USV System Guided by Lyapunov Neural Networks,2022,IEEE International Conference on Robotics and Biomimetics (ROBIO),0,13.0652
+snowball2_core,81,O4409740879,10.1007/s10994-025-06775-4,Gentle local robustness implies generalization,2025,Machine Learning,0,13.0652
+snowball2_core,82,O4404351597,10.1145/3677052.3698677,FairNNV: The Neural Network Verification Tool For Certifying Fairness,2024,ACM International Conference on AI in Finance (ICAIF),0,13.0652
+snowball2_core,83,O4386083000,10.1109/cvpr52729.2023.02358,A Practical Upper Bound for the Worst-Case Attribution Deviations,2023,IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings,0,13.0652
+snowball2_core,84,O4391174865,10.3390/e26020103,Adversarial Robustness with Partial Isometry,2024,Entropy,0,13.0652
+snowball2_core,85,O2970674012,10.1109/icip.2019.8802996,Reinforcing the Robustness of a Deep Neural Network to Adversarial Examples by Using Color Quantization of Training Image Data,2019,Proceedings - International Conference on Image Processing,0,13.0652
+snowball2_core,86,O4389741750,10.1007/978-981-99-8664-4_3,Enhancing Branch and Bound for Robustness Verification of Neural Networks via an Effective Branching Strategy,2023,Lecture notes in computer science,0,13.0652
+snowball2_core,87,O2913356329,10.48550/arxiv.1901.09021,Complexity of Linear Regions in Deep Networks,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,88,O4406065493,10.1016/j.solener.2024.113219,End-to-end sensitivity analysis of a hybrid heliostat calibration process involving artificial neural networks,2025,Solar Energy,0,13.0652
+snowball2_core,89,O4398757461,10.1109/tr.2024.3399739,Formal Synthesis of Safety Controllers via $k$-Inductive Control Barrier Certificates,2024,IEEE Transactions on Reliability,0,13.0652
+snowball2_core,90,O4382202984,10.1609/aaai.v37i9.26247,Towards Optimal Randomized Strategies in Adversarial Example Game,2023,Proceedings of the AAAI Conference on Artificial Intelligence,0,13.0652
+snowball2_core,91,O4388511122,10.1007/978-981-99-7584-6_20,Unified Verification of Neural Networks’ Robustness and Privacy in Computer Vision,2023,Lecture notes in computer science,0,13.0652
+snowball2_core,92,O3192544212,10.48550/arxiv.2012.01699,Content-Adaptive Pixel Discretization to Improve Model Robustness,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,93,O3088409650,,Optimal Planning with Learned Neural Network Transition Models,2020,TSpace (University of Toronto),0,13.0652
+snowball2_core,94,O3091059919,10.1109/tdsc.2020.3027183,Image Transformation based Defense Against Adversarial Perturbation on Deep Learning Models,2020,IEEE Transactions on Dependable and Secure Computing,0,13.0652
+snowball2_core,95,O3119781287,10.1007/978-3-030-65474-0_13,Probabilistic Lipschitz Analysis of Neural Networks,2020,Lecture notes in computer science,0,13.0652
+snowball2_core,96,O3088959210,10.48550/arxiv.2009.10610,Property-Directed Verification of Recurrent Neural Networks,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,97,O3012550246,10.1109/lcsys.2020.2980479,Approximate Closed-Loop Robust Model Predictive Control With Guaranteed Stability and Constraint Satisfaction,2020,IEEE Control Systems Letters,0,13.0652
+snowball2_core,98,O3210935491,,Conditional Gaussian PAC-Bayes.,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,99,O4390663101,10.1093/sysbio/syad074,Deep Learning and Likelihood Approaches for Viral Phylogeography Converge on the Same Answers Whether the Inference Model Is Right or Wrong,2024,Systematic Biology,0,13.0652
+snowball2_core,100,O4372260130,10.1109/icassp49357.2023.10097193,SMUG: Towards Robust Mri Reconstruction by Smoothed Unrolling,2023,IEEE International Conference on Acoustics Speech and Signal Processing,0,13.0652
+snowball2_core,101,O4394962065,10.3390/a17040162,Not So Robust after All: Evaluating the Robustness of Deep Neural Networks to Unseen Adversarial Attacks,2024,Algorithms,0,13.0652
+snowball2_core,102,O4312707520,10.1007/978-3-031-20065-6_6,UniCR: Universally Approximated Certified Robustness via Randomized Smoothing,2022,Lecture notes in computer science,0,13.0652
+snowball2_core,103,O3034726383,10.1109/cvpr42600.2020.00039,Robustness Guarantees for Deep Neural Networks on Videos,2020,IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings,0,13.0652
+snowball2_core,104,O3130826642,10.48550/arxiv.2102.08868,Bridging the Gap Between Adversarial Robustness and Optimization Bias,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,105,O2994632629,10.1007/s00041-020-09761-7,Parseval Proximal Neural Networks,2020,Journal of Fourier Analysis and Applications,0,13.0652
+snowball2_core,106,O3034608990,10.48550/arxiv.2002.08118,Randomized Smoothing of All Shapes and Sizes,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,107,O2798725527,10.48550/arxiv.1805.00164,"Affine Multiplexing Networks: System Analysis, Learning, and Computation",2018,arXiv (Cornell University),0,13.0652
+snowball2_core,108,O4407450436,10.1109/tmech.2025.3528106,Adaptive MPC-Based Multi-Terrain Trajectory Tracking Framework for Mobile Spherical Robots,2025,IEEE/ASME Transactions on Mechatronics,0,13.0652
+snowball2_core,109,O4285043675,10.1109/tnnls.2022.3186278,Guidance Through Surrogate: Toward a Generic Diagnostic Attack,2022,IEEE Transactions on Neural Networks and Learning Systems,0,13.0652
+snowball2_core,110,O4407949557,10.1109/tpami.2025.3545639,AUCPro: AUC-Oriented Provable Robustness Learning,2025,IEEE Transactions on Pattern Analysis and Machine Intelligence,0,13.0652
+snowball2_core,111,O4408996287,10.1016/j.neunet.2025.107426,Multi-head ensemble of smoothed classifiers for certified robustness,2025,Neural Networks,0,13.0652
+snowball2_core,112,O4387430340,10.1007/978-3-031-45275-8_32,Boosting-Based Construction of BDDs for Linear Threshold Functions and Its Application to Verification of Neural Networks,2023,Lecture notes in computer science,0,13.0652
+snowball2_core,113,O2931831036,10.3929/ethz-b-000395401,A Provable Defense for Deep Residual Networks,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,114,O3031249618,10.1109/sspd47486.2020.9272169,Optimising Network Architectures for Provable Adversarial Robustness,2020,Sensor Signal Processing for Defence Conference (SSPD),0,13.0652
+snowball2_core,115,O4315488883,10.1109/cdc51059.2022.9993136,Chordal Sparsity for Lipschitz Constant Estimation of Deep Neural Networks,2022,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",0,13.0652
+snowball2_core,116,O3211753216,10.1109/sp46214.2022.9833677,Reconstructing Training Data with Informed Adversaries,2022,Proceedings - IEEE Symposium on Security and Privacy/Proceedings of the ... IEEE Symposium on Security and Privacy,0,13.0652
+snowball2_core,117,O4391955292,10.1145/3641399.3641445,Neural Networks Verification: Perspectives from Formal Method,2024,Innovations in Software Engineering Conference (ISEC),0,13.0652
+snowball2_core,118,O3160683869,10.1016/j.neunet.2021.04.037,Probabilistic robustness estimates for feed-forward neural networks,2021,Neural Networks,0,13.0652
+snowball2_core,119,O4315489198,10.1109/cdc51059.2022.9993006,Lyapunov-Net: A Deep Neural Network Architecture for Lyapunov Function Approximation,2022,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",0,13.0652
+snowball2_core,120,O4210269843,10.1109/cdc45484.2021.9682945,"Learning-Based, Safety-Constrained Control from Scarce Data via Reciprocal Barriers",2021,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",0,13.0652
+snowball2_core,121,O2981995215,10.1109/jsait.2020.2981864,"Sample Compression, Support Vectors, and Generalization in Deep Learning",2020,IEEE Journal on Selected Areas in Information Theory,0,13.0652
+snowball2_core,122,O7118191111,10.1109/tnnls.2025.3649055,Accurate and Robust Neural Architecture Search via a Flexible Supernet,2026,IEEE Transactions on Neural Networks and Learning Systems,0,13.0652
+snowball2_core,123,O3157961744,10.48550/arxiv.2104.13871,Selection and Aggregation of Conformal Prediction Sets,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,124,O3024982789,10.1109/jsait.2020.3040992,Generalization Bounds via Information Density and Conditional Information Density,2020,IEEE Journal on Selected Areas in Information Theory,0,13.0652
+snowball2_core,125,O3036988529,10.48550/arxiv.2006.10875,Provably adaptive reinforcement learning in metric spaces,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,126,O2988677439,10.48550/arxiv.1911.07198,Smoothed Inference for Adversarially-Trained Models,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,127,O4307884510,10.1145/3563324,A general construction for abstract interpretation of higher-order automatic differentiation,2022,Proceedings of the ACM on Programming Languages,0,13.0652
+snowball2_core,128,O3099988621,10.1109/tac.2022.3217260,On-the-Fly Control of Unknown Systems: From Side Information to Performance Guarantees Through Reachability,2022,IEEE Transactions on Automatic Control,0,13.0652
+snowball2_core,129,O3202495522,10.1109/tdsc.2021.3116105,Towards Certifying the Asymmetric Robustness for Neural Networks: Quantification and Applications,2021,IEEE Transactions on Dependable and Secure Computing,0,13.0652
+snowball2_core,130,O2995343314,10.48550/arxiv.1912.00528,The intriguing role of module criticality in the generalization of deep networks,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,131,O3217335519,10.1007/978-3-031-19778-9_31,Latent Space Smoothing for Individually Fair Representations,2022,Lecture notes in computer science,0,13.0652
+snowball2_core,132,O2946343333,10.48550/arxiv.1905.11213,Provable robustness against all adversarial $l_p$-perturbations for $p\geq 1$,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,133,O3037906261,10.48550/arxiv.1910.10783,Wasserstein Smoothing: Certified Robustness against Wasserstein Adversarial Attacks,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,134,O4392903563,10.1109/icassp48485.2024.10446151,Lipschitz-Constrained Convolutional Layers Using Convex Projection,2024,IEEE International Conference on Acoustics Speech and Signal Processing,0,13.0652
+snowball2_core,135,O7161172413,10.1007/978-3-032-21184-2_5,Studying Neural Network Robustness to Weight Perturbations for Sustainable Incremental Learning,2026,IFIP advances in information and communication technology,0,13.0652
+snowball2_core,136,O4385652243,10.1016/j.acha.2023.101581,Stable parameterization of continuous and piecewise-linear functions,2023,Applied and Computational Harmonic Analysis,0,13.0652
+snowball2_core,137,O4413831974,10.1016/b978-0-443-33514-3.00016-2,Safety and stability analysis of robot systems,2025,Elsevier eBooks,0,13.0652
+snowball2_core,138,O3167007140,,Robust Learning via Persistency of Excitation,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,139,O4412049356,10.1016/j.apenergy.2025.126412,On-line conformalized neural networks ensembles for probabilistic forecasting of day-ahead electricity prices,2025,Applied Energy,0,13.0652
+snowball2_core,140,O2604117713,10.48550/arxiv.1703.11008,Computing Nonvacuous Generalization Bounds for Deep (Stochastic) Neural Networks with Many More Parameters than Training Data,2017,arXiv (Cornell University),0,13.0652
+snowball2_core,141,O4394798889,10.1016/j.physd.2024.134159,Designing stable neural networks using convex analysis and ODEs,2024,Physica D Nonlinear Phenomena,0,13.0652
+snowball2_core,142,O4285605761,10.24963/ijcai.2022/92,Individual Fairness Guarantees for Neural Networks,2022,International Joint Conference on Artificial Intelligence,0,13.0652
+snowball2_core,143,O3007194217,10.48550/arxiv.2002.09579,Robustness to Programmable String Transformations via Augmented Abstract Training,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,144,O3035270717,10.48550/arxiv.2002.03657,Semialgebraic Optimization for Lipschitz Constants of ReLU Networks,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,145,O2971385168,,Better PAC-Bayes Bounds for Deep Neural Networks using the Loss Curvature.,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,146,O3034463702,10.48550/arxiv.2006.06643,Smoothed Geometry for Robust Attribution,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,147,O4402468424,10.1016/j.imavis.2024.105272,Boosting certified robustness via an expectation-based similarity regularization,2024,Image and Vision Computing,0,13.0652
+snowball2_core,148,O2616964725,10.48550/arxiv.1705.10528,Constrained Policy Optimization,2017,arXiv (Cornell University),0,13.0652
+snowball2_core,149,O4210349806,10.1109/cdc45484.2021.9683096,An Introduction to Neural Network Analysis via Semidefinite Programming,2021,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",0,13.0652
+snowball2_core,150,O4363677096,10.1145/3591869,TestSGD : Interpretable Testing of Neural Networks against Subtle Group Discrimination,2023,ACM Transactions on Software Engineering and Methodology,0,13.0652
+snowball2_core,151,O2982474080,10.1109/iceccs.2019.00027,Safe Inputs Approximation for Black-Box Systems,2019,International Conference on Engineering of Complex Computer Systems,0,13.0652
+snowball2_core,152,O3128125857,10.48550/arxiv.2102.04692,Fine-Grained Gap-Dependent Bounds for Tabular MDPs via Adaptive Multi-Step Bootstrap,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,153,O4386076448,10.1109/cvpr52729.2023.01969,Generalist: Decoupling Natural and Robust Generalization,2023,IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings,0,13.0652
+snowball2_core,154,O3217171450,10.1109/tro.2024.3521963,Task-Driven Detection of Distribution Shifts With Statistical Guarantees for Robot Learning,2024,IEEE Transactions on Robotics,0,13.0652
+snowball2_core,155,O2903991797,10.1609/aaai.v33i01.33017966,Compiling Bayesian Network Classifiers into Decision Graphs,2019,Proceedings of the AAAI Conference on Artificial Intelligence,0,13.0652
+snowball2_core,156,O3005220771,10.48550/arxiv.2002.03061,Incorporating Symmetry into Deep Dynamics Models for Improved Generalization,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,157,O3127234585,10.1145/3540250.3549120,Neural termination analysis,2022,ACM Joint European Software Engineering Conference and Symposium on the Foundations of Software Engineering (ESEC/FSE),0,13.0652
+snowball2_core,158,O2995083469,,Learning-based Approximate Model Predictive Control with Guarantees - Joining Neural Networks with Recent Robust MPC,2019,MPG.PuRe (Max Planck Society),0,13.0652
+snowball2_core,159,O3017947522,10.48550/arxiv.2004.10608,Provably robust deep generative models,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,160,O3142819688,10.1016/j.isatra.2021.03.035,Adaptive fractional-order non-singular terminal sliding mode control based on fuzzy wavelet neural networks for omnidirectional mobile robot manipulator,2021,ISA Transactions,0,13.0652
+snowball2_core,161,O7163191713,10.1016/j.sysconle.2026.106480,Universal formulas for safe control and their neural network approximations,2026,Systems & Control Letters,0,13.0652
+snowball2_core,162,O3184513099,10.23919/acc50511.2021.9483160,One-Step Safe Neural Network Supported Control,2021,Proceedings of the ... American Control Conference/Proceedings of the American Control Conference,0,13.0652
+snowball2_core,163,O4401174378,10.1111/cgf.15128,1‐Lipschitz Neural Distance Fields,2024,Computer Graphics Forum,0,13.0652
+snowball2_core,164,O7124259556,10.65109/lnze3711,Towards Robust Contrastive Explanations for Human-Neural Multi-agent Systems,2023,Adaptive Agents and Multi-Agents Systems,0,13.0652
+snowball2_core,165,O4407948977,10.1109/cdc56724.2024.10886521,Stochastic Reachability of Uncontrolled Systems via Probability Measures: Approximation via Deep Neural Networks,2024,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",0,13.0652
+snowball2_core,166,O3130218066,10.1007/s42979-021-00514-x,The Coupling Effect of Lipschitz Regularization in Neural Networks,2021,SN Computer Science,0,13.0652
+snowball2_core,167,O3003587309,10.48550/arxiv.2001.10742,Asymptotically Efficient Off-Policy Evaluation for Tabular Reinforcement Learning,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,168,O2793165286,10.48550/arxiv.1803.04765,"Deep k-Nearest Neighbors: Towards Confident, Interpretable and Robust Deep Learning",2018,arXiv (Cornell University),0,13.0652
+snowball2_core,169,O4403331670,10.23919/fusion59988.2024.10706397,Probabilistic Global Robustness Verification of Arbitrary Supervised Machine Learning Models,2024,International Conference on Information Fusion (FUSION),0,13.0652
+snowball2_core,170,O3158154410,10.1109/cvpr46437.2021.00381,Robust Bayesian Neural Networks by Spectral Expectation Bound Regularization,2021,IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings,0,13.0652
+snowball2_core,171,O4392204051,10.1016/j.ins.2024.120367,Maximum Output Discrepancy Computation for Convolutional Neural Network Compression,2023,Information Sciences,0,13.0652
+snowball2_core,172,O2560609797,10.1109/cvpr.2017.16,PointNet: Deep Learning on Point Sets for 3D Classification and Segmentation,2017,IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings,0,13.0652
+snowball2_core,173,O3171116780,10.48550/arxiv.2106.06624,Relaxing Local Robustness,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,174,O3161523401,10.1109/icassp39728.2021.9414325,Non-Singular Adversarial Robustness of Neural Networks,2021,IEEE International Conference on Acoustics Speech and Signal Processing,0,13.0652
+snowball2_core,175,O4381799460,10.1016/j.sysconle.2023.105580,Assessing the finite-time stability of nonlinear systems by means of physics-informed neural networks,2023,Systems & Control Letters,0,13.0652
+snowball2_core,176,O4413393821,10.23919/acc63710.2025.11107491,ReLU Neural Networks for Approximating Model Predictive Control: Complexity and Stability Guarantees,2025,Proceedings of the ... American Control Conference/Proceedings of the American Control Conference,0,13.0652
+snowball2_core,177,O3109671938,10.1007/978-3-030-58545-7_24,Robust Neural Networks Inspired by Strong Stability Preserving Runge-Kutta Methods,2020,Lecture notes in computer science,0,13.0652
+snowball2_core,178,O3110717408,10.48550/arxiv.2012.04351,Data-Dependent Randomized Smoothing,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,179,O3205537240,10.1109/tac.2022.3206248,Learning Controllers for Performance Through LMI Regions,2022,IEEE Transactions on Automatic Control,0,13.0652
+snowball2_core,180,O2992649094,10.48550/arxiv.1910.08032,Notes on Margin Training and Margin p-Values for Deep Neural Network Classifiers,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,181,O3174280977,10.1109/cvpr46437.2021.00752,Adversarial Robustness Across Representation Spaces,2021,IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings,0,13.0652
+snowball2_core,182,O4401908769,10.1016/j.neucom.2024.128434,A general framework for multi-step ahead adaptive conformal heteroscedastic time series forecasting,2024,Neurocomputing,0,13.0652
+snowball2_core,183,O3093639691,10.48550/arxiv.2010.13275,Asymptotic Behavior of Adversarial Training in Binary Classification,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,184,O3102458427,10.1145/3368089.3417918,PRODeep: a platform for robustness verification of deep neural networks,2020,ACM Joint European Software Engineering Conference and Symposium on the Foundations of Software Engineering (ESEC/FSE),0,13.0652
+snowball2_core,185,O4386076134,10.1109/cvpr52729.2023.01579,Improving Robust Generalization by Direct PAC-Bayesian Bound Minimization,2023,IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings,0,13.0652
+snowball2_core,186,O4386006943,10.1016/j.automatica.2023.111233,Sparse polynomial optimisation for neural network verification,2023,Automatica,0,13.0652
+snowball2_core,187,O4391266657,10.1109/rcae59706.2023.10398830,Provably Safe Deep Learning-Based Offset-Free Model Predictive Control and its Application to Safety-Critical Autonomous Driving,2023,"International Conference on Robotics, Control and Automation Engineering (RCAE)",0,13.0652
+snowball2_core,188,O3027471792,,PatchGuard: Provable Defense against Adversarial Patches Using Masks on Small Receptive Fields.,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,189,O4367598587,10.1214/22-aoas1637,Robust sensible adversarial learning of deep neural networks for image classification,2023,The Annals of Applied Statistics,0,13.0652
+snowball2_core,190,O3129141322,10.1109/icm50269.2020.9331504,Verification of Neural Networks for Safety Critical Applications,2020,,0,13.0652
+snowball2_core,191,O3137367209,10.48550/arxiv.2103.12913,Improved Estimation of Concentration Under $\ell_p$-Norm Distance Metrics Using Half Spaces,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,192,O4393147211,10.1609/aaai.v38i14.29504,DRF: Improving Certified Robustness via Distributional Robustness Framework,2024,Proceedings of the AAAI Conference on Artificial Intelligence,0,13.0652
+snowball2_core,193,O4387886228,10.1109/tac.2023.3326769,Data-Driven Computational Methods for the Domain of Attraction and Zubov's Equation,2023,IEEE Transactions on Automatic Control,0,13.0652
+snowball2_core,194,O2898193427,10.48550/arxiv.1810.11914,Rademacher Complexity for Adversarially Robust Generalization,2018,arXiv (Cornell University),0,13.0652
+snowball2_core,195,O4390707138,10.1109/jbhi.2024.3350082,A Novel Dual Layer Cascade Reliability Framework for an Informed and Intuitive Clinician-AI Interaction in Diagnosis of Colorectal Cancer Polyps,2024,IEEE Journal of Biomedical and Health Informatics,0,13.0652
+snowball2_core,196,O3087810330,10.1609/aaai.v35i9.16979,A Sample-Efficient Algorithm for Episodic Finite-Horizon MDP with Constraints,2021,Proceedings of the AAAI Conference on Artificial Intelligence,0,13.0652
+snowball2_core,197,O3131973483,10.48550/arxiv.2002.04742,Fast Geometric Projections for Local Robustness Certification,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,198,O2769648743,10.1287/moor.2022.1266,Optimistic Posterior Sampling for Reinforcement Learning: Worst-Case Regret Bounds,2022,Mathematics of Operations Research,0,13.0652
+snowball2_core,199,O3186633119,,Self-Repairing Neural Networks: Provable Safety for Deep Networks via Dynamic Repair.,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,200,O4221005825,10.1016/j.icte.2022.03.002,Security methods for AI based COVID-19 analysis system : A survey,2022,ICT Express,0,13.0652
+snowball2_core,201,O2936294254,10.48550/arxiv.1904.04861,Universal Lipschitz Approximation in Bounded Depth Neural Networks,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,202,O3008947830,10.48550/arxiv.2002.09869,Near-optimal Regret Bounds for Stochastic Shortest Path,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,203,O4412825870,10.1145/3711896.3737054,Monitoring Robustness and Individual Fairness,2025,ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD),0,13.0652
+snowball2_core,204,O3004639587,,Polynomial Optimization for Bounding Lipschitz Constants of Deep Networks,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,205,O4285190300,10.1007/978-3-031-06773-0_10,Verified Probabilistic Policies for Deep Reinforcement Learning,2022,Lecture notes in computer science,0,13.0652
+snowball2_core,206,O2898268570,10.48550/arxiv.1810.10939,Evading classifiers in discrete domains with provable optimality guarantees,2018,arXiv (Cornell University),0,13.0652
+snowball2_core,207,O4289713235,10.1109/isit50566.2022.9834717,Asymptotic Behavior of Adversarial Training in Binary Linear Classification,2022,IEEE International Symposium on Information Theory (ISIT),0,13.0652
+snowball2_core,208,O4407182096,10.1007/s12555-024-0475-2,Deep Neural Network-based Approximation of Nonlinear Model Predictive Control: Applications to Truck-trailer Control System,2025,International Journal of Control Automation and Systems,0,13.0652
+snowball2_core,209,O3089522806,10.1109/ijcnn48605.2020.9207670,"Compressive Recovery Defense: Defending Neural Networks Against ℓ2, ℓ∞, and ℓ0 Norm Attacks",2020,,0,13.0652
+snowball2_core,210,O3091918696,10.48550/arxiv.2010.03844,Improve Adversarial Robustness via Weight Penalization on Classification Layer,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,211,O2945563437,10.48550/arxiv.1905.10259,Dichotomize and Generalize: PAC-Bayesian Binary Activated Deep Neural Networks,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,212,O4399805987,10.1007/s11263-024-02111-w,Inter-feature Relationship Certifies Robust Generalization of Adversarial Training,2024,International Journal of Computer Vision,0,13.0652
+snowball2_core,213,O2973657717,10.48550/arxiv.1909.09895,Efficient Learning of Distributed Linear-Quadratic Controllers,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,214,O4292120278,10.48550/arxiv.2208.07289,A Tool for Neural Network Global Robustness Certification and Training,2022,arXiv (Cornell University),0,13.0652
+snowball2_core,215,O3007603175,10.48550/arxiv.2002.10733,(De)Randomized Smoothing for Certifiable Defense against Patch Attacks,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,216,O3167975852,10.48550/arxiv.2106.05937,Fair Normalizing Flows,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,217,O2529714286,10.1109/tsp.2017.2708039,Robust Large Margin Deep Neural Networks,2017,IEEE Transactions on Signal Processing,0,13.0652
+snowball2_core,218,O4312620108,10.1007/978-3-031-19992-9_25,An Abstraction-Refinement Approach to Verifying Convolutional Neural Networks,2022,Lecture notes in computer science,0,13.0652
+snowball2_core,219,O3134887051,,You can't have it all: On Spatial vs Adversarial Robustness of Neural Network Models,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,220,O2907806598,10.1109/milcom.2018.8599814,Towards the Development of Robust Deep Neural Networks in Adversarial Settings,2018,IEEE Military Communications Conference (MILCOM),0,13.0652
+snowball2_core,221,O4293057094,10.1109/ojcsys.2022.3201554,Robust and Safe Autonomous Navigation for Systems With Learned SE(3) Hamiltonian Dynamics,2022,IEEE Open Journal of Control Systems,0,13.0652
+snowball2_core,222,O3199525170,10.1109/tsmc.2023.3257269,Robust Stability of Neural-Network-Controlled Nonlinear Systems With Parametric Variability,2023,IEEE Transactions on Systems Man and Cybernetics Systems,0,13.0652
+snowball2_core,223,O2605409611,10.48550/arxiv.1704.02685,Learning Important Features Through Propagating Activation Differences,2017,arXiv (Cornell University),0,13.0652
+snowball2_core,224,O3130788444,10.48550/arxiv.2103.02200,Formalizing Generalization and Robustness of Neural Networks to Weight Perturbations,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,225,O3090403486,10.1109/lcsys.2020.3038221,A Convex Parameterization of Robust Recurrent Neural Networks,2020,IEEE Control Systems Letters,0,13.0652
+snowball2_core,226,O3039747264,10.48550/arxiv.2006.16384,Sharp Statistical Guarantees for Adversarially Robust Gaussian Classification,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,227,O4382318384,10.1609/aaai.v37i8.26133,A Model-Agnostic Heuristics for Selective Classification,2023,Proceedings of the AAAI Conference on Artificial Intelligence,0,13.0652
+snowball2_core,228,O4294691445,10.23919/acc53348.2022.9867811,Robust Model Predictive Control with Data-Driven Koopman Operators,2022,Proceedings of the ... American Control Conference/Proceedings of the American Control Conference,0,13.0652
+snowball2_core,229,O3191626675,,Householder Activations for Provable Robustness against Adversarial Attacks.,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,230,O3134530401,10.48550/arxiv.2103.01276,A Multiclass Boosting Framework for Achieving Fast and Provable Adversarial Robustness,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,231,O4225322559,10.24963/ijcai.2022/467,Certified Robustness via Randomized Smoothing over Multiplicative Parameters of Input Transformations,2022,International Joint Conference on Artificial Intelligence,0,13.0652
+snowball2_core,232,O7203832383,10.1109/vss69650.2026.11655714,Neural Lyapunov Functions for Sliding Mode Based Feedback Loops,2026,,0,13.0652
+snowball2_core,233,O3045372560,,SOCRATES: Towards a Unified Platform for Neural Network Verification.,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,234,O3086842469,10.23919/ccc50068.2020.9188743,A Safe Hierarchical Control Scheme Incorporated with Constrained Deep Neural Networks,2020,Chinese Control Conference (CCC),0,13.0652
+snowball2_core,235,O3204638793,10.48550/arxiv.2104.09425,Robust Learning Meets Generative Models: Can Proxy Distributions Improve Adversarial Robustness?,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,236,O4389230719,10.1109/ccdc58219.2023.10327268,Accelerating Safety Verification of Neural Network Dynamical Systems Using Assured Compressed Models,2023,Chinese Control and Decision Conference (CCDC),0,13.0652
+snowball2_core,237,O3133479497,10.48550/arxiv.2102.06496,Depthwise Separable Convolutions Allow for Fast and Memory-Efficient Spectral Normalization,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,238,O2980026499,10.48550/arxiv.1910.04077,Model-Based Reinforcement Learning Exploiting State-Action Equivalence,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,239,O3006935033,10.48550/arxiv.2002.10716,Understanding and Mitigating the Tradeoff Between Robustness and Accuracy,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,240,O3093290003,,On the Power of Abstention and Data-Driven Decision Making for Adversarial Robustness,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,241,O3015150039,10.1109/cdc42340.2020.9303750,Tightened Convex Relaxations for Neural Network Robustness Certification,2020,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",0,13.0652
+snowball2_core,242,O3099769594,10.48550/arxiv.2003.01908,Denoised Smoothing: A Provable Defense for Pretrained Classifiers,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,243,O2980731561,10.1109/jsait.2020.2991005,Extracting Robust and Accurate Features via a Robust Information Bottleneck,2020,IEEE Journal on Selected Areas in Information Theory,0,13.0652
+snowball2_core,244,O3131655182,,Improved Estimation of Concentration Under ℓp-Norm Distance Metrics Using Half Spaces,2021,International Conference on Learning Representations,0,13.0652
+snowball2_core,245,O2954744211,10.48550/arxiv.1906.11235,Invariance-inducing regularization using worst-case transformations suffices to boost accuracy and spatial robustness,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,246,O2788197084,10.1007/978-3-319-94144-8_27,Constrained Image Generation Using Binarized Neural Networks with Decision Procedures,2018,Lecture notes in computer science,0,13.0652
+snowball2_core,247,O4315472146,10.1109/cdc51059.2022.9993300,Online Learning for Predictive Control with Provable Regret Guarantees,2022,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",0,13.0652
+snowball2_core,248,O4410001408,10.1016/j.rse.2025.114758,Uncertainty quantification for forest attribute maps with conformal prediction and k -nearest neighbor method,2025,Remote Sensing of Environment,0,13.0652
+snowball2_core,249,O3198532166,10.1109/isit45174.2021.9517751,Robust Machine Learning via Privacy/ Rate-Distortion Theory,2021,IEEE International Symposium on Information Theory (ISIT),0,13.0652
+snowball2_core,250,O3037414083,10.48550/arxiv.1905.12106,EM Converges for a Mixture of Many Linear Regressions,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,251,O2962003043,10.48550/arxiv.1907.07732,Connecting Lyapunov Control Theory to Adversarial Attacks,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,252,O2989358546,10.1145/3319535.3354245,NPAQ Benchmarks,2019,Zenodo (CERN European Organization for Nuclear Research),0,13.0652
+snowball2_core,253,O3096718610,10.1007/s10957-020-01776-w,Stability of Gated Recurrent Unit Neural Networks: Convex Combination Formulation Approach,2020,Journal of Optimization Theory and Applications,0,13.0652
+snowball2_core,254,O4410195488,10.1117/1.jei.34.3.033012,Detecting adversarial examples in object detection: positive and negative representation approach,2025,Journal of Electronic Imaging,0,13.0652
+snowball2_core,255,O3082707543,10.1007/978-3-030-54549-9_14,Safety-Aware Hardening of 3D Object Detection Neural Network Systems,2020,Lecture notes in computer science,0,13.0652
+snowball2_core,256,O3175925814,10.48550/arxiv.2106.13498,Non-Parametric Neuro-Adaptive Control Subject to Task Specifications,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,257,O3205146184,10.1016/j.patrec.2021.10.008,Hopfield-type neural ordinary differential equation for robust machine learning,2021,Pattern Recognition Letters,0,13.0652
+snowball2_core,258,O2903535193,10.1016/j.artint.2020.103291,Compact and efficient encodings for planning in factored state and action spaces with learned Binarized Neural Network transition models,2020,Artificial Intelligence,0,13.0652
+snowball2_core,259,O3100423138,10.1109/lcsys.2020.3032083,On the Use of Difference of Log-Sum-Exp Neural Networks to Solve Data-Driven Model Predictive Control Tracking Problems,2020,IEEE Control Systems Letters,0,13.0652
+snowball2_core,260,O3154883250,10.1007/s42519-021-00171-6,Theoretical Investigation of Generalization Bounds for Adversarial Learning of Deep Neural Networks,2021,Journal of Statistical Theory and Practice,0,13.0652
+snowball2_core,261,O3013156888,,Incremental Bounded Model Checking of Artiﬁcial Neural Networks in CUDA,2019,Research Explorer (The University of Manchester),0,13.0652
+snowball2_core,262,O4391019683,10.1109/cdc49753.2023.10384047,Learning a Gaussian Process Approximation of a Model Predictive Controller with Guarantees,2023,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",0,13.0652
+snowball2_core,263,O4391020322,10.1109/cdc49753.2023.10383608,The Fundamental Limitations of Learning Linear-Quadratic Regulators,2023,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",0,13.0652
+snowball2_core,264,O2896266676,10.48550/arxiv.1810.07481,Provable Robustness of ReLU networks via Maximization of Linear Regions,2018,arXiv (Cornell University),0,13.0652
+snowball2_core,265,O4407950812,10.1109/cdc56724.2024.10886138,Imitation Learning of MPC with Neural Networks: Error Guarantees and Sparsification,2024,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",0,13.0652
+snowball2_core,266,O4396571403,10.1145/3641513.3650122,A Data-Driven Approach for Certifying Asymptotic Stability and Cost Evaluation for Hybrid Systems,2024,ACM International Conference on Hybrid Systems: Computation and Control (HSCC),0,13.0652
+snowball2_core,267,O4289533995,10.1109/icde53745.2022.00274,Prediction Intervals for Learned Cardinality Estimation: An Experimental Evaluation,2022,Proceedings - International Conference on Data Engineering,0,13.0652
+snowball2_core,268,O4400676321,10.1007/978-3-031-65112-0_4,Parallel Verification for $$\delta $$-Equivalence of Neural Network Quantization,2024,Lecture notes in computer science,0,13.0652
+snowball2_core,269,O3043121567,,"Provable, Scalable and Automatic Perturbation Analysis on General Computational Graphs",2020,arXiv (Cornell University),0,13.0652
+snowball2_core,270,O4385478161,10.1109/ijcnn54540.2023.10191488,Fixed Point Laplacian Mapping: A Geometrically Correct Manifold Learning Algorithm,2023,,0,13.0652
+snowball2_core,271,O4205451316,10.1109/lra.2022.3141657,"Learning Safe, Generalizable Perception-Based Hybrid Control With Certificates",2022,IEEE Robotics and Automation Letters,0,13.0652
+snowball2_core,272,O4413304739,10.1016/j.dche.2025.100262,Neural network implementation of model predictive control with stability guarantees,2025,Digital Chemical Engineering,0,13.0652
+snowball2_core,273,O3026123526,10.1109/cdc42340.2020.9303905,Sample Complexity of Data-Driven Stochastic LQR with Multiplicative Uncertainty,2020,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",0,13.0652
+snowball2_core,274,O3081288214,10.1109/aitest49225.2020.00009,Dealing with Robustness of Convolutional Neural Networks for Image Classification,2020,IEEE International Conference on Artificial Intelligence Testing (AITest),0,13.0652
+snowball2_core,275,O4315472218,10.1109/cdc51059.2022.9992667,Robust Control Barrier Functions for Nonlinear Control Systems with Uncertainty: A Duality-based Approach,2022,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",0,13.0652
+snowball2_core,276,O3007000796,,Neural Lyapunov Model Predictive Control,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,277,O4400933095,10.1016/j.ymssp.2024.111737,A Bayesian framework for discovering interpretable Lagrangian of dynamical systems from data,2024,Mechanical Systems and Signal Processing,0,13.0652
+snowball2_core,278,O4312584410,10.1109/icpr56361.2022.9956164,ODG-Q: Robust Quantization via Online Domain Generalization,2022,Proceedings - International Conference on Pattern Recognition/Proceedings/International Conference on Pattern Recognition,0,13.0652
+snowball2_core,279,O4323026396,10.1007/978-3-031-27481-7_24,Verifying Feedforward Neural Networks for Classification in Isabelle/HOL,2023,Lecture notes in computer science,0,13.0652
+snowball2_core,280,O4388918195,10.1016/j.ifacol.2023.10.759,Data-based control design for nonlinear systems with recurrent neural network-based controllers,2023,IFAC-PapersOnLine,0,13.0652
+snowball2_core,281,O4393147751,10.1609/aaai.v38i8.28730,Perturbation-Invariant Adversarial Training for Neural Ranking Models: Improving the Effectiveness-Robustness Trade-Off,2024,Proceedings of the AAAI Conference on Artificial Intelligence,0,13.0652
+snowball2_core,282,O4390872800,10.1109/iccv51070.2023.00190,SAFARI: Versatile and Efficient Evaluations for Robustness of Interpretability,2023,IEEE/CVF International Conference on Computer Vision (ICCV),0,13.0652
+snowball2_core,283,O3088350783,10.48550/arxiv.2009.13145,Adversarial Robustness of Stabilized NeuralODEs Might be from Obfuscated Gradients,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,284,O4320473640,10.1016/j.artint.2023.103857,Accurate parameter estimation for safety-critical systems with unmodeled dynamics,2023,Artificial Intelligence,0,13.0652
+snowball2_core,285,O2962995403,10.18653/v1/p18-1241,Attacking Visual Language Grounding with Adversarial Examples: A Case Study on Neural Image Captioning,2018,Annual Meeting of the Association for Computational Linguistics (ACL),0,13.0652
+snowball2_core,286,O2998293245,10.1609/aaai.v34i04.5888,Robustness Certificates for Sparse Adversarial Attacks by Randomized Ablation,2020,AAAI Publications (The Association for the Advancement of Artificial Intelligence (AAAI)),0,13.0652
+snowball2_core,287,O2892179671,,PAC-learning in the presence of adversaries,2018,neural information processing systems,0,13.0652
+snowball2_core,288,O4367016879,10.1109/tac.2023.3270219,Stability Analysis and Controller Synthesis Using Single-Hidden-Layer ReLU Neural Networks,2023,IEEE Transactions on Automatic Control,0,13.0652
+snowball2_core,289,O4402122622,10.1002/acs.3902,Neural Operator Approximations for Boundary Stabilization of Cascaded Parabolic PDEs,2024,International Journal of Adaptive Control and Signal Processing,0,13.0652
+snowball2_core,290,O2785749378,10.48550/arxiv.1802.05296,Stronger generalization bounds for deep nets via a compression approach,2018,arXiv (Cornell University),0,13.0652
+snowball2_core,291,O2911867426,10.48550/arxiv.1901.08584,Fine-Grained Analysis of Optimization and Generalization for Overparameterized Two-Layer Neural Networks,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,292,O4378976759,10.1109/satml54575.2023.00044,FaShapley: Fast and Approximated Shapley Based Model Pruning Towards Certifiably Robust DNNs,2023,IEEE Conference on Secure and Trustworthy Machine Learning (SaTML),0,13.0652
+snowball2_core,293,O7221010415,10.1093/imamci/dnag017,Certificate-guided neural feedback design for stabilization and practical reachability of switched non-linear systems,2026,IMA Journal of Mathematical Control and Information,0,13.0652
+snowball2_core,294,O3037299416,10.48550/arxiv.2006.14768,Deep Partition Aggregation: Provable Defense against General Poisoning Attacks,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,295,O3092641135,10.48550/arxiv.2010.04261,Dissecting Hessian: Understanding Common Structure of Hessian in Neural Networks,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,296,O4324007187,10.14722/ndss.2023.24508,BARS: Local Robustness Certification for Deep Learning based Traffic Analysis Systems,2023,Network and Distributed System Security Symposium,0,13.0652
+snowball2_core,297,O4382203141,10.1609/aaai.v37i9.26352,Combining Adversaries with Anti-adversaries in Training,2023,Proceedings of the AAAI Conference on Artificial Intelligence,0,13.0652
+snowball2_core,298,O3095964404,10.48550/arxiv.2010.16001,Guaranteeing Safety of Learned Perception Modules via Measurement-Robust Control Barrier Functions,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,299,O3164551603,10.48550/arxiv.2105.11417,Skew Orthogonal Convolutions,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,300,O3039594701,,Robust Learning against Logical Adversaries.,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,301,O3208910075,10.1109/tnnls.2021.3111892,Training Provably Robust Models by Polyhedral Envelope Regularization,2021,IEEE Transactions on Neural Networks and Learning Systems,0,13.0652
+snowball2_core,302,O3174451982,10.1109/cvpr46437.2021.00721,Simpler Certified Radius Maximization by Propagating Covariances,2021,IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings,0,13.0652
+snowball2_core,303,O4383108362,10.1109/icra48891.2023.10161280,MPC with Sensor-Based Online Cost Adaptation,2023,Proceedings - IEEE International Conference on Robotics and Automation/Proceedings,0,13.0652
+snowball2_core,304,O7123339817,10.1109/cdc57313.2025.11312529,Stability Verification for Switched Systems using Neural Multiple Lyapunov Functions,2025,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",0,13.0652
+snowball2_core,305,O4391021575,10.1109/cdc49753.2023.10383838,Change Point Detection Approach for Online Control of Unknown Time Varying Dynamical Systems,2023,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",0,13.0652
+snowball2_core,306,O4388209365,10.1016/j.neucom.2023.126995,Neuron importance based verification of neural networks via divide and conquer,2023,Neurocomputing,0,13.0652
+snowball2_core,307,O2796817565,10.1007/s10851-019-00903-1,Deep Neural Networks Motivated by Partial Differential Equations,2019,Journal of Mathematical Imaging and Vision,0,13.0652
+snowball2_core,308,O3114416783,10.23919/eusipco47968.2020.9287630,Signal Denoising Using a New Class of Robust Neural Networks,2020,European Signal Processing Conference (EUSIPCO),0,13.0652
+snowball2_core,309,O3141848572,,Robust Classification Under 𝓁 0 Attack for the Gaussian Mixture Model.,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,310,O3129144088,10.1007/s00186-022-00777-x,Generative deep learning for decision making in gas networks,2022,Mathematical Methods of Operations Research,0,13.0652
+snowball2_core,311,O4393157336,10.1609/aaai.v38i19.30123,Towards Large Certified Radius in Randomized Smoothing Using Quasiconcave Optimization,2024,Proceedings of the AAAI Conference on Artificial Intelligence,0,13.0652
+snowball2_core,312,O3037137941,10.48550/arxiv.2006.14614,Maximum Multiscale Entropy and Neural Network Regularization,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,313,O4319953031,10.17760/d20467274,Robust sparsified deep learning,2022,,0,13.0652
+snowball2_core,314,O2952118858,10.48550/arxiv.1903.06603,On Certifying Non-uniform Bound against Adversarial Attacks,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,315,O3195795911,10.1007/978-3-030-88806-0_10,Verifying Low-Dimensional Input Neural Networks via Input Quantization,2021,Lecture notes in computer science,0,13.0652
+snowball2_core,316,O3095914024,10.1016/j.laa.2021.09.004,Convolutional proximal neural networks and Plug-and-Play algorithms,2021,Linear Algebra and its Applications,0,13.0652
+snowball2_core,317,O3005576178,10.24963/ijcai.2022/95,CAT: Customized Adversarial Training for Improved Robustness,2022,International Joint Conference on Artificial Intelligence,0,13.0652
+snowball2_core,318,O2898111068,10.48550/arxiv.1810.11726,Towards Robust Deep Neural Networks,2018,arXiv (Cornell University),0,13.0652
+snowball2_core,319,O3206992005,10.1007/978-3-030-88885-5_24,Property-Directed Verification and Robustness Certification of Recurrent Neural Networks,2021,Lecture notes in computer science,0,13.0652
+snowball2_core,320,O3034760359,10.1109/cvpr42600.2020.00120,Exploiting Joint Robustness to Adversarial Perturbations,2020,IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings,0,13.0652
+snowball2_core,321,O4388191815,10.1109/tac.2023.3327937,An Incremental Input-to-State Stability Condition for a Class of Recurrent Neural Networks,2023,IEEE Transactions on Automatic Control,0,13.0652
+snowball2_core,322,O4315630666,10.1109/lcsys.2023.3235958,Robust Data-Driven Control Barrier Functions for Unknown Continuous Control Affine Systems,2023,IEEE Control Systems Letters,0,13.0652
+snowball2_core,323,O4385574855,10.1109/tsg.2023.3301855,An Improved Neural Lyapunov Method for Transient Stability Assessment of Networked Microgrids,2023,IEEE Transactions on Smart Grid,0,13.0652
+snowball2_core,324,O2911498438,10.48550/arxiv.1901.11352,Deep Learning for Inverse Problems: Bounds and Regularizers,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,325,O4391791050,10.2139/ssrn.4705052,Adversarial Training in High-Dimensional Regression: Generated Data and Neural Networks,2024,SSRN Electronic Journal,0,13.0652
+snowball2_core,326,O2906909967,10.48550/arxiv.1907.03207,"Towards Robust, Locally Linear Deep Networks",2019,arXiv (Cornell University),0,13.0652
+snowball2_core,327,O3157207381,10.48550/arxiv.2005.10884,PatchGuard: A Provably Robust Defense against Adversarial Patches via Small Receptive Fields and Masking,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,328,O2947294642,10.48550/arxiv.1906.00555,Adversarially Robust Generalization Just Requires More Unlabeled Data,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,329,O2996098493,,In Search for a SAT-friendly Binarized Neural Network Architecture,2020,Rare & Special e-Zone (The Hong Kong University of Science and Technology),0,13.0652
+snowball2_core,330,O3035203794,10.48550/arxiv.2006.08684,Efficient Model-Based Reinforcement Learning through Optimistic Policy Search and Planning,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,331,O3207173744,,Conformal prediction for dynamic time-series.,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,332,O2963076808,10.48550/arxiv.1805.09190,Towards the first adversarially robust neural network model on MNIST,2018,arXiv (Cornell University),0,13.0652
+snowball2_core,333,O3036332583,,Robust uncertainty sensitivity analysis,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,334,O4396770898,10.1214/24-aos2353,The curse of overparametrization in adversarial training: Precise analysis of robust generalization for random features regression,2024,The Annals of Statistics,0,13.0652
+snowball2_core,335,O4294691992,10.23919/acc53348.2022.9867244,Practical Convex Formulations of One-hidden-layer Neural Network Adversarial Training,2022,Proceedings of the ... American Control Conference/Proceedings of the American Control Conference,0,13.0652
+snowball2_core,336,O3044994114,10.48550/arxiv.2009.09052,Private Reinforcement Learning with PAC and Regret Guarantees,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,337,O3204351398,10.1007/978-3-030-88494-9_14,Gaussian-Based Runtime Detection of Out-of-distribution Inputs for Neural Networks,2021,Lecture notes in computer science,0,13.0652
+snowball2_core,338,O4395686960,10.1145/3639478.3643519,Towards Precise Observations of Neural Model Robustness in Classification,2024,IEEE/ACM International Conference on Software Engineering: Companion Proceedings (ICSE-Companion),0,13.0652
+snowball2_core,339,O4416167232,10.1016/j.asoc.2025.114243,DEJRNN: A novel fusion recurrent neural network-based complex dynamical system modeling and the convergence analysis,2025,Applied Soft Computing,0,13.0652
+snowball2_core,340,O2972763980,10.48550/arxiv.1909.06677,Predictive Multiplicity in Classification,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,341,O4417416290,10.17586/0021-3454-2025-68-11-983-995,Physically consistent dynamic modeling of underwater robots for robust long-horizon motion prediction,2025,Известия высших учебных заведений. Приборостроение,0,13.0652
+snowball2_core,342,O3193362061,10.1109/tcns.2022.3184107,Scalable Regret for Learning to Control Network-Coupled Subsystems With Unknown Dynamics,2022,IEEE Transactions on Control of Network Systems,0,13.0652
+snowball2_core,343,O3049459895,10.48550/arxiv.2008.06141,Analytical bounds on the local Lipschitz constants of affine-ReLU functions,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,344,O2807539765,10.48550/arxiv.1806.01471,PAC-learning in the presence of evasion adversaries,2018,arXiv (Cornell University),0,13.0652
+snowball2_core,345,O3204514161,10.1007/978-3-030-86520-7_23,On Generalization of Graph Autoencoders with Adversarial Training,2021,Lecture notes in computer science,0,13.0652
+snowball2_core,346,O4385488514,10.1109/ijcnn54540.2023.10191763,Diverse Gaussian Noise Consistency Regularization for Robustness and Uncertainty Calibration,2023,,0,13.0652
+snowball2_core,347,O4312700668,10.1007/978-3-031-21222-2_2,A Cascade of Checkers for Run-time Certification of Local Robustness,2022,Lecture notes in computer science,0,13.0652
+snowball2_core,348,O3085332944,10.1609/aaai.v35i10.17039,Large Norms of CNN Layers Do Not Hurt Adversarial Robustness,2021,Proceedings of the AAAI Conference on Artificial Intelligence,0,13.0652
+snowball2_core,349,O4362653093,10.1109/tdsc.2023.3264850,Certified Distributional Robustness on Smoothed Classifiers,2023,IEEE Transactions on Dependable and Secure Computing,0,13.0652
+snowball2_core,350,O2947972834,,Bayesian Prior Networks with PAC Training,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,351,O3171696450,,Adversarial Training with Rectified Rejection,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,352,O3206477178,10.18653/v1/2022.findings-acl.118,Semantically Distributed Robust Optimization for Vision-and-Language Inference,2022,Findings of the Association for Computational Linguistics: ACL 2022,0,13.0652
+snowball2_core,353,O2962847566,,Lipschitz regularity of deep neural networks: analysis and efficient estimation,2018,neural information processing systems,0,13.0652
+snowball2_core,354,O2762853919,,Verification of Binarized Neural Networks.,2017,arXiv (Cornell University),0,13.0652
+snowball2_core,355,O3027092579,10.1007/s00521-020-04954-z,Lipschitz constrained GANs via boundedness and continuity,2020,Neural Computing and Applications,0,13.0652
+snowball2_core,356,O2980264580,10.1109/cvpr.2019.01168,Robustness Verification of Classification Deep Neural Networks via Linear Programming,2019,IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings,0,13.0652
+snowball2_core,357,O4409653140,10.1007/978-3-031-85181-0_5,FullCert: Deterministic End-to-End Certification for Training and Inference of Neural Networks,2025,Lecture notes in computer science,0,13.0652
+snowball2_core,358,O3213513333,10.48550/arxiv.2111.05529,Understanding the Generalization Benefit of Model Invariance from a Data Perspective,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,359,O3049511110,,Reinforcement Learning for Multi-Hop Scheduling and Routing of Real-Time Flows,2020,"Modeling and Optimization in Mobile, Ad-Hoc and Wireless Networks",0,13.0652
+snowball2_core,360,O3177796250,10.24963/kr.2021/36,Safe Learning of Lifted Action Models,2021,,0,13.0652
+snowball2_core,361,O4289655378,10.1109/isit50566.2022.9834832,Efficient and Robust Classification for Sparse Attacks,2022,IEEE International Symposium on Information Theory (ISIT),0,13.0652
+snowball2_core,362,O2900948681,,Statistical Verification of Neural Networks,2018,arXiv (Cornell University),0,13.0652
+snowball2_core,363,O2969049373,10.48550/arxiv.1908.06353,Verification of Neural Network Control Policy Under Persistent Adversarial Perturbation,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,364,O4406658693,10.1109/rtss62706.2024.00026,SCENIC: Capability and Scheduling Co-Design for Intelligent Controller on Heterogeneous Platforms,2024,Proceedings/Proceedings - Real-Time Systems Symposium,0,13.0652
+snowball2_core,365,O3172251066,10.48550/arxiv.2106.04092,Online Learning Robust Control of Nonlinear Dynamical Systems,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,366,O4382239163,10.1609/aaai.v37i6.25935,Local Intrinsic Dimensional Entropy,2023,Proceedings of the AAAI Conference on Artificial Intelligence,0,13.0652
+snowball2_core,367,O3212304456,,Adversarial Tradeoffs in Linear Inverse Problems and Robust State Estimation.,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,368,O3210063218,10.48550/arxiv.2110.12072,How and When Adversarial Robustness Transfers in Knowledge Distillation?,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,369,O3043449705,,Provable Worst Case Guarantees for the Detection of Out-of-Distribution Data.,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,370,O3160792010,10.33039/ami.2021.03.007,Portfolio solver for verifying Binarized Neural Networks,2021,Az Eszterházy Károly Tanárképző Főiskola tudományos közleményei. Tanulmányok a matematikai tudományok köréből/Az Eszterházy Károly Főiskola tudományos közleményei. Tanulmányok a matematikai tudományok köréből/Annales mathematicae et informaticae,0,13.0652
+snowball2_core,371,O3206767190,10.23919/acc53348.2022.9867880,Improving Neural Network Robustness via Persistency of Excitation,2022,Proceedings of the ... American Control Conference/Proceedings of the American Control Conference,0,13.0652
+snowball2_core,372,O4400196289,10.3390/act13070252,Fixed-Time Adaptive Neural Network-Based Trajectory Tracking Control for Workspace Manipulators,2024,Actuators,0,13.0652
+snowball2_core,373,O4405534769,10.2139/ssrn.5063045,Dynamic Lipschitz Constraints in Generative Adversarial Networks,2024,SSRN Electronic Journal,0,13.0652
+snowball2_core,374,O4312643858,10.1007/978-3-031-22308-2_14,Boosting Robustness Verification of Semantic Feature Neighborhoods,2022,Lecture notes in computer science,0,13.0652
+snowball2_core,375,O3173512790,10.1609/aaai.v35i9.17007,Norm-Based Generalisation Bounds for Deep Multi-Class Convolutional Neural Networks,2021,Proceedings of the AAAI Conference on Artificial Intelligence,0,13.0652
+snowball2_core,376,O4403534529,10.1109/codit62066.2024.10708322,Stabilization of nonlinear systems by neural Lyapunov approximators and Sontag’s formula,2024,"International Conference on Control, Decision and Information Technologies (CoDIT)",0,13.0652
+snowball2_core,377,O3093568497,10.1214/22-aos2180,Precise statistical analysis of classification accuracies for adversarial training,2022,The Annals of Statistics,0,13.0652
+snowball2_core,378,O7123361519,10.1109/cdc57313.2025.11312063,Verifying Probabilistic Regions of Attraction with Neural Lyapunov Functions for Stochastic Systems,2025,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",0,13.0652
+snowball2_core,379,O2964881778,10.1109/jiot.2019.2952146,Local Differential Privacy for Deep Learning,2019,IEEE Internet of Things Journal,0,13.0652
+snowball2_core,380,O3177263927,,Certified Robustness via Randomized Smoothing over Multiplicative Parameters.,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,381,O2859967432,10.48550/arxiv.1807.03858,Algorithmic Framework for Model-based Deep Reinforcement Learning with Theoretical Guarantees,2018,arXiv (Cornell University),0,13.0652
+snowball2_core,382,O3008718588,,Provable Robust Learning Based on Transformation-Specific Smoothing.,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,383,O3210540428,10.48550/arxiv.2110.11382,Efficient and Robust Mixed-Integer Optimization Methods for Training Binarized Deep Neural Networks,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,384,O4378805104,10.1109/tac.2023.3281749,Data-Driven Reachability and Support Estimation With Christoffel Functions,2023,IEEE Transactions on Automatic Control,0,13.0652
+snowball2_core,385,O4414322367,10.1109/itaic64559.2025.11163296,Distributional Robustness Framework against Word-level Adversarial Attacks,2025,IEEE Joint International Information Technology and Artificial Intelligence Conference (ITAIC),0,13.0652
+snowball2_core,386,O4382318501,10.1609/aaai.v37i12.26749,WAT: Improve the Worst-Class Robustness in Adversarial Training,2023,Proceedings of the AAAI Conference on Artificial Intelligence,0,13.0652
+snowball2_core,387,O2799032899,10.48550/arxiv.1804.11285,Adversarially Robust Generalization Requires More Data,2018,arXiv (Cornell University),0,13.0652
+snowball2_core,388,O3165885087,10.48550/arxiv.2102.05363,Towards Certifying L-infinity Robustness using Neural Networks with L-inf-dist Neurons,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,389,O2996296329,10.48550/arxiv.2001.02378,MACER: Attack-free and Scalable Robust Training via Maximizing Certified Radius,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,390,O4414165843,10.1109/ojcsys.2025.3607844,On the Representation of Piecewise Quadratic Functions by Neural Networks,2025,IEEE Open Journal of Control Systems,0,13.0652
+snowball2_core,391,O3121106168,10.1360/ssi-2020-0172,Robustness verification of $\boldsymbol~K$-NN classifiers via constraint relaxation and randomized smoothing,2020,Scientia Sinica Informationis,0,13.0652
+snowball2_core,392,O4414911495,10.1007/978-3-032-07106-4_2,Verifying Neural Networks with PyRAT,2025,Lecture notes in computer science,0,13.0652
+snowball2_core,393,O4205652914,10.1109/access.2022.3144933,A Low Complexity Approach to Model-Free Stochastic Inverse Linear Quadratic Control,2022,IEEE Access,0,13.0652
+snowball2_core,394,O3206485117,10.48550/arxiv.2110.06150,Sparsity in Partially Controllable Linear Systems,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,395,O4375868996,10.1109/icassp49357.2023.10097180,Sora: Scalable Black-Box Reachability Analyser on Neural Networks,2023,IEEE International Conference on Acoustics Speech and Signal Processing,0,13.0652
+snowball2_core,396,O3083441818,10.1109/tac.2022.3219340,PAC Reinforcement Learning Algorithm for General-Sum Markov Games,2022,IEEE Transactions on Automatic Control,0,13.0652
+snowball2_core,397,O4394653204,10.48550/arxiv.1811.02625,MixTrain: Scalable Training of Verifiably Robust Neural Networks,2018,arXiv (Cornell University),0,13.0652
+snowball2_core,398,O3080716118,10.48550/arxiv.2008.10180,Sampling-based Reachability Analysis: A Random Set Theory Approach with Adversarial Sampling,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,399,O2803392236,10.48550/arxiv.1805.10265,Training verified learners with learned verifiers,2018,arXiv (Cornell University),0,13.0652
+snowball2_core,400,O4382936033,10.23919/acc55779.2023.10155796,Self-Tuning Tube-based Model Predictive Control,2023,Proceedings of the ... American Control Conference/Proceedings of the American Control Conference,0,13.0652
+snowball2_core,401,O4410808232,10.1109/tac.2025.3574548,Robust Control Barrier Functions for Uncertain Parameter-Varying Control Affine Systems With Set-Membership Parameter Estimation,2025,IEEE Transactions on Automatic Control,0,13.0652
+snowball2_core,402,O3134481631,10.48550/arxiv.2102.13620,Towards Robust and Reliable Algorithmic Recourse,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,403,O3012226457,10.3929/ethz-b-000452593,Certified Defenses for Adversarial Patches,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,404,O2288926313,10.1109/icra.2017.7989379,PLATO: Policy learning using adaptive trajectory optimization,2017,Proceedings - IEEE International Conference on Robotics and Automation/Proceedings,0,13.0652
+snowball2_core,405,O3046107535,10.23919/acc45564.2020.9147848,Exponential stability criteria for neural network based control of nonlinear systems,2020,Proceedings of the ... American Control Conference/Proceedings of the American Control Conference,0,13.0652
+snowball2_core,406,O7123341179,10.1109/cdc57313.2025.11312023,The Bidirectional Mapping Between Linear Model Predictive Control Policies and ReLU Neural Networks,2025,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",0,13.0652
+snowball2_core,407,O4388460544,10.1631/fitee.2300059,Towards robust neural networks via a global and monotonically decreasing robustness training strategy,2023,Frontiers of Information Technology & Electronic Engineering,0,13.0652
+snowball2_core,408,O4385764211,10.24963/ijcai.2023/405,Understanding the Generalization Ability of Deep Learning Algorithms: A Kernelized Rényi's Entropy Perspective,2023,International Joint Conference on Artificial Intelligence,0,13.0652
+snowball2_core,409,O2796892552,10.1007/s10994-020-05929-w,Regularisation of neural networks by enforcing Lipschitz continuity,2020,Machine Learning,0,13.0652
+snowball2_core,410,O3168343211,10.48550/arxiv.2106.07989,Compression Implies Generalization,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,411,O3095342738,10.24963/ijcai.2021/404,Stochastic Shortest Path with Adversarially Changing Costs,2021,,0,13.0652
+snowball2_core,412,O7124997467,10.1109/lra.2026.3655206,DRO-EDL-MPC: Evidential Deep Learning-Based Distributionally Robust Model Predictive Control for Safe Autonomous Driving,2026,IEEE Robotics and Automation Letters,0,13.0652
+snowball2_core,413,O2913624634,10.48550/arxiv.1902.01235,Robustness Certificates Against Adversarial Examples for ReLU Networks,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,414,O3159623598,10.48550/arxiv.1911.10258,Fantastic Four: Differentiable Bounds on Singular Values of Convolution Layers,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,415,O3153809844,10.4208/csiam-am.so-2021-0026,An $L^2$ Analysis of Reinforcement Learning in High Dimensions with Kernel and Neural Network Approximation,2022,CSIAM Transactions on Applied Mathematics,0,13.0652
+snowball2_core,416,O4314947473,10.1109/cdc51059.2022.9992636,Achieving Logarithmic Regret via Hints in Online Learning of Noisy LQR Systems,2022,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",0,13.0652
+snowball2_core,417,O2884801476,10.1007/978-3-030-13453-2_2,Limitations of the Lipschitz Constant as a Defense Against Adversarial Examples,2019,Lecture notes in computer science,0,13.0652
+snowball2_core,418,O3175277063,,Center Smoothing: Provable Robustness for Functions with Metric-Space Outputs,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,419,O4361858883,10.1109/jiot.2023.3263384,Toward Certified Robustness of Graph Neural Networks in Adversarial AIoT Environments,2023,IEEE Internet of Things Journal,0,13.0652
+snowball2_core,420,O2947225494,10.48550/arxiv.1905.13435,PAC-Bayesian Transportation Bound,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,421,O4402836680,10.1016/j.ifacol.2024.09.050,Approximate SDD-TMPC with Spiking Neural Networks: An Application to Wheeled Robots,2024,IFAC-PapersOnLine,0,13.0652
+snowball2_core,422,O3086034503,10.48550/arxiv.2009.06571,Input Hessian Regularization of Neural Networks,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,423,O3038061387,10.1007/978-3-030-59152-6_5,DeepAbstract: Neural Network Abstraction for Accelerating Verification,2020,Lecture notes in computer science,0,13.0652
+snowball2_core,424,O3008555961,10.48550/arxiv.2002.11798,Learning Adversarially Robust Representations via Worst-Case Mutual Information Maximization,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,425,O3195710602,10.1609/aaai.v35i12.17278,Amata: An Annealing Mechanism for Adversarial Training Acceleration,2021,Proceedings of the AAAI Conference on Artificial Intelligence,0,13.0652
+snowball2_core,426,O3009884841,10.48550/arxiv.1905.09677,The role of invariance in spectral complexity-based generalization bounds,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,427,O2964740902,10.24963/ijcai.2019/854,A Dual Approach to Verify and Train Deep Networks,2019,International Joint Conference on Artificial Intelligence,0,13.0652
+snowball2_core,428,O2888561381,10.48550/arxiv.1808.07576,Cooperative SGD: A unified Framework for the Design and Analysis of Communication-Efficient SGD Algorithms,2018,arXiv (Cornell University),0,13.0652
+snowball2_core,429,O3127429604,10.48550/arxiv.2102.05800,Robust Policy Gradient against Strong Data Corruption,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,430,O4313027296,10.1109/tac.2022.3221705,Finite-Time Identification of Linear Systems: Fundamental Limits and Optimal Algorithms,2022,IEEE Transactions on Automatic Control,0,13.0652
+snowball2_core,431,O7203837046,10.1109/aaiee69872.2026.11649914,Boundary-Data-Driven Neural Lyapunov Functions with Formal Verification for VSG Stability Analysis,2026,,0,13.0652
+snowball2_core,432,O2987656320,10.1109/cvpr42600.2020.00820,Robust Design of Deep Neural Networks Against Adversarial Attacks Based on Lyapunov Theory,2020,IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings,0,13.0652
+snowball2_core,433,O4387843449,10.1007/978-3-031-45329-8_20,Using Counterexamples to Improve Robustness Verification in Neural Networks,2023,Lecture notes in computer science,0,13.0652
+snowball2_core,434,O2904810222,10.48550/arxiv.1812.02795,Verification of deep probabilistic models,2018,arXiv (Cornell University),0,13.0652
+snowball2_core,435,O3005384972,10.48550/arxiv.2002.03239,Curse of Dimensionality on Randomized Smoothing for Certifiable Robustness,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,436,O3119917739,10.48550/arxiv.2102.04154,Efficient Certified Defenses Against Patch Attacks on Image Classifiers,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,437,O4382317987,10.1609/aaai.v37i12.26740,Formalising the Robustness of Counterfactual Explanations for Neural Networks,2023,Proceedings of the AAAI Conference on Artificial Intelligence,0,13.0652
+snowball2_core,438,O3009809968,10.1109/cvpr42600.2020.00035,Adversarial Vertex Mixup: Toward Better Adversarially Robust Generalization,2020,IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings,0,13.0652
+snowball2_core,439,O4378977181,10.1109/satml54575.2023.00041,Neural Lower Bounds for Verification,2023,IEEE Conference on Secure and Trustworthy Machine Learning (SaTML),0,13.0652
+snowball2_core,440,O4386939575,10.1007/978-3-031-44207-0_42,Improving Neural Network Verification Efficiency Through Perturbation Refinement,2023,Lecture notes in computer science,0,13.0652
+snowball2_core,441,O3017431885,10.48550/arxiv.2004.10250,Certifying Joint Adversarial Robustness for Model Ensembles,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,442,O3175181736,10.1609/aaai.v35i8.16824,On Lipschitz Regularization of Convolutional Layers using Toeplitz Matrix Theory,2021,AAAI Publications (The Association for the Advancement of Artificial Intelligence (AAAI)),0,13.0652
+snowball2_core,443,O2903443855,10.1109/cdc.2018.8619121,Formal Synthesis of Analytic Controllers for Sampled-Data Systems via Genetic Programming,2018,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",0,13.0652
+snowball2_core,444,O2979484367,10.48550/arxiv.1910.04284,Improved Sample Complexities for Deep Networks and Robust Classification via an All-Layer Margin,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,445,O3153972158,10.1109/infocom42981.2021.9488898,Analyzing Learning-Based Networked Systems with Formal Verification,2021,,0,13.0652
+snowball2_core,446,O4411565081,10.1007/978-981-96-6579-2_26,Certified Patch Defense via Dual Mask-Preservation Prediction,2025,Lecture notes in computer science,0,13.0652
+snowball2_core,447,O4400062479,10.1109/rtas61025.2024.00018,Sync or Sink? The Robustness of Sensor Fusion Against Temporal Misalignment,2024,Proceedings - Real-Time Technology and Applications Symposium,0,13.0652
+snowball2_core,448,O4385804997,10.1109/cvprw59228.2023.00225,Certified Adversarial Robustness Within Multiple Perturbation Bounds,2023,IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW),0,13.0652
+snowball2_core,449,O2596625124,,Nearly-tight VC-dimension bounds for piecewise linear neural networks,2017,arXiv (Cornell University),0,13.0652
+snowball2_core,450,O4316038220,10.1016/j.neucom.2023.01.029,Neural Koopman Lyapunov control,2023,Neurocomputing,0,13.0652
+snowball2_core,451,O4319300797,10.1109/wacv56688.2023.00454,Certified Defense for Content Based Image Retrieval,2023,IEEE/CVF Winter Conference on Applications of Computer Vision (WACV),0,13.0652
+snowball2_core,452,O3138368278,,Boundary Attributions Provide Normal (Vector) Explanations.,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,453,O4313048275,10.1007/978-3-031-22337-2_28,T4V: Exploring Neural Network Architectures that Improve the Scalability of Neural Network Verification,2022,Lecture notes in computer science,0,13.0652
+snowball2_core,454,O4319300587,10.1109/wacv56688.2023.00465,RANCER: Non-Axis Aligned Anisotropic Certification with Randomized Smoothing,2023,IEEE/CVF Winter Conference on Applications of Computer Vision (WACV),0,13.0652
+snowball2_core,455,O2914820002,10.3929/ethz-b-000385951,Adaptive and Safe Bayesian Optimization in High Dimensions via One-Dimensional Subspaces,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,456,O4387868703,10.29007/pvtn,Verifying Global Neural Network Specifications using Hyperproperties,2023,Kalpa publications in computing,0,13.0652
+snowball2_core,457,O3171650258,10.48550/arxiv.2106.04186,What training reveals about neural network complexity,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,458,O2998329861,10.1609/aaai.v34i04.6016,Empirical Bounds on Linear Regions of Deep Rectifier Networks,2020,AAAI Publications (The Association for the Advancement of Artificial Intelligence (AAAI)),0,13.0652
+snowball2_core,459,O2923867558,10.48550/arxiv.1810.10625,Robust Adversarial Learning via Sparsifying Front Ends,2018,arXiv (Cornell University),0,13.0652
+snowball2_core,460,O3092670332,10.48550/arxiv.2010.05983,How does Weight Correlation Affect the Generalisation Ability of Deep Neural Networks,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,461,O4391992177,10.1109/eiecs59936.2023.10435573,Combining Strategy and Roles to Formally Analyze Multi-Agent Reinforcement Learning,2023,International Conference on Electronic Information Engineering and Computer Science (EIECS),0,13.0652
+snowball2_core,462,O7148323215,10.1016/j.isatra.2026.04.001,Enhanced imitation learning of robust nonlinear model predictive control via temporal convolutional neural network for DC shipboard microgrid,2026,ISA Transactions,0,13.0652
+snowball2_core,463,O3177376767,,Task-Driven Out-of-Distribution Detection with Statistical Guarantees for Robot Learning.,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,464,O3041696840,10.48550/arxiv.2007.05145,Beyond Perturbations: Learning Guarantees with Arbitrary Adversarial Test Examples,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,465,O3093599868,,Nonvacuous Loss Bounds with Fast Rates for Neural Networks via Conditional Information Measures,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,466,O4402654985,10.1007/978-3-031-70239-6_26,MaskPure: Improving Defense Against Text Adversaries with Stochastic Purification,2024,Lecture notes in computer science,0,13.0652
+snowball2_core,467,O3122715378,10.1109/tse.2022.3163682,Increasing the Confidence of Deep Neural Networks by Coverage Analysis,2022,IEEE Transactions on Software Engineering,0,13.0652
+snowball2_core,468,O2997227310,10.1609/aaai.v34i04.5798,Regularized Training and Tight Certification for Randomized Smoothed Classifier with Provable Robustness,2020,Proceedings of the AAAI Conference on Artificial Intelligence,0,13.0652
+snowball2_core,469,O3138896344,10.1007/978-3-030-81685-8_1,NNrepair: Constraint-Based Repair of Neural Network Classifiers,2021,Lecture notes in computer science,0,13.0652
+snowball2_core,470,O3036873981,10.3390/e23101280,Differentiable PAC–Bayes Objectives with Partially Aggregated Neural Networks,2021,Entropy,0,13.0652
+snowball2_core,471,O3102735978,10.1016/j.compchemeng.2020.107174,Fast approximate learning-based multistage nonlinear model predictive control using Gaussian processes and deep neural networks,2020,Computers & Chemical Engineering,0,13.0652
+snowball2_core,472,O3005555917,10.48550/arxiv.2002.04197,Generalised Lipschitz Regularisation Equals Distributional Robustness,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,473,O3088161853,10.48550/arxiv.2003.04286,Manifold Regularization for Locally Stable Deep Neural Networks,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,474,O3196299307,10.1016/j.ifacol.2021.08.305,An Adaptive Correction Scheme for Offset-Free Asymptotic Performance in Deep Learning-based Economic MPC,2021,IFAC-PapersOnLine,0,13.0652
+snowball2_core,475,O2610190180,10.48550/arxiv.1704.08847,Parseval Networks: Improving Robustness to Adversarial Examples,2017,arXiv (Cornell University),0,13.0652
+snowball2_core,476,O2912592113,10.48550/arxiv.1902.00146,Agnostic Federated Learning,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,477,O2955163138,10.48550/arxiv.1906.11148,Chaining Meets Chain Rule: Multilevel Entropic Regularization and Training of Neural Nets,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,478,O2989772244,10.1109/tcss.2019.2950017,DNN-DP: Differential Privacy Enabled Deep Neural Network Learning Framework for Sensitive Crowdsourcing Data,2019,IEEE Transactions on Computational Social Systems,0,13.0652
+snowball2_core,479,O3101882350,10.1109/micro50266.2020.00031,Ptolemy: Architecture Support for Robust Deep Learning,2020,Proceedings of the ... annual International Symposium on Microarchitecture/Proceedings of the annual International Symposium on Microarchitecture,0,13.0652
+snowball2_core,480,O4297834088,10.1145/3511808.3557256,Certified Robustness to Word Substitution Ranking Attack for Neural Ranking Models,2022,Proceedings of the ... ACM International Conference on Information & Knowledge Management,0,13.0652
+snowball2_core,481,O3207729118,10.48550/arxiv.2110.08922,Explaining generalization in deep learning: progress and fundamental limits,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,482,O4409473634,10.1109/tii.2025.3556059,A Novel Hybrid Neural Lyapunov Method With Low Conservatism for Power System Domain of Attraction Estimation,2025,IEEE Transactions on Industrial Informatics,0,13.0652
+snowball2_core,483,O2788994884,10.48550/arxiv.1802.09700,Robust GANs against Dishonest Adversaries,2018,arXiv (Cornell University),0,13.0652
+snowball2_core,484,O3150919882,10.1007/978-3-030-73197-7_16,MACROBERT: Maximizing Certified Region of BERT to Adversarial Word Substitutions,2021,Lecture notes in computer science,0,13.0652
+snowball2_core,485,O3193397148,10.48550/arxiv.2108.06885,Neural Architecture Dilation for Adversarial Robustness,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,486,O3204984335,10.1609/aaai.v36i6.20586,DPNAS: Neural Architecture Search for Deep Learning with Differential Privacy,2022,Proceedings of the AAAI Conference on Artificial Intelligence,0,13.0652
+snowball2_core,487,O4411540004,10.1016/j.scico.2025.103354,"Fossil 2.0: Design, usage and impact of a software tool for verification and control of dynamical models",2025,Science of Computer Programming,0,13.0652
+snowball2_core,488,O4352981493,10.1109/icsrs56243.2022.10067295,Efficient Neural Network Validation with Affine Forms,2022,International Conference on System Reliability and Safety (ICSRS),0,13.0652
+snowball2_core,489,O3093965089,10.48550/arxiv.2010.10549,Tight Second-Order Certificates for Randomized Smoothing,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,490,O3010733766,10.48550/arxiv.2003.06974,Toward Adversarial Robustness via Semi-supervised Robust Training,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,491,O4404577698,10.1162/tacl_a_00711,Conformalizing Machine Translation Evaluation,2024,Transactions of the Association for Computational Linguistics,0,13.0652
+snowball2_core,492,O2978464814,10.48550/arxiv.1910.02065,Can I Trust the Explainer? Verifying Post-hoc Explanatory Methods,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,493,O4385569796,10.18653/v1/2023.acl-long.282,Randomized Smoothing with Masked Inference for Adversarially Robust Text Classifications,2023,Annual Meeting of the Association for Computational Linguistics (ACL),0,13.0652
+snowball2_core,494,O3210882018,10.1109/tip.2021.3121150,Progressive Diversified Augmentation for General Robustness of DNNs: A Unified Approach,2021,IEEE Transactions on Image Processing,0,13.0652
+snowball2_core,495,O3201704107,10.1109/cdc45484.2021.9683538,Robust Adversarial Classification via Abstaining,2021,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",0,13.0652
+snowball2_core,496,O4382935844,10.23919/acc55779.2023.10156358,Adversarial Tradeoffs in Robust State Estimation,2023,Proceedings of the ... American Control Conference/Proceedings of the American Control Conference,0,13.0652
+snowball2_core,497,O4392412844,10.1109/istm58889.2023.10454997,Verifying Properties of Tsetlin Machines,2023,,0,13.0652
+snowball2_core,498,O3013548302,10.48550/arxiv.2003.11619,Deep Networks as Logical Circuits: Generalization and Interpretation,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,499,O3200593142,10.1109/icra46639.2022.9811706,Enhancing Data-Driven Reachability Analysis using Temporal Logic Side Information,2022,Proceedings - IEEE International Conference on Robotics and Automation/Proceedings,0,13.0652
+snowball2_core,500,O3122796494,,Deep Partition Aggregation: Provable Defenses against General Poisoning Attacks,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,501,O2963353335,10.1609/aaai.v33i01.33014536,The Curse of Concentration in Robust Learning: Evasion and Poisoning Attacks from Concentration of Measure,2019,AAAI Publications (The Association for the Advancement of Artificial Intelligence (AAAI)),0,13.0652
+snowball2_core,502,O2901258099,,nn-dependability-kit: Engineering Neural Networks for Safety-Critical Systems.,2018,arXiv (Cornell University),0,13.0652
+snowball2_core,503,O4385804751,10.1109/cvprw59228.2023.00037,Towards Characterizing the Semantic Robustness of Face Recognition,2023,IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW),0,13.0652
+snowball2_core,504,O4226330442,10.1609/aaai.v36i6.20579,Input-Specific Robustness Certification for Randomized Smoothing,2022,Proceedings of the AAAI Conference on Artificial Intelligence,0,13.0652
+snowball2_core,505,O2906989593,10.48550/arxiv.1810.09519,Adversarial Risk Bounds via Function Transformation,2018,arXiv (Cornell University),0,13.0652
+snowball2_core,506,O3094059375,10.1109/jsait.2021.3080661,Bayesian Algorithms for Decentralized Stochastic Bandits,2021,IEEE Journal on Selected Areas in Information Theory,0,13.0652
+snowball2_core,507,O3159199716,10.48550/arxiv.2105.00303,RATT: Leveraging Unlabeled Data to Guarantee Generalization,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,508,O4402937098,10.1007/978-3-031-66456-4_5,AccMILP: An Approach for Accelerating Neural Network Verification Based on Neuron Importance,2024,Lecture notes in computer science,0,13.0652
+snowball2_core,509,O3208268610,,Learning Aggregations of Binary Activated Neural Networks with Probabilities over Representations,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,510,O3166056856,10.48550/arxiv.2106.06931,Learning on Abstract Domains: A New Approach for Verifiable Guarantee in Reinforcement Learning,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,511,O3185210729,10.1109/iccvw54120.2021.00015,Enhancing Adversarial Robustness via Test-time Transformation Ensembling,2021,IEEE/CVF International Conference on Computer Vision Workshops (ICCVW),0,13.0652
+snowball2_core,512,O2980965347,10.1109/tac.2020.3030877,Event-Triggered Learning for Linear Quadratic Control,2020,IEEE Transactions on Automatic Control,0,13.0652
+snowball2_core,513,O3123553048,10.1109/tit.2022.3169440,"A Tunable Loss Function for Robust Classification: Calibration, Landscape, and Generalization",2022,IEEE Transactions on Information Theory,0,13.0652
+snowball2_core,514,O4312675304,10.1007/978-3-031-19806-9_33,ViP: Unified Certified Detection and Recovery for Patch Attack with Vision Transformers,2022,Lecture notes in computer science,0,13.0652
+snowball2_core,515,O4415902008,10.1002/rnc.70279,Robust Neural Lyapunov Control for Nonlinear Systems With Quadratically Bounded Disturbances,2025,International Journal of Robust and Nonlinear Control,0,13.0652
+snowball2_core,516,O4312907406,10.1109/ijcnn55064.2022.9892471,Towards Robust Certified Defense via Improved Randomized Smoothing,2022,2022 International Joint Conference on Neural Networks (IJCNN),0,13.0652
+snowball2_core,517,O2972587844,10.48550/arxiv.1808.09540,Lipschitz regularized Deep Neural Networks generalize and are adversarially robust,2018,arXiv (Cornell University),0,13.0652
+snowball2_core,518,O2911339339,10.1109/allerton.2018.8636048,Analyzing the Robustness of Deep Learning Against Adversarial Examples,2018,"Allerton Conference on Communication, Control, and Computing",0,13.0652
+snowball2_core,519,O3035527730,,ClusTR: Clustering Training for Robustness.,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,520,O3215504992,10.5244/c.35.123,Rethinking Clustering for Robustness,2021,British Machine Vision Conference (BMVC),0,13.0652
+snowball2_core,521,O3128658706,10.1007/978-3-030-65965-3_31,Analyzing Forward Robustness of Feedforward Deep Neural Networks with LeakyReLU Activation Function Through Symbolic Propagation,2020,Communications in computer and information science,0,13.0652
+snowball2_core,522,O2918433838,,Lipschitz Certificates for Neural Network Structures Driven by Averaged Activation Operators,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,523,O4312385228,10.1109/ijcnn55064.2022.9892117,Tiny RNN Model with Certified Robustness for Text Classification,2022,2022 International Joint Conference on Neural Networks (IJCNN),0,13.0652
+snowball2_core,524,O3215815316,,Online Learning for Receding Horizon Control with Provable Regret Guarantees.,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,525,O4396622783,10.32657/10356/175394,Towards robust explainability of deep neural networks against attribution attacks,2024,,0,13.0652
+snowball2_core,526,O3167876879,10.48550/arxiv.2106.06098,Meta-Adaptive Nonlinear Control: Theory and Algorithms,2021,CaltechAUTHORS (California Institute of Technology),0,13.0652
+snowball2_core,527,O2995386306,10.48550/arxiv.1912.07561,Constructing a provably adversarially-robust classifier from a high accuracy one,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,528,O2951576642,10.48550/arxiv.1906.07916,Convergence of Adversarial Training in Overparametrized Neural Networks,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,529,O3035419960,10.48550/arxiv.2002.03018,Certified Robustness to Label-Flipping Attacks via Randomized Smoothing,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,530,O3011684164,10.1109/iccvw.2019.00510,Why are Saliency Maps Noisy? Cause of and Solution to Noisy Saliency Maps,2019,,0,13.0652
+snowball2_core,531,O3126078951,,Partition-Based Convex Relaxations for Certifying the Robustness of ReLU Neural Networks.,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,532,O3147310640,,Property-driven Training: All You (N)Ever Wanted to Know About.,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,533,O3175271291,,Robust Generative Adversarial Imitation Learning via Local Lipschitzness,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,534,O4226058100,10.1109/cvpr52688.2022.01484,Enhancing Adversarial Training with Second-Order Statistics of Weights,2022,IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings,0,13.0652
+snowball2_core,535,O4249310262,10.1109/ase51524.2021.9678590,Distribution Models for Falsification and Verification of DNNs,2021,IEEE/ACM International Conference on Automated Software Engineering (ASE),0,13.0652
+snowball2_core,536,O3215544058,10.3390/s21238009,Probabilistic Deep Learning to Quantify Uncertainty in Air Quality Forecasting,2021,Sensors,0,13.0652
+snowball2_core,537,O3194633786,,IADA: Iterative Adversarial Data Augmentation Using Formal Verification and Expert Guidance.,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,538,O2962824341,10.1145/3219819.3220063,Exact and Consistent Interpretation for Piecewise Linear Neural Networks,2018,ACM SIGKDD International Conference on Knowledge Discovery & Data Mining (KDD),0,13.0652
+snowball2_core,539,O4376623159,10.1007/978-3-031-29310-8_7,Robust Safety-Critical Control for Systems with Actuation Uncertainty,2023,Synthesis lectures on computer science,0,13.0652
+snowball2_core,540,O4311262722,10.1016/j.isatra.2022.11.024,Neural network-based adaptive second-order sliding mode control for uncertain manipulator systems with input saturation,2022,ISA Transactions,0,13.0652
+snowball2_core,541,O3189769629,10.48550/arxiv.2108.00491,Certified Defense via Latent Space Randomized Smoothing with Orthogonal Encoders,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,542,O3123856301,10.48550/arxiv.2104.05641,Generalization bounds via distillation,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,543,O3049758263,10.1007/s00521-021-06019-1,Learnability and robustness of shallow neural networks learned by a performance-driven BP and a variant of PSO for edge decision-making,2021,Neural Computing and Applications,0,13.0652
+snowball2_core,544,O3167362291,10.48550/arxiv.2008.07648,Nonparametric Learning of Two-Layer ReLU Residual Units,2020,Edinburgh Research Explorer (University of Edinburgh),0,13.0652
+snowball2_core,545,O7140759827,10.1109/ieeeconf67917.2025.11443716,Verifying Closed-Loop Contractivity of Learning-Based Controllers via Partitioning,2025,"2018 52nd Asilomar Conference on Signals, Systems, and Computers",0,13.0652
+snowball2_core,546,O3169645411,10.48550/arxiv.2105.14866,Variational Autoencoders: A Harmonic Perspective,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,547,O3093731986,10.48550/arxiv.2010.11652,CoinDICE: Off-Policy Confidence Interval Estimation,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,548,O4398198403,10.1109/control60310.2024.10531837,Safe Explicit MPC by Training Neural Networks Through Constrained Optimization,2024,UKACC International Conference on Control,0,13.0652
+snowball2_core,549,O2799237514,10.1109/cvpr.2018.00948,Analytic Expressions for Probabilistic Moments of PL-DNN with Gaussian Input,2018,IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings,0,13.0652
+snowball2_core,550,O3126161079,,Estimating Lipschitz constants of monotone deep equilibrium models,2021,,0,13.0652
+snowball2_core,551,O4385679845,10.1109/sp46215.2023.10179451,RAB: Provable Robustness Against Backdoor Attacks,2023,Proceedings - IEEE Symposium on Security and Privacy/Proceedings of the ... IEEE Symposium on Security and Privacy,0,13.0652
+snowball2_core,552,O3003310084,10.1109/tac.2020.2969713,Safe Controller Synthesis for Data-Driven Differential Inclusions,2020,IEEE Transactions on Automatic Control,0,13.0652
+snowball2_core,553,O3094319733,,A Distributional Robustness Certificate by Randomized Smoothing.,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,554,O3207630696,10.1109/humanoids47582.2021.9555680,Safe Data-Driven Contact-Rich Manipulation,2021,IEEE-RAS International Conference on Humanoid Robots (Humanoids),0,13.0652
+snowball2_core,555,O3174346308,10.1109/cvpr46437.2021.00613,DSRNA: Differentiable Search of Robust Neural Architectures,2021,IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings,0,13.0652
+snowball2_core,556,O3107628015,10.48550/arxiv.2006.11022,Learning Stabilizing Controllers for Unstable Linear Quadratic Regulators from a Single Trajectory,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,557,O3101156174,10.48550/arxiv.2008.07737,Provably Efficient Reward-Agnostic Navigation with Linear Value Iteration,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,558,O4392543805,10.1109/tse.2024.3370807,Provably Valid and Diverse Mutations of Real-World Media Data for DNN Testing,2024,IEEE Transactions on Software Engineering,0,13.0652
+snowball2_core,559,O3102807666,10.1016/j.sysconle.2021.105049,On the stability properties of Gated Recurrent Units neural networks,2021,Systems & Control Letters,0,13.0652
+snowball2_core,560,O4402434920,10.1109/tase.2024.3453668,Tractable Data-Driven Model Predictive Control Using One-Step Neural Networks Predictors,2024,IEEE Transactions on Automation Science and Engineering,0,13.0652
+snowball2_core,561,O3089856152,10.1109/tcad.2020.3013071,Divide and Slide: Layer-Wise Refinement for Output Range Analysis of Deep Neural Networks,2020,IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems,0,13.0652
+snowball2_core,562,O4393147230,10.1609/aaai.v38i13.29382,Towards Modeling Uncertainties of Self-Explaining Neural Networks via Conformal Prediction,2024,Proceedings of the AAAI Conference on Artificial Intelligence,0,13.0652
+snowball2_core,563,O2947099774,10.48550/arxiv.1905.13736,Unlabeled Data Improves Adversarial Robustness,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,564,O2911634294,10.48550/arxiv.1902.02918,Certified Adversarial Robustness via Randomized Smoothing,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,565,O2995773176,,Implicit Bias of Gradient Descent based Adversarial Training on Separable Data,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,566,O4391164394,10.1109/tac.2024.3358210,Adaptive Safety with a RISE-Based Disturbance Observer,2024,IEEE Transactions on Automatic Control,0,13.0652
+snowball2_core,567,O2802945484,10.48550/arxiv.1805.05010,Detecting Adversarial Samples for Deep Neural Networks through Mutation Testing,2018,arXiv (Cornell University),0,13.0652
+snowball2_core,568,O3049279426,10.48550/arxiv.2008.06220,Kernel Methods for Cooperative Multi-Agent Contextual Bandits,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,569,O4401691787,10.1109/lra.2024.3445635,How Generalizable is My Behavior Cloning Policy? A Statistical Approach to Trustworthy Performance Evaluation,2024,IEEE Robotics and Automation Letters,0,13.0652
+snowball2_core,570,O4387448507,10.1109/lra.2023.3322899,Vision-Based Uncertainty-Aware Motion Planning Based on Probabilistic Semantic Segmentation,2023,IEEE Robotics and Automation Letters,0,13.0652
+snowball2_core,571,O4411555871,10.1007/978-981-96-6582-2_17,An Enhanced MILP-Based Verifier for Adversary Robustness of Neural Networks,2025,Lecture notes in computer science,0,13.0652
+snowball2_core,572,O2977814456,10.1109/tnnls.2020.3015958,Clustered Federated Learning: Model-Agnostic Distributed Multitask Optimization Under Privacy Constraints,2020,IEEE Transactions on Neural Networks and Learning Systems,0,13.0652
+snowball2_core,573,O4393160451,10.1609/aaai.v38i15.29574,Adversarial Purification with the Manifold Hypothesis,2024,Proceedings of the AAAI Conference on Artificial Intelligence,0,13.0652
+snowball2_core,574,O3126500609,,Regret Guarantees for Online Receding Horizon Learning Control,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,575,O4393184721,10.1109/jsait.2024.3381869,Learning Robust to Distributional Uncertainties and Adversarial Data,2024,IEEE Journal on Selected Areas in Information Theory,0,13.0652
+snowball2_core,576,O3160457970,10.1109/tac.2023.3257167,Data-Driven Reachability Analysis From Noisy Data,2023,IEEE Transactions on Automatic Control,0,13.0652
+snowball2_core,577,O3126829708,10.48550/arxiv.2104.07167,Orthogonalizing Convolutional Layers with the Cayley Transform,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,578,O4396685241,10.3390/s24092954,Improving Adversarial Robustness of ECG Classification Based on Lipschitz Constraints and Channel Activation Suppression,2024,Sensors,0,13.0652
+snowball2_core,579,O3133199143,10.48550/arxiv.2102.07559,Certifiably Robust Variational Autoencoders,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,580,O4391020373,10.1109/cdc49753.2023.10383270,Data-Driven Reachability Analysis for Gaussian Process State Space Models,2023,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",0,13.0652
+snowball2_core,581,O3121024268,10.1109/cdc42340.2020.9304201,Counter-example guided synthesis of neural network Lyapunov functions for piecewise linear systems,2020,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",0,13.0652
+snowball2_core,582,O3171288285,10.1109/cvpr46437.2021.00196,Enhancing the Transferability of Adversarial Attacks through Variance Tuning,2021,IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings,0,13.0652
+snowball2_core,583,O4389766865,10.1109/tpami.2023.3343031,Principal Uncertainty Quantification With Spatial Correlation for Image Restoration Problems,2023,IEEE Transactions on Pattern Analysis and Machine Intelligence,0,13.0652
+snowball2_core,584,O3176916474,10.48550/arxiv.2106.11612,Uniform-PAC Bounds for Reinforcement Learning with Linear Function Approximation,2021,arXiv (Cornell University),0,13.0652
+snowball2_core,585,O3122798585,,"Geometric Sampling Theory, Triangulations, and Robust Machine Learning",2020,eScholarship (California Digital Library),0,13.0652
+snowball2_core,586,O3110289182,10.48550/arxiv.2011.12344,Trust but Verify: Assigning Prediction Credibility by Counterfactual Constrained Learning,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,587,O7154051030,10.1109/tac.2026.3683628,Neural Port-Hamiltonian Models for Nonlinear Distributed Control: An Unconstrained Parameterization Approach,2026,IEEE Transactions on Automatic Control,0,13.0652
+snowball2_core,588,O4394871807,10.1080/01621459.2024.2344700,Selection and Aggregation of Conformal Prediction Sets,2024,Journal of the American Statistical Association,0,13.0652
+snowball2_core,589,O3215534681,10.1016/j.jprocont.2022.04.011,On Recurrent Neural Networks for learning-based control: Recent results and ideas for future developments,2022,Journal of Process Control,0,13.0652
+snowball2_core,590,O4413393698,10.23919/acc63710.2025.11107936,Noise Sensitivity of Direct Data-Driven Linear Quadratic Regulator by Semidefinite Programming,2025,Proceedings of the ... American Control Conference/Proceedings of the American Control Conference,0,13.0652
+snowball2_core,591,O2983145938,10.23919/acc50511.2021.9482896,Counterexample-Guided Synthesis of Perception Models and Control,2021,Proceedings of the ... American Control Conference/Proceedings of the American Control Conference,0,13.0652
+snowball2_core,592,O4385731019,10.1109/dsn-s58398.2023.00054,Rich and Expressive Specification of Continuous-Learning Cyber-Physical Systems,2023,IEEE/IFIP International Conference on Dependable Systems and Networks - Supplemental Volume (DSN-S),0,13.0652
+snowball2_core,593,O2990603196,10.48550/arxiv.1911.11253,Playing it Safe: Adversarial Robustness with an Abstain Option,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,594,O2952876202,10.48550/arxiv.1906.09525,Defending Against Adversarial Examples with K-Nearest Neighbor,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,595,O3214610920,10.1098/rspa.2021.0176,Sensitivity analysis of Wasserstein distributionally robust optimization problems,2021,Proceedings of the Royal Society A Mathematical Physical and Engineering Sciences,0,13.0652
+snowball2_core,596,O3111275546,10.48550/arxiv.2012.02452,Towards Natural Robustness Against Adversarial Examples,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,597,O3091158289,10.48550/arxiv.2009.13881,Lipschitz neural networks are dense in the set of all Lipschitz functions,2020,arXiv (Cornell University),0,13.0652
+snowball2_core,598,O4280555383,10.1007/978-3-031-13185-1_9,Verifying Neural Networks Against Backdoor Attacks,2022,Lecture notes in computer science,0,13.0652
+snowball2_core,599,O3095983813,10.1109/ita50056.2020.9244969,Worst-case Satisfaction of STL Specifications Using Feedforward Neural Network Controllers: A Lagrange Multipliers Approach,2020,Information Theory and Applications Workshop (ITA),0,13.0652
+snowball2_core,600,O2990931791,10.48550/arxiv.1911.08192,Information-Theoretic Local Minima Characterization and Regularization,2019,arXiv (Cornell University),0,13.0652
+snowball2_core,601,O4360897380,10.1109/tase.2023.3259428,Composing MPC With LQR and Neural Network for Amortized Efficiency and Stable Control,2023,IEEE Transactions on Automation Science and Engineering,0,13.0652
+snowball2_remainder,1,O3092718793,10.48550/arxiv.2010.05901,Nearly Minimax Optimal Reward-free Reinforcement Learning,2020,arXiv (Cornell University),1,12.8815
+snowball2_remainder,2,O3010961009,10.1109/cdc40024.2019.9029996,Delaunay-based Derivative-free Optimization via Global Surrogates with Safe and Exact Function Evaluations,2019,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",1,12.8815
+snowball2_remainder,3,O2739273495,10.1007/s10618-017-0532-z,Differentially private nearest neighbor classification,2017,Data Mining and Knowledge Discovery,1,12.8815
+snowball2_remainder,4,O4226143119,10.1109/tro.2023.3262120,Cooperation for Scalable Supervision of Autonomy in Mixed Traffic,2023,IEEE Transactions on Robotics,1,12.8815
+snowball2_remainder,5,O3096516513,10.1109/ita50056.2020.9244996,Identifying unpredictable test examples with worst-case guarantees,2020,Information Theory and Applications Workshop (ITA),1,12.8815
+snowball2_remainder,6,O3034638213,10.48550/arxiv.2006.05487,Probably Approximately Correct Constrained Learning,2020,arXiv (Cornell University),1,12.8815
+snowball2_remainder,7,O3145970646,10.1109/cdc45484.2021.9682778,Linear Systems can be Hard to Learn,2021,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",1,12.8815
+snowball2_remainder,8,O4401508514,10.1109/dcoss-iot61029.2024.00015,Adversarial Training on Limited-Resource Devices Through Asymmetric Disturbances,2024,International Conference on Distributed Computing in Smart Systems and the Internet of Things (DCOSS-IoT),1,12.8815
+snowball2_remainder,9,O3212610018,10.48550/arxiv.2111.07018,Identification and Adaptive Control of Markov Jump Systems: Sample Complexity and Regret Bounds,2021,arXiv (Cornell University),1,12.8815
+snowball2_remainder,10,O4390421907,10.1109/lcsys.2023.3348688,Feasibility Analysis and Regularity Characterization of Distributionally Robust Safe Stabilizing Controllers,2023,IEEE Control Systems Letters,1,12.8815
+snowball2_remainder,11,O4400909499,10.1109/icde60146.2024.00052,Improve ROI with Causal Learning and Conformal Prediction,2024,Proceedings - International Conference on Data Engineering,1,12.8815
+snowball2_remainder,12,O4415285811,10.1134/s1054661825700166,Evaluation of Multimodal Image and Text Processing Models from an Uncertainty Perspective,2025,Pattern Recognition and Image Analysis,1,12.8815
+snowball2_remainder,13,O2962862931,10.4230/oasics.dx.2024.27,On a Method to Measure Supervised Multiclass Model’s Interpretability: Application to Degradation Diagnosis (Short Paper),2024,HAL (Le Centre pour la Communication Scientifique Directe),1,12.8815
+snowball2_remainder,14,O3040161731,10.48550/arxiv.2007.03574,Provably Safe PAC-MDP Exploration Using Analogies,2020,arXiv (Cornell University),1,12.8815
+snowball2_remainder,15,O4410557696,10.1016/j.cam.2025.116747,Reducing overfitting in ResNet with Adaptive Lipschitz regularization,2025,Journal of Computational and Applied Mathematics,1,12.8815
+snowball2_remainder,16,O7117260864,10.1109/lra.2025.3648503,Data-Efficient Constrained Robot Learning With Probabilistic Lagrangian Control,2025,IEEE Robotics and Automation Letters,1,12.8815
+snowball2_remainder,17,O7211907436,10.1109/access.2026.3731807,CertiHybrid-B: A Lyapunov-Budget-Aware Quantized Neural Predictive Controller for Certification-Oriented RTOS–FPGA Co-Architectures,2026,IEEE Access,1,12.8815
+snowball2_remainder,18,O2965721472,10.24963/ijcai.2019/657,Data Poisoning against Differentially-Private Learners: Attacks and Defenses,2019,International Joint Conference on Artificial Intelligence,1,12.8815
+snowball2_remainder,19,O3127015406,10.48550/arxiv.2102.02145,Adversarially Robust Learning with Unknown Perturbation Sets,2021,arXiv (Cornell University),1,12.8815
+snowball2_remainder,20,O4386746441,10.1007/978-3-031-43835-6_22,Probabilistic Counterexample Guidance for Safer Reinforcement Learning,2023,Lecture notes in computer science,1,12.8815
+snowball2_remainder,21,O4320460176,10.48550/arxiv.2206.02604,Rate-Distortion Theoretic Bounds on Generalization Error for Distributed Learning,2022,arXiv (Cornell University),1,12.8815
+snowball2_remainder,22,O4394788303,10.2139/ssrn.4793530,Robust Safe Control with Multi-Modal Dynamics Uncertainty,2024,SSRN Electronic Journal,1,12.8815
+snowball2_remainder,23,O4391930535,10.1080/01691864.2024.2315067,Safe robust adaptive control under both parametric and nonparametric uncertainty,2024,Advanced Robotics,1,12.8815
+snowball2_remainder,24,O3159401323,10.1109/ijcnn52387.2021.9534307,Impact of Spatial Frequency Based Constraints on Adversarial Robustness,2021,,1,12.8815
+snowball2_remainder,25,O4386065850,10.1109/cvpr52729.2023.00369,SplineCam: Exact Visualization and Characterization of Deep Network Geometry and Decision Boundaries,2023,IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings,1,12.8815
+snowball2_remainder,26,O3034772830,10.48550/arxiv.2006.06981,Kernel Distributionally Robust Optimization,2020,arXiv (Cornell University),1,12.8815
+snowball2_remainder,27,O4399009143,10.5194/hess-2024-64-ac2,Reply on RC2,2024,,1,12.8815
+snowball2_remainder,28,O3017595567,10.48550/arxiv.2004.09656,Tightening Exploration in Upper Confidence Reinforcement Learning,2020,arXiv (Cornell University),1,12.8815
+snowball2_remainder,29,O4388775119,10.17760/d20560798,Algorithms and frameworks for preventing privacy leakage and overfitting in machine learning,2023,,1,12.8815
+snowball2_remainder,30,O7151289189,10.70675/eeb5d27dz2706z4218z90daz7dc73d67a9af,"Understanding and enforcing robustness in neural networks, modern perspectives and challenges",2023,,1,12.8815
+snowball2_remainder,31,O3131311588,10.48550/arxiv.2102.12661,Online Learning for Unknown Partially Observable MDPs,2021,arXiv (Cornell University),1,12.8815
+snowball2_remainder,32,O4382458334,10.1609/aaai.v37i2.25352,Defending Black-Box Skeleton-Based Human Activity Classifiers,2023,Proceedings of the AAAI Conference on Artificial Intelligence,1,12.8815
+snowball2_remainder,33,O2972852682,,Active learning for level set estimation under cost-dependent input uncertainty.,2019,arXiv (Cornell University),1,12.8815
+snowball2_remainder,34,O3209563920,10.4208/jcm.2105-m2020-0310,Achieving Adversarial Robustness Requires an Active Teacher,2021,Journal of Computational Mathematics,1,12.8815
+snowball2_remainder,35,O4414044534,10.1007/978-3-032-04190-6_17,Robot Mission Adaptation with Quantitative Guarantees,2025,Lecture notes in computer science,1,12.8815
+snowball2_remainder,36,O4403405723,10.1029/2023jd040676,Inferring Surface NO 2 Over Western Europe: A Machine Learning Approach With Uncertainty Quantification,2024,Journal of Geophysical Research Atmospheres,1,12.8815
+snowball2_remainder,37,O4400275860,10.1109/tpwrs.2024.3422453,Topology-Based Stabilization of Islanded Microgrids With Multiple Tie Switches Under Operational Variations: A Neural Control Approach,2024,IEEE Transactions on Power Systems,1,12.8815
+snowball2_remainder,38,O7117603221,10.1109/tmc.2025.3649179,Representation Optimal Matching for Federated Learning With Noisy Labels in Remote Sensing,2025,IEEE Transactions on Mobile Computing,1,12.8815
+snowball2_remainder,39,O7164519197,10.1109/lra.2026.3703255,Online Lifelong Dynamic Learning Control for Manipulators With Closed Architecture in Multi-Tasking Environments,2026,IEEE Robotics and Automation Letters,1,12.8815
+snowball2_remainder,40,O4312973784,10.1109/tii.2022.3215985,Adaptive Neural Trajectory Tracking Control for n-DOF Robotic Manipulators With State Constraints,2022,IEEE Transactions on Industrial Informatics,1,12.8815
+snowball2_remainder,41,O4388756775,10.1109/tqe.2023.3333224,Quantum Conformal Prediction for Reliable Uncertainty Quantification in Quantum Machine Learning,2023,IEEE Transactions on Quantum Engineering,1,12.8815
+snowball2_remainder,42,O3014860839,10.48550/arxiv.1906.03804,Model-Based Reinforcement Learning with a Generative Model is Minimax Optimal,2019,arXiv (Cornell University),1,12.8815
+snowball2_remainder,43,O4394717730,10.1137/1.9781611978032.1,Local Differential Privacy in Graph Neural Networks: a Reconstruction Approach,2024,Society for Industrial and Applied Mathematics eBooks,1,12.8815
+snowball2_remainder,44,O4410115166,10.1109/access.2025.3567496,Safe Switching Model-Free Value Iteration for General Nonlinear Systems,2025,IEEE Access,1,12.8815
+snowball2_remainder,45,O4404664898,10.26434/chemrxiv-2024-f3b18-v2,Elucidating structures from spectra using multimodal embeddings and discrete optimization,2024,ChemRxiv,1,12.8815
+snowball2_remainder,46,O3216734817,10.48550/arxiv.2111.11485,A Free Lunch from the Noise: Provable and Practical Exploration for Representation Learning,2021,arXiv (Cornell University),1,12.8815
+snowball2_remainder,47,O4410731478,10.1093/biomtc/ujaf063,Conformal predictive intervals in survival analysis: a resampling approach,2025,Biometrics,1,12.8815
+snowball2_remainder,48,O3035441470,10.18653/v1/2020.acl-main.245,Robust Encodings: A Framework for Combating Adversarial Typos,2020,Annual Meeting of the Association for Computational Linguistics (ACL),1,12.8815
+snowball2_remainder,49,O3207935216,10.1109/icra48506.2021.9561253,Model-based Reinforcement Learning with Provable Safety Guarantees via Control Barrier Functions,2021,Proceedings - IEEE International Conference on Robotics and Automation/Proceedings,1,12.8815
+snowball2_remainder,50,O3093342379,,Conformal prediction interval for dynamic time-series,2020,arXiv (Cornell University),1,12.8815
+snowball2_remainder,51,O4409864513,10.1002/oca.3287,Robust Model Predictive Control With Neural Ordinary Differential Equations for Nonlinear Systems,2025,Optimal Control Applications and Methods,1,12.8815
+snowball2_remainder,52,O4382203289,10.1609/aaai.v37i8.26109,Provably Efficient Causal Model-Based Reinforcement Learning for Systematic Generalization,2023,Proceedings of the AAAI Conference on Artificial Intelligence,1,12.8815
+snowball2_remainder,53,O4382464632,10.1609/aaai.v37i7.25964,Model-Based Reinforcement Learning with Multinomial Logistic Function Approximation,2023,Proceedings of the AAAI Conference on Artificial Intelligence,1,12.8815
+snowball2_remainder,54,O2807801669,10.1109/icdcs.2018.00112,Will Distributed Computing Revolutionize Peace? The Emergence of Battlefield IoT,2018,IEEE International Conference on Distributed Computing Systems (ICDCS),1,12.8815
+snowball2_remainder,55,O4391944419,10.1115/1.4064777,Uncertainty Quantification of a Machine Learning Model for Identification of Isolated Nonlinearities With Conformal Prediction,2024,Journal of Verification Validation and Uncertainty Quantification,0,12.8815
+snowball2_remainder,56,O3202331133,10.1109/cdc51059.2022.9992383,Local Intrinsic Dimensionality Signals Adversarial Perturbations,2022,"Proceedings of the IEEE Conference on Decision & Control, including the Symposium on Adaptive Processes",0,12.8815
+snowball2_remainder,57,O2803117117,10.48550/arxiv.1802.08249,On the Convergence and Robustness of Training GANs with Regularized Optimal Transport,2018,arXiv (Cornell University),0,12.8815
+snowball2_remainder,58,O7213419735,10.1109/iccc70295.2026.11680444,Task-Oriented Multi-User Wireless Model Delivery for Edge-Assisted Autonomous Driving,2026,IEEE/CIC International Conference on Communications in China (ICCC),0,12.8815
+snowball2_remainder,59,O4393159987,10.1609/aaai.v38i14.29556,E2E-AT: A Unified Framework for Tackling Uncertainty in Task-Aware End-to-End Learning,2024,Proceedings of the AAAI Conference on Artificial Intelligence,0,12.8815
+snowball2_remainder,60,O3184908869,10.48550/arxiv.2107.11630,Detecting Adversarial Examples Is (Nearly) As Hard As Classifying Them,2021,arXiv (Cornell University),0,12.8815
+snowball2_remainder,61,O4387322853,10.48550/arxiv.2310.01262,Non-Exchangeable Conformal Risk Control,2023,IT University Of Copenhagen (IT University of Copenhagen),0,12.8815
+snowball2_remainder,62,O2905146218,10.48550/arxiv.1812.06626,Designing Adversarially Resilient Classifiers using Resilient Feature Engineering,2018,arXiv (Cornell University),0,12.8815
+snowball2_remainder,63,O2890075623,10.48550/arxiv.1809.04232,Safe Exploration in Markov Decision Processes with Time-Variant Safety using Spatio-Temporal Gaussian Process,2018,arXiv (Cornell University),0,12.8815
+snowball2_remainder,64,O3131791785,10.48550/arxiv.2102.07078,Exploiting Shared Representations for Personalized Federated Learning,2021,arXiv (Cornell University),0,12.8815
+snowball2_remainder,65,O3168834527,10.48550/arxiv.2105.14075,"Distribution-free inference for regression: discrete, continuous, and in between",2021,arXiv (Cornell University),0,12.8815
+snowball2_remainder,66,O3134374554,10.1145/3442188.3445883,Removing Spurious Features can Hurt Accuracy and Affect Groups Disproportionately,2021,"ACM Conference on Fairness, Accountability, and Transparency (FAccT)",0,12.8815
+snowball2_remainder,67,O3013816534,10.48550/arxiv.2003.12613,Adaptive Reward-Poisoning Attacks against Reinforcement Learning,2020,arXiv (Cornell University),0,12.8815
+snowball2_remainder,68,O3214770989,,Safe Exploration for Constrained Reinforcement Learning with Provable Guarantees.,2021,arXiv (Cornell University),0,12.8815
+snowball2_remainder,69,O4392909883,10.1109/icassp48485.2024.10446097,Multi-Source DOA Estimation With Statistical Coverage Guarantees,2024,IEEE International Conference on Acoustics Speech and Signal Processing,0,12.8815
+snowball2_remainder,70,O4405785279,10.1109/iros58592.2024.10801854,Safe Imitation Learning of Nonlinear Model Predictive Control for Flexible Robots,2024,IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS),0,12.8815
+snowball2_remainder,71,O7151563211,10.70675/e815126ezfd23z4ebczabcdz5fb529197cf6,Runtime safety monitoring of ML-based perception functions in autonomous systems,2023,,0,12.8815
+snowball2_remainder,72,O2962935454,,Generalizing to Unseen Domains via Adversarial Data Augmentation,2018,neural information processing systems,0,12.8815
+snowball2_remainder,73,O3044126222,10.48550/arxiv.2007.13442,Fast active learning for pure exploration in reinforcement learning,2020,Repositori digital de la UPF (Universitat Pompeu Fabra),0,12.8815
+snowball2_remainder,74,O4382318267,10.1609/aaai.v37i8.26119,Bilinear Exponential Family of MDPs: Frequentist Regret Bound with Tractable Exploration & Planning,2023,Proceedings of the AAAI Conference on Artificial Intelligence,0,12.8815
+snowball2_remainder,75,O4410358457,10.1109/tac.2025.3570248,Safety and Optimality in Learning-Based Control at Low Computational Cost,2025,IEEE Transactions on Automatic Control,0,12.8815
+snowball2_remainder,76,O4224917060,10.1109/icassp43922.2022.9747833,Federated Multi-Armed Bandit Via Uncoordinated Exploration,2022,IEEE International Conference on Acoustics Speech and Signal Processing,0,12.8815
+snowball2_remainder,77,O3089675514,,Exploration Analysis in Finite-Horizon Turn-based Stochastic Games.,2020,Uncertainty in Artificial Intelligence,0,12.8815
+snowball2_remainder,78,O4360764865,10.1109/icmla55696.2022.00123,Safe Robot Navigation Using Constrained Hierarchical Reinforcement Learning,2022,IEEE International Conference on Machine Learning and Applications (ICMLA),0,12.8815
+snowball2_remainder,79,O3082256455,10.48550/arxiv.2008.13319,Efficient Reinforcement Learning in Factored MDPs with Application to Constrained RL,2020,arXiv (Cornell University),0,12.8815
+snowball2_remainder,80,O2949505878,10.48550/arxiv.1906.06629,Robust Federated Learning in a Heterogeneous Environment,2019,arXiv (Cornell University),0,12.8815
+snowball2_remainder,81,O3097068942,10.1101/2020.10.27.358226,Compression-based Network Interpretability Schemes,2020,bioRxiv (Cold Spring Harbor Laboratory),0,12.8815
+snowball2_remainder,82,O4396227895,10.3389/frobt.2024.1344367,Safe contact-based robot active search using Bayesian optimization and control barrier functions,2024,Frontiers in Robotics and AI,0,12.8815
+snowball2_remainder,83,O4406610402,10.1109/jas.2024.124929,Broad-Learning-System-Based Model-Free Adaptive Predictive Control for Nonlinear MASs Under DoS Attacks,2025,IEEE/CAA Journal of Automatica Sinica,0,12.8815
+snowball2_remainder,84,O3122417560,10.1002/rnc.5399,Learning‐based robust neuro‐control: A method to compute control Lyapunov functions,2021,International Journal of Robust and Nonlinear Control,0,12.8815
+snowball2_remainder,85,O4386435240,10.1016/j.apenergy.2023.121783,Total and thermal load forecasting in residential communities through probabilistic methods and causal machine learning,2023,Applied Energy,0,12.8815
+snowball2_remainder,86,O3194200810,10.48550/arxiv.2108.08765,Provably Efficient Generative Adversarial Imitation Learning for Online and Offline Setting with Linear Function Approximation,2021,arXiv (Cornell University),0,12.8815
+snowball2_remainder,87,O4405489636,10.1109/embc53108.2024.10782378,Efficient Normalized Conformal Prediction and Uncertainty Quantification for Anti-Cancer Drug Sensitivity Prediction with Deep Regression Forests,2024,,0,12.8815
+snowball2_remainder,88,O4382202987,10.1609/aaai.v37i9.26353,Gradient-Adaptive Pareto Optimization for Constrained Reinforcement Learning,2023,Proceedings of the AAAI Conference on Artificial Intelligence,0,12.8815
+snowball2_remainder,89,O3169618399,10.18653/v1/2021.naacl-main.305,Double Perturbation: On the Robustness of Robustness and Counterfactual Bias Evaluation,2021,Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL-HLT),0,12.8815
+snowball2_remainder,90,O3199433392,10.1016/j.ifacol.2021.08.468,"Combining Model-Based Design and Model-Free Policy Optimization to Learn Safe, Stabilizing Controllers",2021,IFAC-PapersOnLine,0,12.8815
+snowball2_remainder,91,O7130725376,10.1109/oncon68412.2025.11384165,Adaptive Tube-Based Model Predictive Control with a Control Barrier Function-Based Safety Layer,2025,IEEE Industrial Electronics Society Annual On-Line Conference (ONCON),0,12.8815
+snowball2_remainder,92,O3192782817,10.48550/arxiv.2108.05439,Gap-Dependent Unsupervised Exploration for Reinforcement Learning,2021,arXiv (Cornell University),0,12.8815
+snowball2_remainder,93,O3044373951,,Explore More and Improve Regret in Linear Quadratic Regulators.,2020,CaltechAUTHORS (California Institute of Technology),0,12.8815
+snowball2_remainder,94,O4405486670,10.2139/ssrn.5048272,"Mean-Variance Portfolio Selection by Continuous-Time Reinforcement Learning: Algorithms, Regret Analysis, and Empirical Study",2024,SSRN Electronic Journal,0,12.8815
+snowball2_remainder,95,O3033324992,10.48550/arxiv.2006.04779,Conservative Q-Learning for Offline Reinforcement Learning,2020,arXiv (Cornell University),0,12.8815
+snowball2_remainder,96,O3132803292,10.48550/arxiv.2102.11436,Model-Based Domain Generalization,2021,arXiv (Cornell University),0,12.8815
+snowball2_remainder,97,O4390818097,10.1145/3640312,Security and Privacy Issues in Deep Reinforcement Learning: Threats and Countermeasures,2024,ACM Computing Surveys,0,12.8815
+snowball2_remainder,98,O4407557379,10.1214/24-aos2483,"Unified algorithms for RL with Decision-Estimation Coefficients: PAC, reward-free, preference-based learning and beyond",2025,The Annals of Statistics,0,12.8815
+snowball2_remainder,99,O3089494161,10.48550/arxiv.2006.11737,Verifying Individual Fairness in Machine Learning Models,2020,arXiv (Cornell University),0,12.8815
+snowball2_remainder,100,O4414244694,10.1016/j.oceaneng.2025.122789,Adaptive multi-AUV navigation via hybrid offline-online reinforcement learning with ORCA integration,2025,Ocean Engineering,0,12.8815
+snowball2_remainder,101,O2997949714,10.1609/aaai.v34i04.5730,Information-Theoretic Understanding of Population Risk Improvement with Model Compression,2020,Proceedings of the AAAI Conference on Artificial Intelligence,0,12.8815
+snowball2_remainder,102,O3134847873,10.48550/arxiv.2103.01312,UCB Momentum Q-learning: Correcting the bias without forgetting,2021,arXiv (Cornell University),0,12.8815
+snowball2_remainder,103,O4390736236,10.2139/ssrn.4679159,Machine Learning-Enhanced Conformal Prediction Approach for Road Traffic Accident Severity Assessment: A Case Study of Rome,2024,SSRN Electronic Journal,0,12.8815
+snowball2_remainder,104,O4400999328,10.5204/thesis.eprints.250817,"Manipulation on-the-move: Mobile manipulation in dynamic, unstructured environments",2024,Queensland University of Technology,0,12.8815
+snowball2_remainder,105,O3002592837,10.48550/arxiv.2001.09576,Naive Exploration is Optimal for Online LQR,2020,arXiv (Cornell University),0,12.8815
+snowball2_remainder,106,O3021137821,10.48550/arxiv.2005.00527,Is Long Horizon Reinforcement Learning More Difficult Than Short Horizon Reinforcement Learning?,2020,arXiv (Cornell University),0,12.8815
+snowball2_remainder,107,O3025606523,10.48550/arxiv.2005.05951,MOReL : Model-Based Offline Reinforcement Learning,2020,arXiv (Cornell University),0,12.8815
+snowball2_remainder,108,O7125255340,10.1007/978-3-031-99447-0_15,Probabilistic Robustness in Deep Learning: A Concise Yet Comprehensive Guide,2026,Springer eBooks,0,12.8815
+snowball2_remainder,109,O3087994398,10.48550/arxiv.2009.12718,Differentially Private Adversarial Robustness Through Randomized Perturbations,2020,arXiv (Cornell University),0,12.8815
+snowball2_remainder,110,O2901587034,10.48550/arxiv.1811.08010,Stackelberg GAN: Towards Provable Minimax Equilibrium via Multi-Generator Architectures,2018,arXiv (Cornell University),0,12.8815
+snowball2_remainder,111,O3166668003,10.48550/arxiv.2106.00154,Explanations for Monotonic Classifiers,2021,arXiv (Cornell University),0,12.8815
+snowball2_remainder,112,O7168409446,10.14778/3811243.3811256,Relational Deep Dive: Error-Aware Queries Over Unstructured Data,2026,Proceedings of the VLDB Endowment,0,12.8815
+snowball2_remainder,113,O2990565414,10.48550/arxiv.1911.13268,Adversarially Robust Low Dimensional Representations,2019,arXiv (Cornell University),0,12.8815
+snowball2_remainder,114,O3035810656,10.48550/arxiv.2006.10814,FLAMBE: Structural Complexity and Representation Learning of Low Rank MDPs,2020,arXiv (Cornell University),0,12.8815
+snowball2_remainder,115,O4396221523,10.5194/hess-2024-64-ac1,Reply on RC1,2024,,0,12.8815
+snowball2_remainder,116,O2269778407,10.1016/j.neucom.2018.04.027,Understanding adversarial training: Increasing local stability of supervised models through robust optimization,2018,Neurocomputing,0,12.8815
+snowball2_remainder,117,O4403706611,10.1007/978-3-031-73229-4_25,Imaging with Confidence: Uncertainty Quantification for High-Dimensional Undersampled MR Images,2024,Lecture notes in computer science,0,12.8815
+snowball2_remainder,118,O3199938616,10.1109/tac.2023.3253787,On the Certainty-Equivalence Approach to Direct Data-Driven LQR Design,2023,IEEE Transactions on Automatic Control,0,12.8815
+snowball2_remainder,119,O4319337365,10.1088/2632-2153/acb9d5,Multivariate prediction intervals for bagged models,2023,Machine Learning Science and Technology,0,12.8815
+snowball2_remainder,120,O4413443029,10.1109/coins65080.2025.11125785,Uncertainty-Aware LiDAR-Camera Autonomy via Conformal Prediction and Principled Abstention,2025,IEEE International Conference on Omni-layer Intelligent Systems (COINS),0,12.8815
+snowball2_remainder,121,O2947223001,10.48550/arxiv.1905.11527,Tight Regret Bounds for Model-Based Reinforcement Learning with Greedy Policies,2019,arXiv (Cornell University),0,12.8815
+snowball2_remainder,122,O3207148473,10.48550/arxiv.2110.10602,Transductive Robust Learning Guarantees,2021,arXiv (Cornell University),0,12.8815
+snowball2_remainder,123,O4405788075,10.2139/ssrn.5071672,Understanding The Stability Of Deep Learning from Weak Dependence Perspective,2024,SSRN Electronic Journal,0,12.8815
+snowball2_remainder,124,O2963945659,10.1109/lra.2019.2929987,Data-Driven Model Predictive Control for Trajectory Tracking With a Robotic Arm,2019,IEEE Robotics and Automation Letters,0,12.8815
+snowball2_remainder,125,O3035880215,,On Optimism in Model-Based Reinforcement Learning.,2020,arXiv (Cornell University),0,12.8815
+snowball2_remainder,126,O2954762061,10.1016/j.compchemeng.2019.106580,ReLU networks as surrogate models in mixed-integer linear programs,2019,Computers & Chemical Engineering,0,12.8815
+snowball2_remainder,127,O4390674931,10.1016/j.neunet.2024.106117,Perturbation diversity certificates robust generalization,2024,Neural Networks,0,12.8815
+snowball2_remainder,128,O3164995693,10.1109/tac.2022.3200948,Safe Value Functions,2022,IEEE Transactions on Automatic Control,0,12.8815
+snowball2_remainder,129,O7212311344,10.2139/ssrn.7446074,Symbolic and Neuro-Symbolic Artificial Intelligence for Safety-Critical Control Systems: A Survey and Unifying Engineering Framework,2026,SSRN Electronic Journal,0,12.8815
+snowball2_remainder,130,O4394716337,10.5194/hess-2024-64-rc1,Comment on hess-2024-64,2024,,0,12.8815
+snowball2_remainder,131,O7220930272,10.1109/cvprf71909.2026.00083,Optimizing Certified Radius of Zero-Shot Composed Image Retrieval Via Text Guidance,2026,,0,12.8815
+snowball2_remainder,132,O3038637878,10.48550/arxiv.2007.01356,Decoder-free Robustness Disentanglement without (Additional) Supervision,2020,arXiv (Cornell University),0,12.8815
+snowball2_remainder,133,O3162400012,,Conformal histogram regression,2021,arXiv (Cornell University),0,12.8815
+snowball2_remainder,134,O4386420753,10.32657/10356/169803,Toward robust natural language systems,2023,,0,12.8815
+snowball2_remainder,135,O4407896071,10.1088/2632-2153/adb9b5,Deep learning for structure-preserving universal stable Koopman-inspired embeddings for nonlinear canonical Hamiltonian dynamics,2025,Machine Learning Science and Technology,0,12.8815
+snowball2_remainder,136,O4294732780,10.5565/rev/elcvia.1517,Material Classification with a Transfer Learning based Deep Model on an imbalanced Dataset using an epochal Deming-Cycle-Methodology,2022,ELCVIA Electronic Letters on Computer Vision and Image Analysis,0,12.8815
+snowball2_remainder,137,O4223502737,10.1016/j.automatica.2022.110253,Model-free design of stochastic LQR controller from a primal–dual optimization perspective,2022,Automatica,0,12.8815
+snowball2_remainder,138,O4390190035,10.1109/iccvw60793.2023.00072,Inductive Conformal Prediction for Harvest-Readiness Classification of Cauliflower Plants: A Comparative Study of Uncertainty Quantification Methods,2023,IEEE/CVF International Conference on Computer Vision Workshops (ICCVW),0,12.8815
+snowball2_remainder,139,O3008658911,10.48550/arxiv.2003.00189,Logarithmic Regret for Adversarial Online Control,2020,arXiv (Cornell University),0,12.8815
+snowball2_remainder,140,O4391341342,10.1109/tnnls.2024.3356512,Conformal Loss-Controlling Prediction,2024,IEEE Transactions on Neural Networks and Learning Systems,0,12.8815
+snowball2_remainder,141,O7131100898,10.1109/robio66223.2025.11377478,Lyapunov Stability Learning with Nonlinear Control via Inductive Biases,2025,IEEE International Conference on Robotics and Biomimetics (ROBIO),0,12.8815
+snowball2_remainder,142,O3209476132,10.48550/arxiv.2110.14163,Does the Data Induce Capacity Control in Deep Learning?,2021,arXiv (Cornell University),0,12.8815
+snowball2_remainder,143,O2943476756,10.48550/arxiv.1905.01019,Adversarial Training with Voronoi Constraints,2019,arXiv (Cornell University),0,12.8815
+snowball2_remainder,144,O4392591475,10.1214/23-aos2342,Settling the sample complexity of model-based offline reinforcement learning,2024,The Annals of Statistics,0,12.8815
+snowball2_remainder,145,O4393147610,10.1609/aaai.v38i10.28953,Sample Efficient Reinforcement Learning with Partial Dynamics Knowledge,2024,Proceedings of the AAAI Conference on Artificial Intelligence,0,12.8815
+snowball2_remainder,146,O3211530946,10.48550/arxiv.2102.00815,"Bellman Eluder Dimension: New Rich Classes of RL Problems, and Sample-Efficient Algorithms",2021,arXiv (Cornell University),0,12.8815
+snowball2_remainder,147,O4407937759,10.1109/tcyb.2025.3539464,Probabilistic Model-Based Fault-Tolerant Control for Uncertain Nonlinear Systems,2025,IEEE Transactions on Cybernetics,0,12.8815
+snowball2_remainder,148,O4393304394,10.31274/td-20240329-36,Active learning with random forests,2023,,0,12.8815
+snowball2_remainder,149,O7154718244,10.1145/3789456.3789462,Design and Adversarial Robustness Verification of Network Intrusion Detection Model for Raw Traffic,2025,International Conference on Communication and Network Security (ICCNS),0,12.8815
+snowball2_remainder,150,O3004052494,10.48550/arxiv.2002.00082,Regret Minimization in Partially Observable Linear Quadratic Control,2020,arXiv (Cornell University),0,12.8815
+snowball2_remainder,151,O4411583732,10.1007/s13042-025-02697-8,Robust humanoid vehicle ingress with regression and whole body control,2025,International Journal of Machine Learning and Cybernetics,0,12.8815
+snowball2_remainder,152,O4399426598,10.1117/12.3021865,Calibrated confidences and prediction sets for open set SAR ATR,2024,,0,12.8815
+snowball2_remainder,153,O3202901906,10.1016/j.automatica.2022.110537,Data-driven control via Petersen’s lemma,2022,Automatica,0,12.8815
+snowball2_remainder,154,O7154987728,10.1080/1062936x.2026.2658500,Mitigating silent failures in toxicity prediction: a conformalized heteroscedastic Bayesian framework,2026,SAR and QSAR in environmental research,0,12.8815
+snowball2_remainder,155,O2808216250,10.65109/iwwg6201,Multi-Armed Bandit Algorithms for Crowdsourcing Systems with Online Estimation of Workers' Ability,2018,Adaptive Agents and Multi-Agents Systems,0,12.8815
+snowball2_remainder,156,O3212613688,10.18653/v1/2021.emnlp-main.418,Profanity-Avoiding Training Framework for Seq2seq Models with Certified Robustness,2021,Conference on Empirical Methods in Natural Language Processing (EMNLP),0,12.8815
+snowball2_remainder,157,O4398198594,10.1109/control60310.2024.10531954,Real-Time Optimization of Fuel Cell Cogeneration Systems with Safety-Aware Self-Learning Algorithms,2024,UKACC International Conference on Control,0,12.8815
+snowball2_remainder,158,O3028766998,10.48550/arxiv.2005.13239,MOPO: Model-based Offline Policy Optimization,2020,arXiv (Cornell University),0,12.8815
+snowball2_remainder,159,O4409426106,10.1109/tase.2025.3560600,Safe Data-Driven Predictive Control,2025,IEEE Transactions on Automation Science and Engineering,0,12.8815
+snowball2_remainder,160,O4393147725,10.1609/aaai.v38i11.29170,Delivering Inflated Explanations,2024,Proceedings of the AAAI Conference on Artificial Intelligence,0,12.8815
+snowball2_remainder,161,O4409563646,10.1016/j.compchemeng.2025.109136,Capturing uncertainty in black-box chromatography modelling using conformal prediction and Gaussian processes,2025,Computers & Chemical Engineering,0,12.8815
+snowball2_remainder,162,O3036835756,10.1007/978-3-030-66096-3_25,"On Sparse Connectivity, Adversarial Robustness, and a Novel Model of the Artificial Neuron",2020,Lecture notes in computer science,0,12.8815
+snowball2_remainder,163,O3154209654,10.82308/31555,On some applied problems using nonlinear elliptic partial differential equations,2020,,0,12.8815
+snowball2_remainder,164,O3208198916,10.48550/arxiv.2105.08747,Conformal Prediction using Conditional Histograms,2021,arXiv (Cornell University),0,12.8815
+snowball2_remainder,165,O4316468757,10.3390/s23020989,Robust Control Based on Adaptive Neural Network for the Process of Steady Formation of Continuous Contact Force in Unmanned Aerial Manipulator,2023,Sensors,0,12.8815
+snowball2_remainder,166,O4402843643,10.1002/rnc.7626,A stabilizing reinforcement learning approach for sampled systems with partially unknown models,2024,International Journal of Robust and Nonlinear Control,0,12.8815
+snowball2_remainder,167,O3093548068,10.48550/arxiv.2010.11425,Differentially-Private Federated Linear Bandits,2020,arXiv (Cornell University),0,12.8815
+snowball2_remainder,168,O4285156696,10.1109/lcsys.2022.3179668,Regret Minimization for Linear Quadratic Adaptive Controllers Using Fisher Feedback Exploration,2022,IEEE Control Systems Letters,0,12.8815
+snowball2_remainder,169,O2945785808,,PAC Guarantees for Concurrent Reinforcement Learning with Restricted Communication.,2019,arXiv (Cornell University),0,12.8815
+snowball2_remainder,170,O4382239134,10.1609/aaai.v37i6.25865,Global Convergence of Two-Timescale Actor-Critic for Solving Linear Quadratic Regulator,2023,Proceedings of the AAAI Conference on Artificial Intelligence,0,12.8815
+snowball2_remainder,171,O7125602401,10.1016/j.nahs.2026.101678,Data-driven stability and optimality certificates for hybrid dynamical systems,2026,Nonlinear Analysis Hybrid Systems,0,12.8815
+snowball2_remainder,172,O4404725342,10.1007/978-3-031-73013-9_9,Towards Certifiably Robust Face Recognition,2024,Lecture notes in computer science,0,12.8815
