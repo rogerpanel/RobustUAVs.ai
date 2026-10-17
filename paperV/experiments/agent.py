@@ -542,6 +542,8 @@ def _cli():
                 raise SystemExit(f"{a.model} is not listed by {a.provider} for this key; see --list-models")
             if a.price_in is None or a.price_out is None:
                 raise SystemExit("--price-in and --price-out are required (USD per million tokens, from the pricing page)")
+            if a.provider != "openai_compat" and (a.price_in <= 0 or a.price_out <= 0):
+                raise SystemExit("prices must be > 0 for a paid provider (USD per million tokens, from the pricing page)")
             lock["roles"][a.role] = {
                 "status": "pinned", "provider": a.provider, "model_id": a.model, "model_created_at": ms[a.model],
                 "verified_via": {"endpoint": f"{a.provider} list-models", "utc": now},

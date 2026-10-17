@@ -221,6 +221,14 @@ def test_no_cap_means_no_paid_call(monkeypatch, tmp_path):
         call(h)
 
 
+def test_zero_priced_paid_role_refused():
+    lk = lock("openai"); lk["roles"]["r"]["price_in_per_mtok"] = 0.0
+    with pytest.raises(H.LLMUnavailable):
+        H.role_entry("r", lk)
+    lk = lock("openai_compat", price_in_per_mtok=0.0, price_out_per_mtok=0.0)
+    assert H.role_entry("r", lk)["provider"] == "openai_compat"
+
+
 def test_unpriced_role_refused():
     lk = lock(); lk["roles"]["r"]["price_in_per_mtok"] = None
     with pytest.raises(H.LLMUnavailable):

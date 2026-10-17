@@ -86,6 +86,11 @@ def role_entry(role, lock=None):
     for k in ("provider", "model_id", "price_in_per_mtok", "price_out_per_mtok"):
         if e.get(k) in (None, ""):
             raise LLMUnavailable(f"role {role!r}: {k} is not set in models.lock.json (no call without prices)")
+    if e["provider"] != "openai_compat":           # only a self-hosted model may be free
+        for k in ("price_in_per_mtok", "price_out_per_mtok"):
+            if float(e[k]) <= 0:
+                raise LLMUnavailable(f"role {role!r}: {k} = {e[k]} in models.lock.json; a paid provider needs its real "
+                                     "price, otherwise the spend cap cannot see this model's cost")
     return e
 
 
