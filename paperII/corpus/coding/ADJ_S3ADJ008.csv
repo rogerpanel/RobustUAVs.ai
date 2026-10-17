@@ -1,0 +1,6 @@
+cid,field,value,rationale
+O4281974197,evidence,measured,"Headline coverage validated on real-world datasets (MIMIC, Insurance, COVID19, EEG, Load); codebook: measured means real-world data."
+O4283791235,perturbation,distribution,"Perturbation is sim-to-real transition-kernel mismatch framed as DRO, not an additive state disturbance term; codebook: distribution covers natural sampling variation or shift."
+O4286858784,lifts,L_conc,"Bound carries performance on n i.i.d. training samples to population expected risk (PAC-type rates for VC classes); this is a sample-based L_conc argument."
+O4313644371,class,NEW:data-driven Lyapunov control synthesis,"Controller is computed from data with an SDP Lyapunov/ROA/RPI certificate. It is not neural (NCERT), not NN reachability (CLR), and not GP/chance-constrained (LUC)."
+O4318718938,perturbation,distribution,"Regret bound holds over stochastic transitions of an unknown MDP sampled during learning; the codebook calls this natural sampling variation (distribution), not none."

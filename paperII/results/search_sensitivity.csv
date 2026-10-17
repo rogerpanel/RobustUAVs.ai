@@ -1,0 +1,7 @@
+search,scope,found,n,recall
+rev0,tier A,31,46,0.6739
+rev0,tier B,17,40,0.425
+rev0,all,48,86,0.5581
+rev0,dev (odd gid),22,43,0.5116
+rev0,held-out (even gid),26,43,0.6047
+rev0,held-out tier A,17,25,0.68

@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3170270116",1,"","LUC","A","control","in","P","disturbance","L_conc","S","simulated","GP-CBF-CLF-SOCP: necessary/sufficient conditions for pointwise feasibility of 1-delta GP chance-constrained safety constraint; ACC simulation. Rule 6: pointwise in time, so scope in not tr."
+"O4385764189",0,"Explanation-redundancy study of decision trees; no robustness or safety guarantee; overview duplicating journal version.","","","","","","","","","",""
+"O2799107510",1,"","BP","B","perception","in","A","norm","none","S","proof","Fast-Lin/Fast-Lip: certified lower bound on minimum lp adversarial distortion of ReLU networks via linear relaxation; MNIST/CIFAR only."
+"O3170697419",1,"","GEN","B","control","pop","P","distribution","L_conc","S","modelled","Offline PEVI-Adv finds eps-optimal policy w.p. 1-delta in O(H^3 S C*/eps^2) episodes under single-policy concentrability; tabular MDP theory, no experiments."
+"O2917325587",1,"","BP","A","perception","in","A","norm","none","S","proof","Symbolic propagation on abstract domains gives sound, tighter output bounds for L-inf local robustness; MNIST headline, ACAS Xu for SMT speedup. Rule 6: perception over control."

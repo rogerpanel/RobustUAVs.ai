@@ -1,0 +1,8 @@
+cid,field,value,rationale
+O2807299122,assumption,U,"L_conc lift (eq. 2) needs i.i.d. sampling from a fixed D; paper never states it, only 'probability over the choice of the training set'."
+O2850875954,lifts,L_conc;L_dyn,"Besides LSTD concentration, analysis 'relies on the contractiveness of stable policies' through the LQ plant (Lyapunov stability, mixing) to bound regret: L_dyn."
+O2850875954,evidence,modelled,"Headline O(T^{2/3+xi}) regret is an analytical theorem; simulations report stability fraction and cost, never evaluating the bound itself."
+O2910718468,scope,tr,"Doubt between tr and pop (expected cost over x0~D0); rule 6 picks smaller scope; guarantee concerns stability/convergence over closed-loop trajectories."
+O2910718468,modality,A,"Theorems 4.7/4.12 are deterministic, sound convergence statements with exact gradients; no sampling or probability enters the claim."
+O2939888044,perturbation,disturbance,"Dynamics (1) carry explicit additive process noise w(t); rule CLR-1 uses disturbance when dynamics carry an explicit disturbance or noise term."
+O2945007002,class,NEW:robustness impossibility bound,"Concentration-of-measure upper bound on adversarial accuracy/distance for any classifier; no classes.csv class (GEN, PROB) covers impossibility bounds."

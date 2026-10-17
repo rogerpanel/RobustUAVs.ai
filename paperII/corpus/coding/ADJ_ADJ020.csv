@@ -1,0 +1,9 @@
+cid,field,value,rationale
+O4407950306,lifts,none,"Forward invariance is the cited HOCBF theorem defining tr scope directly; no monitor/fallback switching (infeasibility unhandled), no plant-model lift to larger scope."
+O4407951861,class,OPREL,"Guarantee P(C(u)>c)<alpha via total probability weighting scenario frequencies P(z): operational-profile weighting of module behaviour; existing class fits, no NEW needed."
+O4407951861,assumption,S,"Representativeness of P(z) and data-estimated weights stated (""burden on designer"", approximate) but never validated; no evidence for the lift's assumption supplied."
+O4408666991,class,NEW:Bayesian posterior harm-probability bound,"No classes.csv code fits a Bayesian-posterior cautious-theory bound on true harm probability (Props 3.4/4.6); both coders chose NEW; C1 label more precise."
+O4409079480,class,SEM,"Headline guarantee is robustness over semantic subspaces (perturbation=semantic agreed); uses both Marabou (SMT) and ERAN (BP), so verifier does not define class."
+O4409079480,lifts,L_gen,"Embedding-space hyper-rectangle is an abstraction surrogate for real semantically similar sentences (embedding gap); generalisability and embedding error measured, matching agreed SE."
+O4409364009,class,SEM,"Title/headline: certifying robustness against semantic transformations (rotation, shift); smoothing is the technique, semantic certification the guarantee family; consistent with SEM label."
+O4409364009,evidence,proof,"Headline Det@80/AP@50 are certified lower bounds computed (Theorems 1, 4) on the actual smoothed model; CARLA only supplies inputs; MC confidence already captured by Ac."

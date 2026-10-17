@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3095839831",1,"","PACB","A","control","pop","P","distribution","L_conc;L_mon","SE","simulated","Scenario/VC bound: learned MPC policy feasible and tmax-suboptimal w.p. 1-eps, confidence 1-beta; dual check plus backup. Class PACB nearest, not PAC-Bayes."
+"O3035780950",1,"","CRL","B","control","pop","P","none","L_conc","S","modelled","Tabular two-player Markov game: w.p. 1-p, certified policies are eps-Nash after K episodes sample complexity. Scope pop doubtful; no experiments."
+"O4414806824",1,"","CP","A","perception","pop","P","distribution","L_conc","S","simulated","Split-conformal marginal coverage 1-alpha of PICNN uncertainty set for learned object transition matrix; iid calibration. Component could be estimation; tier A doubtful (Habitat indoor)."
+"O7133238252",0,"Online convex optimization regret bounds; no learned component of an autonomous system.","","","","","","","","","",""
+"O4402883652",1,"","NCERT","A","control","tr","A","none","L_conc","S","simulated","Learned switching LQR law plus polynomial reachability certificate steers initial set to goal in finitely many iterations; certificate checked by sampling (rule 3)."

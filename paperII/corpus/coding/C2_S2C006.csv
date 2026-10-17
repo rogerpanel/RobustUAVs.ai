@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3129335991","1","","PACB","B","perception","pop","P","distribution","L_conc","S","proof","Disintegrated PAC-Bayes (Renyi) bound on true risk of one sampled deterministic NN, w.p. 1-delta over sample and hypothesis; MNIST/FMNIST/CIFAR-10."
+"O3033405017","1","","LUC","A","control","tr","P","distribution","L_conc","S","simulated","Wasserstein-DRO DeePC: w.p. 1-beta, CVaR output constraint holds and cost upper-bounds out-of-sample cost; quadcopter sim. Doubt: data-matrix predictor as learned component; tr vs pop."
+"O3035827960","0","Analytic network moments under Gaussian input, approximate via linearization; used for attacks, no guarantee.","","","","","","","","","",""
+"O4372262625","1","","NEW:constraint-enforcing architecture","B","perception","in","A","none","none","S","proof","POLICE bias projection provably makes a CPA DNN exactly affine on a given convex polytope input region, during training and test; toy 2D tasks."
+"O2777012514","1","","SMT","B","perception","in","X","norm","none","S","proof","0-1 MILP encoding of ReLU DNN finds provably optimal minimum-L1 targeted adversarial examples on small MNIST nets. Doubt: optimality implies a forall bound (A)."

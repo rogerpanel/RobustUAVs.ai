@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+O3182959332,0,"Optimality theorem assumes information state exactly known; no guarantee on learned component","","","","","","","","","",""
+O2963582321,1,"","ALG","B","control","pop","P","distribution","L_conc","S","proof","With prob 1-delta, UBEV policy epsilon-optimal in all but polynomially many episodes, for all epsilon jointly; tabular episodic MDPs."
+O3168586460,1,"","RS","B","perception","in","Ac","semantic","none","S","proof","Exponential-mechanism DP smoothing certifies text classifier against L-word synonym substitutions with Monte Carlo confidence eta; RS vs SEM class doubt."
+O4390873449,1,"","PROB","A","estimation","in","P","norm","L_conc","SEC","proof","PAC-model robustness of pedestrian trajectory predictors in L-inf ball via scenario sampling (eps,eta); tier A doubtful (ETH/UCY, SDD pedestrian data)."
+O3106612012,1,"","PACB","A","end2end","pop","P","distribution","L_conc","SE","simulated","PAC-Bayes bound on expected cost of imitation-learned visuomotor policy over novel environments from D; tier A doubtful (Fetch indoor navigation, manipulation)."

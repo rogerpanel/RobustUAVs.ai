@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3007985585","1","","GEN","B","control","pop","P","disturbance","L_conc;L_dyn","S","simulated","NN approximate MPC: Hoeffding bound, w.p. 1-delta new i.i.d. trajectory inherits RMPC safety. Manipulator, not vehicle; class GEN vs OPREL doubtful; pop vs op."
+"O3107520776","1","","LIP","B","perception","in","A","norm","none","S","simulated","Deterministic Bernstein-smoothed classifier certified lp radius via 1-Lipschitz feature extractor and root-finding (CIFAR); root-finding not provably sound; class could be NEW."
+"O4366726364","1","","SMT","B","perception","in","A","norm","none","S","proof","Exact TADS (piecewise-affine) verification of local Linf robustness on MNIST, incl. PCA-built-in nets with robustness lifted to full input."
+"O3196583636","0","Complexity result (NP-completeness) on verification problem; no guarantee on a learned component.","","","","","","","","","",""
+"O4379116938","1","","GEN","A","control","in","P","none","none","S","simulated","Learned MPC policy error bounded by r(p) for all p in P, in probability as M grows, assuming realizability; quadcopter example."

@@ -1,0 +1,9 @@
+metric,value
+screened,2226
+included,622
+excluded_both,1604
+L1_includes,374
+L2_includes,585
+kappa_L1_L2,0.626
+batches_pending,0
+batches_invalid,0

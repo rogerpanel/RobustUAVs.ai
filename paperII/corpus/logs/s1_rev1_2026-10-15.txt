@@ -1,0 +1,154 @@
+{
+ "is_grandfathered": false,
+ "rate_limit": {
+  "daily_budget_usd": 1,
+  "daily_used_usd": 0.1499,
+  "daily_remaining_usd": 0.8501,
+  "prepaid_balance_usd": 0,
+  "prepaid_remaining_usd": 0,
+  "prepaid_expires_at": null,
+  "resets_at": "2026-10-15T00:00:00.000Z",
+  "resets_in_seconds": 44797,
+  "endpoint_costs_usd": {
+   "singleton": 0,
+   "list": 0.0001,
+   "search": 0.001,
+   "search_rerank": 0.002,
+   "rerank_extra": 0.001,
+   "content": 0.01,
+   "semantic": 0.001,
+   "text": 0.01
+  },
+  "credits_limit": 10000,
+  "credits_used": 1499,
+  "credits_remaining": 8501,
+  "onetime_credits_balance": 0,
+  "onetime_credits_remaining": 0,
+  "onetime_credits_expires_at": null,
+  "credit_costs": {
+   "singleton": 0,
+   "list": 1,
+   "search": 10,
+   "search_rerank": 20,
+   "rerank_extra": 10,
+   "content": 100,
+   "semantic": 10,
+   "text": 100
+  }
+ }
+}
+== search (2026-10-14T11:33:23Z)
+done    1829  "certified robustness" ("neural network" OR "deep learning" 
+done     708  "certifiably robust" ("neural network" OR "deep learning" OR
+done   11058  "formal verification" ("neural network" OR "deep learning" O
+done    3521  "reachability analysis" ("neural network" OR "deep learning"
+done     521  "runtime assurance" ("neural network" OR "deep learning" OR 
+done     290  "simplex architecture" ("neural network" OR "deep learning" 
+done    3191  "conformal prediction" ("neural network" OR "deep learning" 
+done     456  "PAC-Bayes" ("neural network" OR "deep learning" OR "learnin
+done     671  "statistical model checking" ("neural network" OR "deep lear
+done    1413  "scenario approach" ("neural network" OR "deep learning" OR 
+done    3257  "safety verification" ("neural network" OR "deep learning" O
+done    1743  "provable guarantee" ("neural network" OR "deep learning" OR
+done      27  "perception contract" ("neural network" OR "deep learning" O
+done    2158  "safety certificate" ("neural network" OR "deep learning" OR
+done    1250  "barrier certificate" ("neural network" OR "deep learning" O
+done    1400  "operational profile" ("neural network" OR "deep learning" O
+{
+ "is_grandfathered": false,
+ "rate_limit": {
+  "daily_budget_usd": 1,
+  "daily_used_usd": 0.9999,
+  "daily_remaining_usd": 0.0001,
+  "prepaid_balance_usd": 0,
+  "prepaid_remaining_usd": 0,
+  "prepaid_expires_at": null,
+  "resets_at": "2026-10-15T00:00:00.000Z",
+  "resets_in_seconds": 40894,
+  "endpoint_costs_usd": {
+   "singleton": 0,
+   "list": 0.0001,
+   "search": 0.001,
+   "search_rerank": 0.002,
+   "rerank_extra": 0.001,
+   "content": 0.01,
+   "semantic": 0.001,
+   "text": 0.01
+  },
+  "credits_limit": 10000,
+  "credits_used": 9999,
+  "credits_remaining": 1,
+  "onetime_credits_balance": 0,
+  "onetime_credits_remaining": 0,
+  "onetime_credits_expires_at": null,
+  "credit_costs": {
+   "singleton": 0,
+   "list": 1,
+   "search": 10,
+   "search_rerank": 20,
+   "rerank_extra": 10,
+   "content": 100,
+   "semantic": 10,
+   "text": 100
+  }
+ }
+}
+== search (2026-10-14T12:38:26Z)
+resume: 31 of 16 queries complete (33493 records kept)
+== venues (2026-10-14T12:38:30Z)
+resume: 0 of 18 venues complete (0 records kept)
+OpenAlex daily budget exhausted -- resume after 00:00 UTC (`venues --resume`)
+== venues: OpenAlex daily budget spent; sleeping 35187s until 00:05 UTC
+== venues (2026-10-15T00:05:00Z)
+resume: 0 of 18 venues complete (0 records kept)
+S&P            3 sources     2898 papers 2017-2026     18 block-A titles
+USENIX Sec     1 sources      358 papers 2017-2026      1 block-A titles
+CCS            5 sources     2976 papers 2017-2026     16 block-A titles
+NDSS           1 sources     1195 papers 2017-2026      5 block-A titles
+CAV            1 sources        9 papers 2017-2026      1 block-A titles
+TACAS          0 sources        0 papers 2017-2026      0 block-A titles
+HSCC           3 sources      320 papers 2017-2026     23 block-A titles
+ICCPS          3 sources      401 papers 2017-2026      8 block-A titles
+EMSOFT         5 sources      142 papers 2017-2026      1 block-A titles
+NFM            1 sources        1 papers 2017-2026      0 block-A titles
+SAFECOMP       1 sources        0 papers 2017-2026      0 block-A titles
+DSN            5 sources     1390 papers 2017-2026      6 block-A titles
+NeurIPS        2 sources    18066 papers 2017-2026     79 block-A titles
+ICML          14 sources     8252 papers 2017-2026      8 block-A titles
+ICLR           1 sources      587 papers 2017-2026      2 block-A titles
+CoRL           1 sources       60 papers 2017-2026      0 block-A titles
+CDC            2 sources       20 papers 2017-2026      0 block-A titles
+DASC           2 sources     1354 papers 2017-2026      3 block-A titles
+venue sweep: 38029 papers scanned in this attempt, 171 kept; sources -> /home/deploy/paper-work/paperII/corpus/venue_sources.csv
+== venues_dblp (2026-10-15T00:08:29Z)
+resume: 0 of 18 venues complete (0 records kept)
+S&P           0 volumes       0 papers 2017-2026     0 block-A titles
+USENIX Sec    0 volumes       0 papers 2017-2026     0 block-A titles
+CCS           0 volumes       0 papers 2017-2026     0 block-A titles
+NDSS          0 volumes       0 papers 2017-2026     0 block-A titles
+CAV           0 volumes       0 papers 2017-2026     0 block-A titles
+TACAS         0 volumes       0 papers 2017-2026     0 block-A titles
+HSCC          0 volumes       0 papers 2017-2026     0 block-A titles
+ICCPS         0 volumes       0 papers 2017-2026     0 block-A titles
+EMSOFT        0 volumes       0 papers 2017-2026     0 block-A titles
+NFM           0 volumes       0 papers 2017-2026     0 block-A titles
+SAFECOMP      0 volumes       0 papers 2017-2026     0 block-A titles
+DSN           0 volumes       0 papers 2017-2026     0 block-A titles
+NeurIPS       0 volumes       0 papers 2017-2026     0 block-A titles
+ICML          0 volumes       0 papers 2017-2026     0 block-A titles
+ICLR          0 volumes       0 papers 2017-2026     0 block-A titles
+CoRL          0 volumes       0 papers 2017-2026     0 block-A titles
+CDC           0 volumes       0 papers 2017-2026     0 block-A titles
+DASC          0 volumes       0 papers 2017-2026     0 block-A titles
+DBLP venue sweep: 0 papers scanned in this attempt, 0 kept
+33664 records -> 25373 unique candidates (8291 duplicates)
+[S1] identified 33664 (search 33493, venue sweeps 171, other databases 0); duplicates 8291; 25373 records to screen; 0 queries truncated
+[S1] wrote /home/deploy/paper-work/paperII/corpus/prisma_counts.csv
+[sensitivity] rev1 tier A                33/46  = 72%
+[sensitivity] rev1 tier B                21/40  = 52%
+[sensitivity] rev1 all                   54/86  = 63%
+[sensitivity] rev1 dev (odd gid)         25/43  = 58%
+[sensitivity] rev1 held-out (even gid)   29/43  = 67%
+[sensitivity] rev1 held-out tier A       18/25  = 72%
+[sensitivity] 32 misses -> /home/deploy/paper-work/paperII/corpus/search_misses.csv
+== S1 complete, revision 1 (2026-10-15T00:08:53Z)

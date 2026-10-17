@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3137534975",1,"","ALG","B","control","tr","E","disturbance","none","S","modelled","Regret bound between sqrt(T) and log T for adaptive-gradient online controller on known stable linear system; scope tr vs pop doubtful, chose smaller."
+"O3028525609",1,"","GEN","B","perception","pop","P","norm","L_conc","S","modelled","Adversarially trained two-layer ReLU net has o(1) robust error under l2 perturbations w.h.p. on sparse-coding data; poly samples; scope pop vs in doubtful."
+"O2981925314",1,"","RTA","A","control","op","A","none","L_mon","S","proof","NN-warm-started MPC with online suboptimality certificate and active-set fallback gives recursive feasibility and asymptotic stability (LTI model, quadrotor example)."
+"O3127248914",1,"","GEN","B","perception","pop","P","distribution","L_conc","S","modelled","Pruned one-hidden-layer net: sample complexity linear in non-pruned weights for linear convergence to oracle, w.h.p.; Gaussian inputs, accurate mask assumed."
+"O4386075838",1,"","BP","B","perception","in","A","norm","none","S","proof","Abstraction-trained classifier with sound and complete black-box verification of l-inf ball robustness via finite interval abstraction (granularity at least 2 eps)."

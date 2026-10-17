@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7166859555",1,"","RTA","B","control","op","A","none","L_mon","S","simulated","Guardian masks every executed RL action into data-support safe set; guarded Bellman operator contraction. Doubt: theorem is convergence, safety by construction only."
+"O4310631281",1,"","NCERT","B","control","tr","P","disturbance","L_conc;L_mon","S","simulated","GP-learned elastic-joint dynamics; robust CBF-SOCP keeps state set forward invariant w.p. 1-(m+m^2)delta, backup model switch ensures feasibility. Class doubt: RTA."
+"O7131319644",0,"Empirical evaluation of conformal methods on EEG; no guarantee stated, theory deferred elsewhere.","","","","","","","","","",""
+"O4390092008",1,"","NCERT","A","control","tr","P","disturbance","none","S","simulated","High-order stochastic CBF gives worst-case probability of set invariance for Bayesian-identified SDE; no transfer of learning error to true system argued."
+"O2964359568",1,"","SMT","B","perception","in","A","patch","none","S","proof","MILP/SMT-certified abductive explanations: fixed feature subset entails NN prediction for all values of remaining features. Perturbation doubt: patch vs semantic."

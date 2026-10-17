@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2998161546",1,"","BP","B","perception","in","A","norm","none","S","proof","Certified lower bound on l-inf weight-perturbation radius preserving top-1 class at input x via linear bound propagation; perturbation is in weight space, coded norm."
+"O4379193103",0,"Soundness of differentiable-logic loss semantics; no guarantee about a trained network.","","","","","","","","","",""
+"O3132066662",1,"","ALG","B","control","op","E","poisoning","none","S","modelled","Secure-UCB: O(log T) expected regret with O(log T) verifications under any reward poisoning; scope op vs pop doubt; bandit learner coded control."
+"O3118738365",0,"Only empirical percentages of test traces satisfying TQTL specs; no guarantee.","","","","","","","","","",""
+"O4379256329",1,"","GEN","B","planning","op","P","distribution","L_conc","S","measured","W.p. 1-delta, per-trajectory cost <= budget + count-based concentration term for diffusion planner; scope op vs pop doubt (return bound is expectation)."

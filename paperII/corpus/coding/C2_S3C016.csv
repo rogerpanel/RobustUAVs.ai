@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2945007002",1,"","NEW:robustness impossibility bound","B","perception","pop","P","norm","none","S","modelled","Upper bound on adversarial accuracy of any classifier under T2 concentration of class-conditional data; negative (impossibility) guarantee, eligibility doubtful."
+"O2913004909",1,"","GEN","B","perception","pop","P","norm","L_conc","S","modelled","Adversarially robust margin bound on l2 adversarial error via RKHS norm, w.p. 1-delta over training data; secondary to regularization headline."
+"O4362577180",0,"PhD thesis of empirical environment-poisoning attacks on RL; resilience mechanism only empirical.","","","","","","","","","",""
+"O3134221632",0,"Delta-method epistemic uncertainty estimator; only numerical approximation-error bound, no component guarantee.","","","","","","","","","",""
+"O4313644371",1,"","NEW:data-driven SDP stabilization","B","control","tr","A","disturbance","none","S","proof","Data-learned nonlinear controller certified via SDP Lyapunov: asymptotic stability, ROA/RPI estimates under disturbances; doubt whether SDP-designed controller counts as learned."

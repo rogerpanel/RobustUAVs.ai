@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7106228543",1,"",CP,B,estimation,pop,P,distribution,L_conc,S,modelled,"Finite-sample marginal coverage of OT-based multivariate conformal sets/predictive distributions under exchangeability; model-agnostic, no vehicle task."
+"O7201906978",1,"",CP,B,estimation,pop,P,distribution,L_conc,S,simulated,"Split-conformal marginal coverage 1-alpha for interval-regression NN surrogates; exchangeability stated; augmented calibration biases coverage."
+"O4414811182",1,"",NEW:ICL generalization bounds,B,estimation,pop,P,distribution,L_conc,S,modelled,"High-probability generalization bound for in-context learners under heavy-tailed task priors and dependent sequences; theory plus synthetic SDE tests."
+"O7147556692",1,"",NEW:MITM attack detection for model-free RL,B,control,op,P,disturbance,L_conc,S,simulated,"Bellman-deviation detector detects spoofing w.h.p. with no false alarms iff information advantage holds, asymptotically; scope op vs tr doubtful; toy MDP."
+"O4407950306",1,"",RTA,A,control,tr,A,none,L_dyn;L_mon,S,simulated,"RL-tuned MPC with HOCBF hard constraints keeps safe set forward invariant (cited theorem); scope tr vs op doubtful; infeasible cases occur."

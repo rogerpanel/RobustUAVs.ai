@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7162495747","1","","MON","B","perception","pop","E","distribution","L_conc","S","measured","Conformal q-values (SCQ+P-TAMS) control FDR of learned OOD detectors at level alpha under pairwise exchangeability; FDR is expectation, so E not P; MON vs CP doubt."
+"O4415986067","0","Guarantees are ProVerif cryptographic protocol proofs about non-learned access-control components only.","","","","","","","","","",""
+"O7162988865","0","Empirical evaluation of LLM verification layers; detection rates only, no formal or statistical guarantee.","","","","","","","","","",""
+"O4406786055","1","","CP","B","estimation","pop","P","distribution","L_conc","S","measured","Wasserstein upper bound on conformal coverage gap of learned regressor under joint shift, with finite-sample high-probability empirical bound."
+"O4393871000","0","Proves safety of synthesized symbolic control envelopes; no learned component in the guarantee.","","","","","","","","","",""

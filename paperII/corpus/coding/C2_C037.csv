@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3037655992","1","","NEW:dynamics-shift transfer bound","B","control","pop","E","distribution","none","S","modelled","DARC policy's expected target-domain return within 4Rmax*sqrt(eps/2) of optimal under Assumption 1; theorem on idealised optimum, MuJoCo/gridworld only."
+"O7128825065","1","","CP","A","estimation","tr","P","distribution","L_conc;L_dyn;L_hor","SE","simulated","Weighted-CP model-error bounds in SLS-MPC give P(constraints hold over T-step horizon)>=1-alpha; R-replanning extension is op; chose tr per rule 6."
+"O7161737938","0","Data-driven barrier certificates for unknown monotone systems; no learned component involved.","","","","","","","","","",""
+"O4415795436","1","","CP","B","perception","pop","E","distribution","L_conc","S","simulated","Online multi-model adaptive CP: long-run average miscoverage error o(1) under distribution shift, plus adaptive regret; CIFAR-C classifiers."
+"O7161640018","1","","RTA","B","planning","op","P","distribution","L_mon;L_rate","SE","modelled","LLM multi-agent task success >=(1-p(1-d)^k)^n via consensus check and recovery; independence assumed; class fit to RTA doubtful."

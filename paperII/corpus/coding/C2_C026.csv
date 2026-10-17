@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7220413358",0,"LLM thesis; empirical attack/defense study; only a definitional metric inequality, no certificate","","","","","","","","","",""
+"O4288481534",0,"Accuracy-sensitivity tradeoff theorem for generic Bayesian binary classifiers; no learned-component guarantee","","","","","","","","","",""
+"O4366999641",0,"Reach-avoid certificate covers non-learned controller/dynamics; SVM safe set taken as given","","","","","","","","","",""
+"O7171287931",0,"Empirical simulation RL driving study; CBF shield with slack, no stated or proved guarantee","","","","","","","","","",""
+"O3209289000",1,"","CP","A","estimation","pop","P","distribution","L_conc","SE","measured","Scenario/RCP (and conformal) bound: NN trajectory-set predictor false-negative rate <= eps with 99% confidence, i.i.d. NGSIM data; MPC safety not proved."

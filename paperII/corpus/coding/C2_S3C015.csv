@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2998050631","1","","ALG","B","control","pop","P","distribution","L_conc","S","modelled","Sample-based TRPO converges to global optimum at O(1/sqrt N), O(1/N) regularized, w.p. 1-delta; concentrability assumption stated; tabular MDPs, no experiments."
+"O3130196891","1","","GEN","B","control","pop","E","distribution","L_conc","S","modelled","Imitation learning with known transitions: Mimic-MD expected suboptimality O(|S|H^1.5/N), matching minimax lower bound; tabular MDPs, theory only."
+"O3141676405","1","","GEN","B","control","pop","P","distribution","L_conc","S","modelled","Direct data-driven predictive control: implicit model error unbiased, P(||Delta||>=eps) <= T^2 sigma/(eps^2 N); doubt: least-squares/data-driven model as learned component."
+"O3173397148","1","","GEN","B","estimation","pop","P","distribution","L_conc","S","modelled","DRO solution excess risk <= 2KM(1+sqrt(2log(1/delta)))/sqrt n w.p. 1-delta; generic hypothesis class, component coded estimation (doubt)."
+"O2899434523","1","","GEN","B","perception","in","A","norm","none","S","modelled","Sufficient delta-cover sampling makes nearest-neighbour classifier correct on whole eps-tube of data manifold; rule-6 doubt in vs pop."

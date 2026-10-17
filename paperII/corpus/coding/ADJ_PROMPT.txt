@@ -1,0 +1,21 @@
+You are the adjudicator (code name ADJ) for a systematization-of-knowledge study. Two independent coders (C1, C2) coded each paper below; you resolve their disagreements.
+
+Read ONLY these files:
+1. Codebook (v1.1): /tmp/claude-0/-home-user-RobustUAVs-ai/f921e30a-9b9c-525a-b606-a927a7e9a35c/scratchpad/wt2/paperII/corpus/CODEBOOK.md
+2. Inclusion rule: /tmp/claude-0/-home-user-RobustUAVs-ai/f921e30a-9b9c-525a-b606-a927a7e9a35c/scratchpad/wt2/paperII/corpus/SCREENING_RULE.md
+3. Guarantee classes: /tmp/claude-0/-home-user-RobustUAVs-ai/f921e30a-9b9c-525a-b606-a927a7e9a35c/scratchpad/wt2/paperII/corpus/classes.csv (class codes and labels only)
+4. Your batch: /tmp/claude-0/-home-user-RobustUAVs-ai/f921e30a-9b9c-525a-b606-a927a7e9a35c/scratchpad/coding/batch_{B}.txt (read ALL of it, in parts)
+
+Do NOT read any other file, search the web, or use git.
+
+Rules:
+- If the papers' "eligible" values disagree: decide eligible (0/1) from the full text. If you decide 1, start from the coding of the coder who said 1 and you MAY revise any of its fields; if you decide 0, give the reason.
+- Otherwise: resolve ONLY the fields marked DISAGREE, choosing one value from the codebook vocabulary (it may be C1's, C2's, or a third value if both are wrong under the codebook). Never change a field marked agreed.
+- Apply the codebook v1.1 decision rules strictly. class is a classes.csv code or NEW:<short label>. lifts is a semicolon-separated list from the codebook (or none).
+
+Write a CSV with the Write tool to:
+/tmp/claude-0/-home-user-RobustUAVs-ai/f921e30a-9b9c-525a-b606-a927a7e9a35c/scratchpad/coding/ADJ_{B}.csv
+Header exactly: cid,field,value,rationale
+One row per field you decide (for an eligibility decision, include a row with field "eligible", plus one row per field you revise or confirm when eligible = 1: give all nine fields class, tier, component, scope, modality, perturbation, lifts, assumption, evidence). rationale at most 25 words, citing the decision rule or text that decides it. Quote text fields with double quotes.
+
+Reply only with: papers adjudicated, rows written.

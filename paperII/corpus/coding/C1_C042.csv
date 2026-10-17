@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4387561115","1","","CP","B","perception","pop","P","distribution","L_conc","S","simulated","Split-conformal marginal coverage >=1-alpha for image classifier prediction sets (SAPS score); exchangeability assumed; CIFAR/ImageNet only."
+"O4400647773","1","","RTA","A","control","op","E","distribution","L_mon","S","simulated","Rule-based shield overrides DQN braking in intersections; claimed collision reduction is empirical rates, no safety theorem (rule 5 not met); doubt on eligibility."
+"O4403344774","1","","CP","B","perception","pop","P","distribution","L_conc","S","simulated","Conformal structured prediction sets with marginal or PAC (1-eps, 1-delta) coverage; i.i.d. calibration assumed; ImageNet/MNIST/LLM tasks."
+"O7167247121","0","Empirical negative evaluation of a conformal detector; no guarantee claimed or established.","","","","","","","","","",""
+"O4308244126","1","","NEW:PAC data-driven abstraction","B","estimation","pop","P","distribution","L_conc;L_hor","S","simulated","Scenario-theory PAC bound that data-driven l-complete abstraction behaviourally includes unknown deterministic system, finite and infinite horizon; doubt: learned component is the abstraction."

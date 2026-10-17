@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3082124241",1,"","GEN","B","estimation","pop","P","disturbance","L_conc","S","modelled","High-probability O(1/sqrt N) bound on OLS Markov-parameter error from multiple rollouts under Gaussian noise; no vehicle task; simulation only illustrative."
+"O4401726295",1,"","ALG","B","estimation","pop","P","poisoning","L_conc","S","modelled","Subspace-Median: eps-accurate subspace recovery w.h.p. with sample/communication complexity under <40% Byzantine nodes; analytic only. Poisoning chosen for Byzantine node outputs."
+"O2808958252",1,"","ALG","B","estimation","pop","P","distribution","L_conc","S","modelled","GD on one-hidden-layer ReLU net converges linearly to teacher weights up to statistical error w.p. 1-c/d^10; needs Gaussian inputs and near-truth initialisation."
+"O4385127973",0,"Plant-property identifiability from data (stabilizability); no learned component or learning guarantee.","","","","","","","","","",""
+"O4401358101",1,"","ALG","B","control","tr","E","disturbance","none","S","modelled","Local minimax regret lower bound of order sqrt(T) for any adaptive controller of unknown LQG system. Scope tr vs pop doubtful (expectation over noise)."

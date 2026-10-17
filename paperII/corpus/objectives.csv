@@ -1,0 +1,23 @@
+oid,group,doc,clause,statement,scope,modality,target_per_h,hazard,source_check
+O01,TLS,JARUS SORA 2.5 Main Body (JAR-doc-25),Sec. 2 target level of safety,fewer than 1E-6 fatalities per flight hour,poph,P,1e-6,N,primary
+O02,TLS,JARUS SORA 2.5 Main Body (JAR-doc-25),Sec. 2 target level of safety,fewer than 1E-7 mid-air collisions per flight hour,poph,P,1e-7,N,primary
+O03,CONT,JARUS SORA 2.5 Annex E (JAR-doc-28),Containment criterion 1 (low/medium),probability of leaving the operational volume below 1E-3 per flight hour,poph,P,1e-3,N,primary
+O04,CONT,JARUS SORA 2.5 Annex E (JAR-doc-28),Containment criterion 1 (high),probability of leaving the operational volume below 1E-4 per flight hour,poph,P,1e-4,N,primary
+O05,NSF,JARUS SORA 2.5 Annex E (JAR-doc-28),Containment criterion 4,no single failure leads to operation outside the ground risk buffer,op,A,,N,primary
+O06,CV,JARUS SORA 2.5 Main Body and Annex A (JAR-doc-26),Operational volume and contingency volume,contingency volume sized from GNSS accuracy and position-holding error and reaction and stopping distance; entry is an abnormal situation,op,A,,N,secondary
+O07,TLS,JARUS SORA 2.5 Annex E (JAR-doc-28),Test-based integrity evidence,30/300/3000/30000 flight hours for SAIL I-IV at 95 percent confidence,poph,P,,N,primary
+O08,1309,FAA AC 23.1309-1E,Figure 2,catastrophic failure condition below 1E-6 (Class I) to 1E-9 (Class IV) per flight hour,poph,P,1e-9,N,primary
+O09,NSF,FAA AC 23.1309-1E,Sec. 8,no single failure results in a catastrophic failure condition,op,A,,N,primary
+O10,1309,EASA CS-25 AMC 25.1309,Extremely improbable,catastrophic failure conditions of the order of 1E-9 per flight hour or less,poph,P,1e-9,N,secondary
+O11,GEN,EASA AI Concept Paper Issue 02,Learning assurance (generalisation bounds; LM-04),quantifiable generalisation bounds over the AI/ML constituent ODD,popd,P,,N,secondary
+O12,GEN,EASA AI Concept Paper Issue 02,MOC SA-01-8,generalisation-based error estimates are quantities on average,popd,E,,N,primary
+O13,GEN,EASA AI Concept Paper Issue 02,DM-07,data completeness and representativeness over the ODD as a prerequisite for generalisation bounds,popd,P,,N,primary
+O14,ROB,EASA AI Concept Paper Issue 02,Learning assurance (robustness; LM-12/LM-13),stability of the model under perturbations and adverse conditions,in,A,,B,secondary
+O15,OOD,EASA AI Concept Paper Issue 02,MOC SA-01-3,monitoring to detect input data outside the AI/ML constituent ODD,op,A,,N,primary
+O16,RTA,EASA AI Concept Paper Proposed Issue 03,Operational oversight system,independent oversight system bounding Level 3 AI behaviour,op,A,,N,secondary
+O17,GEN,EASA MLEAP final report (2024),Generalisation guarantees,generalisation relative to the ODD,popd,P,,N,primary
+O18,ROB,EASA MLEAP final report (2024),Robustness and stability,local robustness and stability of the trained model,in,A,,B,primary
+O19,GEN,EUROCAE ED-324 / SAE ARP6983 (concept level),Desired properties,generalisation of the ML model,popd,P,,N,secondary
+O20,ROB,EUROCAE ED-324 / SAE ARP6983 (concept level),Desired properties,stability and robustness of the ML model,in,A,,B,secondary
+O21,RTA,ASTM F3269-21,RTA architecture,safety monitor and recovery function bound the behaviour of a complex function on every execution,op,A,,N,primary
+O22,SEC,RTCA DO-326A / EUROCAE ED-202A,Threat conditions,intentional unauthorised electronic interaction does not lead to an unacceptable threat condition,op,A,,Adv,secondary

@@ -1,0 +1,6 @@
+cid,field,value,rationale
+O3037655992,class,NEW:dynamics-shift transfer bound,"Thm 4.1 bounds target-domain return of idealised DARC optimum under Assumption 1; no policy certificate, so CRL does not fit; no listed class matches."
+O3087456546,evidence,modelled,"Completeness (|S|^3) and convergence theorems are analytical proof sketches; simulations measure lap costs, not the bound; no certificate computed on a model."
+O3089014878,eligible,0,"Coq proof of value/policy iteration convergence for known finite MDPs (dynamic programming); no learned component; rule excludes guarantees about non-learned components."
+O3092184188,assumption,S,"lifts=none, so code main modelling assumption: ReLU/identity network, polytope sets, hyperrectangle domain explicitly stated (Sec. 2); no evidence for it required."
+O3092567899,lifts,L_conc;L_dyn,"Least-squares generalisation bounds (L_conc) carried to closed-loop cost via linear plant and strong stability: decoding error grows linearly if rho(A)<1 (L_dyn)."

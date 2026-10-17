@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4384521927",1,"","RTA","A","perception","op","A","none","L_mon","S","measured","Hypervisor isolation plus heartbeat monitor and backup controller keep UAV safe if DNN tracker faults; no theorem, architectural claim (rule-6 doubt on eligibility)."
+"O7140117080",0,"Empirical selective-release controller for VLM OCR; no formal or statistical guarantee stated.","","","","","","","","","",""
+"O4320724689",1,"","CRL","B","control","tr","E","disturbance","none","S","modelled","Mean-square ultimate boundedness of critic weight error under stochastic dynamics, assuming persistent excitation and stabilised environment; rule-6 doubt: tr vs in."
+"O7168656616",0,"Guarantees concern symbolic constraint-set CSP solutions and complexity, not a learned component's behaviour.","","","","","","","","","",""
+"O7161176011",1,"","CP","B","end2end","pop","P","distribution","L_conc;L_mon","SE","simulated","E-process release wrapper bounds P(release | infeasible task) <= alpha for LLM generate-verify loops under pool-dominance assumption; MBPP+ only."

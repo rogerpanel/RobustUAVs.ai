@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2796576875",1,"","NCERT","A","control","tr","A","none","none","S","proof","SMT-verified barrier certificate (unbounded-time safety) for Dubins-car path following with NN controller; assumes dReal model equals deployed dynamics."
+"O4315488717",1,"","NCERT","B","estimation","tr","A","none","L_conc","SE","simulated","Koopman-eigenfunction Lyapunov sublevel set forward invariant given bounded approximation error; polytope sampling enters claim. Doubt: A vs P; no vehicle."
+"O4386875196",1,"","CP","B","estimation","pop","P","distribution","L_conc","S","simulated","Conformal PAC bound: Christoffel-polynomial reach set covers 1-eps of reach-set mass with confidence 1-delta. Doubt: learned component marginal; generic ODEs."
+"O4391528845",1,"","RS","B","perception","in","Ac","norm","none","SEC","proof","Randomized-smoothing L2 certified radius for ensemble smoothed classifier, alpha=0.001 Monte Carlo; CIFAR/ImageNet/SVHN only."
+"O4402520256",1,"","BP","A","control","in","A","none","none","U","proof","Sound under/over-approximation of NN preimage as polytopes, sound quantitative verification. Doubt: tier A rests on parking/ACAS-style tasks; text truncated."

@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7128041204",1,"","CP","A","planning","pop","P","distribution","L_conc","S","simulated","Split-conformal coverage of LLM object-relevance prediction sets guiding multi-robot exploration under iid assumption; doubt: Habitat household ground robots counted as tier A."
+"O4281490538",1,"","CP","B","perception","pop","P","distribution","L_conc","SE","simulated","Asymptotic conformal coverage and outlier type-I error for flow-based image classifier sets under contamination, assuming training loss vanishes; CIFAR/Fashion-MNIST."
+"O4286857124",0,"Empirical fairness study; conformal coverage borrowed as evaluation tool, no own guarantee.","","","","","","","","","",""
+"O7167942380",0,"Guarantees concern exact reachability Bellman operator, not the learned value approximation.","","","","","","","","","",""
+"O4405658626",0,"Empirical DRL manipulator planning study; collision check stated without formal guarantee.","","","","","","","","","",""

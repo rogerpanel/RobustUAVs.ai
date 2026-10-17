@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3182348021",1,"","GEN","B","perception","pop","P","distribution","L_conc","S","modelled","W.p. 1-delta, worst-case expected log-loss over Wasserstein ball bounded by ARKS objective + rho/sigma + concentration term; bound proved, not computed; P vs E doubt."
+"O3130937369",1,"","SMT","B","perception","in","A","none","none","S","proof","MILP certifies ReLU neuron stability so compressed network is exactly equivalent to original on the whole bounded input domain (MNIST/CIFAR)."
+"O3102590949",1,"","GEN","B","perception","pop","P","distribution","L_conc","S","modelled","W.p. 1-gamma, uniform generalisation gap along SGD trajectory bounded via Hausdorff dimension of Feller-process proxy; bound not evaluated numerically."
+"O4379522721",1,"","PACB","B","perception","pop","P","distribution","L_conc","S","proof","Catoni-style PAC-Bayes bound on true risk of aggregated binary-activated networks, computed non-vacuously on UCI and binary-MNIST tasks under iid assumption."
+"O3213126186",1,"","ALG","B","control","pop","P","distribution","L_conc","S","modelled","W.p. 1-delta, sublinear regret for preference-based RL with linear trajectory-preference model; purely theoretical, no evaluation (tier B by default)."

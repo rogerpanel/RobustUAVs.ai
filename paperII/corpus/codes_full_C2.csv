@@ -1,0 +1,288 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note,batch
+O2741041149,0,"Doctoral abstract; convergence guarantees concern non-learned PSO/MPC planner, not learned component.",,,,,,,,,,,C025
+O2793067802,0,"Power-grid topology estimation algorithm; guarantee about classical statistical estimator, no learned component.",,,,,,,,,,,C021
+O2796576875,1,,NCERT,A,control,tr,A,none,L_dyn,S,proof,"Simulation-guided barrier certificate, dReal-verified: NN-controlled Dubins car never leaves safe set from X0. Certificate polynomial not neural; NCERT vs CLR doubt.",C014
+O2801079363,1,,SMT,A,control,in,A,none,none,S,proof,Complete branch-and-bound/MIP verification of PL-NN input-output properties; BaBSB verifies 98.4% of ACAS Xu properties within one hour.,C008
+O2804542227,0,Optimality/complexity of CIRL POMDP planning algorithm; no learned-component guarantee,,,,,,,,,,,C044
+O2888409681,0,"Position paper: high-level GSN safety argument for RL, no guarantee of its own",,,,,,,,,,,C053
+O2890660842,1,,BP,A,control,in,A,norm,none,S,proof,"Neurify: symbolic linear relaxation plus LP refinement proves/refutes input-region safety (ACAS Xu, L-norm). DAVE steering net (end2end) also verified; BP vs SMT doubt.",C017
+O2913563956,0,Hand-designed swarm state-action map proven live/safe; guarantee about non-learned component,,,,,,,,,,,C053
+O2921112343,1,,NEW:Learned stochastic forward reachable sets,A,estimation,tr,P,distribution,L_dyn,S,simulated,"Nested reach sets from learned human-action predictor capture trajectories with empirical probability 0.75-1; no confidence; tr vs pop doubt, chose smaller.",C003
+O2948254043,1,,OPREL,A,perception,pop,E,distribution,L_conc,SE,measured,Unbiased CES-sampled estimate of DNN operational accuracy on operational data; no confidence bound. Tier A only via Dave steering; component mixes classifiers/end2end.,C040
+O2955566917,1,,NEW:Lipschitz grid-search L0 robustness bounds,B,perception,in,E,norm,none,S,proof,Converging lower/upper bounds on L0 maximal safe radius averaged over finite test set; rule-6 doubt in vs pop.,C001
+O2962295100,1,,RTA,B,control,op,E,distribution,L_gen;L_mon,S,simulated,"Synthesized shield optimal for worst-case expected long-run average cost vs adversarial RL traffic-light controller, only w.r.t. abstract MDP; tier B (traffic signals, not vehicle) doubtful.",C036
+O2963160885,1,,PROB,B,perception,in,P,norm,none,S,proof,"Analytic upper bound (Borell-TIS) on GP posterior probability of delta-deviation in input neighbourhood; doubt: probability over Bayesian posterior, not environment.",C011
+O2964079458,1,,CLR,A,control,tr,A,none,L_dyn,S,proof,Benchmark suite; NNV reachability shows ACC NN controller keeps safe distance over 5 s from initial set. Example result reproduced from prior NNV work.,C015
+O2964359568,1,,SMT,B,perception,in,A,patch,none,S,proof,MILP/SMT-certified abductive explanations: fixed feature subset entails NN prediction for all values of remaining features. Perturbation doubt: patch vs semantic.,C050
+O2970900401,0,SMC validation of POMDP planner and Bayesian occupancy grid; no learned component,,,,,,,,,,,C054
+O2972713160,1,,SMT,A,control,in,A,none,none,S,proof,Complete BaB/MIP verification of piecewise-linear NN input-output properties; tier A via ACAS Xu and CollisionDetection; MNIST norm-ball properties also evaluated.,C016
+O2979091979,0,Model-checking planner; no learned component in the guaranteed system,,,,,,,,,,,C055
+O2992136447,1,,SMT,B,perception,in,A,norm,none,S,proof,nuXmv model checking shows no misclassification under relative input noise up to +-11% per test input; noise assumed integer-percent valued.,C013
+O2997425368,1,,BP,B,perception,in,A,norm,none,S,proof,"Abstract interpretation (silva) soundly, and completely for univariate splits, verifies L-inf stability of tree-ensemble classifiers on MNIST/Sensorless.",C007
+O2998709064,1,,BP,B,perception,in,A,norm,none,S,proof,"FROWN tightens CROWN linear-bound certificates of lp-ball robustness for MLP classifiers on MNIST, CIFAR10, sensorless drive data.",C012
+O3010516233,0,Analyses accuracy loss of smoothing (hypothesis-class shrinkage); no guarantee of its own on a component,,,,,,,,,,,C019
+O3016425199,0,Lyapunov synthesis for polynomial ODEs via SMT; no learned component guaranteed.,,,,,,,,,,,C047
+O3029730229,1,,LIP,B,perception,in,A,norm,none,S,proof,Curvature (Hessian eigenvalue) bound gives deterministic l2 robustness certificate for smooth-activation classifiers on MNIST; LIP vs BP class doubt.,C003
+O3035105259,1,,PACB,B,perception,pop,P,distribution,L_conc,S,modelled,"Generalisation error bound of spectrally pruned network w.p. 1-2e^-t over training sample; compression/covering bound, not PAC-Bayes; PACB nearest class.",C004
+O3035780950,1,,NEW:PAC-RL sample complexity,B,control,pop,P,distribution,L_conc,S,modelled,"Certified self-play policies are eps-approximate Nash w.p. 1-p after O(H^6 S(A+B)/eps^2) episodes; tabular Markov games, no experiments.",C041
+O3035782912,1,,SMT,A,perception,in,A,semantic,L_mon;L_sup,S,proof,"MILP proves Audi direct-perception net never steers far left on right-bending road, assuming perfect characterizer and monitored neuron-bound polyhedron.",C009
+O3037629243,1,,CLR,A,control,tr,A,disturbance,L_dyn,S,proof,Sound and complete MILP check of bounded-CTL properties for ReLU agent in nondeterministic PWL environment (VerticalCAS); doubt CLR vs SMT; nondeterminism coded as disturbance.,C012
+O3037655992,1,,NEW:dynamics-shift transfer bound,B,control,pop,E,distribution,none,S,modelled,"DARC policy's expected target-domain return within 4Rmax*sqrt(eps/2) of optimal under Assumption 1; theorem on idealised optimum, MuJoCo/gridworld only.",C037
+O3087456546,1,,CRL,A,planning,op,A,none,none,S,simulated,"CMAX++ reaches goal within |S|^3 steps per repetition, converges to optimal cost, under optimistic model assumption; model-mismatch not a listed perturbation.",C054
+O3089014878,0,Coq convergence proof for tabular value/policy iteration; no learned component,,,,,,,,,,,C034
+O3092184188,1,,SMT,A,control,in,A,norm,none,S,proof,"MarabouOpt: exact global optimum of output / minimum Linf adversarial perturbation over input regions (ACAS Xu, TaxiNet, MNIST). Doubt: component control vs perception (TaxiNet).",C038
+O3092567899,1,,PACB,B,perception,pop,P,distribution,L_conc;L_dyn,S,modelled,PAC sample complexity: RichID learns epsilon-optimal LQR policy from rich observations with learned decoder. PAC not PAC-Bayes; P vs E doubt; pop vs tr.,C009
+O3093179871,0,Guarantee is convergence of kernel safety-probability estimator; system has no learned component.,,,,,,,,,,,C016
+O3093796394,1,,BP,B,perception,in,A,norm,none,S,proof,First-order dual SDP relaxation gives sound L-inf robustness certificates for verification-agnostic MNIST/CIFAR-10 CNNs and VAE decoder latent-perturbation specification.,C007
+O3095839831,1,,PACB,A,control,pop,P,distribution,L_conc;L_mon,SE,simulated,"NN-approximated MPC feasible and tmax-suboptimal w.p. 1-eps (conf 1-beta) via scenario/VC bounds; dual check plus backup. Scenario/VC PAC, not PAC-Bayes.",C041
+O3098796714,0,Licentiate thesis duplicating journal version (Sci. Comput. Program. 2020); papers removed,,,,,,,,,,,C056
+O3101293418,1,,PACB,B,perception,pop,P,distribution,L_conc,S,modelled,PAC-Bayes margin generalization bound on worst-case affine-shift risk of federated NN classifier; MNIST/CIFAR. Convergence theorem also headline.,C022
+O3112586141,1,,SEM,A,perception,in,A,semantic,L_gen,SE,proof,"dReal proves lane-distance regressor error <0.25m over configuration/latent cells, modulo learned decoder (SSIM 0.823); open-loop, not PIL.",C004
+O3114355749,0,Reachability safety monitor for generic ADS; no learned component identified,,,,,,,,,,,C032
+O3132132679,1,,CLR,A,control,tr,A,none,L_dyn,S,proof,Projected training yields ReLU NN controller provably satisfying reach-avoid from Xinit via finite-state reachability abstraction of plant model. Full text truncated.,C009
+O3134881993,1,,OPREL,A,control,pop,P,distribution,L_conc,S,simulated,Deep-PrAE: certified upper bound on crash probability via NN outer-set plus IS. Tested AV is IDM (not learned); eligibility borderline.,C017
+O3139113494,1,,CLR,A,control,tr,A,disturbance,L_dyn,S,proof,"Interval observer with auxiliary NNs provably bounds NN-enabled system state for all t under bounded inputs (ACC); rule-6 doubt tr vs op, runtime monitor.",C012
+O3183883635,1,,BP,A,perception,in,A,distribution,L_sup,SE,proof,Sufficient conditions reuse state abstractions/Lipschitz to prove safety over enlarged data-derived input box after fine-tuning; 1/10 vehicle waypoint DNN.,C007
+O3206889533,1,,CRL,B,control,tr,A,disturbance,L_dyn,S,proof,"NN policy with closed-form gauge-map safety filter keeps state in robust controlled-invariant polytope for all bounded disturbances; doubt tr vs op, chose tr.",C043
+O3208537030,1,,PACB,B,perception,pop,P,distribution,L_conc,S,measured,"PAC-Bayes plus uniform-stability bound on expected meta-test loss over new tasks, w.p. 1-delta; bound is on an expectation (P vs E doubt); text/toy classifiers.",C007
+O3209289000,1,,CP,A,estimation,pop,P,distribution,L_conc,SE,measured,"Scenario/RCP (and conformal) bound: NN trajectory-set predictor false-negative rate <= eps with 99% confidence, i.i.d. NGSIM data; MPC safety not proved.",C026
+O3211668688,1,,SMT,B,control,in,A,none,none,S,proof,Exact LP/region-enumeration decision that TLL NN output stays in a box for all inputs in a polytope; synthetic TLL benchmarks only.,C001
+O3212063444,1,,NCERT,B,control,tr,A,norm,L_sup,S,proof,Learned NN positive invariant proves infinite-horizon safety for all BNN weights in interval box; rejection sampling keeps weights inside; perturbation is weight box.,C005
+O3213106995,1,,PACB,A,end2end,pop,P,distribution,L_conc,SE,simulated,"PAC-Bayes bound (1-delta) on expected cost of vision quadrotor policy over novel environments, generative-model prior; ~83% success. Doubt: P vs E.",C006
+O3213615249,1,,LIP,B,estimation,tr,E,none,L_dyn,S,proof,Operator-norm contraction conditions on mean/variance networks guarantee mean-square stability of deep Markov models; 2D synthetic demos only.,C001
+O3214811133,0,Empirical safe-RL study; authors state neural HJ approximation loses hard safety guarantees,,,,,,,,,,,C002
+O3214930062,1,,NEW:GP-learned model in robust adaptive control tubes,A,estimation,tr,P,disturbance,L_conc;L_dyn,S,simulated,"With prob 1-delta (GP error bounds) quadrotor state stays in contraction-L1 tube around plan for all t; GP uncertainty model coded estimation, control possible.",C019
+O3216935302,1,,MON,A,perception,in,A,disturbance,L_mon,SE,measured,Lightweight LiDAR/plausibility monitor guarantees detection of perception position errors above dxmin per object state; doubt in vs op; mostly empirical recall.,C044
+O4200294561,1,,BP,A,control,in,A,none,none,S,proof,Interval-analysis verification of DRL aquatic-drone policy decision properties over input regions; violation % bounds unsafe input fraction.,C047
+O4205626291,1,,NCERT,A,control,tr,A,none,none,S,simulated,"Jointly learned NN controller and CBF on black-box drone/ship; safety holds if CBF losses reach zero; only sample-checked, may be violated.",C045
+O4206840646,1,,BP,A,perception,in,A,norm,none,S,proof,"PRIMA multi-neuron convex relaxation certifies lp robustness of classifiers; abstract claims driving-network verification (text truncated), so component perception vs end2end doubtful.",C017
+O4221148689,1,,RTA,A,control,op,A,disturbance,L_dyn;L_hor;L_mon,S,simulated,"Safety layer with Lipschitz-inferred safe action sets and fail-safe fallback guarantees collision-free horizon against worst-case other vehicles; highD replay, 0 crashes.",C011
+O4221153097,1,,NCERT,B,control,tr,A,none,L_dyn,S,proof,"Alpha-net architecture constrained so ECBF conditions hold, safe set forward invariant by construction; QP feasibility without slack unaddressed; integrators only.",C035
+O4225423574,1,,SMT,B,perception,in,A,norm,none,SE,proof,Hybrid quantum-classical Benders MILP certificate of l-inf robustness for MNIST ReLU MLP; sound in ideal simulated setting.,C024
+O4225455743,1,,RTA,A,control,op,A,none,L_mon,S,simulated,"Rule-based emergency-braking switch overrides RL throttle policy so AV avoids collision at unprotected left turn; no proof, CARLA demos only; doubt: arguably empirical.",C055
+O4281490538,1,,CP,B,perception,pop,P,distribution,L_conc,SE,simulated,"Asymptotic conformal coverage and outlier type-I error for flow-based image classifier sets under contamination, assuming training loss vanishes; CIFAR/Fashion-MNIST.",C049
+O4283326543,0,"Tool/platform description; no guarantee of its own, only metamorphic testing results.",,,,,,,,,,,C010
+O4283657298,1,,NEW:WCET/implementation timing bound,A,control,in,A,none,none,S,proof,OTAWA static WCET bound on generated C code of ACAS-Xu/CNN nets; semantics preservation only tested; rule-6 doubt in vs op; also perception nets.,C005
+O4284967541,1,,NEW:Lipschitz-metric robustness estimation,A,perception,in,A,norm,none,S,simulated,"Safe norm-ball radius s(x)/Q via Lipschitz metric (Theorem 1); doubt: Q found by black-box local search, so not sound; ACAS Xu, MNIST, ImageNet.",C018
+O4285409484,0,Convergence and sample complexity of decentralized low-rank regression; no autonomy-relevant component guarantee.,,,,,,,,,,,C024
+O4286224460,0,"Empirical study of a prior approximate GE bound; no own guarantee, bound often violated.",,,,,,,,,,,C005
+O4286750481,1,,SMT,A,control,in,A,none,none,S,proof,"Imandra proves ACAS Xu property phi1 over input region; also toy CNN eps-ball robustness. Proofs on quantised/pruned networks, not originals.",C015
+O4286857124,0,"Empirical fairness study; conformal coverage borrowed as evaluation tool, no own guarantee.",,,,,,,,,,,C049
+O4288481534,0,Accuracy-sensitivity tradeoff theorem for generic Bayesian binary classifiers; no learned-component guarantee,,,,,,,,,,,C026
+O4303857556,0,Convergence/approximation bound of MARL training algorithm; no guarantee on learned component behaviour.,,,,,,,,,,,C033
+O4308244126,0,PAC abstraction of unknown deterministic dynamics; no learned component is the guarantee object.,,,,,,,,,,,C042
+O4310631281,1,,NCERT,B,control,tr,P,disturbance,L_conc;L_mon,S,simulated,"GP-learned elastic-joint dynamics; robust CBF-SOCP keeps state set forward invariant w.p. 1-(m+m^2)delta, backup model switch ensures feasibility. Class doubt: RTA.",C050
+O4312433875,1,,RTA,A,control,op,A,disturbance,L_mon,S,simulated,"Differentiable robust-CBF safety layer keeps RL agent forward-invariant under GP-estimated disturbance set; experiments absent from excerpt, tier uncertain.",C048
+O4312475894,1,,CLR,B,control,tr,A,none,L_dyn,S,proof,"Exact/epsilon-tight one-step reach sets of LTI plant with TLL ReLU controller, polynomial time; random A,B on VNN-COMP TLL nets, no disturbance.",C006
+O4312564465,0,Impossibility theorem on RL reward translation; no guarantee about a learned component,,,,,,,,,,,C040
+O4312744983,1,,NCERT,A,control,tr,P,disturbance,L_dyn,S,proof,"CROWN-verified neural stochastic barrier gives sound lower bound on finite-horizon safety probability; doubt: learned part is certificate only, no learned controller.",C011
+O4313121846,0,Empirical study of Lipschitz bound gaps; proposes no guarantee of its own.,,,,,,,,,,,C011
+O4313447601,1,,PACB,B,estimation,pop,P,distribution,L_conc,S,simulated,"PAC-Bayesian-like bounds (KL, Renyi) on infinite-horizon generalisation loss of learned stochastic LTI predictors from one time series.",C012
+O4315488717,0,Learned Lyapunov certificate for non-learned dynamics; no learned system component,,,,,,,,,,,C014
+O4318621098,1,,SMT,B,estimation,in,A,norm,none,S,proof,MILP certifies largest Linf ball where ReLU network approximating dynamics (or network-to-network map) is invertible; Brusselator and Van der Pol examples.,C012
+O4318685743,1,,RTA,A,planning,op,A,disturbance,L_mon,SE,simulated,NN lane-change planner gated by safe-evasion-trajectory check; collision-free if aggressiveness assessment correct (error rate measured). Doubt: disturbance vs none for bounded vehicle accelerations.,C029
+O4319323110,1,,BP,B,estimation,in,A,none,L_dyn,S,proof,Online reachability verification that motion-predictor outputs stay in output set for each time-varying input set; Lipschitz tolerance reuses earlier proofs. Perturbation none vs norm unclear.,C008
+O4320724689,1,,CRL,B,control,tr,E,disturbance,none,S,modelled,Mean-square ultimate boundedness of actor-critic critic weight error under stochastic dynamics; headline also includes counterexample (X) to prior stability claim.,C028
+O4320855572,1,,CP,B,perception,pop,P,distribution,L_conc,S,measured,Conformal sets calibrated on noisy labels keep >=1-alpha clean coverage under dispersive noise; KITTI depth only online demo; label noise maybe poisoning.,C058
+O4321392741,0,"Adversarial-training method; theorem is training-loss convergence under assumption, robustness only empirical (PGD).",,,,,,,,,,,C036
+O4362721716,1,,SEM,A,perception,in,A,patch,none,S,proof,"Certified detection: per input, any patch within size bound cannot flip an accepted ViT prediction; tier A only via GTSRB; paper also reframes as statistical.",C016
+O4366999641,0,Reach-avoid certificate covers non-learned controller/dynamics; SVM safe set taken as given,,,,,,,,,,,C026
+O4367056604,0,Tutorial on stochastic fundamental lemma for LTI systems; no learned component guarantee.,,,,,,,,,,,C045
+O4378499190,0,No guarantee on learned DDPG policy; constraint violation only estimated by simulation,,,,,,,,,,,C046
+O4378977211,1,,SEM,B,perception,in,A,semantic,L_gen,S,proof,CEGAR-refined sound verification of classifier robustness over CVAE latent ball modelling real-world shifts (MNIST/CIFAR); fidelity of generator only cited/illustrated.,C006
+O4381542600,1,,SMT,B,perception,in,A,norm,none,S,proof,Exact ADD-based pre/post-condition verification of random forest over input box (Iris); complete. Tabular classifier coded perception by closest vocabulary.,C009
+O4382318418,1,,BP,B,perception,in,A,norm,none,S,proof,"Complete IBP-based (GPU) verifier proves per-input L-inf robustness of quantized NN classifiers on MNIST/Fashion-MNIST; complete, so SMT class also arguable.",C016
+O4382935996,1,,NEW:Adaptive ISSf-CBF with online-learned parameters,A,estimation,tr,A,disturbance,none,S,proof,ISSf-HOCBF: inflated safe set forward invariant for any estimator with bounded error; doubt whether online parameter estimation counts as learned component,C056
+O4383613691,1,,CLR,B,control,tr,A,disturbance,L_dyn,S,proof,"LMI/quadratic-Lyapunov certificate: event-triggered NN controller locally stable, ellipsoidal ROA estimate for IQC-perturbed plant; inverted pendulum only.",C010
+O4384521927,1,,RTA,A,perception,op,A,none,L_mon,SE,measured,"Hypervisor-isolated Simplex-like drone architecture: heartbeat monitor switches DNN tracker to backup within 8-12 ms; no safety theorem, eligibility borderline.",C028
+O4385289198,0,Bandit regret bound for black-box SMC; verified systems contain no learned component,,,,,,,,,,,C020
+O4385300825,1,,CP,A,estimation,pop,P,distribution,L_conc,SE,simulated,"CQR regions contain true future trajectory of learned motion predictor w.p. 1-delta (F1Tenth); i.i.d. calibration assumed, test coverage checked.",C018
+O4385453437,0,Rule-based reachability verification of AV trajectories; no learned component identified,,,,,,,,,,,C020
+O4386875196,0,Conformal reach-set estimate of non-learned dynamics; no learned system component,,,,,,,,,,,C014
+O4387334532,0,Computational complexity results for NN reachability; no guarantee about a learned component.,,,,,,,,,,,C001
+O4387561115,1,,CP,B,perception,pop,P,distribution,L_conc,SE,measured,SAPS conformal score for image classifiers keeps finite-sample marginal coverage P(Y in C(X))>=1-alpha under exchangeability; validated on ImageNet/CIFAR test splits.,C042
+O4387972489,1,,OPREL,A,end2end,pop,P,distribution,L_conc,S,modelled,Conservative Bayesian (CBI) worst-case confidence in pfe/pfm bound under Klotz-correlated executions; AV example illustrative; learned component only implicit.,C023
+O4388561670,1,,OPREL,A,perception,pop,P,distribution,L_gen;L_op,S,simulated,"Bayesian safety validation estimates runway-detector failure probability over ODD distribution per approach (5.8e-3 vs 1e-4 target); point estimate, no confidence.",C043
+O4389665627,0,"Safe RL algorithm; constraint satisfaction only empirical; reuses CPO bound, no own guarantee",,,,,,,,,,,C022
+O4390092008,1,,NCERT,A,control,tr,P,disturbance,none,S,simulated,High-order stochastic CBF gives worst-case probability of set invariance for Bayesian-identified SDE; no transfer of learning error to true system argued.,C050
+O4390349808,0,Formal guarantee from HJI BRS covers non-learned dynamics; LSTM predictor unguaranteed.,,,,,,,,,,,C027
+O4390576807,1,,CRL,A,control,tr,A,disturbance,L_dyn,S,measured,"Barrier-force actor-critic: proven constraint satisfaction, stability, convergence to disturbance set via Lipschitz tightening; tr vs op doubt, chose smaller.",C054
+O4390832684,1,,BP,B,perception,in,A,norm,none,S,proof,"DeepPoly-based certification that scene-text predictions are invariant under L-inf perturbations for CTC, attention-decoder and ViTSTR models.",C013
+O4391021262,1,,NEW:Order-statistic expected-risk bound,B,perception,pop,P,distribution,L_conc,S,simulated,Permutation-invariant ambiguity-set proxy cost upper-bounds expected risk with calibrated confidence 1-delta; synthetic regression/SVM; component and class fit doubtful.,C048
+O4391188106,0,Specification logic and offline monitoring of perception data; no guarantee on learned component.,,,,,,,,,,,C047
+O4391528845,1,,RS,B,perception,in,Ac,norm,none,S,proof,"Smoothed (ensemble) classifier constant within certified L2 radius; AdvMacer/EsbRs raise ACR on CIFAR-10, ImageNet, SVHN.",C014
+O4391988331,1,,CP,B,perception,pop,P,distribution,L_conc,SE,measured,Standard split-conformal marginal coverage 1-epsilon for multi-view activity-recognition classifiers; MV-I intersection not strictly conformal.,C048
+O4393160604,1,,RTA,B,control,op,A,none,L_mon,S,proof,PPLTL action mask guarantees RL agent never takes unsafe action in training/deployment and still learns optimal safe policy; gridworlds.,C035
+O4393161169,1,,CP,B,perception,pop,P,distribution,L_conc,U,measured,"MC-dropout+CP sets claim distribution-free marginal coverage 1-alpha (inherited, exchangeability unstated); CIFAR/MNIST/UCI. Borderline eligibility: guarantee not proved.",C039
+O4393871000,0,Proves safety of synthesized symbolic control envelopes; no learned component in the guarantee.,,,,,,,,,,,C031
+O4393954477,1,,BP,A,control,in,A,none,none,S,proof,Sound LiRPA preimage under-approximation verifies proportion p of an input box mapped to output set (VCAS 90.8%); MNIST L-inf/patch also evaluated.,C013
+O4394930075,0,"PMC of non-learned allocation strategy; NN is only an MSE surrogate, no guarantee",,,,,,,,,,,C056
+O4396600859,1,,RS,B,perception,pop,P,norm,L_conc,S,proof,"RSCP+: conformal coverage >=1-alpha under L2-bounded adversarial test perturbation, MC error folded via Hoeffding; rule-1 doubt (Ac vs P).",C047
+O4396650433,0,"LLM alignment method; idealised Nash-convergence of training only, empirical benchmark evaluation.",,,,,,,,,,,C036
+O4396783611,1,,CP,B,estimation,pop,P,distribution,L_conc,S,measured,Conformal calibration of NN-learned uncertainty ellipsoids guarantees marginal coverage Pr[y in E(x)]>=eta under i.i.d. data; non-vehicle localization datasets.,C043
+O4399115387,0,"Course project; stability only asserted via cited lemma, Lyapunov network never verified; empirical results",,,,,,,,,,,C029
+O4399157133,1,,CLR,B,control,tr,A,none,L_dyn,S,proof,"SMT predicate-abstraction CEGAR proves neural planning policy reach-avoid safe from start set; doubt tr vs op (unbounded horizon), nondeterministic transitions.",C018
+O4400025616,0,Stability certified for non-learned autonomous dynamics; network only aids symbolic Lyapunov search.,,,,,,,,,,,C008
+O4400647773,0,Empirical shielded-RL collision rates in simulation; shield has no stated or proven safety guarantee.,,,,,,,,,,,C042
+O4400776977,1,,SMT,B,perception,in,A,norm,L_gen,U,modelled,SMT (Lukasiewicz logic) proves L-inf robustness/reachability of a sampled piecewise-linear surrogate of XOR net; surrogate fidelity unbounded; eligibility borderline.,C002
+O4400946840,1,,NCERT,A,control,tr,P,disturbance,L_conc,S,simulated,"GP-learned residual CBF/CLF SOCP safety filter: forward invariance w.p. 1-delta under RKHS bound; certificate hand-designed, learned residual model (class doubt NCERT/RTA).",C023
+O4401024639,0,Certificates for SMT-synthesized tabular MDP policies; no learned component involved,,,,,,,,,,,C017
+O4401414359,1,,NEW:Distributionally robust chance-constrained planning,A,estimation,pop,P,distribution,L_sup,S,simulated,Per-step collision probability <= eps for all distributions matching predictor's estimated mean/covariance; Trajectron++ predictor. Doubt: pop vs tr (MPC horizon).,C022
+O4401416547,0,Empirical planning method; authors defer strict safety guarantees to future work.,,,,,,,,,,,C039
+O4401990437,0,Concept and timing feasibility study; no stated or quantified reliability guarantee,,,,,,,,,,,C044
+O4402354142,0,Learned reach-avoid shield evaluated empirically; no proven or statistical guarantee on the system,,,,,,,,,,,C019
+O4402520256,1,,BP,B,perception,in,A,norm,none,S,proof,"LiRPA-based sound preimage under/over-approximation; sound, complete quantitative verification over input box. Experiments truncated; tier A possible (vehicle parking).",C014
+O4402753567,1,,LIP,B,perception,in,A,norm,none,S,proof,Certified l2 robust accuracy of 1-Lipschitz CNNs via margin > eps*sqrt2 on CIFAR/TinyImageNet; doubt: mainly a comparison study of existing layers.,C018
+O4402883652,1,,NCERT,A,control,tr,A,none,L_conc;L_dyn,S,simulated,Demonstration-learned switching LQR reaches goal from initial set in finitely many iterations; polynomial certificate checked by dense sampling; non-neural.,C041
+O4403317714,1,,RTA,A,control,op,A,none,L_dyn;L_hor;L_mon,S,simulated,"Online POLAR-Express reachability switches Turtlebot NN controller to backup; no proved theorem, backup assumed safe; Flatland simulation.",C002
+O4403344774,1,,CP,B,perception,pop,P,distribution,L_conc,SE,measured,"Structured conformal sets give marginal or PAC (epsilon,delta) coverage under iid calibration; component doubtful: ImageNet classifier plus LLM QA/code/text tasks.",C042
+O4403365237,1,,CRL,B,control,pop,P,distribution,L_conc,SEC,simulated,"Per-episode BTL satisfaction probability >= Pr_des during RL, via Wilson-bound policy switching, high confidence; gridworld. Doubt: op vs pop; CRL vs RTA.",C033
+O4403593963,0,Empirical RL architecture study with RTA; no guarantee stated or proven.,,,,,,,,,,,C027
+O4403853633,1,,CLR,B,control,tr,A,disturbance,L_dyn;L_sup,SE,proof,ISS/LMI: closed loop with learned linearizing NN law converges to invariant ellipsoid if residual <= eps; eps from data. Doubt: CLR vs NEW (ISS of NN model).,C006
+O4404305051,1,,NEW:PAC off-policy evaluation bound,B,control,pop,P,distribution,L_conc,S,modelled,"W.p. 1-delta over offline data, SpectralDICE policy-value error <= O(N^-1/2) under realizability/concentrability; doubt: component control vs estimation.",C021
+O4404314050,1,,RS,B,perception,in,Ac,norm,none,S,proof,"Randomized smoothing for uncertainty-equipped classifier: l2 radii for consistent-confident and no-confident-label-change predictions, confidence 1-alpha; CIFAR10/ImageNet.",C005
+O4404569890,1,,CP,A,perception,pop,P,distribution,L_conc,S,measured,Two-stage conformal calibration lower-bounds probability of correct multimodal retrieval (KITTI place recognition) under iid; coverage not empirically validated.,C052
+O4404689764,1,,PACB,B,estimation,pop,P,distribution,L_conc,S,simulated,"Renyi PAC-Bayes bound on generalisation gap of learned stochastic LTI predictors (RNN special case), O(1/sqrt N), w.p. 1-2delta.",C017
+O4404986723,1,,PACB,B,control,pop,P,distribution,L_conc,SEC,simulated,Learned optimizer hyperparameters: validation-set sample bound gives high-probability performance quantiles over parameter distribution. Not PAC-Bayes; class doubt; control component uncertain.,C009
+O4405094777,0,Data-driven barrier certificate for unknown nonlinear plant; no learned component involved,,,,,,,,,,,C053
+O4405354148,1,,CP,B,estimation,pop,P,distribution,L_conc,SE,measured,"Geo-weighted split conformal intervals cover spatial ML predictions (XGBoost, DGSI) at 1-eps under covariate shift; coverage 93.67% measured on housing data.",C053
+O4405469692,0,"Constraint removal for mp-QP/MPC; learns from solved QPs, no learned model",,,,,,,,,,,C020
+O4405658626,0,Empirical DRL manipulator planning study; collision check stated without formal guarantee.,,,,,,,,,,,C049
+O4405785676,1,,DTMC,A,perception,pop,P,distribution,L_gen,S,simulated,"AMS+online STL estimate of AV lane-change rule-violation probability with GP perception error model; no finite-sample bound. Doubt: eligibility, DTMC vs NEW.",C006
+O4405955404,1,,BP,A,perception,in,A,norm,none,S,proof,"VNN-COMP 2024 report (rule 4): per-instance local/input-region properties; winner alpha-beta-CROWN; mixed benchmarks incl. ACAS Xu, TaxiNet; component doubt.",C013
+O4406715843,0,"Heuristic decision-tree policy generalisation; performance empirical, authors state no guarantee of near-optimality",,,,,,,,,,,C029
+O4406764499,1,,CP,B,estimation,pop,P,distribution,L_conc,SE,simulated,"CQR intervals cover PHEV fuel consumption with prob >= 0.9 under exchangeability. Doubt: tier, vehicle task but not autonomous.",C022
+O4406786055,1,,CP,B,estimation,pop,P,distribution,L_conc,S,measured,"Wasserstein upper bound on conformal coverage gap of learned regressor under joint shift, with finite-sample high-probability empirical bound.",C031
+O4407039535,0,Conceptual overview of AI safety cases in rail; no guarantee of its own,,,,,,,,,,,C056
+O4407231265,1,,BP,A,perception,in,A,norm,none,S,proof,"IBP bounds on NeSy (CNNs + arithmetic circuit) constraint-satisfaction probability over l_inf ball, ROAD-R driving; perception vs end2end doubt.",C010
+O4407948456,1,,CLR,A,control,tr,A,none,L_dyn,S,proof,"Data-driven SDP certifies local asymptotic stability and ellipsoidal ROA of NN-controlled unknown LTI vehicle lateral dynamics; quadratic (non-neural) Lyapunov, so CLR over NCERT.",C007
+O4407949559,1,,NCERT,B,control,tr,A,none,none,S,proof,Exact LP/MILP computation of maximal admissible positively invariant sublevel set of given ReLU neural Lyapunov function; NN level estimator verified by MILP.,C020
+O4407950306,1,,RTA,A,control,tr,A,none,none,S,simulated,"HOCBF constraints in MPC keep CAV merging safe set forward invariant whatever RL-tuned parameters, if feasible; rule-6 doubt tr vs op.",C051
+O4407951861,1,,OPREL,A,estimation,pop,P,distribution,L_op,SE,measured,"Module uncertainty spec via total probability weighting scenario frequencies P(z) ensures P(C(u)>c)<alpha; estimates by counting, no confidence; eligibility borderline.",C003
+O4408175362,0,"Chemical toxicity application; empirical calibration of conformal intervals, no own guarantee",,,,,,,,,,,C046
+O4408666991,1,,NEW:Bayesian posterior harm bound,B,estimation,in,P,distribution,L_conc,S,simulated,"W.p. >=1-delta over data stream, true harm probability <= max over plausible theories (Ville/martingale). Rule-6: in vs op; component control vs estimation doubtful.",C038
+O4409079480,1,,SMT,B,perception,in,A,semantic,none,SE,proof,Marabou/ERAN prove text classifier robust on semantic hyper-rectangle subspaces of embedding space; text classifier coded perception; class doubt SMT vs SEM/BP.,C019
+O4409364009,1,,RS,A,perception,in,Ac,semantic,none,SE,simulated,Smoothed camera-LiDAR fusion detector certified for detection confidence and IoU under bounded rotation/shift in CARLA; RS vs SEM doubt.,C015
+O4411399924,1,,CRL,B,control,tr,P,distribution,L_dyn,S,proof,"Masked NN policy: P(enter unsafe set within horizon)<=eps per task, via known transition model; alt class RTA (shield-like mask); tr vs op doubt",C032
+O4411552344,1,,SMT,A,control,in,A,none,L_conc,SE,proof,"SMT proves Highway-env DQN policy property on input region via rational surrogate; quantization error bound estimated by testing, so soundness doubtful.",C016
+O4412514774,1,,SMT,A,control,in,A,norm,none,S,proof,"Complete DPLL(T) verifier proves input-output properties on VNN-COMP'24 incl. ACAS Xu; tier A via ACAS Xu, most benchmarks are image classifiers (component doubt).",C003
+O4413945503,1,,CP,B,estimation,pop,P,distribution,L_conc;L_mon,SE,measured,"Conformal threshold on LSTM trajectory-prediction error flags OOD at 1-delta, switching to GP-dPHS predictor; oscillating-spring data.",C033
+O4414050564,1,,CP,B,end2end,pop,P,distribution,L_conc,SE,measured,Time-varying conformal band bounds false-positive failure-detection rate at alpha over successful rollouts of visuomotor imitation policy; hardware tested.,C038
+O4414449094,0,Empirical adversarial defense via Jacobian regularization; no certified or formal guarantee,,,,,,,,,,,C055
+O4414806824,1,,CP,A,perception,pop,P,distribution,L_conc,S,simulated,"PICNN conformal set covers true object transition matrix w.p. >=1-alpha (marginal); Habitat indoor MultiON, tier A doubtful.",C041
+O4414811182,1,,NEW:statistical generalisation bound,B,estimation,pop,P,distribution,L_conc,S,modelled,High-probability ICL generalisation bound for trained transformer under heavy-tailed task prior and dependent sequences; eligibility doubtful (pure learning theory).,C051
+O4415042174,0,Assurance-case/SPI methodology with expert belief propagation; no learned-component guarantee.,,,,,,,,,,,C039
+O4415179585,0,"Convergence claim inherited from prior GTD work; no own guarantee, simulation only",,,,,,,,,,,C004
+O4415197707,1,,CP,B,perception,pop,P,distribution,L_conc,SE,measured,Split conformal prediction sets for LVLM multiple-choice VQA with marginal coverage >= 1-alpha under exchangeability; empirical error rates checked.,C057
+O4415795436,1,,CP,B,perception,pop,E,distribution,L_conc,S,simulated,"Online multi-model adaptive CP: long-run average miscoverage error o(1) under distribution shift, plus adaptive regret; CIFAR-C classifiers.",C037
+O4415795464,0,"Backdoor poisoning attack study; theorems guarantee attack success, not assurance.",,,,,,,,,,,C023
+O4415799201,1,,CP,B,perception,pop,E,distribution,L_conc,S,measured,L-ARC online calibration: asymptotic localized (reweighted) expected risk of set predictor <= alpha + gap under iid; doubt E vs P (risk is expectation).,C047
+O4415886758,1,,RTA,B,control,op,A,disturbance,L_conc;L_mon,SE,simulated,"Grid shield (Thm 1) makes RL strategy learned under it safe; simulation-sampled abstraction, SMC check 99% CI; doubt A vs P.",C024
+O4415913028,1,,CP,A,planning,pop,P,distribution,L_conc,S,measured,"Calibrated probability that LLM plan-compliance verdict is correct, from latent-distance calibration set (i.i.d.); not strictly conformal; scope pop vs in doubtful.",C021
+O4415986067,0,Guarantees are ProVerif cryptographic protocol proofs about non-learned access-control components only.,,,,,,,,,,,C031
+O4416177651,0,PhD thesis on regret bounds for distributed online optimization; no learned-component guarantee.,,,,,,,,,,,C033
+O4416190460,1,,CP,A,estimation,pop,P,distribution,L_conc,U,measured,"Split-conformal intervals on neural-process robot state estimates, coverage >= 1-alpha for next sample; coverage not empirically reported, assumption unstated.",C057
+O4416243460,0,Adaptive CBF safety filter with RLS parameter estimation; no learned ML component.,,,,,,,,,,,C024
+O4416383082,1,,NEW:Stability-based generalisation bound,B,perception,pop,E,distribution,none,S,measured,"Expected test-error bound for mixed real/synthetic training via uniform stability, U-shaped in Wasserstein gap; class doubt PACB vs NEW; evidence measured-vs-modelled doubt.",C045
+O4416407150,1,,CRL,A,control,tr,A,disturbance,none,S,modelled,"Claimed local asymptotic Lyapunov stability of MARL feedback-linearized closed loop under bounded delay/noise; sketch proofs only; doubt tr vs in, class fit.",C048
+O4416603702,1,,BP,A,perception,in,A,patch,none,S,proof,LiRPA preimage under-approximation: all inputs in certified subregion of patch domain keep GTSRB label; coverage ratio Monte Carlo estimated; SEM class possible.,C001
+O4416904409,1,,NEW:Stability/Rademacher generalisation bound,B,estimation,pop,P,distribution,L_conc,S,modelled,"Generalisation bound w.p. 1-delta for GeoAda-trained model; asymptotic, assumes convex loss and exact G-invariance; never instantiated numerically.",C034
+O4416919197,0,Compression recovery bounds under hypothetical noise model; no guarantee on component behaviour,,,,,,,,,,,C002
+O4416999542,0,Termination bound for an assumed Markov-chain model of LLM-verifier pipeline; no learned-component guarantee.,,,,,,,,,,,C036
+O4417137914,1,,CP,B,perception,pop,E,distribution,L_conc,S,measured,"SeqCRC bounds expected detection loss <= alpha under iid calibration. E vs P doubt (CRC); datasets truncated, likely COCO.",C015
+O4417290994,0,Survey book chapter on agentic AI architectures; no guarantee of its own.,,,,,,,,,,,C023
+O4417292332,1,,CP,B,perception,pop,P,distribution,L_conc,S,simulated,CQR coverage per wavelet coefficient for image-reconstruction nets plus Hoeffding bound on CHEM estimate under i.i.d.; synthetic degradations of real images.,C025
+O4417439619,0,Hybrid-system identification algorithm correctness; no guarantee about a deployed learned component.,,,,,,,,,,,C027
+O7106162589,0,Convergence of game-theoretic equilibrium-seeking algorithm; no learned component guaranteed,,,,,,,,,,,C044
+O7106228543,1,,CP,B,estimation,pop,P,distribution,L_conc,S,proof,Finite-sample marginal coverage of OT-conformalized multivariate prediction regions/CPDs for any predictor under exchangeability; generic synthetic data only.,C051
+O7118017025,1,,CP,B,estimation,pop,P,distribution,L_conc,S,measured,Non-asymptotic excess-risk bound for density-weighted quantile regression improving conformal conditional coverage; tabular UCI regression; component/class fit doubtful.,C015
+O7123346317,1,,NCERT,A,control,tr,A,none,none,S,simulated,Max-composition of learned CS-RBF local CBFs is a valid nonsmooth CBF giving forward invariance; local validity not certified (Lipschitz too large). Scope tr vs op doubt.,C030
+O7125487007,0,Stochastic CBF with Kalman/Lie-group estimation; no learned component,,,,,,,,,,,C056
+O7125517238,0,Model checking of non-learned IDS automaton abstractions; no learned-component guarantee,,,,,,,,,,,C038
+O7127925835,0,"Empirical Neural ODE regularizer; Gronwall bound is motivational, never certified on model",,,,,,,,,,,C044
+O7128015350,1,,RTA,A,control,op,A,none,L_mon,U,simulated,"Viability-based action mask shields tabular Q-learning so hard constraints never violated; by construction on abstraction representative states, no formal theorem.",C030
+O7128041204,1,,CP,A,planning,pop,P,distribution,L_conc,S,simulated,Split-conformal coverage of LLM object-relevance prediction sets guiding multi-robot exploration under iid assumption; doubt: Habitat household ground robots counted as tier A.,C049
+O7128825065,1,,CP,A,estimation,tr,P,distribution,L_conc;L_dyn;L_hor,SE,simulated,Weighted-CP model-error bounds in SLS-MPC give P(constraints hold over T-step horizon)>=1-alpha; R-replanning extension is op; chose tr per rule 6.,C037
+O7129017294,0,"Verifies Petri-net structural properties (safeness, deadlock) of BNN encoding, not learned behaviour",,,,,,,,,,,C004
+O7130695231,1,,CP,B,estimation,pop,P,distribution,L_conc,S,measured,"Split-conformal marginal coverage 1-alpha for bearing RUL predictor under exchangeability; headline is accuracy, conformal optional and cited, borderline eligibility.",C052
+O7131319644,0,"Empirical evaluation of conformal methods on EEG; no guarantee stated, theory deferred elsewhere.",,,,,,,,,,,C050
+O7131417432,0,Formal verification targets generated PLC code (non-learned); headline is empirical pass rates,,,,,,,,,,,C046
+O7131910089,1,,NEW:GP regression error bound,B,estimation,in,A,none,none,S,modelled,"Deterministic GPR error bound |f-f*|^2<=C*Var over domain, giving Jacobi convergence condition; C=RKHS norm unknown; not autonomous-system relevant.",C052
+O7133204952,0,Approximation-error lower bounds for equivariant model classes; no assurance guarantee on a component.,,,,,,,,,,,C030
+O7133238252,0,Online convex optimisation regret/projection-efficiency theory; no guarantee about a learned component.,,,,,,,,,,,C041
+O7133267090,1,,NEW:Learning-theoretic generalisation bound,B,perception,pop,P,distribution,L_conc,S,modelled,"W.p. 1-delta, GD-trained two-layer net's population error bounded by gradient-feature optimum; purely theoretical; generic classifier coded perception.",C008
+O7134853944,1,,DTMC,B,control,tr,P,distribution,L_dyn,S,proof,Storm PMC on PPO-induced DTMC: bridge-failure probability 3.55% over 20-year horizon; scope tr vs pop doubt; MDP synthetic.,C034
+O7134959935,1,,CP,B,perception,pop,P,distribution,L_conc,S,measured,RCPS/LTT plus transfer-informed betting: Pr[unsafe cache-hit rate of selective intent classifier <= alpha] >= 1-delta under iid calibration. Class doubt: CP vs PACB.,C027
+O7135102326,1,,CP,A,control,tr,P,distribution,L_conc;L_hor,S,measured,Belief CBF with conformal prediction bounds avoid-set probability over finite horizon; learned RL belief CLF; tr vs op doubt; space free-flyer tier doubt.,C023
+O7135162928,1,,CP,A,estimation,pop,P,distribution,L_conc,SE,measured,"ConForME: conformal multi-horizon trajectory-prediction tubes with joint 1-alpha coverage under exchangeability; thesis, journal-duplication not verifiable from text.",C057
+O7136229505,0,Empirical LLM reasoning evaluation; no formal or statistical guarantee,,,,,,,,,,,C022
+O7138101982,1,,NEW:policy-gradient convergence,B,control,pop,E,distribution,L_conc,S,modelled,"Minibatch SGD on domain-randomized LQR reaches epsilon-suboptimal expected cost w.p. 1-delta, jointly stabilizing all sampled plants; eligibility borderline (optimization guarantee); cart-pole.",C043
+O7138277436,1,,BP,B,perception,in,A,norm,none,S,proof,"Complete BaB verification (alpha-beta-CROWN, DRG branching) of local robustness on MNIST/CIFAR-10 nets; doubt BP vs SMT (complete verifier).",C005
+O7138473169,1,,CRL,A,control,pop,E,distribution,L_gen;L_sup,S,simulated,Certified lower bound on expected return under real dynamics via KL to traffic prior (trust-region assumption); plus Nash convergence; bound not evaluated numerically.,C052
+O7138907351,1,,OPREL,B,end2end,pop,P,distribution,L_op;L_rate,S,simulated,Hierarchical imprecise-Bayes posterior envelopes on LLM failure probability and n-task failure-free reliability under OP; component LLM fits no category.,C030
+O7138945547,1,,CP,B,perception,pop,P,distribution,L_conc,U,measured,"Split conformal sets for RF landslide classifier, marginal 1-alpha coverage; exchangeability unstated despite spatial dependence; empirical coverage plotted.",C025
+O7139111173,1,,SMT,B,perception,in,A,norm,none,S,proof,"SMiLE architecture plus MILP counterexample search proves zero violation of global relational properties (robustness, fairness, monotonicity) over whole input domain.",C003
+O7139119937,0,"Guarantee concerns dataset Bayes-error estimate (unlearnable data), not a learned component.",,,,,,,,,,,C043
+O7139143999,0,Data-driven linear robust MPC; no learned (ML) component guaranteed,,,,,,,,,,,C032
+O7140091238,0,"Empirical RAG uncertainty benchmark; conformal coverage used as metric, no own guarantee",,,,,,,,,,,C054
+O7140117080,0,Empirical selective-release OCR controller; explicitly no formal or statistical guarantee.,,,,,,,,,,,C028
+O7140324240,1,,NEW:asymptotic learned-predictor error rates,B,estimation,pop,E,distribution,none,S,simulated,"Exact asymptotic expected excess H-step prediction error of least-squares single/multi-step linear predictors; stylized LTI; eligibility borderline (analysis, not certificate).",C035
+O7144391708,0,Cryptographic integrity/privacy guarantees for V2X messages; no guarantee on learned component behaviour,,,,,,,,,,,C057
+O7147556692,1,,MON,B,control,op,P,distribution,L_conc,S,simulated,Bellman-deviation detector flags MITM attack on Q-learning agent w.h.p. asymptotically iff information-advantage holds; rule-6 doubt op vs pop; MON closest.,C051
+O7151076360,1,,LIP,B,perception,in,A,norm,none,S,modelled,"Exact Lipschitz constant of integral-kernel feature maps bounds Lip(h) for all RKHS predictors; doubt: no task, feature map not learned.",C018
+O7152649819,1,,NEW:bandit regret/approximation bound,B,planning,tr,E,disturbance,none,SE,modelled,Expected approximation bound vs optimal for distributed EXP3 camera coordination under delays/clock mismatch; tr vs op doubt; learned-component status borderline.,C035
+O7154959401,0,TLA+ guarantees cover non-learned admission-control protocol for software agents only,,,,,,,,,,,C040
+O7155091958,1,,NEW:Statistical recovery bound for continual learning,B,estimation,pop,P,distribution,L_conc,S,modelled,"W.p. 1-delta over samples, weighted/average estimation error of continual-learning predictor under replay, distillation or data-dependent weights is bounded; theory only, no experiments.",C055
+O7155371970,1,,CP,B,planning,pop,P,distribution,L_conc,S,simulated,"ICAD labels LLM-agent step rewards with FNR<=eps_s, FPR<=eps_f under iid; doubt: guarantee on labeler, not agent itself",C032
+O7157859985,1,,PIL,A,perception,tr,A,distribution,L_dyn;L_gen,SE,measured,SLS output-feedback tubes guarantee constraint satisfaction over horizon given empirically calibrated state-dependent visual observation error bounds; modality A conditional on calibration.,C027
+O7160305831,0,"Empirical safety-filter evaluation; safety certificate deferred to prior work, no own guarantee.",,,,,,,,,,,C039
+O7160560765,0,"Conceptual shielding architecture description; no stated or proven guarantee, no evaluation.",,,,,,,,,,,C033
+O7160879966,1,,CP,A,perception,pop,P,distribution,L_conc,SE,measured,Split-CP box-level marginal coverage >=1-4alpha (Bonferroni) for EfficientDet boxes under exchangeability; empirical coverage checked on KITTI/BDD/CODA incl. shift.,C039
+O7160958905,0,"Enterprise LLM-agent governance framework; empirical production metrics; architectural claims asserted, not formalized.",,,,,,,,,,,C021
+O7161176011,1,,CP,B,end2end,op,P,distribution,L_conc;L_hor,SE,simulated,"Hard-negative rank-calibrated e-process bounds false-release probability on infeasible tasks by alpha; op vs pop doubt, chose op; class CP approximate.",C028
+O7161263437,0,Proofs cover non-learned workflow logic only; AI decisions treated as unverified assumptions,,,,,,,,,,,C019
+O7161387891,1,,CP,B,perception,pop,P,distribution,L_conc,SE,measured,"Split-conformal 90% marginal coverage for crystal-property GNN, 89.1% measured; WL expressivity theorem not coded; component perception doubtful (regressor).",C021
+O7161640018,1,,RTA,B,planning,op,P,distribution,L_mon;L_rate,SE,modelled,LLM multi-agent task success >=(1-p(1-d)^k)^n via consensus check and recovery; independence assumed; class fit to RTA doubtful.,C037
+O7161737938,0,Data-driven barrier certificates for unknown monotone systems; no learned component involved.,,,,,,,,,,,C037
+O7161742013,0,"Verifier benchmark; robustness proofs concern hand-constructed, not learned, networks.",,,,,,,,,,,C010
+O7162495747,1,,MON,B,perception,pop,E,distribution,L_conc,S,measured,"Conformal q-values (SCQ+P-TAMS) control FDR of learned OOD detectors at level alpha under pairwise exchangeability; FDR is expectation, so E not P; MON vs CP doubt.",C031
+O7162760278,1,,CP,B,perception,op,P,distribution,L_conc;L_hor,S,simulated,"Anytime-valid false-alarm bound delta_e+delta_cal across refreshed conformal RAG deployments; LLM QA scorer; doubt op vs pop, component fit.",C048
+O7162988865,0,"Empirical evaluation of LLM verification layers; detection rates only, no formal or statistical guarantee.",,,,,,,,,,,C031
+O7163179530,1,,CP,B,estimation,pop,E,distribution,L_conc,S,proof,POGO parameter-free online conformal: finite-time bound on time-averaged group-conditional miscoverage for arbitrary streams; E (average) vs A doubt.,C052
+O7164836213,1,,CP,B,estimation,pop,P,distribution,L_conc,U,measured,"Split-conformal finite-sample coverage for clinical risk regression heads; coverage invoked, not evaluated in visible text; exchangeability unstated; component estimation doubtful.",C057
+O7164897298,1,,NEW:robustness-based generalisation bound,B,perception,pop,P,distribution,L_conc,S,measured,Expected 0-1 risk bounded w.p. 1-delta via stable/unstable cluster local robustness; ImageNet classifiers; robustness terms sampled; NEW vs PACB doubt.,C002
+O7166701031,1,,NEW:Training-distribution bound on dangerous predictors,B,estimation,pop,P,none,none,S,modelled,"Thm 5.26: training-process probability of dangerous Predictor <= Cbad*Rshell; purely theoretical, no benchmark; tier B and component estimation doubtful.",C054
+O7166813758,1,,CP,B,estimation,tr,P,distribution,L_conc;L_dyn,SE,simulated,Invariant-measure conformal tube: P(all k-step errors within q*Gamma_k(L)) >= 1-k*alpha for learned predictor; tr vs pop doubt.,C035
+O7166859555,1,,RTA,B,control,op,A,none,L_mon,S,simulated,"Guardian masks every executed RL action into data-support safe set; guarded Bellman operator contraction. Doubt: theorem is convergence, safety by construction only.",C050
+O7167089804,1,,RTA,B,planning,op,A,none,L_mon,S,simulated,"Utility gate proves no LLM-proposed action with utility below threshold is ever dispatched; UR5 manipulators, not a vehicle.",C046
+O7167247121,0,"Negative empirical evaluation; shows conformal exchangeability assumption violated, claims no guarantee.",,,,,,,,,,,C042
+O7167735818,1,,BP,A,perception,in,A,norm,none,S,proof,Star-set reachability (NNV) certifies targeted eps-robustness of feature subset per input; tier A via TaxiNet only qualitatively; CP-Star backend probabilistic for deep nets.,C011
+O7167942380,0,"Guarantees concern exact reachability Bellman operator, not the learned value approximation.",,,,,,,,,,,C049
+O7168241292,0,"Position/framework paper; no formal, statistical or architectural guarantee stated",,,,,,,,,,,C032
+O7168509562,0,Guarantee covers discrete coordination logic only; learned scorer and LLM explicitly outside model,,,,,,,,,,,C055
+O7168656616,0,"Guarantees concern symbolic constraint sets' shortcut-freeness, not a learned component's behaviour.",,,,,,,,,,,C028
+O7169592824,1,,RTA,A,control,op,A,none,L_mon,S,modelled,"Theorem HAF: if 22 contracts hold, safety-first behavior tree/action mask keeps MARL swarm safe; no evaluation, UAV SAR domain only; tier doubtful.",C025
+O7169620179,1,,RTA,B,control,op,A,none,L_mon,U,simulated,"Deterministic safety layer clips every LLM insulin dose to IOB/RoC limits; asserted, no theorem; doubt in vs op.",C046
+O7169762495,1,,NCERT,A,control,tr,P,disturbance,L_conc,S,simulated,"Data-driven kernel barrier: finite-horizon safety prob >=1-(eta+cT) with confidence 1-rho for NN-controlled stochastic system; text truncated, tier from vehicle example.",C013
+O7169876191,1,,SEM,B,perception,in,A,semantic,none,S,proof,"RSIP-SSIP verified robust accuracy against parameterised blur/sharpen kernels after certified training, e.g. ~80% on CIFAR10; SEM vs BP doubt.",C034
+O7171287931,0,"Empirical simulation RL driving study; CBF shield with slack, no stated or proved guarantee",,,,,,,,,,,C026
+O7171488556,1,,CP,B,end2end,pop,P,distribution,L_conc;L_mon,SE,simulated,"Role-stratified conformal risk control bounds per-role violated-and-allowed rate of LLM tool-call fields; doubt: component end2end vs planning, perturbation distribution vs prompt-injection.",C020
+O7171834681,0,"Conformal-calibrated Bayesian optimization for antenna switching; simulation only, no stated guarantee.",,,,,,,,,,,C025
+O7171968334,0,Narrative review of hybrid robot navigation; no guarantee of its own.,,,,,,,,,,,C030
+O7172049593,0,Correctness comes from non-learned subtype checker; LLM synthesis evaluated only empirically,,,,,,,,,,,C034
+O7201906978,1,,CP,B,estimation,pop,P,distribution,L_conc,S,simulated,"Split/CQR conformal coverage 1-alpha for NN interval-propagation surrogates (RANN, CROWN, DeepONet); exchangeability breaks with augmented calibration data.",C051
+O7202270053,1,,CP,A,estimation,pop,P,distribution,L_conc,U,measured,"Conformal 95% error set for learned NN residual rover dynamics, used in CVaR planning; headline risk reduction is empirical; weak, borderline eligibility.",C053
+O7203720573,1,,CP,B,estimation,pop,P,distribution,L_conc,SE,simulated,"Split conformal/CQR RUL intervals on C-MAPSS turbofan with marginal 90% coverage under exchangeability; empirically 89.3% validation, 77% test.",C029
+O7204119119,1,,RTA,B,planning,op,A,semantic,L_mon,SE,simulated,"Release-predicate invariant: LLM-derived skill sequences reach RAN only if contract, zero-trust score and gate pass; perturbation semantic vs poisoning doubtful.",C045
+O7204467824,1,,RTA,A,control,op,A,none,L_mon,SE,simulated,NN-encoded viability kernel as MPC terminal constraint guarantees safe abort fallback on hexarotor; class doubt RTA vs NCERT.,C024
+O7204803478,0,"Differential-privacy guarantee for emotion recognition; no safety/robustness guarantee, not autonomous system",,,,,,,,,,,C040
+O7212031345,1,,CP,B,estimation,pop,P,distribution,L_conc,SE,simulated,Max-norm split-conformal band gives finite-sample joint 10-year trajectory coverage of bridge deterioration forecasts under exchangeability; synthetic benchmark.,C036
+O7213414119,1,,CLR,A,control,tr,A,disturbance,L_dyn,S,proof,"Sound BaB reach-avoid certificates for nonlinear NN feedback systems on AINNCS; model has bounded eps term, though most instances initial-set only.",C004
+O7214089039,1,,CP,B,estimation,pop,P,distribution,L_conc;L_hor,SEC,simulated,"Promoted world-model-guided decisions harmful with probability <= alpha+delta via conformal/TV-audit bounds and Bellman telescope. Doubt: P vs E, pop vs op.",C029
+O7214657561,1,,RTA,B,planning,op,A,none,L_mon,S,simulated,"Runtime mediating LLM-agent device actions: authorized completions satisfy task obligations, recoveries sound, conditional on assumptions A1-A5.",C038
+O7214713629,1,,CP,A,control,in,P,distribution,L_conc;L_dyn,S,simulated,Conformal residual margin gives one-step ACC constraint satisfaction >=1-alpha-eps under TV-bounded dynamics shift via Lipschitz barrier; scope in vs pop doubt.,C058
+O7214748213,1,,NEW:Local transfer concentration bound,B,end2end,in,P,distribution,L_conc,S,simulated,Hoeffding bound (1-delta) on skill-gain prediction error and routing regret for fixed target task; rule-6: in vs pop (fresh-task Thm 6).,C045
+O7220413358,0,"LLM thesis; empirical attack/defense study; only a definitional metric inequality, no certificate",,,,,,,,,,,C026
+O7220423872,1,,SMT,B,perception,in,A,norm,none,S,proof,Exact SMT proof that an edit removes/preserves a skill for all inputs in box/embedding ball; CROWN extension. Generic toy classifiers coded perception.,C008
+O7220695213,1,,CRL,A,control,tr,P,disturbance,L_conc,SEC,simulated,"With confidence 1-beta, P(paired return degradation <= alpha) >= rho under declared sparse action-attack/episode law (incl. ACC); tr vs pop doubt, chose tr.",C010
+O7220723858,0,Governance framework for AI-assisted engineering workflows; gate guarantee rests on non-learned verifier,,,,,,,,,,,C040

@@ -1,0 +1,6 @@
+cid,field,value,rationale
+O4312433875,lifts,L_dyn;L_mon,"Rule 5 requires L_mon; per-step RCBF constraint is carried to forward invariance of all trajectories through the disturbed plant model (Theorem 1), i.e. L_dyn."
+O4312744983,eligible,0,"Guarantee is safety probability of non-learned stochastic plants (population model, polynomial system, constant-steering Dubins car); NN is only the certificate. Excluded: non-learned component."
+O4313447601,evidence,simulated,"Headline bounds evaluated on time series sampled from a known second-order generating system (numerical toy example, Fig. 1): synthetic simulated data, not analytical model only."
+O4315488717,eligible,0,"Lyapunov certificate for non-learned dynamics (Van der Pol, gLV microbiome); learned Koopman eigenfunctions only build the certificate. Excluded: guarantee about non-learned component."
+O4318621098,assumption,S,"lifts=none, so code main modelling assumption: Theorem 1 states continuity and compact ball; pre-activation bounds assumed known (via IBP). Stated, no separate evidence."

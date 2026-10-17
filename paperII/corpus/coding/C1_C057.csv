@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7164836213",1,"","CP","B","estimation","pop","P","distribution","L_conc","U","measured","Split-conformal 1-alpha intervals on perioperative risk heads; clinical, not vehicle, data; guarantee secondary to accuracy claims; scope doubt pop vs in."
+"O7135162928",1,"","CP","A","estimation","pop","P","distribution","L_conc","S","measured","ConForME conformal multi-horizon trajectory-prediction regions, joint 1-alpha coverage under exchangeability; PROSPERS scheduling theorem is a second guarantee."
+"O4415197707",1,"","CP","B","perception","pop","P","distribution","L_conc","S","simulated","Split conformal prediction sets for LVLM multiple-choice VQA with marginal coverage >=1-alpha under exchangeability; checked on ScienceQA and MMMU."
+"O4416190460",1,"","CP","A","estimation","pop","P","distribution","L_conc","U","measured","Split-conformal finite-sample coverage of state-estimate intervals for a skid-steer robot; coverage itself not empirically verified; exchangeability not stated."
+"O7144391708",0,"Zero-knowledge proof security covers commitments and protocol, not learned model behaviour; non-learned guarantees only","","","","","","","","","",""

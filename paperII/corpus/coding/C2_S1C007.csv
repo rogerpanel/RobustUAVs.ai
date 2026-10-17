@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3170270116",1,"","LUC","A","control","in","P","disturbance","L_conc","S","simulated","GP-CBF chance constraint ensures true CBF condition holds w.p. 1-delta pointwise in time; N&S feasibility conditions; ACC sim. Doubt: perturbation (model uncertainty) disturbance vs distribution."
+"O4385764189",0,"Explanation-redundancy results for decision trees; no safety guarantee; extended abstract of journal version","","","","","","","","","",""
+"O2799107510",1,"","BP","B","perception","in","A","norm","none","S","proof","Fast-Lin/Fast-Lip certified lower bound on minimum lp adversarial distortion for ReLU classifiers; MNIST/CIFAR."
+"O3170697419",1,"","GEN","B","control","pop","P","distribution","L_conc","S","modelled","PEVI-Adv returns epsilon-optimal policy w.p. 1-delta in O(H^3SC*/eps^2) episodes under single-policy concentrability. Doubt: class GEN vs ALG; modality P vs E."
+"O2917325587",1,"","BP","A","perception","in","A","norm","none","S","proof","Abstract interpretation with symbolic propagation soundly certifies local robustness; MNIST plus ACAS Xu (Reluplex speedup). Doubt: tier A via ACAS Xu only; component perception vs control."

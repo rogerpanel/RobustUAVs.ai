@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3010516233",0,"Learnability analysis of smoothing accuracy loss; no robustness guarantee of its own, empirical evaluation.","","","","","","","","","",""
+"O4409079480",1,"","SEM","B","perception","in","A","semantic","L_gen","SE","proof","Sound (Marabou/ERAN) verification of NLP classifiers over semantic hyper-rectangle subspaces; generalisability and embedding-error measured. Rule-6: scope in vs subspace set."
+"O4402354142",1,"","RTA","A","control","op","A","none","L_mon","S","simulated","Learned reach-avoid value switches to recovery policy to keep quadruped in RA set; no theorem, relies on learned V; rule-6 doubt on modality."
+"O7161263437",0,"Guarantees cover deterministic workflow semantics; AI steps are assumptions, not learned components; verified core unevaluated.","","","","","","","","","",""
+"O3214930062",1,"","NEW:GP-bounded contraction tube","A","estimation","tr","P","disturbance","L_dyn;L_conc","S","simulated","With prob 1-delta, quadrotor stays in a-priori tube around planned trajectory, using GP uniform error bounds in CL1 contraction control."

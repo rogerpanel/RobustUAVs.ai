@@ -1,0 +1,7 @@
+cid,field,value,rationale
+O4319323110,perturbation,norm,"Verified input sets are l-infinity bounded polytopes (velocity bounds; CV task 'robust to perturbations within 2/256 l-infinity'); CLR-1 applies only to closed-loop reachability."
+O4319323110,lifts,none,"Lipschitz tolerance (Lemma 3.1) only accelerates re-verifying the same per-step input-set spec; no plant model, no larger scope or modality reached."
+O4320855572,evidence,measured,"Coverage theorem rests on unverifiable dispersive-noise assumption, not a sound certificate on the model; headline coverage is shown on real data (CIFAR-10H, AVA, MS COCO)."
+O4321392741,eligible,0,"Theorem 1 bounds training-time worst-class empirical loss under assumed mistake bound; no guarantee on the learned model's robustness, which is only PGD/AutoAttack-evaluated."
+O4362721716,tier,A,"Certified accuracy is evaluated on GTSRB traffic-sign recognition (Table 2), a perception task of an autonomous vehicle; tier A needs any vehicle-task evaluation."
+O4366999641,eligible,0,"Reach-avoid certificate (Theorem 1) covers polynomial dynamics and a non-learned sampling controller; the SVM safe set is used as given, its correctness never guaranteed."

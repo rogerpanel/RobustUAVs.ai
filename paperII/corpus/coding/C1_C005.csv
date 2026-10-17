@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7138277436",1,"","BP","B","perception","in","A","norm","none","S","proof","Complete BaB verification (alpha-beta-CROWN with DRG branching): sound, complete robustness over input box D0; contribution is branching speed-up. Class BP vs SMT doubt."
+"O4283657298",0,"C code generator for NN inference; semantics tested empirically, WCET is timing of code, no learned-component guarantee","","","","","","","","","",""
+"O4286224460",1,"","PACB","B","perception","pop","P","distribution","L_conc","SE","simulated","Input-compression PAC-style bound on generalisation error holding with 1-delta=95%; paper only tests it empirically on infinite-width nets. Class PACB approximate (not PAC-Bayes)."
+"O3212063444",1,"","NCERT","B","control","tr","A","none","L_sup","S","proof","Learned positive-invariant NN proves infinite-horizon safety of BNN policy for weights in epsilon-box; rejection sampling enforces it. Tier B: pendulum, LDS, toy collision task."
+"O4404314050",1,"","RS","B","perception","in","Ac","norm","none","S","proof","Randomized-smoothing l2 radii for uncertainty-aware classifier (consistent and confident; no confident label change), confidence 1-alpha over Monte Carlo sampling. CIFAR10/ImageNet."

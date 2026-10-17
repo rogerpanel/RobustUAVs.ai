@@ -1,0 +1,10 @@
+cid,field,value,rationale
+O4402354142,eligible,0,"Excluded: shield is a learned, unverified RA network; RA-set property holds only for exact value; paper reports empirical collision rates, no guarantee stated."
+O4402520256,tier,A,"Guarantee evaluated on vehicle parking task (Examples 1-7, Fig. 4) and NN controllers, so not only generic benchmarks; tier A rule."
+O4402520256,component,control,"In the vehicle task the network maps vehicle state/position to a decision/action (parking lot, controller action), not an image classifier."
+O4402520256,perturbation,none,"Preimage/quantitative guarantee ranges over a fixed input hyperrectangle domain C; no perturbation or threat model around a nominal input."
+O4402520256,assumption,S,"lifts=none; main modelling assumptions (ReLU piecewise-linear network, box input, polyhedral output) are explicitly stated (Sec. 4.1, Prop. 8)."
+O4402883652,lifts,L_conc;L_dyn,"Rule 3 gives L_conc (sampled decrease check); Prop. 2 extends checks via ODE continuity and LQR funnel (Lemma 1) through plant model: L_dyn."
+O4403317714,lifts,L_dyn;L_hor;L_mon,"POLAR-Express reach-sets through Turtlebot dynamics (L_dyn), re-anchored every 0.2 s over horizon T' across operation (L_hor), switching to backup (L_mon)."
+O4403344774,assumption,SE,"i.i.d. calibration assumption stated; held-out test sets over 5 random splits empirically confirm coverage, supplying validation-set evidence."
+O4403344774,evidence,measured,"Headline coverage measured on real-world datasets (ImageNet, SQuAD, MBPP, GoEmotions, MNIST), not a simulator or benchmark environment."

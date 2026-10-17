@@ -1,0 +1,3 @@
+cid,field,value,rationale
+O4409311673,class,SMT,"iDP-DB computed by MILP encoding plus branch-and-bound returning the precise bound (Sec. 5.1, 5.3); fits existing SMT class, so NEW unnecessary."
+O4411936039,evidence,measured,"Strongest evidence: DR-CBF QP certificate computed online from real LiDAR/state-estimate samples in real-world Jackal robot experiments (abstract, Fig. 1)."

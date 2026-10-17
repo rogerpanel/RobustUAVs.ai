@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2912816250",1,"","PROB","B","perception","pop","P","norm","L_conc","S","modelled","Pr over D of delta-close pairs satisfying Lipschitz bound >= 1-eps via abstract interpretation plus importance sampling; unevaluated NIER, eligibility and component doubtful."
+"O4323026894",0,"Short position paper: consistency specification proposed, no verification result reported.","","","","","","","","","",""
+"O2760733685",1,"","SMT","B","control","in","A","none","none","S","proof","Sound output range within tolerance delta over input polyhedron via local search plus MILP; demos on NN controller and MNIST patch; component doubt."
+"O2616305530",1,"","CRL","B","control","pop","E","distribution","none","S","measured","Adaptive torque limit keeps expected damage below Dsafe each learning iteration; heuristic bound from empirical unsafety rate, no confidence; eligibility doubtful."
+"O3100287144",1,"","CP","B","estimation","pop","P","distribution","L_conc","S","proof","J+aB prediction interval has distribution-free marginal coverage >= 1-2alpha under exchangeability, any ensemble regressor; validated on real data."

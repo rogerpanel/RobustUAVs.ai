@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2796576875","1","","NCERT","A","control","tr","A","none","L_dyn","S","proof","Simulation-guided barrier certificate, dReal-verified: NN-controlled Dubins car never leaves safe set from X0. Certificate polynomial not neural; NCERT vs CLR doubt."
+"O4315488717","0","Learned Lyapunov certificate for non-learned dynamics; no learned system component","","","","","","","","","",""
+"O4386875196","0","Conformal reach-set estimate of non-learned dynamics; no learned system component","","","","","","","","","",""
+"O4391528845","1","","RS","B","perception","in","Ac","norm","none","S","proof","Smoothed (ensemble) classifier constant within certified L2 radius; AdvMacer/EsbRs raise ACR on CIFAR-10, ImageNet, SVHN."
+"O4402520256","1","","BP","B","perception","in","A","norm","none","S","proof","LiRPA-based sound preimage under/over-approximation; sound, complete quantitative verification over input box. Experiments truncated; tier A possible (vehicle parking)."

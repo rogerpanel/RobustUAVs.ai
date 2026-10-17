@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4415886758",1,"","RTA","B","control","op","A","distribution","L_mon;L_conc","SEC","simulated","Shield for stochastic hybrid MDP keeps RL agent safe (Thm 1); approximated by sampling, SMC 99% confidence. Rule-6 doubt: modality A vs P."
+"O7204467824",1,"","NCERT","A","control","tr","A","none","L_mon","SE","simulated","NN-approximated viability kernel as MPC terminal constraint gives safe-abort fallback state for multirotor; scope tr vs op doubtful, soundness of NN only checked visually."
+"O4416243460",1,"","NCERT","A","estimation","tr","A","disturbance","L_dyn","SE","proof","Robust adaptive discrete-time CBF certificate: finite-horizon forward invariance of safe set under bounded disturbance and parametric uncertainty with online estimator (ACC example)."
+"O4285409484",0,"Generic low-rank multi-task learning convergence/sample-complexity theory; no guarantee about a deployed learned component or autonomy.","","","","","","","","","",""
+"O4225423574",1,"","SMT","B","perception","in","A","norm","none","S","proof","Hybrid quantum-classical Benders MIP gives sound (conservative) l-inf robustness certificate for ReLU MLP on MNIST; soundness assumed for ideal simulated solver."

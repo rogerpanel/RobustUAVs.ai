@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4416603702",1,"","BP","A","perception","in","A","patch","none","S","proof","LiRPA preimage under-approximation: all inputs in certified subregion of patch domain keep GTSRB label; coverage ratio Monte Carlo estimated; SEM class possible."
+"O3211668688",1,"","SMT","B","control","in","A","none","none","S","proof","Exact LP/region-enumeration decision that TLL NN output stays in a box for all inputs in a polytope; synthetic TLL benchmarks only."
+"O3213615249",1,"","LIP","B","estimation","tr","E","none","L_dyn","S","proof","Operator-norm contraction conditions on mean/variance networks guarantee mean-square stability of deep Markov models; 2D synthetic demos only."
+"O4387334532",0,"Computational complexity results for NN reachability; no guarantee about a learned component.","","","","","","","","","",""
+"O2955566917",1,"","NEW:Lipschitz grid-search L0 robustness bounds","B","perception","in","E","norm","none","S","proof","Converging lower/upper bounds on L0 maximal safe radius averaged over finite test set; rule-6 doubt in vs pop."

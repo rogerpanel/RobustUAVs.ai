@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2592542720",1,"","ALG","B","control","tr","A","none","none","S","modelled","O(eps) objective/constraint gap with O(1/eps^2) convergence for online decisions under Slater; doubt: generic online optimizer, scope tr vs op, perturbation adversarial functions"
+"O4403017775",1,"","GEN","B","estimation","pop","E","distribution","none","S","modelled","Closed-form expected model error of FedAvg linear model vs local steps K under Gaussian features; component label is a generic regressor"
+"O208468569",1,"","ALG","B","control","pop","P","distribution","none","S","modelled","Empirical Q-value iteration converges a.s. to Q*; sample complexity P(||Q-Q*||>=eps)<=delta; finite irreducible MDP assumed"
+"O7133189980",0,"Identifiability of causal graph of data-generating MDP only; RL results empirical","","","","","","","","","",""
+"O3129820173",1,"","CP","B","estimation","pop","P","distribution","L_conc","S","proof","Split-conformal interval covers conditional median w.p. >=1-alpha for any regressor and any distribution, assuming i.i.d. data"

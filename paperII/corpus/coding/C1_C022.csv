@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4389665627",1,"","CRL","A","control","pop","E","distribution","none","S","simulated","Trust-region bound: expected discounted cost of updated policy stays near limit; extra budget decays to 0. Drone-Circle is the only vehicle task; scope doubt tr vs pop."
+"O4401414359",1,"","NEW:Distributionally robust chance-constrained MPC","A","estimation","tr","P","distribution","none","S","proof","Collision prob >= 1-eps for all human-motion distributions in a moment ambiguity set built from forecaster samples. Scope doubt in/tr/pop; moments assumed known."
+"O4406764499",1,"","CP","A","estimation","pop","P","distribution","L_conc","S","simulated","Conformalized quantile regression gives 1-alpha coverage of PHEV fuel-consumption intervals under exchangeability. Vehicle not autonomous; tier A doubtful."
+"O3101293418",1,"","PACB","B","perception","pop","P","distribution","L_conc","S","proof","Margin-based generalisation bound (prob 1-xi) for spectrally regularised nets under worst-case affine shifts; convergence of FedRobust is a second headline."
+"O7136229505",0,"Empirical LLM accuracy study on puzzles; no formal guarantee, no autonomous system.","","","","","","","","","","",""

@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4382318418","1","","BP","B","perception","in","A","norm","none","S","proof","Complete IBP-based (GPU) verifier proves per-input L-inf robustness of quantized NN classifiers on MNIST/Fashion-MNIST; complete, so SMT class also arguable."
+"O4362721716","1","","SEM","A","perception","in","A","patch","none","S","proof","Certified detection: per input, any patch within size bound cannot flip an accepted ViT prediction; tier A only via GTSRB; paper also reframes as statistical."
+"O2972713160","1","","SMT","A","control","in","A","none","none","S","proof","Complete BaB/MIP verification of piecewise-linear NN input-output properties; tier A via ACAS Xu and CollisionDetection; MNIST norm-ball properties also evaluated."
+"O4411552344","1","","SMT","A","control","in","A","none","L_conc","SE","proof","SMT proves Highway-env DQN policy property on input region via rational surrogate; quantization error bound estimated by testing, so soundness doubtful."
+"O3093179871","0","Guarantee is convergence of kernel safety-probability estimator; system has no learned component.","","","","","","","","","",""

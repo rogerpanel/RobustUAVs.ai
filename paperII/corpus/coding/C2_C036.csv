@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2962295100","1","","RTA","B","control","op","E","distribution","L_mon;L_gen","S","simulated","Synthesized shield optimal for worst-case expected long-run average cost vs adversarial RL traffic-light controller, only w.r.t. abstract MDP; tier B (traffic signals, not vehicle) doubtful."
+"O4416999542","0","Termination bound for an assumed Markov-chain model of LLM-verifier pipeline; no learned-component guarantee.","","","","","","","","","",""
+"O4321392741","0","Adversarial-training method; theorem is training-loss convergence under assumption, robustness only empirical (PGD).","","","","","","","","","",""
+"O4396650433","0","LLM alignment method; idealised Nash-convergence of training only, empirical benchmark evaluation.","","","","","","","","","",""
+"O7212031345","1","","CP","B","estimation","pop","P","distribution","L_conc","SE","simulated","Max-norm split-conformal band gives finite-sample joint 10-year trajectory coverage of bridge deterioration forecasts under exchangeability; synthetic benchmark."

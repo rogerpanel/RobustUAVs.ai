@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3010516233",0,"Analyses accuracy loss of smoothing (hypothesis-class shrinkage); no guarantee of its own on a component","","","","","","","","","",""
+"O4409079480",1,"","SMT","B","perception","in","A","semantic","none","SE","proof","Marabou/ERAN prove text classifier robust on semantic hyper-rectangle subspaces of embedding space; text classifier coded perception; class doubt SMT vs SEM/BP."
+"O4402354142",0,"Learned reach-avoid shield evaluated empirically; no proven or statistical guarantee on the system","","","","","","","","","",""
+"O7161263437",0,"Proofs cover non-learned workflow logic only; AI decisions treated as unverified assumptions","","","","","","","","","",""
+"O3214930062",1,"","NEW:GP-learned model in robust adaptive control tubes","A","estimation","tr","P","disturbance","L_dyn;L_conc","S","simulated","With prob 1-delta (GP error bounds) quadrotor state stays in contraction-L1 tube around plan for all t; GP uncertainty model coded estimation, control possible."

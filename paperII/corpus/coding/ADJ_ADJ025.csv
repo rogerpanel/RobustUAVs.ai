@@ -1,0 +1,9 @@
+cid,field,value,rationale
+O7123346317,lifts,L_sup,"Thm 1: safe sets Si lie inside validity domains Di (Assumption 2), projq(Sk)⊆Mk keeps system inside certified sets for all time; support containment lift."
+O7128015350,lifts,L_mon,"L_gen is a surrogate for the real sensor; here the abstraction replaces dynamics, not a sensor. Rule 5: shield/RTA architecture lists L_mon."
+O7128825065,component,estimation,"Learned part is the NN dynamics model f-hat (one-step state predictor); MPC/SLS planner is not learned. COMP-1 analogy: learned predictor counts as estimation."
+O7128825065,lifts,L_conc;L_dyn;L_hor,"Weighted CP (L_conc), SLS reachable tubes through plant model (L_dyn), and Thm 2(b) union bound over R replanning solves covers the operation (L_hor)."
+O7128825065,assumption,SE,"Independence and gradual-drift assumption (22) stated; empirical coverage tested (99.33% inside ellipsoid, Fig. 7, App. E validation); confidence on the evidence does not enter guarantee."
+O7130695231,eligible,0,"Headline claims are empirical RMSE/PHM accuracy; split-conformal is optional and only cited ([70,71]), not a guarantee the paper proves, certifies or estimates."
+O7131910089,class,NEW:GP regression error bound,"Title and abstract lead with GPR error-analysis framework (Thm 2.2 |f-f*|^2<=C·Var); Jacobi convergence (Thm 3.1) is a downstream application of it."
+O7131910089,evidence,modelled,"Bound is analytical; constant C=||f||_H^2 is unknown and never computed, so no sound certificate on the actual model; analytical model only."

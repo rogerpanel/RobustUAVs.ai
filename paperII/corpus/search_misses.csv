@@ -1,0 +1,71 @@
+search,gid,tier,year,venue,title
+rev0,G01,B,2019,ICML,Certified Adversarial Robustness via Randomized Smoothing
+rev0,G03,B,2019,NeurIPS,Provably Robust Deep Learning via Adversarially Trained Smoothed Classifiers
+rev0,G04,B,2020,ICML,Randomized Smoothing of All Shapes and Sizes
+rev0,G05,B,2019,ICCV,Scalable Verified Training for Provably Robust Image Classification (IBP)
+rev0,G09,B,2022,NeurIPS,General Cutting Planes for Bound-Propagation-Based Neural Network Verification
+rev0,G14,B,2024,CAV,Marabou 2.0: A Versatile Formal Analyzer of Neural Networks
+rev0,G15,B,2018,NeurIPS,Lipschitz-Margin Training: Scalable Certification of Perturbation Invariance
+rev0,G16,B,2021,ICLR,Orthogonalizing Convolutional Layers with the Cayley Transform
+rev0,G17,B,2023,ICLR,A Unified Algebraic Perspective on Lipschitz Neural Networks (SLL)
+rev0,G19,A,2021,ICML,Scalable Certified Segmentation via Randomized Smoothing (Cityscapes)
+rev0,G20,B,2021,USENIX Security,PatchGuard: A Provably Robust Defense against Adversarial Patches
+rev0,G23,B,2020,NeurIPS,Certified Defense to Image Transformations via Randomized Smoothing
+rev0,G25,B,2020,CVPR,Towards Verifying Robustness of Neural Networks Against a Family of Semantic Perturbations
+rev0,G26,B,2021,ICCV,Robustness Certification for Point Cloud Models
+rev0,G27,A,2019,JGCD,Deep Neural Network Compression for Aircraft Collision Avoidance Systems
+rev0,G28,A,2022,NFM,NNLander-VeriF: Formal Verification for Vision-Based Autonomous Aircraft Landing
+rev0,G38,A,2019,HSCC,Verisig: Verifying Safety Properties of Hybrid Systems with Neural Network Controllers
+rev0,G40,A,2020,CAV,NNV: The Neural Network Verification Tool for DNNs and Learning-Enabled CPS
+rev0,G42,B,2019,ACM TECS,ReachNN: Reachability Analysis of Neural-Network Controlled Systems
+rev0,G43,B,2020,ATVA,ReachNN*: A Tool for Reachability Analysis of Neural-Network Controlled Systems
+rev0,G44,A,2022,ATVA,POLAR: A Polynomial Arithmetic Framework for Verifying Neural-Network Controlled Systems
+rev0,G45,A,2022,AAAI,Verification of Neural-Network Control Systems by Integrating Taylor Models and Zonotopes
+rev0,G47,A,2022,JMLR,OVERT: Safety Verification of Neural Network Control Policies for Nonlinear Systems
+rev0,G51,A,2025,ARCH,ARCH-COMP25 Category Report: AINNCS for Continuous and Hybrid Systems Plants
+rev0,G52,B,2022,ICLR,Policy Smoothing for Provably Robust Reinforcement Learning
+rev0,G55,B,2022,ICLR,COPA: Certifying Robust Policies for Offline RL against Poisoning Attacks
+rev0,G57,B,2021,CAV,FOSSIL: A Software Tool for the Formal Synthesis of Lyapunov Functions and Barrier Certificates using Neural Networks
+rev0,G65,A,2020,JGCD,Runtime Assurance for Autonomous Aerospace Systems
+rev0,G69,B,2020,ECAI,Outside the Box: Abstraction-Based Monitoring of Neural Networks
+rev0,G70,B,2020,IMBSA,SafeML: Safety Monitoring of ML Classifiers through Statistical Difference Measures
+rev0,G71,A,2020,CAV,Formal Analysis and Redesign of a Neural Network-Based Aircraft Taxiing System with VerifAI
+rev0,G72,A,2019,CAV,VerifAI: A Toolkit for the Formal Design and Analysis of AI-Based Systems
+rev0,G74,A,2018,NeurIPS,Scalable End-to-End Autonomous Vehicle Testing via Rare-Event Simulation
+rev0,G75,B,2017,UAI,Computing Nonvacuous Generalization Bounds for Deep (Stochastic) Neural Networks
+rev0,G78,B,2019,ICML,PROVEN: Verifying Robustness of Neural Networks with a Probabilistic Approach
+rev0,G81,B,2021,AISafety@IJCAI,Assessing the Reliability of Deep Learning Classifiers Through Robustness Evaluation and Operational Profiles
+rev0,G82,A,2023,ACM TECS,Reliability Assessment and Safety Arguments for ML Components in System Assurance
+rev0,G86,A,2021,SAFECOMP,Towards Certification of a Reduced Footprint ACAS-Xu System: A Hybrid ML-Based Solution
+rev1,G01,B,2019,ICML,Certified Adversarial Robustness via Randomized Smoothing
+rev1,G03,B,2019,NeurIPS,Provably Robust Deep Learning via Adversarially Trained Smoothed Classifiers
+rev1,G04,B,2020,ICML,Randomized Smoothing of All Shapes and Sizes
+rev1,G05,B,2019,ICCV,Scalable Verified Training for Provably Robust Image Classification (IBP)
+rev1,G09,B,2022,NeurIPS,General Cutting Planes for Bound-Propagation-Based Neural Network Verification
+rev1,G14,B,2024,CAV,Marabou 2.0: A Versatile Formal Analyzer of Neural Networks
+rev1,G15,B,2018,NeurIPS,Lipschitz-Margin Training: Scalable Certification of Perturbation Invariance
+rev1,G16,B,2021,ICLR,Orthogonalizing Convolutional Layers with the Cayley Transform
+rev1,G19,A,2021,ICML,Scalable Certified Segmentation via Randomized Smoothing (Cityscapes)
+rev1,G20,B,2021,USENIX Security,PatchGuard: A Provably Robust Defense against Adversarial Patches
+rev1,G23,B,2020,NeurIPS,Certified Defense to Image Transformations via Randomized Smoothing
+rev1,G25,B,2020,CVPR,Towards Verifying Robustness of Neural Networks Against a Family of Semantic Perturbations
+rev1,G26,B,2021,ICCV,Robustness Certification for Point Cloud Models
+rev1,G27,A,2019,JGCD,Deep Neural Network Compression for Aircraft Collision Avoidance Systems
+rev1,G28,A,2022,NFM,NNLander-VeriF: Formal Verification for Vision-Based Autonomous Aircraft Landing
+rev1,G38,A,2019,HSCC,Verisig: Verifying Safety Properties of Hybrid Systems with Neural Network Controllers
+rev1,G40,A,2020,CAV,NNV: The Neural Network Verification Tool for DNNs and Learning-Enabled CPS
+rev1,G47,A,2022,JMLR,OVERT: Safety Verification of Neural Network Control Policies for Nonlinear Systems
+rev1,G51,A,2025,ARCH,ARCH-COMP25 Category Report: AINNCS for Continuous and Hybrid Systems Plants
+rev1,G55,B,2022,ICLR,COPA: Certifying Robust Policies for Offline RL against Poisoning Attacks
+rev1,G57,B,2021,CAV,FOSSIL: A Software Tool for the Formal Synthesis of Lyapunov Functions and Barrier Certificates using Neural Networks
+rev1,G65,A,2020,JGCD,Runtime Assurance for Autonomous Aerospace Systems
+rev1,G69,B,2020,ECAI,Outside the Box: Abstraction-Based Monitoring of Neural Networks
+rev1,G70,B,2020,IMBSA,SafeML: Safety Monitoring of ML Classifiers through Statistical Difference Measures
+rev1,G71,A,2020,CAV,Formal Analysis and Redesign of a Neural Network-Based Aircraft Taxiing System with VerifAI
+rev1,G72,A,2019,CAV,VerifAI: A Toolkit for the Formal Design and Analysis of AI-Based Systems
+rev1,G74,A,2018,NeurIPS,Scalable End-to-End Autonomous Vehicle Testing via Rare-Event Simulation
+rev1,G75,B,2017,UAI,Computing Nonvacuous Generalization Bounds for Deep (Stochastic) Neural Networks
+rev1,G78,B,2019,ICML,PROVEN: Verifying Robustness of Neural Networks with a Probabilistic Approach
+rev1,G81,B,2021,AISafety@IJCAI,Assessing the Reliability of Deep Learning Classifiers Through Robustness Evaluation and Operational Profiles
+rev1,G82,A,2023,ACM TECS,Reliability Assessment and Safety Arguments for ML Components in System Assurance
+rev1,G86,A,2021,SAFECOMP,Towards Certification of a Reduced Footprint ACAS-Xu System: A Hybrid ML-Based Solution

@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4416919197",0,"Compression recovery bounds under hypothetical noise model; no guarantee on component behaviour","","","","","","","","","",""
+"O3214811133",0,"Empirical safe-RL study; authors state neural HJ approximation loses hard safety guarantees","","","","","","","","","",""
+"O4400776977",1,"","SMT","B","perception","in","A","norm","L_gen","U","modelled","SMT (Lukasiewicz logic) proves L-inf robustness/reachability of a sampled piecewise-linear surrogate of XOR net; surrogate fidelity unbounded; eligibility borderline."
+"O7164897298",1,"","NEW:robustness-based generalisation bound","B","perception","pop","P","distribution","L_conc","S","measured","Expected 0-1 risk bounded w.p. 1-delta via stable/unstable cluster local robustness; ImageNet classifiers; robustness terms sampled; NEW vs PACB doubt."
+"O4403317714",1,"","RTA","A","control","op","A","none","L_mon;L_dyn;L_hor","S","simulated","Online POLAR-Express reachability switches Turtlebot NN controller to backup; no proved theorem, backup assumed safe; Flatland simulation."

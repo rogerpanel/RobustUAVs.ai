@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7123348845",0,"Fundamental-lemma representation of plant trajectories; no guarantee on a learned component; robustness only empirical.","","","","","","","","","",""
+"O3173645038",1,"","GEN","A","perception","tr","P","distribution","L_dyn;L_conc;L_sup","S","modelled","With prob 1-delta, certainty-equivalent control with kernel-regression perception map has tracking suboptimality O(T^-1/(p+4)); needs state to stay in sampled region."
+"O4384345675",1,"","NEW:ensemble regression-error (negative-flip) reduction","B","perception","pop","E","distribution","none","S","simulated","Aligned-uncertainty ensemble of old/new DNN lowers expected regression-error rate without accuracy loss; approximate theory (bias dropped, MSE surrogate)."
+"O3034746922",1,"","BP","B","perception","in","A","norm","none","S","proof","Sound decoupled upper/lower node bounds (ReLU, max-pool) prove absence of L-inf adversarial examples around an MNIST input."
+"O2785755647",1,"","LIP","B","perception","in","A","norm","none","S","proof","Margin >= sqrt(2)*L*||eps||_2 certifies L2 invariance; L estimated by power iteration with probabilistic Thm 2, so Ac doubt."

@@ -73,3 +73,13 @@ paperV/manuscript/*.fls
 paperV/manuscript/*.fdb_latexmk
 paperV/manuscript/*.log
 paperV/manuscript/*.out
+
+# paperII build and cache debris
+paperII/manuscript/*.aux
+paperII/manuscript/*.blg
+paperII/manuscript/*.log
+paperII/manuscript/*.out
+paperII/experiments/__pycache__/
+
+# raw S1 search output is committed compressed (corpus/search_raw.jsonl.gz)
+paperII/corpus/search_raw.jsonl

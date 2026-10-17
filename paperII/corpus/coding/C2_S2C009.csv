@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3207297971",1,"","RS","B","perception","in","Ac","norm","none","SE","proof","Input-dependent RS certified L2 radius for r-semi-elastic sigma(x), Clopper-Pearson confidence; CIFAR10/MNIST. Semi-elasticity proved for their design (Thm 4.1)."
+"O2970615870",1,"","LIP","B","perception","in","A","norm","none","S","proof","BCOP orthogonal-convolution 1-Lipschitz GNP nets give deterministic L2 margin certificates per input on MNIST/CIFAR10."
+"O2947562989",1,"","GLOB","B","perception","in","Ac","norm","L_conc","SE","simulated","Per-image min adversarial distance bound from loss Lipschitz/modulus of continuity, estimated by EVT sampling (heuristic); doubt: class GLOB vs LIP, modality Ac vs A."
+"O4396214268",1,"","SMT","B","perception","in","A","semantic","none","S","proof","VHAGaR MIP anytime bounds on minimal globally robust confidence over all inputs; doubt: scope in (whole input domain), L-inf also supported."
+"O3109575026",1,"","GEN","B","control","tr","P","disturbance","L_conc","S","simulated","Data-driven SLS controller LQG suboptimality bound w.p. 1-delta given N averaged trajectories; doubt: scope tr vs pop."

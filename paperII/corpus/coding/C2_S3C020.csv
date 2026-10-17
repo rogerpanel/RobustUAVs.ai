@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3082124241",1,"","GEN","B","estimation","pop","P","distribution","L_conc","S","modelled","OLS Markov-parameter estimate error O(1/sqrt(N)) w.p. 1-delta over Gaussian rollouts; learned object is identified LTI model, borderline learned component."
+"O4401726295",1,"","ALG","B","estimation","pop","P","poisoning","L_conc","S","modelled","Byzantine-resilient Subspace-Median/altGDmin reach eps-accurate subspace w.h.p. with sample/communication complexity bounds; Byzantine nodes coded as poisoning; ALG vs GEN doubt."
+"O2808958252",1,"","ALG","B","estimation","pop","P","distribution","L_conc","S","modelled","GD on one-hidden-layer ReLU net converges linearly to teacher weights up to O(d log N/N) error w.h.p.; generic regression, component forced."
+"O4385127973",0,"Noiseless identifiability conditions for linear system properties; no learned-component guarantee.","","","","","","","","","",""
+"O4401358101",1,"","ALG","B","control","tr","E","distribution","none","S","modelled","Local minimax lower bound: any adaptive LQG/LQR policy has expected regret Omega(sqrt(T)); impossibility result; rule-6 tr vs pop."

@@ -1,0 +1,17 @@
+metric,value
+papers_merged,100
+batches_pending,0
+batches_invalid,0
+eligible_C1,89
+eligible_C2,86
+disagreements,65
+agree_eligible,95/100
+agree_class,72/85
+agree_tier,84/85
+agree_component,81/85
+agree_scope,83/85
+agree_modality,80/85
+agree_perturbation,76/85
+agree_lifts,74/85
+agree_assumption,81/85
+agree_evidence,74/85

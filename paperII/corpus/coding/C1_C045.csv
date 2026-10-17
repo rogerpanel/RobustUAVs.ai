@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4416383082",1,"","PACB","B","perception","pop","E","distribution","L_gen","S","modelled","Stability-based bound on expected test risk of mixed real/synthetic training, U-shaped in synthetic ratio via W2 mismatch; no stability class fits exactly, nearest PACB."
+"O4367056604",0,"Tutorial on stochastic fundamental lemma for linear systems; no learned component, no learned-component guarantee.","","","","","","","","","",""
+"O7214748213",1,"","NEW:Transfer gain-prediction bound","B","end2end","in","P","distribution","L_conc","S","simulated","Hoeffding bound w.p. 1-delta on error of kNN-predicted skill gain for LLM agent on a fixed task; rule-6 doubt: fresh-task Theorem 6 is pop; also doubtful eligibility (not vehicle)."
+"O4205626291",1,"","NCERT","A","control","tr","A","none","L_conc","S","simulated","Jointly learned neural CBF and controller for black-box drone/ship dynamics; certificate holds if loss converges on samples; rule 3 L_conc, rule 6 doubt tr vs in."
+"O7204119119",1,"","RTA","B","planning","op","A","semantic","L_mon","S","simulated","Release gate: only skill sequences satisfying intent contract and zero-trust check reach RAN, conditional on assumed verifier soundness; non-vehicle O-RAN, rule 6 doubt on perturbation."

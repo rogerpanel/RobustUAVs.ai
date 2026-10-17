@@ -1,0 +1,10 @@
+cid,field,value,rationale
+O2996319422,class,"NEW:Network compression approximation bound","No classes.csv class covers coreset pruning error bounds; broader label also covers the layer-wise compression guarantee (Cor. 8-9)."
+O2996319422,lifts,none,"Sampling is the construction's own randomness (already Ac); no argument carries the bound to larger scope. Rule 3 concerns certificates checked by sampling, not applicable."
+O2996319422,evidence,modelled,"Bound is analytical (Thm 7/Cor 8); no certificate computed on actual pruned nets, which are fine-tuned afterwards; 'proof' requires certificate on actual model."
+O3007684729,component,perception,"Learned component is a representation/feature extractor (""last layer of a CNN""), motivated by ImageNet classification; codebook maps classifiers to perception."
+O3033617045,class,"NEW:architectural equivariance","Invariance by construction (Thm 1-2) fits no classes.csv code; both coders agree on NEW, concise label chosen."
+O3034840734,class,LUC,"Safety guarantee rests on GP confidence bounds of unknown safety function (Lemma 1, Thm 1); LUC explicitly covers GP learned-uncertainty safe control."
+O3034840734,component,planning,"Learned GP safety/reward maps feed value-iteration path planning on a grid MDP; not a learned state-to-action controller."
+O3034840734,lifts,L_conc;L_dyn,"GP concentration bound (L_conc); Lipschitz g plus reachability/returnability through known transition f extend safety to all t (L_dyn); X- confinement is enforced, not ODD containment."
+O3041070598,scope,tr,"Regret bounds one learning run over horizon T from any initial distribution; rule 6: in doubt between tr and pop choose smaller scope."

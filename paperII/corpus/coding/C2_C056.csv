@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4394930075",0,"PMC of non-learned allocation strategy; NN is only an MSE surrogate, no guarantee","","","","","","","","","",""
+"O4382935996",1,"","NEW:Adaptive ISSf-CBF with online-learned parameters","A","estimation","tr","A","disturbance","none","S","proof","ISSf-HOCBF: inflated safe set forward invariant for any estimator with bounded error; doubt whether online parameter estimation counts as learned component"
+"O3098796714",0,"Licentiate thesis duplicating journal version (Sci. Comput. Program. 2020); papers removed","","","","","","","","","",""
+"O4407039535",0,"Conceptual overview of AI safety cases in rail; no guarantee of its own","","","","","","","","","",""
+"O7125487007",0,"Stochastic CBF with Kalman/Lie-group estimation; no learned component","","","","","","","","","",""

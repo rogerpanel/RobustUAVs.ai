@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7140091238",0,"Benchmark of RAG uncertainty; uses standard conformal coverage but proves no guarantee of its own.","","","","","","","","","",""
+"O2970900401",1,"","OPREL","A","planning","pop","P","distribution","L_conc","S","simulated","Chernoff-bound estimate Pr(|w-w^|<=eps)>=1-delta that POMDP intersection-crossing meets KPIs over random simulated scenarios; simulator fidelity assumed."
+"O7166701031",1,"","NEW:Training-distribution mass bound on dangerous predictors","B","estimation","pop","P","none","L_mon","S","modelled","Thm 5.26: training-process probability of a dangerous guardrailed Predictor <= Cbad*Rshell; sparsity assumed. Scope pop vs op doubtful, chose pop."
+"O4390576807",1,"","CRL","A","control","tr","A","disturbance","L_dyn","S","modelled","Safe RL with barrier-force policy: convergence, stability, and robust constraint satisfaction under bounded disturbance via Lipschitz tube; NN approximation error excluded."
+"O3087456546",1,"","CRL","A","planning","op","A","none","none","S","modelled","CMAX++ planner with learned Q-values provably reaches goal in <=|S|^3 steps per repetition and converges to optimal cost, given optimistic model assumption."

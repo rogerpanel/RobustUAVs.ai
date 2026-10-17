@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7220723858",1,"","RTA","B","planning","op","A","none","L_mon","SE","modelled","Gate admits AI-generated artefact only if sound verifier accepts, else fallback; E implies formalization holds. Doubt: component and vehicle fit weak; scope op per rule 5."
+"O7154959401",0,"Deterministic admission protocol for agent actions; no learned component guarantee, no ML in decision path.","","","","","","","","","",""
+"O2948254043",1,"","OPREL","A","perception","pop","E","distribution","L_conc","SE","simulated","Unbiased operational-accuracy estimator with conditioning-based variance reduction (about half the labels); no confidence bound. Doubt: guarantee is estimator efficiency, evaluated incl. Dave driving."
+"O4312564465",0,"Theoretical impossibility result on reward translation for Rabin automata; no guarantee about a learned component.","","","","","","","","","",""
+"O7204803478",0,"Privacy-preserving emotion recognition; DP only asserted via accountant, no proved behavioural guarantee, no autonomous system.","","","","","","","","","",""

@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3035105259",1,"","PACB","B","perception","pop","P","distribution","L_conc","S","modelled","Compression-based generalization bound for spectrally pruned network, prob 1-2e^-t over training sample; Lipschitz loss, bounded input assumed. Not PAC-Bayes strictly; closest class."
+"O7129017294",0,"Verifies 1-safeness/deadlock-freedom of a Petri net model of a BNN, not learned behaviour; XOR toy.","","","","","","","","","",""
+"O4415179585",0,"Convergence claim imported from GTD literature; no own guarantee; simulation-only evaluation.","","","","","","","","","",""
+"O7213414119",1,"","CLR","A","control","tr","A","disturbance","L_dyn","S","proof","Sound reach-avoid verification of nonlinear neural feedback systems via BaB over enclosures, bounded horizon; E term in dynamics (benchmarks may lack noise, CLR-1 doubt)."
+"O3112586141",1,"","PIL","A","perception","in","A","semantic","L_gen","SE","proof","Sound proof that regressor estimate is within 0.25 m of truth for all configurations in a cell, modulo learned decoder; rule-6 smaller scope chosen."

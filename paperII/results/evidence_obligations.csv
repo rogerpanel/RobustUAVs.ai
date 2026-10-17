@@ -1,0 +1,7 @@
+id,text,kind,status,evidence,coverage_gap
+O_cal,interface rate gamma transfers to the deployment (C3),statistical,partially evidenced,real PX4 spoofing/jamming flights; hover only; one airframe,platform: not varied; flight mode: not varied; airspeed: poor
+O_lip,Lipschitz constant / plant-model error bound over the operating region,model,evidenced (model),local Lipschitz constant 1.1814 on operating-region trajectories,"outside the smooth envelope (stall, saturation, aggressive manoeuvre) no finite L"
+O_hor,horizon or re-anchoring covers the whole operation,model,assumed,re-anchoring every Tc = 1 s; satisfied by construction for delay adversaries,"fails under persistent denial (Paper I, Prop. regimes)"
+O_odd,deployment stays inside the certified set (ODD containment),statistical,stated,mission distribution (3 profiles x 3 receivers) named; simulated,deployment distribution not sampled
+O_dep,temporal dependence and exposure model (per demand -> per hour),statistical,open,none,no per-hour claim is made
+O_thr,perturbation model covers the objective's hazard,architectural,stated,time-delay adversary below detector threshold; GNSS RF manipulation via unit bridge,"denial, insider key compromise, monitor-input attacks not covered"

@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4312475894",1,"","CLR","B","control","tr","A","none","L_dyn","S","proof","Exact/epsilon-tight one-step reach sets of LTI plant with TLL ReLU controller, polynomial time; random A,B on VNN-COMP TLL nets, no disturbance."
+"O4403853633",1,"","CLR","B","control","tr","A","disturbance","L_dyn;L_sup","SE","proof","ISS/LMI: closed loop with learned linearizing NN law converges to invariant ellipsoid if residual <= eps; eps from data. Doubt: CLR vs NEW (ISS of NN model)."
+"O4405785676",1,"","DTMC","A","perception","pop","P","distribution","L_gen","S","simulated","AMS+online STL estimate of AV lane-change rule-violation probability with GP perception error model; no finite-sample bound. Doubt: eligibility, DTMC vs NEW."
+"O3213106995",1,"","PACB","A","end2end","pop","P","distribution","L_conc","SE","simulated","PAC-Bayes bound (1-delta) on expected cost of vision quadrotor policy over novel environments, generative-model prior; ~83% success. Doubt: P vs E."
+"O4378977211",1,"","SEM","B","perception","in","A","semantic","L_gen","S","proof","CEGAR-refined sound verification of classifier robustness over CVAE latent ball modelling real-world shifts (MNIST/CIFAR); fidelity of generator only cited/illustrated."

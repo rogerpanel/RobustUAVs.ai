@@ -1,0 +1,8 @@
+cid,field,value,rationale
+O3183883635,perturbation,distribution,"Din is a data-derived envelope (min/max neuron values over dataset), enlarged by newly encountered runtime data; by analogy with PIL-1, data-estimated set = distribution."
+O3183883635,lifts,L_sup,"Argument is ODD/support containment: inputs monitored against recorded Din bound, enlarged to Din∪Δin when exceeded; no fallback switching, so not L_mon."
+O3183883635,assumption,SE,"Containment assumption stated and evidenced: Din built from complete data set plus buffers, and track-run monitoring records exceedances; no confidence level enters the guarantee."
+O3206889533,class,CRL,"Safety is built into the RL policy architecture (closed-form gauge-map filter trained end-to-end), not a monitor-and-switch Simplex; agreed scope tr and lifts L_dyn fit CRL."
+O3208537030,evidence,measured,"Headline numerical bounds computed on Mini-Wiki, real Wikipedia sentence data (plus synthetic toy); real-world data outranks simulation per codebook evidence classes."
+O3212063444,perturbation,norm,"Guarantee holds for all BNN weights in an L-infinity box [mu-eps, mu+eps]; a norm-bounded perturbation, not initial-set-only reachability, so CLR-1 none does not apply."
+O3213106995,assumption,SE,"i.i.d. environment assumption stated; evidence supplied: bound compared with true cost via exhaustive sampling of novel environments and hardware validation (29/30), without confidence entering guarantee."

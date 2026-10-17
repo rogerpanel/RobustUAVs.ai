@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3127015406","1","","GEN","B","perception","pop","P","norm","L_conc","S","modelled","Robust PAC sample/oracle complexity: robust risk <= eps w.p. 1-delta using attack oracles; U arbitrary unknown set, norm chosen as nearest; no experiments."
+"O4320460176","1","","GEN","B","perception","pop","P","distribution","L_conc","S","simulated","Rate-distortion tail/expectation bounds on generalization error of distributed learning; DSVM bound decays with K, checked on MNIST; subgaussian loss assumed."
+"O3159401323","0","Empirical study of frequency constraints and PGD robustness; no guarantee stated.","","","","","","","","","",""
+"O4386065850","0","Exact decision-boundary visualization tool; no guarantee about learned component behaviour.","","","","","","","","","",""
+"O3034772830","1","","NEW:Distributionally robust worst-case risk bound","B","perception","pop","E","distribution","none","S","modelled","Duality gives upper bound on worst-case expected loss over RKHS ambiguity set; doubt: mainly an optimization reformulation, eligibility borderline."

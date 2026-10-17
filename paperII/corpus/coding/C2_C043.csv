@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4396783611",1,"","CP","B","estimation","pop","P","distribution","L_conc","S","measured","Conformal calibration of NN-learned uncertainty ellipsoids guarantees marginal coverage Pr[y in E(x)]>=eta under i.i.d. data; non-vehicle localization datasets."
+"O7138101982",1,"","NEW:policy-gradient convergence","B","control","pop","E","distribution","L_conc","S","modelled","Minibatch SGD on domain-randomized LQR reaches epsilon-suboptimal expected cost w.p. 1-delta, jointly stabilizing all sampled plants; eligibility borderline (optimization guarantee); cart-pole."
+"O3206889533",1,"","CRL","B","control","tr","A","disturbance","L_dyn","S","proof","NN policy with closed-form gauge-map safety filter keeps state in robust controlled-invariant polytope for all bounded disturbances; doubt tr vs op, chose tr."
+"O7139119937",0,"Guarantee concerns dataset Bayes-error estimate (unlearnable data), not a learned component.","","","","","","","","","",""
+"O4388561670",1,"","OPREL","A","perception","pop","P","distribution","L_op;L_gen","S","simulated","Bayesian safety validation estimates runway-detector failure probability over ODD distribution per approach (5.8e-3 vs 1e-4 target); point estimate, no confidence."

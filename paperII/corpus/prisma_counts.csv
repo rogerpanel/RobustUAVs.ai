@@ -1,0 +1,13 @@
+stage,n
+identified,33664
+duplicates,8291
+screened,
+full-text,
+included,
+identified_openalex,33493
+identified_venues,171
+identified_external,0
+truncated_queries,0
+identified_venue_raw_rev1,171
+identified_venue_dblp_raw,0
+dblp_venue_sweep,not executed: DBLP blocked automated access (bot protection)

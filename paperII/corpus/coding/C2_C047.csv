@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4415799201",1,"","CP","B","perception","pop","E","distribution","L_conc","S","measured","L-ARC online calibration: asymptotic localized (reweighted) expected risk of set predictor <= alpha + gap under iid; doubt E vs P (risk is expectation)."
+"O3016425199",0,"Lyapunov synthesis for polynomial ODEs via SMT; no learned component guaranteed.","","","","","","","","","",""
+"O4200294561",1,"","BP","A","control","in","A","none","none","S","proof","Interval-analysis verification of DRL aquatic-drone policy decision properties over input regions; violation % bounds unsafe input fraction."
+"O4391188106",0,"Specification logic and offline monitoring of perception data; no guarantee on learned component.","","","","","","","","","",""
+"O4396600859",1,"","RS","B","perception","pop","P","norm","L_conc","S","proof","RSCP+: conformal coverage >=1-alpha under L2-bounded adversarial test perturbation, MC error folded via Hoeffding; rule-1 doubt (Ac vs P)."

@@ -1,0 +1,7 @@
+cid,field,value,rationale
+O2796576875,lifts,L_dyn,"Barrier certificate carries dReal-checked state conditions to unbounded-time trajectory safety through the plant model (L_dyn); simulations only propose candidates, so no L_conc."
+O2801079363,perturbation,none,"Headline is ACAS Xu input-region properties over a bounded domain C; no threat model. L-inf ball appears only as an illustrative example."
+O2890660842,component,end2end,"Tier-A norm-ball results are on DAVE, a camera-to-steering network; not a classifier (perception) nor state-to-action (control), so end2end."
+O2890660842,assumption,S,"lifts=none; main modelling assumptions (L-norm threat model, piecewise-linear ReLU networks) are stated explicitly but not evidenced."
+O2921112343,class,NEW:Learned stochastic forward reachable sets,"Probabilities are empirical capture fractions, not conformal; learned predictor is estimation, not NN control, so no classes.csv code fits."
+O2948254043,evidence,measured,"Estimator evaluated on real recorded datasets (Udacity driving images, MNIST, ImageNet), not a simulator; measured means real-world data."

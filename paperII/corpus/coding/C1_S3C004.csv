@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4315489011",0,"Data-driven DRO for power scheduling; no guarantee on a learned component's behaviour.","","","","","","","","","",""
+"O3100532071",1,"","ALG","B","control","pop","P","distribution","L_conc","S","modelled","Tabular risk-sensitive RL: regret <= lambda(|beta|H^2)*sqrt(H^3 S^2 A T) w.p. 1-delta; rule-6: pop vs tr, chose pop."
+"O4399554721",1,"","ALG","B","control","pop","P","disturbance","L_dyn;L_conc","S","modelled","Risk-sensitive LQR online learning: O(log N) regret w.p. 1-delta under identifiability assumption; sqrt(N) otherwise. Rule-6: pop vs tr."
+"O3209195293",1,"","ALG","B","estimation","pop","P","distribution","L_conc","S","modelled","Online ridge/forward linear regression: high-probability regret O(log^2 T) under sub-Gaussian noise, uniformly over T; generic regression, no vehicle."
+"O2974095354",1,"","CP","B","estimation","pop","P","distribution","L_conc","S","modelled","Distributional conformal prediction: finite-sample (1-alpha) marginal coverage under exchangeability; asymptotic conditional validity if CDF consistently estimated. Rule-6: pop chosen."

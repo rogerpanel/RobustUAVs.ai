@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4286858784",1,"","GEN","B","perception","pop","E","distribution","L_conc","S","modelled","CMI bound gives optimal expected risk 2(d+1)/n for SVM halfspaces under realizable i.i.d. data; pure theory, generic binary classifier coded perception."
+"O4391607289",1,"","CP","B","estimation","pop","P","distribution","L_conc","S","measured","Exact full-conformal set for sparse high-order interaction regression gives finite-sample 1-alpha coverage under i.i.d. data; regression predictor coded estimation."
+"O3049066126",1,"","GEN","B","estimation","pop","E","norm","L_conc","S","simulated","Surrogate adversarial training of linear/two-layer regression: adversarial risk converges in probability to minimal adversarial risk; ALG also plausible."
+"O2850875954",1,"","ALG","B","control","tr","P","disturbance","L_conc;L_dyn","S","simulated","Model-free LQ policy iteration achieves O(T^(2/3+xi)) regret w.p. 1-delta under Gaussian process noise; scope tr vs op doubt (rule 6)."
+"O4416251183",1,"","RS","B","perception","in","Ac","norm","none","S","proof","Certifying adapters on pretrained CNN/ViT give randomized-smoothing L2 certified radius per input on CIFAR-10/ImageNet."

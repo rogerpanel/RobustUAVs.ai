@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4404305051",1,"","NEW:PAC off-policy evaluation bound","B","control","pop","P","distribution","L_conc","S","modelled","W.p. 1-delta over offline data, SpectralDICE policy-value error <= O(N^-1/2) under realizability/concentrability; doubt: component control vs estimation."
+"O7161387891",1,"","CP","B","perception","pop","P","distribution","L_conc","SE","measured","Split-conformal 90% marginal coverage for crystal-property GNN, 89.1% measured; WL expressivity theorem not coded; component perception doubtful (regressor)."
+"O7160958905",0,"Enterprise LLM-agent governance framework; empirical production metrics; architectural claims asserted, not formalized.","","","","","","","","","",""
+"O2793067802",0,"Power-grid topology estimation algorithm; guarantee about classical statistical estimator, no learned component.","","","","","","","","","",""
+"O4415913028",1,"","CP","A","planning","pop","P","distribution","L_conc","S","measured","Calibrated probability that LLM plan-compliance verdict is correct, from latent-distance calibration set (i.i.d.); not strictly conformal; scope pop vs in doubtful."

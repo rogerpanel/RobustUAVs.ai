@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7172049593",0,"Correctness comes from non-learned subtype checker; LLM synthesis evaluated only empirically",,,,,,,,,,
+"O7134853944",1,,"DTMC","B","control","tr","P","distribution","L_dyn","S","proof","Storm PMC on PPO-induced DTMC: bridge-failure probability 3.55% over 20-year horizon; scope tr vs pop doubt; MDP synthetic."
+"O3089014878",0,"Coq convergence proof for tabular value/policy iteration; no learned component",,,,,,,,,,
+"O7169876191",1,,"SEM","B","perception","in","A","semantic","none","S","proof","RSIP-SSIP verified robust accuracy against parameterised blur/sharpen kernels after certified training, e.g. ~80% on CIFAR10; SEM vs BP doubt."
+"O4416904409",1,,"NEW:Stability/Rademacher generalisation bound","B","estimation","pop","P","distribution","L_conc","S","modelled","Generalisation bound w.p. 1-delta for GeoAda-trained model; asymptotic, assumes convex loss and exact G-invariance; never instantiated numerically."

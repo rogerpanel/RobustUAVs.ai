@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2963496101",1,"","BP","B","perception","in","A","norm","none","S","proof","Dual-network convex outer bound certifies l-inf robustness of ReLU classifiers around each input; certified robust error on MNIST/SVHN."
+"O2915008147",1,"","PACB","B","perception","pop","P","distribution","L_conc","S","simulated","PAC-Bayes compression bound, 95% confidence, gives non-vacuous test-error bound for ImageNet MobileNet; assumes iid data."
+"O4409311673",1,"","NEW:Training-data privacy (iDP) verification","B","perception","in","A","poisoning","none","S","proof","MILP/hyper-network sound bound gives 0-iDP for confident inputs, noise elsewhere; rule 6 doubt: perturbation is removal of one training point."
+"O3130461065",1,"","BP","B","perception","in","A","norm","none","S","proof","Functional Lagrangian dual soundly bounds worst-case probabilistic spec violation over input-distribution set, e.g. l-inf robust accuracy and OOD detection of BNNs."
+"O3010082790",1,"","RS","B","perception","in","Ac","norm","none","S","proof","Denoiser plus pretrained classifier smoothed; l2 certified radius with Monte Carlo confidence, ImageNet/CIFAR-10 and vision APIs."

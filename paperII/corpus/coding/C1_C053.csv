@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2888409681",0,"Position paper with high-level safety argument; no formal or statistical guarantee proved.","","","","","","","","","",""
+"O4405094777",0,"Data-driven barrier certificate for unknown non-learned plants; no learned component involved.","","","","","","","","","",""
+"O4405354148",1,"","CP","B","estimation","pop","P","distribution","L_conc","S","measured","Geographically weighted split-conformal intervals with 1-eps coverage for spatial regressors (XGBoost housing, DGSI); covariate shift handled by distance weights."
+"O7202270053",1,"","CP","A","planning","tr","P","disturbance","L_conc","U","simulated","Conformal 95% error set on learned rover residual dynamics feeds CVaR risk-aware AO-RRT/SCP planning; scope tr vs op doubtful, no formal coverage theorem."
+"O2913563956",0,"Hand-designed stochastic swarm policy verified formally; no learned component.","","","","","","","","","",""

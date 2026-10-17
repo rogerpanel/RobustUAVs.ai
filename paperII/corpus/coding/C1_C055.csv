@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7168509562",0,"Guarantees cover discrete coordination logic only; paper states learned parts are outside the model.","","","","","","","","","",""
+"O7155091958",1,"","NEW:continual-learning estimation-error bounds","B","estimation","pop","P","distribution","L_conc","S","modelled","High-probability (1-delta) estimation-error bound for replay-based continual regression under assumed autoregressive task dependency; no vehicle task, proof only."
+"O4225455743",1,"","RTA","A","control","op","A","none","L_mon","S","simulated","Rule-based Safety controller overrides learned policy via switching logic, claimed to ensure collision avoidance; no theorem, CARLA demo only (rule-5/6 doubt)."
+"O2979091979",0,"Model-checking guarantees concern a symbolic planner model; no learned component involved.","","","","","","","","","",""
+"O4414449094",0,"Empirical Jacobian-regularised MARL defense with simulation results; no formal or statistical guarantee.","","","","","","","","","",""

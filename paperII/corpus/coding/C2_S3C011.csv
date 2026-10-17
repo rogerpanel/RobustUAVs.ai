@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3034840734",1,"","LUC","A","planning","op","P","distribution","L_conc","S","simulated","GP-based SNO-MDP: w.p. 1-Delta safety g(s_t)>=h for all t plus near-optimal reward; Mars rover gridworld (tier A doubtful); op vs tr doubt"
+"O2939888044",1,"","GEN","B","estimation","pop","P","distribution","L_conc","SE","simulated","Lasso sparse LTI identification from one trajectory: w.p. 1-delta exact sparsity recovery and l_inf error bound; power-system simulation; learned-component status doubtful"
+"O2807299122",1,"","GEN","B","perception","pop","P","distribution","L_conc","S","simulated","Rademacher generalization bound for two-layer ReLU nets w.p. 1-delta over training set; evaluated on CIFAR-10/SVHN/MNIST"
+"O3036320002",1,"","GEN","B","estimation","pop","P","disturbance","L_conc","S","modelled","Active-learning OLS identification of feature-linear nonlinear dynamics: w.p. 1-delta parametric-rate error bound; bounded process noise; no experiments"
+"O2914920107",1,"","ALG","B","control","pop","E","none","none","S","modelled","Error-propagation/regret bounds for regularized and mirror-descent modified policy iteration (TRPO, SAC, etc.) in rho-weighted norm; theory only"

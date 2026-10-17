@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2964079458","1","","CLR","A","control","tr","A","none","L_dyn","S","proof","Benchmark suite; NNV reachability shows ACC NN controller keeps safe distance over 5 s from initial set. Example result reproduced from prior NNV work."
+"O4286750481","1","","SMT","A","control","in","A","none","none","S","proof","Imandra proves ACAS Xu property phi1 over input region; also toy CNN eps-ball robustness. Proofs on quantised/pruned networks, not originals."
+"O4417137914","1","","CP","B","perception","pop","E","distribution","L_conc","S","measured","SeqCRC bounds expected detection loss <= alpha under iid calibration. E vs P doubt (CRC); datasets truncated, likely COCO."
+"O4409364009","1","","RS","A","perception","in","Ac","semantic","none","SE","simulated","Smoothed camera-LiDAR fusion detector certified for detection confidence and IoU under bounded rotation/shift in CARLA; RS vs SEM doubt."
+"O7118017025","1","","CP","B","estimation","pop","P","distribution","L_conc","S","measured","Non-asymptotic excess-risk bound for density-weighted quantile regression improving conformal conditional coverage; tabular UCI regression; component/class fit doubtful."

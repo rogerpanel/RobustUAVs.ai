@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2913266441","1","","GEN","B","perception","pop","E","norm","none","S","modelled","Population bound: robust error minus optimal natural error <= psi^-1(surrogate excess risk) + boundary error; tight. Doubt: PROB/PACB vs GEN class."
+"O3037427931","1","","SMT","B","perception","in","A","none","L_conc","U","simulated","Global robustness: rule back-propagation enumerates classification regions of SDN, finds adversarial regions. Sampling estimates radius/volume (L_conc); doubt A vs Ac, proof vs simulated."
+"O3032731803","0","Empirical forecasting model; no formal or statistical guarantee beyond by-construction dynamic feasibility.","","","","","","","","","",""
+"O2788084076","1","","LUC","A","planning","in","P","distribution","L_conc","S","simulated","GP-based safe exploration: visited states satisfy safety threshold with high probability; value consistency (Thm 1). Doubt in vs tr (per-step safe set); smaller chosen."
+"O3199481125","1","","ALG","B","estimation","pop","P","distribution","L_conc","S","modelled","Fed-SEL is (0,delta)-PAC for federated best-arm identification with sample and communication bounds; Byzantine-robust variants proved. Doubt: learned component eligibility."

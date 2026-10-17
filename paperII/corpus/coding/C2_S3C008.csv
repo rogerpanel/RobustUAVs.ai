@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2903088609",1,"","GEN","B","estimation","pop","P","distribution","L_conc","S","modelled","OLS identification error ||A-Ahat|| bounded w.p. 1-delta from one noisy LTI trajectory, all eigenvalue regimes; doubt pop vs tr (single trajectory)."
+"O4386488250",1,"","CP","B","estimation","pop","P","distribution","L_conc","S","modelled","CV+ training-conditional miscoverage <= 2alpha+sqrt(2log(K/delta)/m) w.p. 1-delta over training data; full conformal/jackknife+ impossibility shown."
+"O3046187644",1,"","GEN","B","estimation","pop","E","distribution","L_conc","S","modelled","Expected Sinkhorn divergence of jointly-learned latent+generator GAN to target bounded by c(tau,L,sigma,k)/sqrt(n); component is a generative model."
+"O2953334130",1,"","RS","B","perception","in","Ac","norm","none","S","proof","Tight l0 (and l1/linf uniform) certified radius for randomly smoothed classifiers via likelihood-ratio regions; Clopper-Pearson confidence; MNIST/ImageNet."
+"O2970857099",1,"","ALG","B","control","tr","E","disturbance","none","S","modelled","Online gradient control of known LDS with i.i.d. bounded noise attains O(log^7 T) expected regret vs best stable linear controller; doubt tr vs pop."

@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O7160879966",1,"","CP","A","perception","pop","P","distribution","L_conc","SE","measured","Split-CP box-level marginal coverage >=1-4alpha (Bonferroni) for EfficientDet boxes under exchangeability; empirical coverage checked on KITTI/BDD/CODA incl. shift."
+"O4393161169",1,"","CP","B","perception","pop","P","distribution","L_conc","U","measured","MC-dropout+CP sets claim distribution-free marginal coverage 1-alpha (inherited, exchangeability unstated); CIFAR/MNIST/UCI. Borderline eligibility: guarantee not proved."
+"O7160305831",0,"Empirical safety-filter evaluation; safety certificate deferred to prior work, no own guarantee.","","","","","","","","","",""
+"O4415042174",0,"Assurance-case/SPI methodology with expert belief propagation; no learned-component guarantee.","","","","","","","","","",""
+"O4401416547",0,"Empirical planning method; authors defer strict safety guarantees to future work.","","","","","","","","","",""

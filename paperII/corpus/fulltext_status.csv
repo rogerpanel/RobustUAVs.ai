@@ -1,0 +1,351 @@
+cid,stratum,order,status,source,chars
+O4416603702,core,1,retrieved,https://arxiv.org/pdf/2505.22798,104953
+O4408146792,core,2,not retrieved,,0
+O3211668688,core,3,retrieved,https://arxiv.org/pdf/2111.09293,119544
+O3213615249,core,4,retrieved,https://arxiv.org/pdf/2111.04601,66466
+O4387334532,core,5,retrieved,https://arxiv.org/pdf/2306.05818,62263
+O2955566917,core,6,retrieved,https://www.ijcai.org/proceedings/2019/0824.pdf,63251
+O4416919197,core,7,retrieved,https://arxiv.org/pdf/2502.02766,102494
+O3214811133,core,8,retrieved,https://arxiv.org/pdf/2110.07699,131264
+O4400776977,core,9,retrieved,https://sol.sbc.org.br/index.php/wbl/article/download/29324/29129/,24302
+O7164897298,core,10,retrieved,https://arxiv.org/pdf/2606.16883,129371
+O4403317714,core,11,retrieved,https://arxiv.org/pdf/2408.08592,43178
+O4412514774,core,12,retrieved,https://link.springer.com/content/pdf/10.1007/978-3-031-98679-6_19.pdf,41268
+O4407951861,core,13,retrieved,https://arxiv.org/pdf/2410.12019,124662
+O3029730229,core,14,retrieved,https://arxiv.org/pdf/2006.00731,302383
+O2921112343,core,15,retrieved,https://arxiv.org/pdf/1903.07738,59663
+O4307367089,core,16,not retrieved,,0
+O7139111173,core,17,retrieved,https://ojs.aaai.org/index.php/AAAI/article/download/41071/45032,71074
+O3035105259,core,18,retrieved,https://www.ijcai.org/proceedings/2020/0393.pdf,67037
+O7129017294,core,19,retrieved,https://arxiv.org/pdf/2602.13128,70940
+O7197012924,core,20,not retrieved,,0
+O2894033912,core,21,not retrieved,,0
+O4415179585,core,22,retrieved,https://arxiv.org/pdf/2502.04925,51517
+O7213414119,core,23,retrieved,https://arxiv.org/pdf/2609.16298,109496
+O4401713799,core,24,not retrieved,,0
+O3112586141,core,25,retrieved,https://arxiv.org/pdf/2012.09313,42379
+O7138277436,core,26,retrieved,https://arxiv.org/pdf/2603.14823,64668
+O4411233968,core,27,not retrieved,,0
+O4283657298,core,28,retrieved,https://drops.dagstuhl.de/storage/00lipics/lipics-vol231-ecrts2022/LIPIcs.ECRTS.2022.3/LIPIcs.ECRTS.2022.3.pdf,80785
+O4286224460,core,29,retrieved,https://arxiv.org/pdf/2207.09408,96199
+O3212063444,core,30,retrieved,https://arxiv.org/pdf/2111.03165,78965
+O4404314050,core,31,retrieved,https://arxiv.org/pdf/2410.20432,117453
+O4391779065,core,32,not retrieved,,0
+O4312475894,core,33,retrieved,https://arxiv.org/pdf/2209.09400,63036
+O4404706641,core,34,not retrieved,,0
+O4403853633,core,35,retrieved,https://arxiv.org/pdf/2409.15858,37811
+O7204593560,core,36,not retrieved,,0
+O7106278279,core,37,not retrieved,,0
+O4405785676,core,38,retrieved,https://arxiv.org/pdf/2405.15771,74967
+O3213106995,core,39,retrieved,https://arxiv.org/pdf/2111.08761,57028
+O4378977211,core,40,retrieved,https://arxiv.org/pdf/2206.03669,114842
+O4407948456,core,41,retrieved,https://arxiv.org/pdf/2405.02100,61297
+O2997425368,core,42,retrieved,https://ojs.aaai.org/index.php/AAAI/article/download/5998/5854,85155
+O3093796394,core,43,retrieved,https://arxiv.org/pdf/2010.11645,99838
+O3208537030,core,44,retrieved,https://arxiv.org/pdf/2102.06589,121145
+O3183883635,core,45,retrieved,https://arxiv.org/pdf/2010.05689,50730
+O4400025616,core,46,retrieved,https://arxiv.org/pdf/2406.15675,79249
+O4319323110,core,47,retrieved,https://arxiv.org/pdf/2106.12732,93391
+O7220423872,core,48,retrieved,https://arxiv.org/pdf/2610.03502,87901
+O7133267090,core,49,retrieved,https://arxiv.org/pdf/2310.12408,380216
+O4206554519,core,50,not retrieved,,0
+O2801079363,core,51,retrieved,https://arxiv.org/pdf/1711.00455,86265
+O4381542600,core,52,retrieved,https://link.springer.com/content/pdf/10.1007/s10009-023-00702-5.pdf,74115
+O3092567899,core,53,retrieved,https://arxiv.org/pdf/2010.03799,485815
+O3035782912,core,54,retrieved,https://arxiv.org/pdf/1904.04706,37716
+O3132132679,core,55,retrieved,https://arxiv.org/pdf/2102.10806,2265195
+O4404986723,core,56,retrieved,https://arxiv.org/pdf/2411.15717,315442
+O7220695213,core,57,retrieved,https://arxiv.org/pdf/2610.04754,186427
+O4283326543,core,58,retrieved,https://arxiv.org/pdf/2206.03044,49224
+O4407231265,core,59,retrieved,https://arxiv.org/pdf/2502.03274,56947
+O4383613691,core,60,retrieved,https://hal.science/hal-04154871v1/file/NN_trigger_sector_Rev.pdf,71512
+O3124435701,core,61,not retrieved,,0
+O7161742013,core,62,retrieved,https://arxiv.org/pdf/2605.17153,120129
+O7167735818,core,63,retrieved,https://www.jair.org/index.php/jair/article/download/20924/27323,144896
+O4313121846,core,64,retrieved,https://arxiv.org/pdf/2207.07232,30172
+O2963160885,core,65,retrieved,https://ojs.aaai.org/index.php/AAAI/article/download/4772/4650,123794
+O4221148689,core,66,retrieved,https://arxiv.org/pdf/2203.01696,144619
+O4312744983,core,67,retrieved,https://arxiv.org/pdf/2206.01463,78711
+O7211954474,core,68,not retrieved,,0
+O3037629243,core,69,retrieved,https://link.springer.com/content/pdf/10.1007/s10458-021-09529-3.pdf,107002
+O3139113494,core,70,retrieved,https://arxiv.org/pdf/2101.08297,89516
+O4313447601,core,71,retrieved,https://arxiv.org/pdf/2212.14838,204528
+O4318621098,core,72,retrieved,https://arxiv.org/pdf/2301.11783,73969
+O2998709064,core,73,retrieved,https://ojs.aaai.org/index.php/AAAI/article/download/5944/5800,67482
+O3113369941,core,74,not retrieved,,0
+O4393954477,core,75,retrieved,https://link.springer.com/content/pdf/10.1007/978-3-031-57256-2_1.pdf,70898
+O7169762495,core,76,retrieved,https://www.jair.org/index.php/jair/article/download/21679/27329,168023
+O2992136447,core,77,retrieved,https://arxiv.org/pdf/1912.01978,47383
+O4390832684,core,78,retrieved,https://arxiv.org/pdf/2401.05338,92347
+O4405955404,core,79,retrieved,https://arxiv.org/pdf/2412.19985,437673
+O2796576875,core,80,retrieved,https://arxiv.org/pdf/1804.03973,43933
+O4315488717,core,81,retrieved,https://arxiv.org/pdf/2203.12303,58781
+O4386875196,core,82,retrieved,https://arxiv.org/pdf/2309.08976,71135
+O4391528845,core,83,retrieved,https://arxiv.org/pdf/2310.07780,80127
+O4402520256,core,84,retrieved,https://arxiv.org/pdf/2408.09262,157106
+O2964079458,core,85,retrieved,https://easychair.org/publications/open/ZmnC,32991
+O4286750481,core,86,retrieved,https://arxiv.org/pdf/2207.10562,150047
+O4417137914,core,87,retrieved,https://arxiv.org/pdf/2505.24038,260235
+O4409364009,core,88,retrieved,https://ojs.aaai.org/index.php/AAAI/article/download/33927/36082,79846
+O3011850250,core,89,not retrieved,,0
+O7210286003,core,90,not retrieved,,0
+O2964130946,core,91,not retrieved,,0
+O7118017025,core,92,retrieved,https://arxiv.org/pdf/2512.24139,161705
+O2889490035,core,93,not retrieved,,0
+O4382318418,core,94,retrieved,https://ojs.aaai.org/index.php/AAAI/article/download/26747/26519,69838
+O4362721716,core,95,retrieved,https://arxiv.org/pdf/2111.10481,169223
+O2972713160,core,96,retrieved,https://arxiv.org/pdf/1909.06588,143702
+O4411552344,core,97,retrieved,https://enac.hal.science/hal-05127878/document,42036
+O3093179871,core,98,retrieved,https://arxiv.org/pdf/1910.10818,50154
+O7125907885,core,99,not retrieved,,0
+O3115739581,core,100,not retrieved,,0
+O4401024639,core,101,retrieved,https://www.ijcai.org/proceedings/2024/0001.pdf,77433
+O2890660842,core,102,retrieved,https://arxiv.org/pdf/1809.08098,87605
+O4411552176,core,103,not retrieved,,0
+O4206840646,core,104,retrieved,https://arxiv.org/pdf/2103.03638,157887
+O3134881993,core,105,retrieved,https://arxiv.org/pdf/2006.15722,140680
+O4404689764,core,106,retrieved,https://hal.science/hal-04787629v1/document,163409
+O4402753567,core,107,retrieved,https://arxiv.org/pdf/2311.16833,152209
+O7151076360,core,108,retrieved,https://arxiv.org/pdf/2604.02887,93211
+O4385300825,core,109,retrieved,https://arxiv.org/pdf/2302.01060,76877
+O4284967541,core,110,retrieved,https://link.springer.com/content/pdf/10.1007/s40747-022-00790-x.pdf,101352
+O7204663563,core,111,not retrieved,,0
+O2967595108,core,112,not retrieved,,0
+O2936295456,core,113,not retrieved,,0
+O4399157133,core,114,retrieved,https://ojs.aaai.org/index.php/ICAPS/article/download/31523/33683,47414
+O3010516233,core,115,retrieved,https://arxiv.org/pdf/2003.01595,96721
+O4367044454,core,116,not retrieved,,0
+O4409079480,core,117,retrieved,https://www.cambridge.org/core/services/aop-cambridge-core/content/view/9B615CA5045F87F71F29C8889CE07979/S0956792525000099a.pdf/div-class-title-nlp-verification-towards-a-general-methodology-for-certifying-robustness-div.pdf,286140
+O4402354142,remainder,1,retrieved,https://doi.org/10.15607/rss.2024.xx.059,128192
+O7161263437,remainder,2,retrieved,https://arxiv.org/pdf/2605.14968,66318
+O4414539290,remainder,3,not retrieved,,0
+O3214930062,remainder,4,retrieved,https://arxiv.org/pdf/2009.03864,138503
+O4385289198,remainder,5,retrieved,https://ieeexplore.ieee.org/ielx7/9552933/9973428/10195190.pdf,97881
+O7164211900,remainder,6,not retrieved,,0
+O7151853392,remainder,7,not retrieved,,0
+O7171488556,remainder,8,retrieved,https://arxiv.org/pdf/2607.24343,112014
+O4405469692,remainder,9,retrieved,https://arxiv.org/pdf/2412.11098,126436
+O4391257561,remainder,10,not retrieved,,0
+O4407949559,remainder,11,retrieved,https://arxiv.org/pdf/2409.19881,58668
+O4385453437,remainder,12,retrieved,https://ieeexplore.ieee.org/ielx7/6287639/6514899/10198247.pdf,155712
+O3131019302,remainder,13,not retrieved,,0
+O4404305051,remainder,14,retrieved,https://arxiv.org/pdf/2410.17538,141195
+O7161387891,remainder,15,retrieved,https://www.ijsr.net/archive/v15i5/SR26513224012.pdf,51053
+O7160958905,remainder,16,retrieved,https://arxiv.org/pdf/2605.10223,55383
+O2793067802,remainder,17,retrieved,https://arxiv.org/pdf/1803.04812,129644
+O4388441002,remainder,18,not retrieved,,0
+O4415913028,remainder,19,retrieved,https://arxiv.org/pdf/2510.26935,112870
+O4389665627,remainder,20,retrieved,https://arxiv.org/pdf/2302.14339,58145
+O4401414359,remainder,21,retrieved,https://arxiv.org/pdf/2403.05081,59236
+O4406764499,remainder,22,retrieved,https://arxiv.org/pdf/2405.17654,40515
+O3101293418,remainder,23,retrieved,https://arxiv.org/pdf/2006.08907,187731
+O7136229505,remainder,24,retrieved,https://www.researchsquare.com/article/rs-8884364/latest.pdf,45467
+O4400946840,remainder,25,retrieved,https://arxiv.org/pdf/2403.18041,74964
+O4387972489,remainder,26,retrieved,https://arxiv.org/pdf/2208.07935,149341
+O7118104636,remainder,27,not retrieved,,0
+O7135102326,remainder,28,retrieved,https://arxiv.org/pdf/2603.10572,159133
+O4415795464,remainder,29,retrieved,https://arxiv.org/pdf/2405.20539,95285
+O4417290994,remainder,30,retrieved,https://arxiv.org/pdf/2512.09458,69578
+O2810864230,remainder,31,not retrieved,,0
+O4415886758,remainder,32,retrieved,https://arxiv.org/pdf/2508.16345,53439
+O7204467824,remainder,33,retrieved,https://arxiv.org/pdf/2608.25459,45968
+O4416243460,remainder,34,retrieved,https://arxiv.org/pdf/2508.08153,88182
+O4285409484,remainder,35,retrieved,https://arxiv.org/pdf/2204.08117,141562
+O4225423574,remainder,36,retrieved,https://arxiv.org/pdf/2205.00900,88164
+O7171834681,remainder,37,retrieved,https://arxiv.org/pdf/2607.26547,48996
+O7169592824,remainder,38,retrieved,https://arxiv.org/pdf/2607.14093,62981
+O7138945547,remainder,39,retrieved,https://library.acadlore.com/IJEI/2026/9/1/IJEI_09.01_21.pdf,59172
+O4417292332,remainder,40,retrieved,https://arxiv.org/pdf/2512.09806,198816
+O7165669975,remainder,41,not retrieved,,0
+O7123342641,remainder,42,not retrieved,,0
+O7127194351,remainder,43,not retrieved,,0
+O2741041149,remainder,44,retrieved,https://www.ijcai.org/proceedings/2017/0753.pdf,13778
+O7220413358,remainder,45,retrieved,https://arxiv.org/pdf/2610.02432,394261
+O4288481534,remainder,46,retrieved,https://arxiv.org/pdf/1903.01032,58117
+O4366999641,remainder,47,retrieved,https://arxiv.org/pdf/2304.11550,74121
+O4396937861,remainder,48,not retrieved,,0
+O7171287931,remainder,49,retrieved,http://www.wpias.edu.pl/ojs/index.php/JAAT/article/download/314/361,51710
+O3209289000,remainder,50,retrieved,https://arxiv.org/pdf/2011.03590,54449
+O7134959935,remainder,51,retrieved,https://arxiv.org/pdf/2603.08907,77126
+O4403593963,remainder,52,retrieved,https://arxiv.org/pdf/2409.04641,54225
+O4417439619,remainder,53,retrieved,https://arxiv.org/pdf/2507.16426,154273
+O4390349808,remainder,54,retrieved,https://arxiv.org/pdf/2302.07109,156925
+O7157859985,remainder,55,retrieved,https://arxiv.org/pdf/2604.24894,418946
+O4384521927,remainder,56,retrieved,https://link.springer.com/content/pdf/10.1007/s11241-023-09402-4.pdf,75261
+O7117364081,remainder,57,not retrieved,,0
+O7140117080,remainder,58,retrieved,https://arxiv.org/pdf/2603.19790,52512
+O4320724689,remainder,59,retrieved,https://arxiv.org/pdf/2111.12316,48021
+O7168656616,remainder,60,retrieved,https://proceedings.kr.org/2026/106/kr2026-0106-takemura-et-al.pdf,81247
+O7161176011,remainder,61,retrieved,https://arxiv.org/pdf/2605.12947,170894
+O4399115387,remainder,62,retrieved,https://arxiv.org/pdf/2405.16184,33590
+O4318685743,remainder,63,retrieved,https://arxiv.org/pdf/2201.09112,64741
+O4406715843,remainder,64,retrieved,https://arxiv.org/pdf/2410.18293,96212
+O4415476385,remainder,65,not retrieved,,0
+O7214089039,remainder,66,retrieved,https://arxiv.org/pdf/2609.26293,225712
+O7203720573,remainder,67,retrieved,https://doi.org/10.22214/ijraset.2026.84520,55863
+O7123346317,remainder,68,retrieved,https://arxiv.org/pdf/2409.12382,47967
+O7133204952,remainder,69,retrieved,https://arxiv.org/pdf/2303.04745,93184
+O7138907351,remainder,70,retrieved,https://arxiv.org/pdf/2511.00527,205800
+O7214925451,remainder,71,not retrieved,,0
+O7128015350,remainder,72,retrieved,https://arxiv.org/pdf/2602.03968,73844
+O7171968334,remainder,73,retrieved,https://joe.uobaghdad.edu.iq/index.php/main/article/download/3943/2809,92900
+O7162495747,remainder,74,retrieved,https://arxiv.org/pdf/2605.26429,199005
+O4415986067,remainder,75,retrieved,https://doi.org/10.14722/ndss.2026.230869,143457
+O7162988865,remainder,76,retrieved,https://arxiv.org/pdf/2609.09692,46420
+O4406786055,remainder,77,retrieved,https://arxiv.org/pdf/2501.13430,144668
+O4393871000,remainder,78,retrieved,https://link.springer.com/content/pdf/10.1007/978-3-031-57246-3_9.pdf,63641
+O4312717216,remainder,79,not retrieved,,0
+O4411399924,remainder,80,retrieved,https://link.springer.com/content/pdf/10.1007/s10994-025-06810-4.pdf,88457
+O7139143999,remainder,81,retrieved,https://arxiv.org/pdf/2603.15063,78267
+O7155371970,remainder,82,retrieved,https://arxiv.org/pdf/2604.19775,71766
+O7168241292,remainder,83,retrieved,https://arxiv.org/pdf/2607.10811,22730
+O3114355749,remainder,84,retrieved,https://research.chalmers.se/publication/526124/file/526124_Fulltext.pdf,58710
+O4403365237,remainder,85,retrieved,https://arxiv.org/pdf/2410.08022,67682
+O7165634166,remainder,86,not retrieved,,0
+O4303857556,remainder,87,retrieved,https://arxiv.org/pdf/1912.02906,191753
+O7160560765,remainder,88,retrieved,https://www.eudoxuspress.com/index.php/pub/article/download/5323/4002,33305
+O4413945503,remainder,89,retrieved,https://arxiv.org/pdf/2504.17966,50832
+O4416177651,remainder,90,retrieved,https://theses.hal.science/tel-04959071/document,509632
+O7172049593,remainder,91,retrieved,https://arxiv.org/pdf/2607.27964,146124
+O7134853944,remainder,92,retrieved,https://arxiv.org/pdf/2603.07546,93533
+O2904263972,remainder,93,not retrieved,,0
+O4308069718,remainder,94,not retrieved,,0
+O3089014878,remainder,95,retrieved,https://arxiv.org/pdf/2009.11403,76861
+O7110962066,remainder,96,not retrieved,,0
+O7169876191,remainder,97,retrieved,https://arxiv.org/pdf/2607.18195,110283
+O4416904409,remainder,98,retrieved,http://article.sciencepg.com/pdf/j.ijssam.20251003.12,60577
+O4393160604,remainder,99,retrieved,https://ojs.aaai.org/index.php/AAAI/article/download/30163/32063,74222
+O7140324240,remainder,100,retrieved,https://arxiv.org/pdf/2603.23465,155669
+O7152649819,remainder,101,retrieved,https://arxiv.org/pdf/2604.06430,127007
+O7166813758,remainder,102,retrieved,https://arxiv.org/pdf/2606.31607,101174
+O4221153097,remainder,103,retrieved,https://arxiv.org/pdf/2201.01347,85461
+O7214064349,remainder,104,not retrieved,,0
+O2962295100,remainder,105,retrieved,https://link.springer.com/content/pdf/10.1007%2F978-3-030-25540-4_36.pdf,63449
+O4416999542,remainder,106,retrieved,https://arxiv.org/pdf/2512.02080,135774
+O4321392741,remainder,107,retrieved,https://arxiv.org/pdf/2302.08872,120586
+O4396650433,remainder,108,retrieved,https://arxiv.org/pdf/2405.00675,114500
+O7212031345,remainder,109,retrieved,https://asciences.org/index.php/ojs/article/download/98/97,64465
+O3037655992,remainder,110,retrieved,https://arxiv.org/pdf/2006.13916,85341
+O7128825065,remainder,111,retrieved,https://arxiv.org/pdf/2602.12047,156730
+O7161737938,remainder,112,retrieved,https://arxiv.org/pdf/2605.16660,133250
+O4415795436,remainder,113,retrieved,https://arxiv.org/pdf/2411.03678,112660
+O7161640018,remainder,114,retrieved,https://www.researchsquare.com/article/rs-9353255/latest.pdf,83814
+O3092184188,remainder,115,retrieved,https://link.springer.com/content/pdf/10.1007/s10994-021-06050-2.pdf,93365
+O4408666991,remainder,116,retrieved,https://s-rsa.com/index.php/agi/article/download/13799/10471,82671
+O4283365351,remainder,117,not retrieved,,0
+O7125517238,remainder,118,retrieved,https://ijamjournal.org/ijam/publication/index.php/ijam/article/download/1658/1508,51135
+O7214657561,remainder,119,retrieved,https://arxiv.org/pdf/2609.30691,212861
+O4414050564,remainder,120,retrieved,https://arxiv.org/pdf/2503.08558,95069
+O7160879966,remainder,121,retrieved,https://arxiv.org/pdf/2605.07549,70055
+O4411267971,remainder,122,not retrieved,,0
+O4393161169,remainder,123,retrieved,https://ojs.aaai.org/index.php/AAAI/article/download/30084/31910,66786
+O7160305831,remainder,124,retrieved,https://arxiv.org/pdf/2605.01069,53301
+O4414050734,remainder,125,not retrieved,,0
+O4415042174,remainder,126,retrieved,https://rpsonline.com.sg/proceedings/esrel-sra-e2025/pdf/ESREL-SRA-E2025-P8451.pdf,52959
+O4401416547,remainder,127,retrieved,https://arxiv.org/pdf/2406.01814,64387
+O7220723858,remainder,128,retrieved,https://arxiv.org/pdf/2610.04084,180556
+O7154959401,remainder,129,retrieved,https://arxiv.org/pdf/2603.18829,290641
+O4410642864,remainder,130,not retrieved,,0
+O2948254043,remainder,131,retrieved,https://arxiv.org/pdf/1906.02533,123708
+O4312564465,remainder,132,retrieved,https://ris.utwente.nl/ws/files/297741446/978_3_031_19992_9_3.pdf,47213
+O7204803478,remainder,133,retrieved,https://www.nature.com/articles/s41598-026-69233-8_reference.pdf,150914
+O3095839831,remainder,134,retrieved,https://arxiv.org/pdf/1912.04744,85204
+O4399563841,remainder,135,not retrieved,,0
+O3035780950,remainder,136,retrieved,https://arxiv.org/pdf/2006.12007,124505
+O4414806824,remainder,137,retrieved,https://arxiv.org/pdf/2510.00441,88858
+O7133238252,remainder,138,retrieved,https://arxiv.org/pdf/2309.08911,261521
+O4402883652,remainder,139,retrieved,https://arxiv.org/pdf/2011.12639,85395
+O4387561115,remainder,140,retrieved,https://arxiv.org/pdf/2310.06430,117469
+O4400647773,remainder,141,retrieved,https://arxiv.org/pdf/2407.04343,50029
+O4403344774,remainder,142,retrieved,https://arxiv.org/pdf/2410.06296,117702
+O7167247121,remainder,143,retrieved,https://arxiv.org/pdf/2607.02124,29242
+O4308244126,remainder,144,retrieved,https://arxiv.org/pdf/2211.01793,116207
+O4396783611,remainder,145,retrieved,https://arxiv.org/pdf/2405.02441,40535
+O7138101982,remainder,146,retrieved,https://arxiv.org/pdf/2603.14197,104987
+O3206889533,remainder,147,retrieved,https://arxiv.org/pdf/2110.10333,59952
+O7139119937,remainder,148,retrieved,https://ojs.aaai.org/index.php/AAAI/article/download/40923/44884,71898
+O4388561670,remainder,149,retrieved,https://arxiv.org/pdf/2310.03217,82126
+O7127925835,remainder,150,retrieved,https://arxiv.org/pdf/2602.04608,72208
+O2804542227,remainder,151,retrieved,https://arxiv.org/pdf/1806.03820,101124
+O7106162589,remainder,152,retrieved,https://arxiv.org/pdf/2511.14048,55831
+O4401990437,remainder,153,retrieved,https://arxiv.org/pdf/2405.05146,52971
+O4414883572,remainder,154,not retrieved,,0
+O3216935302,remainder,155,retrieved,https://arxiv.org/pdf/2111.12360,62227
+O4416383082,remainder,156,retrieved,https://arxiv.org/pdf/2510.08095,250364
+O4367056604,remainder,157,retrieved,https://www.db-thueringen.de/servlets/MCRFileNodeServlet/dbt_derivate_00068606/1872-9088_55_2023_92-117.pdf,302102
+O7214748213,remainder,158,retrieved,https://arxiv.org/pdf/2609.32274,97931
+O4205626291,remainder,159,retrieved,https://ieeexplore.ieee.org/ielx7/7083369/9647862/09681233.pdf,66238
+O7164702531,remainder,160,not retrieved,,0
+O7204119119,remainder,161,retrieved,https://arxiv.org/pdf/2608.21049,96067
+O4378499190,remainder,162,retrieved,https://arxiv.org/pdf/2305.15755,57188
+O7138825943,remainder,163,not retrieved,,0
+O7167089804,remainder,164,retrieved,https://arxiv.org/pdf/2607.00334,62918
+O4408175362,remainder,165,retrieved,https://www.repository.cam.ac.uk/bitstreams/c4566617-9317-4160-b704-d084d692560f/download,129936
+O7169620179,remainder,166,retrieved,https://arxiv.org/pdf/2607.14126,64929
+O7131417432,remainder,167,retrieved,https://arxiv.org/pdf/2410.14209,96101
+O4415799201,remainder,168,retrieved,https://arxiv.org/pdf/2405.07976,92470
+O3016425199,remainder,169,retrieved,https://link.springer.com/content/pdf/10.1007%2F978-3-030-45190-5_6.pdf,53954
+O4200294561,remainder,170,retrieved,https://arxiv.org/pdf/2112.10593,45584
+O4391188106,remainder,171,retrieved,https://arxiv.org/pdf/2206.14372,247412
+O4396600859,remainder,172,retrieved,https://arxiv.org/pdf/2404.19651,123459
+O4416407150,remainder,173,retrieved,https://www.researchsquare.com/article/rs-7996305/latest.pdf,109294
+O4312433875,remainder,174,retrieved,https://arxiv.org/pdf/2110.05415,242483
+O4391021262,remainder,175,retrieved,https://arxiv.org/pdf/2303.09196,85229
+O7162760278,remainder,176,retrieved,https://arxiv.org/pdf/2605.29139,162450
+O4391988331,remainder,177,retrieved,https://arxiv.org/pdf/2402.12307,103779
+O7162090531,remainder,178,not retrieved,,0
+O7128041204,remainder,179,retrieved,https://arxiv.org/pdf/2602.06038,68067
+O2982316166,remainder,180,not retrieved,,0
+O4281490538,remainder,181,retrieved,https://arxiv.org/pdf/2205.10732,54248
+O2926603448,remainder,182,not retrieved,,0
+O4286857124,remainder,183,retrieved,https://arxiv.org/pdf/2111.09211,140780
+O7167942380,remainder,184,retrieved,https://arxiv.org/pdf/2607.07893,160754
+O7171646275,remainder,185,not retrieved,,0
+O4405658626,remainder,186,retrieved,https://link.springer.com/content/pdf/10.1007/s10846-024-02205-0.pdf,83682
+O7166859555,remainder,187,retrieved,https://aclanthology.org/2026.acl-long.528.pdf,135547
+O4310631281,remainder,188,retrieved,https://arxiv.org/pdf/2212.00478,57644
+O7131319644,remainder,189,retrieved,https://arxiv.org/pdf/2602.19483,12377
+O4390092008,remainder,190,retrieved,https://arxiv.org/pdf/2312.12759,64492
+O2964359568,remainder,191,retrieved,https://ojs.aaai.org/index.php/AAAI/article/download/3964/3842,68565
+O7106228543,remainder,192,retrieved,https://arxiv.org/pdf/2511.15146,163815
+O7201906978,remainder,193,retrieved,https://lirias.kuleuven.be/retrieve/d5945f26-bbac-42a1-9b76-ba519b898423,47568
+O3154545355,remainder,194,not retrieved,,0
+O4414811182,remainder,195,retrieved,https://arxiv.org/pdf/2510.01163,372742
+O7147556692,remainder,196,retrieved,https://arxiv.org/pdf/2603.27592,97017
+O4407950306,remainder,197,retrieved,https://arxiv.org/pdf/2403.17338,88629
+O7130695231,remainder,198,retrieved,https://link.springer.com/content/pdf/10.1007/s40192-026-00441-w.pdf,128804
+O7163179530,remainder,199,retrieved,https://arxiv.org/pdf/2606.00419,133144
+O4404569890,remainder,200,retrieved,https://arxiv.org/pdf/2411.10513,78285
+O7138473169,remainder,201,retrieved,https://arxiv.org/pdf/2603.15221,243907
+O7196949195,remainder,202,not retrieved,,0
+O7131910089,remainder,203,retrieved,https://arxiv.org/pdf/2602.22679,71789
+O2888409681,remainder,204,retrieved,https://eprints.whiterose.ac.uk/id/eprint/133489/1/RL_paper_5.pdf,35438
+O7133189163,remainder,205,not retrieved,,0
+O4405094777,remainder,206,retrieved,https://arxiv.org/pdf/2412.03932,49037
+O4405354148,remainder,207,retrieved,https://arxiv.org/pdf/2412.08661,82187
+O7202270053,remainder,208,retrieved,https://arxiv.org/pdf/2608.11175,23386
+O2913563956,remainder,209,retrieved,https://link.springer.com/content/pdf/10.1007/s11721-019-00163-0.pdf,126151
+O7140091238,remainder,210,retrieved,https://arxiv.org/pdf/2603.19281,169701
+O2970900401,remainder,211,retrieved,https://inria.hal.science/hal-02127889v1/file/SMC_CMCDOT_WS_IV.pdf,52916
+O7166701031,remainder,212,retrieved,https://arxiv.org/pdf/2606.29657,183705
+O4390576807,remainder,213,retrieved,https://ieeexplore.ieee.org/ielx7/41/4387790/10381514.pdf,81216
+O3087456546,remainder,214,retrieved,https://arxiv.org/pdf/2009.09942,106576
+O7168509562,remainder,215,retrieved,https://arxiv.org/pdf/2607.13070,63744
+O7155091958,remainder,216,retrieved,https://arxiv.org/pdf/2604.17578,241397
+O4415996205,remainder,217,not retrieved,,0
+O4225455743,remainder,218,retrieved,https://arxiv.org/pdf/2201.12819,80024
+O2979091979,remainder,219,retrieved,https://arxiv.org/pdf/1910.01380,76212
+O4414449094,remainder,220,retrieved,https://www.researchsquare.com/article/rs-7668573/latest.pdf,149005
+O4394930075,remainder,221,retrieved,https://www.researchsquare.com/article/rs-4256683/latest.pdf,56942
+O4382935996,remainder,222,retrieved,https://arxiv.org/pdf/2303.04241,73099
+O3098796714,remainder,223,retrieved,http://liu.diva-portal.org/smash/get/diva2:1484042/FULLTEXT01,96233
+O4407039535,remainder,224,retrieved,https://doisrpska.nub.rs/index.php/jita/article/download/10435/10074,39090
+O7125487007,remainder,225,retrieved,https://arxiv.org/pdf/2601.16198,107932
+O7164836213,remainder,226,retrieved,https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1836430/pdf,155379
+O7135162928,remainder,227,retrieved,https://theses.hal.science/tel-05547773/document,358107
+O4415197707,remainder,228,retrieved,https://arxiv.org/pdf/2504.17671,40418
+O4412375037,remainder,229,not retrieved,,0
+O4416190460,remainder,230,retrieved,https://arxiv.org/pdf/2511.08231,68777
+O7144391708,remainder,231,retrieved,https://arxiv.org/pdf/2603.26343,119633
+O7214713629,remainder,232,retrieved,https://arxiv.org/pdf/2609.35415,118369
+O4320855572,remainder,233,retrieved,https://arxiv.org/pdf/2209.14295,192201

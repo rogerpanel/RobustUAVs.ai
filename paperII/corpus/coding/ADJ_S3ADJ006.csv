@@ -1,0 +1,7 @@
+cid,field,value,rationale
+O3111808837,eligible,0,"Excluded: guarantee concerns regularized DeePC on Hankel data matrices of an LTI system; no learned (ML) component, power converter only."
+O3118640283,evidence,measured,"Headline risk control validated on real-world image datasets (ImageNet, MS COCO, polyp segmentation), not a simulator or analytical model."
+O3129820173,evidence,simulated,"Coverage theorem is general, not a certificate computed on a model; its only empirical support is Section 4 simulated synthetic distributions."
+O3135766489,class,NEW:Differential-privacy poisoning certification,"No classes.csv code covers DP-based poisoning bounds (mixup plus Laplace noise); both coders proposed equivalent NEW labels."
+O3135766489,modality,E,"Poisoning guarantee bounds expected attack cost J(D')=E[C(M(D'))]; no confidence level over certifier sampling, so not Ac."
+O3167479696,lifts,L_conc,"Bound uses concentration/PAC arguments (Hoeffding, calibrated model w.p. 1-delta); partial coverage is a data assumption, not deployment-in-certified-set (L_sup)."

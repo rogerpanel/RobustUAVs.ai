@@ -1,0 +1,7 @@
+cid,field,value,rationale
+O1678450113,class,"NEW:Fundamental adversarial robustness upper bounds","Theorems 1-3 bound rho_adv from above for linear/quadratic families (impossibility limit); no classes.csv code fits; GEN covers generalisation/sample complexity, not robustness limits."
+O208468569,lifts,"L_conc","Theorem 2.2 P(||Q-Q*||>=eps)<=delta derived via Hoeffding-type bound p_n=1-2|S||A|exp(...) on n i.i.d. simulation samples: concentration argument from samples."
+O2626994141,lifts,"none","Proof analyses expected updates only (Sec. 5.2, App. A); no concentration, PAC or other codebook lift argument is stated in the paper."
+O2733092977,class,"NEW:Finite-sample system-identification confidence regions","SPCR gives exact-coverage parameter regions via sign-perturbation rank symmetry; not a learning-theoretic generalisation/sample-complexity bound, so GEN does not fit."
+O2733092977,lifts,"L_conc","Claim 1: coverage P{theta* in region}=h2/m follows from a rank/exchangeability argument over sign-perturbed data, a conformal-type argument from samples."
+O2754770961,perturbation,"distribution","w_t ~ N(0,I) is unbounded Gaussian noise, not a bounded disturbance; regret is an expectation over prior and noise distributions (sampling variation)."

@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3212552393",1,"","ALG","B","control","pop","E","distribution","L_conc","S","modelled","Constrained linear bandit: O~(sqrt(tau)) expected regret and zero expected constraint violation after constant tau'; Slater condition assumed; hospital routing eval only."
+"O4283791235",1,"","GEN","B","control","pop","P","disturbance","L_conc","S","modelled","Robust MDP: poly samples give eps-optimal policy vs worst-case bounded transition perturbation w.p. 1-delta; Lipschitz constraint assumed; toy MDP only."
+"O2914897181",0,"Empirical adversarial-example detector; no formal or statistical guarantee on a stated object.","","","","","","","","","",""
+"O3170402103",1,"","GEN","B","control","pop","P","distribution","L_conc","S","modelled","Reward-free RL with kernel/neural approximation: O~(1/eps^2) episodes yield eps-suboptimal policy w.h.p.; realizability (linear-RKHS transition) assumed; theory only."
+"O3012552881",0,"Dropout uncertainty estimates for molecular potentials; empirical, no guarantee, not an autonomous system.","","","","","","","","","",""

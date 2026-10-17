@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O3202898482",1,"","GEN","B","control","pop","P","distribution","L_conc","S","modelled","W.p. 1-delta, O~(d^2H^3/eps^2) reward-free episodes give model where any eps-optimal plug-in planner is O(eps)-optimal; theory only, linear mixture MDP."
+"O4322576871",1,"","LUC","B","estimation","tr","A","disturbance","L_dyn","SE","simulated","Bounded error of data-based (fundamental-lemma, basis-function) output prediction/matching under bounded noise; borderline learned component; estimation vs control doubt."
+"O4407950169",1,"","LUC","B","control","tr","A","disturbance","L_dyn","S","simulated","Data-learned zonotopic model set gives tube MPC recursive feasibility and robust exponential stability under bounded noise; borderline learned component (set-membership ID)."
+"O3135766489",1,"","NEW:DP-based poisoning certification","B","perception","in","E","poisoning","none","S","proof","k-way mixup+Laplace noise is (eps,0)-DP, bounding expected attack cost under l poisoned points; scope in (dataset neighbourhood) vs pop doubt."
+"O2804470424",1,"","ALG","B","control","pop","P","distribution","L_conc","S","modelled","GP-UCRL achieves high-probability sublinear regret O~((gamma_T(R)+gamma_mT(P))sqrt(T)) in RKHS kernelized MDPs; theory only, no experiments."

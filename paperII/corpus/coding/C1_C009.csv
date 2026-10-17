@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O4381542600",1,"","SMT","B","perception","in","A","norm","none","U","proof","Exact ADD aggregation of random forest verifies pre/post-conditions over input box and equivalence; Iris only; class could be BP."
+"O3092567899",1,"","PACB","B","perception","pop","P","distribution","L_conc","S","modelled","RichID PAC sample-complexity bound for epsilon-optimal policy from learned decoder, w.p. 1-delta; theory only; E vs P doubt."
+"O3035782912",1,"","SMT","A","perception","in","A","semantic","L_sup","S","proof","MILP-verifies direct-perception output never violates risk given learned property characterizer, assuming activations stay in training polyhedron (monitored)."
+"O3132132679",1,"","CLR","A","control","tr","A","none","L_dyn","S","proof","Projected training restricts ReLU controller to CPWA family proven reach-avoid safe on finite abstraction of known plant; robot vehicle test."
+"O4404986723",1,"","PACB","B","control","pop","P","distribution","L_conc","SEC","simulated","Validation-set sample-convergence quantile bounds on learned optimizer residual over problem distribution, plus convergence; control tier B doubt (text truncated)."

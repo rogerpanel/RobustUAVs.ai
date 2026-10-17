@@ -1,0 +1,6 @@
+cid,eligible,elig_reason,class,tier,component,scope,modality,perturbation,lifts,assumption,evidence,note
+"O2955833779",1,"","SMT","B","perception","in","A","none","none","S","proof","SMT-proved global abductive explanations for boosted trees: fixed feature subset entails prediction for all instances. Tabular classifier coded perception (rule-6 doubt)."
+"O2962710014",0,"Empirical randomized-noise defence; no certificate or formal robustness guarantee.","","","","","","","","","",""
+"O3188794522",0,"Complexity and enumeration results for explaining decision trees; no guarantee about learned model behaviour.","","","","","","","","","",""
+"O4385437649",1,"","SMT","B","perception","in","A","none","none","S","proof","MILP product network yields counterfactual provably valid across all n ReLU networks. Quantifies over model set at one input (rule-6 doubt)."
+"O3167492897",1,"","BP","B","perception","in","E","norm","none","SE","modelled","Expected-tight interval bounds are supersets of true output bounds, tighter than IBP, in expectation over Gaussian weights; not a sound certificate."
