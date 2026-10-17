@@ -185,6 +185,17 @@ if systemctl list-unit-files 2>/dev/null | grep -q '^robustuavs-api.service'; th
 	else
 		log "control plane is active but /api/health does not answer"; exit 1
 	fi
+elif curl -fsS --max-time 5 http://127.0.0.1:8000/api/health >/dev/null 2>&1; then
+	# Something answers on :8000 but it is not the systemd unit, so nothing
+	# above restarted it: it keeps serving the code it was started with while
+	# the client is rebuilt from the new commit. Pages then report routes the
+	# API "does not serve". Say so and fail rather than finish green.
+	api_stale=1
+	log "control plane NOT restarted: robustuavs-api.service is not installed,"
+	log "         but an API answers on :8000 and keeps running its old code:"
+	(ss -ltnp 'sport = :8000' 2>/dev/null || true) | sed 's/^/         /'
+	log "         install the unit once (deploy/robustuavs-api.service header),"
+	log "         stop the old process, then re-run this script"
 fi
 
 # Docker stack, only if this deployment defines one.
@@ -203,7 +214,8 @@ fi
 # Origin CA cert, which only Cloudflare is meant to trust.
 log "verification (origin-local; the public path is Cloudflare's to serve)"
 ok=1
-for path in / /api/health /artifact/ /app; do
+# /api/papers proves the API runs this commit's code, not merely that it is up.
+for path in / /api/health /api/papers /artifact/ /app; do
 	code=$(curl -s -o /dev/null -w '%{http_code}' -k --max-time 10 \
 		--resolve "robustuavs.ai:443:127.0.0.1" "https://robustuavs.ai${path}") || code=000
 	case "$code" in 2*|3*) mark="ok" ;; *) mark="FAILED"; ok=0 ;; esac
@@ -211,4 +223,8 @@ for path in / /api/health /artifact/ /app; do
 done
 [ "$ok" = "1" ] || log "one or more endpoints did not answer locally"
 
+if [ "${api_stale:-0}" = "1" ]; then
+	log "client deployed at $after, but the API was NOT restarted (see above)"
+	exit 1
+fi
 log "deployed $after"
