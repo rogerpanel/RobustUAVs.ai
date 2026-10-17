@@ -538,45 +538,139 @@ def _codebook(path: Path) -> tuple[Optional[str], dict[str, list[str]]]:
     return ver, out
 
 
-def corpus(table: str = "ADJ", filters: Optional[dict[str, str]] = None,
+def _corpus_tables(cdir: Path) -> dict[str, Path]:
+    """Coded tables by name. Pilot: ADJ, C1, C2 (keyed by gid, metadata in corpus_index.csv).
+    Full study: full_final (adjudicated), full_C1, full_C2, and each snowballing iteration as
+    snow<k>_final / snow<k>_C1 / snow<k>_C2 (keyed by OpenAlex cid, metadata in the candidate files)."""
+    out = {p.stem[len("codes_"):]: p for p in sorted(cdir.glob("codes_*.csv"))}
+    for p in sorted((cdir / "snowball").glob("iter*_codes_full_*.csv")):
+        m = re.fullmatch(r"iter(\d+)_codes_full_(\w+)", p.stem)
+        if m:
+            out[f"snow{m.group(1)}_{m.group(2)}"] = p
+    return out
+
+
+def _table_label(name: str) -> str:
+    if name == "full_final":
+        return "full study — adjudicated"
+    if name.startswith("full_"):
+        return f"full study — coder {name[5:]}"
+    m = re.fullmatch(r"snow(\d+)_(\w+)", name)
+    if m:
+        who = "adjudicated" if m.group(2) == "final" else f"coder {m.group(2)}"
+        return f"snowballing {m.group(1)} — {who}"
+    return {"ADJ": "pilot — adjudicated", "C1": "pilot — coder C1", "C2": "pilot — coder C2"}.get(name, name)
+
+
+def _cid_metadata(cdir: Path) -> dict[str, dict]:
+    """title / year / venue / doi for every OpenAlex cid, from the main and snowball candidate files."""
+    meta: dict[str, dict] = {}
+    for p in [cdir / "candidates.csv", *sorted((cdir / "snowball").glob("iter*_candidates.csv"))]:
+        if p.is_file():
+            _, rows = read_table(p)
+            for r in rows:
+                meta.setdefault(str(r.get("cid")), r)
+    return meta
+
+
+def _full_prisma(cdir: Path, rdir: Path) -> Optional[list[dict]]:
+    """The full study's flow, read from the same files that generate the manuscript's numbers
+    (prisma_counts.csv, results/screening_status.csv, codes_full_final.csv, snowball_iter*_status.csv).
+    Screening of the long tail is sampled, so its includes are an estimate with a 95 % interval."""
+    st_p = rdir / "screening_status.csv"
+    if not st_p.is_file() or not (cdir / "codes_full_final.csv").is_file():
+        return None
+    _, st_rows = read_table(st_p)
+    st = {str(r["metric"]): r["value"] for r in st_rows}
+    _, pr_rows = read_table(cdir / "prisma_counts.csv")
+    pr = {str(r["stage"]): r["n"] for r in pr_rows}
+    _, codes = read_table(cdir / "codes_full_final.csv")
+    def _int(v):
+        x = _num(v)
+        return int(x) if x is not None and float(x).is_integer() else x
+    ident, dup = _int(pr.get("identified")), _int(pr.get("duplicates"))
+    rows = [
+        {"stage": "identified (database search)", "n": ident, "note": "OpenAlex and venue sweeps"},
+        {"stage": "duplicates removed", "n": dup, "note": None},
+        {"stage": "candidates to screen", "n": (ident - dup) if ident is not None and dup is not None else None,
+         "note": None},
+        {"stage": "screened (title and abstract)", "n": _int(st.get("screened")),
+         "note": f"two independent screeners, kappa {st.get('kappa_L1_L2')}"},
+        {"stage": "  top-ranked core screened / included", "n": f"{st.get('core_screened')} / {st.get('core_included')}",
+         "note": None},
+        {"stage": "  random sample of the rest screened / included",
+         "n": f"{st.get('sample_screened')} / {st.get('sample_included')}", "note": None},
+        {"stage": "  unscreened remainder, estimated includes",
+         "n": _int(st.get("remainder_includes_est")),
+         "note": f"of {st.get('remainder_size')} records; 95 % interval {st.get('remainder_includes_ci95')}"},
+        {"stage": "full-text coded (stratified sample)", "n": len(codes), "note": "two coders plus adjudication"},
+        {"stage": "eligible after full text", "n": sum(1 for r in codes if str(r.get("eligible")) in ("1", "1.0")),
+         "note": None},
+    ]
+    for p in sorted(rdir.glob("snowball_iter*_status.csv")):
+        _, srows = read_table(p)
+        ss = {str(r["metric"]): r["value"] for r in srows}
+        k = ss.get("iteration", p.stem)
+        rows.append({"stage": f"snowballing {k}: screened / included / coded / eligible",
+                     "n": f"{ss.get('candidates_screened')} / {ss.get('includes')} / {ss.get('coded')} / "
+                          f"{ss.get('eligible_coded')}",
+                     "note": f"new eligible papers estimated {ss.get('new_eligible_est')} "
+                             f"[{ss.get('new_eligible_lo')}, {ss.get('new_eligible_hi')}]"})
+    return rows
+
+
+def corpus(table: Optional[str] = None, filters: Optional[dict[str, str]] = None,
            year_min: Optional[int] = None, year_max: Optional[int] = None) -> dict:
     d = _paper_dir("II")
     cdir, rdir = d / "corpus", d / "results"
     if not d.is_dir():
-        raise Unavailable("paperII/", "paperII/ is not checked out in this deployment "
-                          "(it lives on the paperII/full-study branch), so the coded "
+        raise Unavailable("paperII/", "paperII/ is not checked out in this deployment, so the coded "
                           "corpus and PRISMA counts are not available here.")
-    if not re.fullmatch(r"[A-Za-z0-9_]+", table or ""):
-        raise BadRequest("table must be a coder id such as ADJ, C1, C2, H1")
-    codes_p, index_p = cdir / f"codes_{table}.csv", cdir / "corpus_index.csv"
-    for p in (codes_p, index_p):
-        if not p.is_file():
-            raise Unavailable(_rel(p))
+    tables = _corpus_tables(cdir)
+    if table in (None, ""):
+        table = "full_final" if "full_final" in tables else "ADJ"
+    if not re.fullmatch(r"[A-Za-z0-9_]+", table):
+        raise BadRequest("table must be one of the names in tables_available")
+    if table not in tables:
+        raise Unavailable(f"paperII/corpus/codes_{table}.csv",
+                          f"no coded table named {table!r}; available: {sorted(tables)}")
+    codes_p = tables[table]
 
     ver, book = _codebook(cdir / "CODEBOOK.md")
     code_cols, codes = read_table(codes_p)
-    _, index = read_table(index_p)
+    key = "gid" if "gid" in code_cols else "cid"
     fields = [f for f in (book or {}) if f in code_cols] or \
              [f for f in CODE_FIELDS_FALLBACK if f in code_cols]
+    fields = [f for f in ("eligible", "class") if f in code_cols] + fields
 
     filters = {k: v for k, v in (filters or {}).items() if v not in (None, "")}
     unknown = sorted(set(filters) - set(fields))
     if unknown:
         raise BadRequest(f"unknown filter field(s) {unknown}; filterable: {fields}")
 
-    by_gid = {str(r["gid"]): r for r in index}
+    sources = [_rel(codes_p)]
+    if key == "gid":
+        index_p = cdir / "corpus_index.csv"
+        _, index = read_table(index_p)
+        meta_by = {str(r["gid"]): r for r in index}
+        sources.append(_rel(index_p))
+    else:
+        meta_by = _cid_metadata(cdir)
+        sources.append(_rel(cdir / "candidates.csv") + " (+ snowball/iter*_candidates.csv)")
     joined = []
     for r in codes:
-        meta = by_gid.get(str(r["gid"]), {})
-        joined.append({"gid": r["gid"], "year": meta.get("year"),
-                       "venue": meta.get("venue"), "bibkey": meta.get("bibkey"),
+        meta = meta_by.get(str(r[key]), {})
+        joined.append({key: r[key], "year": meta.get("year"),
+                       "venue": meta.get("venue"), "bibkey": meta.get("bibkey") or meta.get("doi"),
                        "title": meta.get("title"),
-                       **{k: v for k, v in r.items() if k != "gid"}})
+                       **{k: v for k, v in r.items() if k != key}})
 
     def values(row, f):
         v = row.get(f)
-        if v is None:
-            return []
+        if v is None or str(v).strip() == "":
+            return []                      # blank = not coded (e.g. an ineligible paper), not a category
+        if f == "eligible":
+            return [str(int(_num(v)))] if _num(v) is not None else [str(v)]
         return [x.strip() for x in str(v).split(";") if x.strip()] if f in LIST_FIELDS \
             else [str(v)]
 
@@ -598,7 +692,6 @@ def corpus(table: str = "ADJ", filters: Optional[dict[str, str]] = None,
               for f, c in counts.items()}
     years = [int(y) for y in (_num(r.get("year")) for r in joined) if y is not None]
 
-    sources = [_rel(codes_p), _rel(index_p)]
     missing = []
 
     def optional(p: Path):
@@ -610,17 +703,23 @@ def corpus(table: str = "ADJ", filters: Optional[dict[str, str]] = None,
             missing.append(_rel(p))
             return None
 
-    prisma = optional(cdir / "prisma_counts.csv")
+    full = _full_prisma(cdir, rdir)
+    if full is not None:
+        prisma, prisma_source = full, ("paperII/corpus/prisma_counts.csv, paperII/results/screening_status.csv, "
+                                       "paperII/corpus/codes_full_final.csv, paperII/results/snowball_iter*_status.csv")
+    else:
+        prisma, prisma_source = optional(cdir / "prisma_counts.csv"), "paperII/corpus/prisma_counts.csv"
     sensitivity = optional(rdir / "search_sensitivity.csv")
-    tables = sorted(p.stem[len("codes_"):] for p in cdir.glob("codes_*.csv"))
     return {
-        "table": table, "tables_available": tables,
+        "table": table, "tables_available": sorted(tables, key=lambda n: (not n.startswith("full"),
+                                                                           not n.startswith("snow"), n)),
+        "table_labels": {n: _table_label(n) for n in tables}, "key": key,
         "codebook_version": ver, "codebook": book, "fields": fields,
         "filters": filters, "year_min": year_min, "year_max": year_max,
         "year_range": [min(years), max(years)] if years else None,
         "n_total": len(joined), "n_filtered": len(rows),
         "counts": counts, "rows": rows,
-        "prisma": prisma, "search_sensitivity": sensitivity,
+        "prisma": prisma, "prisma_source": prisma_source, "search_sensitivity": sensitivity,
         "missing": missing,
         "source": ", ".join(sources),
     }

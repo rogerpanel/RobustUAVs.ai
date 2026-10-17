@@ -59,8 +59,11 @@ is a 503 naming the file rather than a 500.
                                                   only .csv, resolved and confined to that results/ (else 400)
     GET  /api/papers/I/budget                     Paper I defaults: constants.py values + provenance, dauth.csv schemes
     POST /api/papers/I/budget                     rho = (Delta + Delta_auth) * gamma * e^{L T_c} <= m; any input overridable
-    GET  /api/papers/II/corpus?table=ADJ&year_min=&year_max=&<codebook field>=<value>
-                                                  filtered coded corpus, counts per category, PRISMA, search sensitivity
+    GET  /api/papers/II/corpus?table=full_final&year_min=&year_max=&<codebook field>=<value>
+                                                  filtered coded corpus, counts per category, PRISMA, search sensitivity;
+                                                  tables: full_final (default) / full_C1 / full_C2, snow<k>_final|C1|C2,
+                                                  and the pilot ADJ / C1 / C2; the full-study PRISMA is read from
+                                                  results/screening_status.csv and snowball_iter*_status.csv
     GET  /api/papers/III/certify                  Paper III constants (KAPPA, THETA_BENIGN, ALERT_LIMITS), lift reference
     POST /api/papers/III/certify                  {rho | staleness_s, alpha, b?, proposal?} -> deficiency, coverage margin,
                                                   worst case, nested_greedy_fast, lexicographic_projection (N, M <= 2000)

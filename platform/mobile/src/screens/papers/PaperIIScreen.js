@@ -14,10 +14,11 @@ const ANY = 'any';
  * Paper II: the quantifier-gap SoK, as a filterable corpus.
  *
  * Each row is one coded guarantee (codebook fields: tier, component, scope,
- * modality, perturbation, lifts, assumption, evidence), joined to its year and
- * venue. Filters are applied server-side to the coded table the visitor picks
- * -- the adjudicated pilot by default, either coder's raw codes for comparison
- * -- and the counts per category are recomputed on the filtered set, so the
+ * modality, perturbation, lifts, assumption, evidence; the full study adds eligible
+ * and class), joined to its year and venue. Filters are applied server-side to the
+ * coded table the visitor picks -- the full study's adjudicated codes by default,
+ * either coder's raw codes, each snowballing iteration, or the pilot -- and the
+ * counts per category are recomputed on the filtered set, so the
  * page answers questions like "of the tier-A guarantees after 2020, how many
  * use a dynamics lift, and what evidence backs them?" directly.
  *
@@ -29,7 +30,7 @@ export default function PaperIIScreen() {
   const s = styles(t);
   const { paper } = usePaper('II');
 
-  const [table, setTable] = useState('ADJ');
+  const [table, setTable] = useState(null);   // null: the server's default (full study)
   const [filters, setFilters] = useState({});
   const [yearMin, setYearMin] = useState('');
   const [yearMax, setYearMax] = useState('');
@@ -52,6 +53,7 @@ export default function PaperIIScreen() {
         yearMin: ymin || null, yearMax: ymax || null,
       });
       setD(r);
+      setTable(r.table);
       // Options for each field: the codebook's vocabulary plus anything coded
       // outside it, so an off-codebook code is visible rather than hidden.
       setVocab((v) => v ?? Object.fromEntries(r.fields.map((f) => [
@@ -67,7 +69,12 @@ export default function PaperIIScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const pickTable = (tb) => { setTable(tb); load({ table: tb }); };
+  // Tables differ in their fields (the full study adds eligible and class), so the
+  // filters and the per-field vocabularies are rebuilt for the table picked.
+  const pickTable = (tb) => {
+    setTable(tb); setFilters({}); setVocab(null);
+    load({ table: tb, filters: {} });
+  };
   const pickFilter = (field) => (v) => {
     const next = { ...filters };
     if (v === ANY) delete next[field]; else next[field] = v;
@@ -108,10 +115,13 @@ export default function PaperIIScreen() {
       {d ? (
         <>
           {d.prisma ? (
-            <Panel title="PRISMA flow" subtitle="paperII/corpus/prisma_counts.csv — an empty count is a stage not yet run, not zero">
+            <Panel title="PRISMA flow" subtitle={`${d.prisma_source ?? 'paperII/corpus/prisma_counts.csv'} — an empty count is a stage not yet run, not zero`}>
               {d.prisma.map((p) => (
-                <KV key={p.stage} k={p.stage} v={p.n == null ? 'not yet run' : fmt(p.n)}
-                    tone={p.n == null ? t.bridge : undefined} />
+                <View key={p.stage}>
+                  <KV k={p.stage} v={p.n == null ? 'not yet run' : fmt(p.n)}
+                      tone={p.n == null ? t.bridge : undefined} />
+                  {p.note ? <Text style={s.hint}>{p.note}</Text> : null}
+                </View>
               ))}
             </Panel>
           ) : null}
@@ -133,7 +143,7 @@ export default function PaperIIScreen() {
                  subtitle={`codebook v${d.codebook_version ?? '?'} · ${d.n_filtered} of ${d.n_total} guarantees match`}>
             <Text style={s.label}>coded table</Text>
             <Pills options={d.tables_available} value={table} onChange={pickTable}
-                   labelOf={(tb) => (tb === 'ADJ' ? 'ADJ — adjudicated' : tb)} />
+                   labelOf={(tb) => d.table_labels?.[tb] ?? tb} />
             <View style={s.years}>
               <View style={{ flex: 1, marginRight: 8 }}>
                 <Field label={`year from${d.year_range ? ` (${d.year_range[0]}…)` : ''}`}
@@ -190,7 +200,7 @@ export default function PaperIIScreen() {
 
           <Panel title="Matching guarantees" subtitle={d.source}>
             <DataTable rows={d.rows}
-                       columns={['gid', 'year', 'venue', 'title', ...d.fields]}
+                       columns={[d.key ?? 'gid', 'year', 'venue', 'title', ...d.fields]}
                        max={60} />
             <View style={s.exportRow}>
               <ExportMenu title="Paper II filtered corpus" data={d} csv={d.rows}

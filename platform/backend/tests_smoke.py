@@ -1,6 +1,8 @@
 """Smoke tests. The symmetry test is the load-bearing one: a tool advertised
 in TOOLS but absent from DISPATCH is a lie told to the model."""
 import sys, pathlib
+from pathlib import Path
+ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
 from app import auth, copilot, jobs, registry, results, runners  # noqa: F401
 
@@ -161,6 +163,33 @@ def test_paper2_corpus_or_503():
     assert r.status_code == 200, r.text
     d = r.json()
     assert d["n_filtered"] == len(d["rows"]) <= d["n_total"]
+
+
+def test_paper2_every_table_and_full_study():
+    """Every coded table the page offers loads (pilot gid-keyed, full study and snowballing
+    cid-keyed); the default is the full study; eligibility counts match the committed file."""
+    import csv
+    c = _client()
+    r = c.get("/api/papers/II/corpus")
+    if r.status_code == 503:
+        return
+    d = r.json()
+    for tb in d["tables_available"]:
+        rr = c.get("/api/papers/II/corpus", params={"table": tb})
+        assert rr.status_code == 200, (tb, rr.text[:300])
+        dd = rr.json()
+        assert dd["n_total"] == len(dd["rows"]) and all(dd["key"] in row for row in dd["rows"])
+        assert all("" not in cnt for cnt in dd["counts"].values()), tb      # blank is not a category
+    full = ROOT / "paperII" / "corpus" / "codes_full_final.csv"
+    if full.is_file():
+        assert d["table"] == "full_final"
+        rows = list(csv.DictReader(open(full)))
+        assert d["n_total"] == len(rows)
+        assert d["counts"]["eligible"].get("1", 0) == sum(r["eligible"] == "1" for r in rows)
+        stages = {p["stage"]: p["n"] for p in d["prisma"]}
+        assert stages["full-text coded (stratified sample)"] == len(rows)
+        f = c.get("/api/papers/II/corpus", params={"table": "full_final", "eligible": "1", "tier": "A"}).json()
+        assert f["n_filtered"] == f["counts"]["tier"]["A"] and set(f["counts"]["eligible"]) == {"1"}
 
 
 def test_paper3_certify_tiny():

@@ -551,7 +551,7 @@ _CORPUS_RESERVED = {"table", "year_min", "year_max"}
 
 
 @app.get("/api/papers/II/corpus", tags=["papers"])
-def api_paper2_corpus(request: Request, table: str = Query("ADJ"),
+def api_paper2_corpus(request: Request, table: Optional[str] = Query(None),
                       year_min: Optional[int] = Query(None),
                       year_max: Optional[int] = Query(None)) -> dict:
     # Any other query parameter is a codebook field = value filter

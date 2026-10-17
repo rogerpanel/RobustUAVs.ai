@@ -236,7 +236,9 @@ Add a pre-commit guard:
 ```bash
 cat > .git/hooks/pre-commit <<'EOF'
 #!/bin/sh
-if git diff --cached -U0 | grep -E '(sk-[A-Za-z0-9_-]{16,}|AIza[0-9A-Za-z_-]{20,}|x-api-key|BEGIN [A-Z ]*PRIVATE KEY)'; then
+# only added lines can introduce a secret; key-shaped strings must start a token (so "risk-burden-stratified"
+# in a paper abstract is not flagged); x-api[-]key is written so this line cannot match itself
+if git diff --cached -U0 | grep '^+' | grep -E '(^|[^A-Za-z0-9])(sk-[A-Za-z0-9_-]{16,}|AIza[0-9A-Za-z_-]{20,})|x-api[-]key|BEGIN [A-Z ]*PRIVATE KEY'; then
   echo "pre-commit: possible secret staged; aborting"; exit 1; fi
 if git diff --cached --name-only | grep -E '^paperV/restricted/'; then
   echo "pre-commit: restricted material staged; aborting"; exit 1; fi

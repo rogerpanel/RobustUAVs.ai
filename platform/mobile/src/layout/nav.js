@@ -178,8 +178,8 @@ export const LEFT_GROUPS = [
       { key: 'PaperII', glyph: 'Ⅱ', title: 'Paper II · Corpus', grounded: true,
         blurb: 'The quantifier-gap SoK, filterable',
         steps: [
-          "Read the PRISMA flow: an empty stage is one not yet run, not a count of zero.",
-          "Pick the coded table — adjudicated by default, or either coder's raw codes.",
+          "Read the PRISMA flow: screening of the long tail is sampled, so its includes are an estimate with a 95 % interval.",
+          "Pick the coded table — the full study's adjudicated codes by default; either coder's raw codes, each snowballing iteration, or the pilot for comparison.",
           "Filter by year and by any codebook field; counts per category update for the filtered set.",
           "Export the matching rows or the counts as CSV or JSON.",
         ],
