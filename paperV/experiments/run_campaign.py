@@ -96,7 +96,13 @@ def shard_of(cell_id, seed, K):
 def _run(cfg):
     try:
         return run_episode(cfg)
-    except Exception as e:                       # never silently: the record says incomplete and why
+    except Exception as e:                       # never silently: the record says why
+        name = type(e).__name__
+        status = {"LLMUnavailable": "api_error", "BudgetExceeded": "budget_stop", "CacheMiss": "cache_miss"}.get(
+            name, "incomplete")
+        if status != "incomplete":
+            return dict(cell_id=cfg.cell_id(), mission_seed=cfg.mission_seed, repeat=cfg.repeat, status=status,
+                        error=f"{name}: {e}", campaign_id=cfg.campaign_id, planner=cfg.planner)
         return dict(cell_id=cfg.cell_id(), mission_seed=cfg.mission_seed, repeat=cfg.repeat, status="incomplete",
                     error=f"{type(e).__name__}: {e}", campaign_id=cfg.campaign_id)
 
@@ -114,10 +120,22 @@ def execute(cfgs, cid, par, resume, shard, label=""):
         from .adaptive import quiet
     except ImportError:
         from adaptive import quiet
+    errs, per_cell = {}, {}
     with Pool(par, initializer=quiet) as pool:
         for rec in pool.imap_unordered(_run, todo, chunksize=1):
             store.append(rec)
             n += 1
+            st = rec.get("status")
+            if st in ("budget_stop", "cache_miss"):
+                pool.terminate()
+                raise SystemExit(f"[{cid}] stopped: {rec.get('error')}")
+            c = rec.get("cell_id")
+            per_cell[c] = per_cell.get(c, 0) + 1
+            errs[c] = errs.get(c, 0) + int(st == "api_error")
+            if errs[c] >= 3 and errs[c] > 0.02 * per_cell[c]:
+                pool.terminate()
+                raise SystemExit(f"[{cid}] aborted: {errs[c]}/{per_cell[c]} episodes of cell {c} ended in "
+                                 f"api_error (> 2%); last error: {rec.get('error')}")
             if n % 20 == 0 or n == len(todo):
                 el = time.perf_counter() - t0
                 print(f"  [{cid}] {n}/{len(todo)} done, {el:.0f} s elapsed", flush=True)
@@ -223,6 +241,13 @@ def main(argv=None):
     ap.add_argument("--goals", default="G1,G2,G3,G4")
     ap.add_argument("--log-steps", default="events")
     ap.add_argument("--stage", default=None, help="p2-budget: monitor | curve")
+    ap.add_argument("--planner", default="api", help="p3: api | scripted (zero-cost reference)")
+    ap.add_argument("--roles", default="planner_frontier_1,planner_frontier_2")
+    ap.add_argument("--attacker", default="A0")
+    ap.add_argument("--repeats", type=int, default=1)
+    ap.add_argument("--concurrency", type=int, default=0, help="p3: parallel episodes (default --par)")
+    ap.add_argument("--estimate-only", action="store_true")
+    ap.add_argument("--cache-only", action="store_true")
     ap.add_argument("--baseline-planners", default="", help="p2: run non-psf filters only for these planners")
     ap.add_argument("--baseline-missions", type=int, default=0, help="p2: missions per baseline-filter cell")
     a = ap.parse_args(argv)
@@ -233,6 +258,12 @@ def main(argv=None):
         phase_p1_property(a)
     elif a.phase == "p1-timing":
         phase_p1_timing(a)
+    elif a.phase == "p3":
+        try:
+            from . import campaigns_p3 as P3
+        except ImportError:
+            import campaigns_p3 as P3
+        P3.run(a)
     elif a.phase in ("p2", "p2-budget"):
         try:
             from . import campaigns_p2 as P2

@@ -196,9 +196,15 @@ def run_episode(cfg: EpisodeCfg, step_log=None):
         stealth_alarm=None,
         solve_ms_p50=float(np.nanpercentile(sm, 50)), solve_ms_p99=float(np.nanpercentile(sm, 99)),
         solve_ms_max=float(np.nanmax(sm)), llm_calls=0, tokens_in=0, tokens_in_cached=0, tokens_out=0, usd=0.0,
+        llm_refusals=0,
         wall_s=time.perf_counter() - t_wall, sat_steps=plant.sat_steps, w20_kt=plant.nature.w20,
         status_counts=status_counts, filter_counts=dict(getattr(flt, "counts", {})),
     )
+    if hasattr(pl, "usage"):                    # LLM planners: provider, model, prompt version, tokens, cost
+        u = pl.usage()
+        rec.update(provider=u["provider"], model_id=u["model_id"], prompt_version=u["prompt_version"],
+                   llm_calls=u["llm_calls"], tokens_in=u["tokens_in"], tokens_in_cached=u["tokens_in_cached"],
+                   tokens_out=u["tokens_out"], usd=u["usd"], llm_refusals=u["refusals"], planner_kind=pl.kind)
     return rec
 
 

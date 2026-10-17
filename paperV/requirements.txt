@@ -12,3 +12,4 @@ hypothesis>=6.100
 cma>=3.3
 optuna>=3.6
 rliable>=1.0
+anthropic>=1.15
