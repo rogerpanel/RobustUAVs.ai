@@ -32,6 +32,10 @@ export const papersApi = {
   // Paper I -- the authentication budget.
   budgetDefaults: () => request('/api/papers/I/budget'),
   budget: (body) => post('/api/papers/I/budget', body),
+  /** rho across one input: { vary, lo, hi, n, base } -- base is a budget request. */
+  budgetSweep: (body) => post('/api/papers/I/budget/sweep', body),
+  /** Every signature scheme on one transport, each through the same budget. */
+  budgetSchemes: (body) => post('/api/papers/I/budget/schemes', body),
 
   // Paper II -- the coded corpus. `filters` is { field: value }.
   corpus: ({ table, yearMin, yearMax, filters } = {}) =>
@@ -39,13 +43,24 @@ export const papersApi = {
       table, year_min: yearMin, year_max: yearMax, ...(filters ?? {}),
     })}`),
 
+  /** One paper's record at every stage of the study. */
+  trace: ({ id, table }) => request(`/api/papers/II/trace${query({ id, table })}`),
+  /** Coder agreement recomputed for the papers the filters select. */
+  agreement: ({ table, yearMin, yearMax, filters } = {}) =>
+    request(`/api/papers/II/agreement${query({
+      table, year_min: yearMin, year_max: yearMax, ...(filters ?? {}),
+    })}`),
+
   // Paper III -- certificate combinatorics, the i.i.d. lift, the MARL tables.
   certifyDefaults: () => request('/api/papers/III/certify'),
   certify: (body) => post('/api/papers/III/certify', body),
   lift: (body) => post('/api/papers/III/lift', body),
+  liftSimulate: (body) => post('/api/papers/III/lift/simulate', body),
   marl: () => request('/api/papers/III/marl'),
 
   // Paper IV -- the dependence-uncertainty floor of the unified budget.
   floorDefaults: () => request('/api/papers/IV/floor'),
   floor: (body) => post('/api/papers/IV/floor', body),
+  floorSweep: (body) => post('/api/papers/IV/floor/sweep', body),
+  marginals: (alpha) => request(`/api/papers/IV/marginals${query({ alpha })}`),
 };

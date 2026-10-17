@@ -28,6 +28,8 @@ export default function LineChart({
   xUnit = '',
   yUnit = '',
   onHover = null,
+  overlay = [],           // [{ x, y, label, color }] -- reference points, drawn as rings
+  vlines = [],            // [{ x, label, color }] -- e.g. where a verdict flips
 }) {
   const { t } = useTheme();
   const s = styles(t);
@@ -41,7 +43,8 @@ export default function LineChart({
   const iw = w - pad.l - pad.r;
   const ih = h - pad.t - pad.b;
 
-  const xs = series.flatMap((ss) => ss.points.map((p) => p.x));
+  const xs = [...series.flatMap((ss) => ss.points.map((p) => p.x)),
+              ...overlay.map((p) => p.x)].filter(Number.isFinite);
   const xMin = xs.length ? Math.min(...xs) : 0;
   const xMax = xs.length ? Math.max(...xs) : 1;
 
@@ -75,8 +78,19 @@ export default function LineChart({
 
   const handleLeave = useCallback(() => { setCursor(null); onHover?.(null); }, [onHover]);
 
-  const linePath = (pts) =>
-    pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${X(p.x).toFixed(1)},${Y(p.y).toFixed(1)}`).join(' ');
+  // Non-finite values (an infeasible scheme's inf) break the line rather than
+  // being drawn at an invented height.
+  const ok = (p) => Number.isFinite(p.x) && Number.isFinite(p.y);
+  const clampY = (y) => Math.max(yMin, Math.min(yMax, y));
+  const linePath = (pts) => {
+    let pen = 'M';
+    return pts.map((p) => {
+      if (!ok(p)) { pen = 'M'; return ''; }
+      const seg = `${pen}${X(p.x).toFixed(1)},${Y(clampY(p.y)).toFixed(1)}`;
+      pen = 'L';
+      return seg;
+    }).join(' ');
+  };
 
   const bandPath = (pts) => {
     if (!pts.length || pts[0].lo == null) return null;
@@ -85,10 +99,12 @@ export default function LineChart({
     return `${up.join(' ')} ${dn.join(' ')} Z`;
   };
 
-  const yTicks = [0, 0.25, 0.5, 0.75, 1.0].filter((v) => v >= yMin && v <= yMax);
-  const xTickCount = iw < 260 ? 4 : 5;
-  const xTicks = Array.from({ length: xTickCount }, (_, i) =>
-    xMin + ((xMax - xMin) * i) / (xTickCount - 1));
+  // Probability axes keep their quarter ticks; anything else gets round
+  // numbers spanning the actual range, so a value above 1 has a tick to read.
+  const yTicks = (yMin >= 0 && yMax <= 1.05 && yMax - yMin > 0.5)
+    ? [0, 0.25, 0.5, 0.75, 1.0].filter((v) => v >= yMin && v <= yMax)
+    : niceTicks(yMin, yMax, 5);
+  const xTicks = niceTicks(xMin, xMax, iw < 260 ? 4 : 6);
 
   const hoverProps = Platform.OS === 'web'
     ? { onMouseMove: handleMove, onMouseLeave: handleLeave }
@@ -103,12 +119,12 @@ export default function LineChart({
             <Line x1={pad.l} y1={Y(v)} x2={w - pad.r} y2={Y(v)}
                   stroke={t.border} strokeWidth={1} />
             <SvgText x={pad.l - 6} y={Y(v) + 3} fill={t.muted} fontSize="9"
-                     textAnchor="end">{v.toFixed(2)}</SvgText>
+                     textAnchor="end">{tickLabel(v)}</SvgText>
           </React.Fragment>
         ))}
         {xTicks.map((v) => (
           <SvgText key={`x${v}`} x={X(v)} y={h - 10} fill={t.muted} fontSize="9"
-                   textAnchor="middle">{Math.round(v)}</SvgText>
+                   textAnchor="middle">{tickLabel(v)}</SvgText>
         ))}
 
         {series.map((ss) => {
@@ -139,15 +155,29 @@ export default function LineChart({
           </>
         ) : null}
 
+        {vlines.map((v, i) => (
+          <React.Fragment key={`v${i}`}>
+            <Line x1={X(v.x)} y1={pad.t} x2={X(v.x)} y2={pad.t + ih}
+                  stroke={v.color ?? t.danger} strokeWidth={1.2} strokeDasharray="3,3" />
+            <SvgText x={X(v.x) + 3} y={pad.t + 10 + 11 * i} fill={v.color ?? t.danger}
+                     fontSize="9">{v.label}</SvgText>
+          </React.Fragment>
+        ))}
+
         {series.map((ss) => (
           <Path key={ss.key} d={linePath(ss.points)} stroke={ss.color}
-                strokeWidth={2} fill="none" />
+                strokeWidth={2} fill="none"
+                strokeDasharray={ss.dash ? '5,4' : undefined} />
         ))}
         {series.map((ss) =>
-          ss.points.map((p) => (
-            <Circle key={`${ss.key}-${p.x}`} cx={X(p.x)} cy={Y(p.y)} r={2}
+          ss.points.filter(ok).map((p) => (
+            <Circle key={`${ss.key}-${p.x}`} cx={X(p.x)} cy={Y(clampY(p.y))} r={2}
                     fill={ss.color} />
           )))}
+        {overlay.filter(ok).map((p, i) => (
+          <Circle key={`o${i}`} cx={X(p.x)} cy={Y(clampY(p.y))} r={5}
+                  fill="none" stroke={p.color ?? t.text} strokeWidth={1.8} />
+        ))}
 
         {/* Crosshair. Drawn last so it sits above every series. */}
         {cursor ? (
@@ -235,3 +265,25 @@ const styles = (t) => StyleSheet.create({
   readoutCi: { color: t.muted, fontSize: 9, fontFamily: fonts.mono, marginLeft: 4 },
   hoverHint: { color: t.muted, fontSize: 9.5, marginTop: 6, fontStyle: 'italic' },
 });
+
+/** Round-number ticks covering [lo, hi]. */
+function niceTicks(lo, hi, count) {
+  if (!Number.isFinite(lo) || !Number.isFinite(hi)) return [];
+  if (hi === lo) return [lo];
+  const raw = (hi - lo) / Math.max(1, count - 1);
+  const mag = 10 ** Math.floor(Math.log10(raw));
+  const step = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => s >= raw) ?? 10 * mag;
+  const out = [];
+  for (let v = Math.ceil(lo / step - 1e-9) * step; v <= hi + 1e-9 * step; v += step) {
+    out.push(Number(v.toPrecision(12)));
+  }
+  return out;
+}
+
+function tickLabel(v) {
+  if (v === 0) return '0';
+  const a = Math.abs(v);
+  if (a >= 1e6) return v.toExponential(0);
+  if (Number.isInteger(v)) return String(v);
+  return String(Number(v.toPrecision(3)));
+}

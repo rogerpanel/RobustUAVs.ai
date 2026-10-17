@@ -485,6 +485,7 @@ from fastapi.responses import FileResponse  # noqa: E402
 from pydantic import ConfigDict  # noqa: E402
 
 from . import papers  # noqa: E402
+from . import papers_demo  # noqa: E402
 
 
 def _papers(fn, *args, **kwargs):
@@ -499,6 +500,12 @@ def _papers(fn, *args, **kwargs):
         raise HTTPException(400, str(exc))
     except papers.BadRequest as exc:
         raise HTTPException(422, str(exc))
+
+
+def _with_steps(body: dict) -> dict:
+    out = papers.budget(body)
+    out["steps"] = papers_demo.budget_steps(out)
+    return out
 
 
 class _Strict(BaseModel):
@@ -544,7 +551,27 @@ def api_paper1_budget_defaults() -> dict:
 
 @app.post("/api/papers/I/budget", tags=["papers"])
 def api_paper1_budget(body: BudgetRequest | None = None) -> dict:
-    return _papers(papers.budget, body.model_dump() if body else {})
+    return _papers(_with_steps, body.model_dump() if body else {})
+
+
+class BudgetSweepRequest(_Strict):
+    vary: str
+    lo: float
+    hi: float
+    n: int = 31
+    base: Optional[BudgetRequest] = None
+
+
+@app.post("/api/papers/I/budget/sweep", tags=["papers"])
+def api_paper1_budget_sweep(body: BudgetSweepRequest) -> dict:
+    d = body.model_dump()
+    d["base"] = d.get("base") or {}
+    return _papers(papers_demo.budget_sweep, d)
+
+
+@app.post("/api/papers/I/budget/schemes", tags=["papers"])
+def api_paper1_budget_schemes(body: BudgetRequest | None = None) -> dict:
+    return _papers(papers_demo.budget_schemes, body.model_dump() if body else {})
 
 
 _CORPUS_RESERVED = {"table", "year_min", "year_max"}
@@ -562,6 +589,22 @@ def api_paper2_corpus(request: Request, table: Optional[str] = Query(None),
                    year_min=year_min, year_max=year_max)
 
 
+@app.get("/api/papers/II/trace", tags=["papers"])
+def api_paper2_trace(id: str = Query(..., max_length=40),
+                     table: Optional[str] = Query(None)) -> dict:
+    return _papers(papers_demo.paper_trace, id, table)
+
+
+@app.get("/api/papers/II/agreement", tags=["papers"])
+def api_paper2_agreement(request: Request, table: Optional[str] = Query(None),
+                         year_min: Optional[int] = Query(None),
+                         year_max: Optional[int] = Query(None)) -> dict:
+    filters = {k: v for k, v in request.query_params.items()
+               if k not in _CORPUS_RESERVED}
+    return _papers(papers_demo.agreement, table=table, filters=filters,
+                   year_min=year_min, year_max=year_max)
+
+
 @app.get("/api/papers/III/certify", tags=["papers"])
 def api_paper3_certify_defaults() -> dict:
     return _papers(papers.certify_defaults)
@@ -569,12 +612,22 @@ def api_paper3_certify_defaults() -> dict:
 
 @app.post("/api/papers/III/certify", tags=["papers"])
 def api_paper3_certify(body: CertifyRequest) -> dict:
-    return _papers(papers.certify, body.model_dump())
+    return _papers(papers_demo.certify_working, body.model_dump())
 
 
 @app.post("/api/papers/III/lift", tags=["papers"])
 def api_paper3_lift(body: LiftRequest) -> dict:
     return _papers(papers.lift, body.model_dump())
+
+
+class LiftSimRequest(LiftRequest):
+    trials: int = 4000
+    seed: int = 7
+
+
+@app.post("/api/papers/III/lift/simulate", tags=["papers"])
+def api_paper3_lift_simulate(body: LiftSimRequest) -> dict:
+    return _papers(papers_demo.lift_simulate, body.model_dump())
 
 
 @app.get("/api/papers/III/marl", tags=["papers"])
@@ -596,7 +649,32 @@ def api_paper4_floor_defaults() -> dict:
 
 @app.post("/api/papers/IV/floor", tags=["papers"])
 def api_paper4_floor(body: FloorRequest) -> dict:
-    return _papers(papers.floor, body.model_dump())
+    return _papers(papers_demo.floor_working, body.model_dump())
+
+
+class FloorBase(_Strict):
+    m: Optional[float] = None
+    delta_adv: Optional[float] = None
+    net: Optional[float] = None
+    alpha: Optional[float] = None
+
+
+class FloorSweepRequest(_Strict):
+    vary: str
+    lo: float
+    hi: float
+    n: int = 31
+    base: FloorBase
+
+
+@app.post("/api/papers/IV/floor/sweep", tags=["papers"])
+def api_paper4_floor_sweep(body: FloorSweepRequest) -> dict:
+    return _papers(papers_demo.floor_sweep, body.model_dump())
+
+
+@app.get("/api/papers/IV/marginals", tags=["papers"])
+def api_paper4_marginals(alpha: Optional[float] = Query(None, gt=0, lt=1)) -> dict:
+    return _papers(papers_demo.marginal_tails, alpha)
 
 
 @app.get("/api/papers/{pid}/results", tags=["papers"])

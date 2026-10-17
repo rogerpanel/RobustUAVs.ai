@@ -58,22 +58,43 @@ is a 503 naming the file rather than a 500.
                                                   one file as typed JSON rows, or the committed file itself;
                                                   only .csv, resolved and confined to that results/ (else 400)
     GET  /api/papers/I/budget                     Paper I defaults: constants.py values + provenance, dauth.csv schemes
-    POST /api/papers/I/budget                     rho = (Delta + Delta_auth) * gamma * e^{L T_c} <= m; any input overridable
+    POST /api/papers/I/budget                     rho = (Delta + Delta_auth) * gamma * e^{L T_c} <= m; any input overridable;
+                                                  `steps` writes the inequality out with the values used
+    POST /api/papers/I/budget/sweep               {vary, lo, hi, n <= 61, base} -> rho at every point (a full budget run each),
+                                                  and where the verdict flips, bisected on the same budget
+    POST /api/papers/I/budget/schemes             every dauth.csv scheme on one transport, each through the budget
     GET  /api/papers/II/corpus?table=full_final&year_min=&year_max=&<codebook field>=<value>
                                                   filtered coded corpus, counts per category, PRISMA, search sensitivity;
                                                   tables: full_final (default) / full_C1 / full_C2, snow<k>_final|C1|C2,
                                                   and the pilot ADJ / C1 / C2; the full-study PRISMA is read from
                                                   results/screening_status.csv and snowball_iter*_status.csv
+    GET  /api/papers/II/trace?id=<cid|gid>&table= one paper at every stage: candidate record, both screeners' decisions
+                                                  and reasons, coding sample, full text, both coders' codes, adjudication
+    GET  /api/papers/II/agreement?<as corpus>     C1 vs C2 agreement and Cohen's kappa on the filtered selection, by
+                                                  paperII/experiments/reliability.py; unfiltered it equals reliability_*.csv
     GET  /api/papers/III/certify                  Paper III constants (KAPPA, THETA_BENIGN, ALERT_LIMITS), lift reference
     POST /api/papers/III/certify                  {rho | staleness_s, alpha, b?, proposal?} -> deficiency, coverage margin,
-                                                  worst case, nested_greedy_fast, lexicographic_projection (N, M <= 2000)
+                                                  worst case, nested_greedy_fast, lexicographic_projection (N, M <= 2000);
+                                                  plus the count profile, the optimal attack replayed per b (each step's
+                                                  deficiency checked against worst_case_deficiency) and the eligibility grid
     POST /api/papers/III/lift                     {N <= 200, alpha, q[5]} -> P(full coverage) via e2_degradation.p_full_iid
+    POST /api/papers/III/lift/simulate            {as lift, trials <= 20000, seed} -> Monte Carlo fleets scored by
+                                                  batch_deficiency, Clopper-Pearson interval, running estimate
     GET  /api/papers/III/marl                     e6_main.csv and every e6_main_<dir>.csv, as {dir: rows}
     GET  /api/papers/IV/floor                     Paper IV defaults: delta_adv presets (r1_delta_adv.csv, e4_delta_adv.csv),
                                                   net-tube presets (e4_soundness.csv), r5_floor_sensitivity.csv reference
     POST /api/papers/IV/floor                     {m in (0, 40], delta_adv >= 0, net? >= 0, alpha? in (0, 1)} -> s = m - delta_adv - net,
                                                   depbounds.union_bound on e3_marginals.npz (point estimate) and
-                                                  depbounds.pbar_union_cp on cp_tails(alpha) (valid w.p. >= 1 - alpha), floors 1 - each
+                                                  depbounds.pbar_union_cp on cp_tails(alpha) (valid w.p. >= 1 - alpha), floors 1 - each;
+                                                  plus the attaining split (re-located by the same loop and checked against
+                                                  the paper's value on every call) and indep_tail / comon_tail for comparison
+    POST /api/papers/IV/floor/sweep               {vary: m|delta_adv|net, lo, hi, n, base} -> both floors per point, with the
+                                                  matching r5_floor_sensitivity.csv rows
+    GET  /api/papers/IV/marginals?alpha=          Pr[X > t] per benign source, empirical and CP upper, plus quantiles
+
+`app/papers_demo.py` holds the "show the working" endpoints above; it computes nothing
+of its own beyond locating where a paper's function attains its value.
+Click-test every page in a browser with `platform/mobile/scripts/gui_check.py --url <site>`.
 
 Unknown paper -> 404; file or folder not present here -> 503; bad calculator
 input or an unknown request key -> 422. `paperII/` lives on the

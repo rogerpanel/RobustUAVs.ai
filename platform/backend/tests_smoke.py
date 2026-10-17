@@ -288,6 +288,87 @@ def test_paper4_floor():
         assert c.post("/api/papers/IV/floor", json=bad).status_code == 422, bad
 
 
+
+def test_paper1_working_sweep_schemes():
+    """The steps end in the verdict's own rho; the sweep's crossing is where rho = m
+    (bisected on the budget, so rho there is m to 1e-6); every scheme row is a budget run."""
+    c = _client()
+    b = c.post("/api/papers/I/budget", json={})
+    if b.status_code == 503:
+        return
+    b = b.json()
+    rho_step = next(s for s in b["steps"] if s["step"] == "certified tube radius")
+    assert rho_step["value"] == b["rho_m"]
+    sw = c.post("/api/papers/I/budget/sweep", json={"vary": "theta_s", "lo": 0, "hi": 3, "n": 31}).json()
+    assert len(sw["points"]) == 31 and len(sw["flips"]) == 1
+    x = sw["flips"][0]["x"]
+    at = c.post("/api/papers/I/budget", json={"theta_s": x}).json()
+    assert abs(at["rho_m"] - at["alert_limit_m"]) < 1e-6
+    sc = c.post("/api/papers/I/budget/schemes", json={"transport": "can"}).json()
+    one = next(r for r in sc["rows"] if r["scheme"] == "ed25519")
+    ref = c.post("/api/papers/I/budget", json={"scheme": "ed25519", "transport": "can"}).json()
+    assert one["rho_m"] == ref["rho_m"] and one["pass"] == ref["pass"]
+
+
+def test_paper2_trace_and_agreement_match_committed():
+    """Unfiltered agreement equals the committed reliability file field by field; a
+    traced paper's final codes are the adjudicated table's row."""
+    import csv
+    c = _client()
+    a = c.get("/api/papers/II/agreement")
+    if a.status_code == 503:
+        return
+    a = a.json()
+    com = {r["field"]: r for r in a["committed"] or []}
+    for r in a["rows"]:
+        if r["field"] in com:
+            assert r["agree"] == com[r["field"]]["agree"] and r["kappa"] == com[r["field"]]["kappa"], r
+    full = ROOT / "paperII" / "corpus" / "codes_full_final.csv"
+    row = next(r for r in csv.DictReader(open(full)) if r["eligible"] == "1")
+    tr = c.get("/api/papers/II/trace", params={"id": row["cid"]}).json()
+    codes = next(s for s in tr["stages"] if s.get("codes"))["codes"]
+    tier = next(x for x in codes if x["field"] == "tier")
+    assert tier["final"] == row["tier"]
+    assert c.get("/api/papers/II/trace", params={"id": "../etc"}).status_code == 422
+
+
+def test_paper3_replay_and_simulation():
+    """Replay deficiencies equal worst_case_deficiency (checked server-side too); the
+    simulated coverage's interval is a probability interval around p_hat."""
+    c = _client()
+    r = c.post("/api/papers/III/certify", json={"rho": [1, 3, 6, 12], "alpha": [2, 5, 5, 10]})
+    if r.status_code == 503:
+        return
+    r = r.json()
+    wc = {p["b"]: p["deficiency"] for p in r["worst_case_curve"]}
+    assert all(st["deficiency"] == wc[st["b"]] for st in r["replay"])
+    assert r["replay"][1]["collapsed"] == [0]            # the smallest-rho agent
+    assert r["eligibility_matrix"][0] == [True, True, True, True]
+    s = c.post("/api/papers/III/lift/simulate",
+               json={"N": 4, "alpha": [2, 5, 10], "q": [0.4, 0.2, 0.2, 0.1, 0.1],
+                     "trials": 2000, "seed": 3}).json()
+    assert 0 <= s["ci95"][0] <= s["p_hat"] <= s["ci95"][1] <= 1
+    assert sum(s["deficiency_histogram"].values()) == 2000
+
+
+def test_paper4_working_reproduces_paper():
+    """The CP split's tails sum to pbar_union_cp; the m-sweep hits the paper's r5 rows."""
+    c = _client()
+    f = c.post("/api/papers/IV/floor", json={"m": 10, "delta_adv": 5.463})
+    if f.status_code == 503:
+        return
+    f = f.json()
+    assert abs(sum(x["cp_upper_tail"] for x in f["split_cp"]) - f["pbar_union_cp"]) < 1e-12
+    assert sum(x["s_i_m"] for x in f["split_cp"]) <= f["s"] + 1e-9
+    sw = c.post("/api/papers/IV/floor/sweep",
+                json={"vary": "m", "lo": 5, "hi": 20, "n": 4, "base": {"delta_adv": 5.463}}).json()
+    got = {round(p["x"], 6): p["floor_cp"] for p in sw["points"]}
+    for ref in sw["reference"]:
+        if ref["x"] in got:
+            assert abs(got[ref["x"]] - ref["floor_cp"]) < 1e-4, ref
+    m = c.get("/api/papers/IV/marginals").json()
+    assert [x["source"] for x in m["marginals"]] == ["gnss", "fault", "env"]
+
 if __name__ == "__main__":
     n = 0
     for k, v in sorted(globals().items()):

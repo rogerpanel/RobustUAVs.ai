@@ -8,6 +8,7 @@ import { ScreenHeader, Panel, Unavailable, KV } from '../uav/parts';
 import {
   usePaper, classify, fmt, parseList, Pills, Field, Button, DataTable, ResultsBrowser,
 } from './parts';
+import { Player, EligibilityGrid } from './demo';
 
 const MARL_COLUMNS = ['method', 'n_runs', 'r_cert_iqm', 'r_cert_lo', 'r_cert_hi',
   'viol_iqm', 'cov_ratio_iqm', 'exposure_iqm', 'switches_iqm', 'eval_viol_cp95'];
@@ -54,6 +55,14 @@ export default function PaperIIIScreen() {
   const [liftState, setLiftState] = useState({});
   const [liftBusy, setLiftBusy] = useState(false);
 
+  // attack replay and the lift's Monte Carlo check
+  const [bStep, setBStep] = useState(0);
+  const [trials, setTrials] = useState('4000');
+  const [seed, setSeed] = useState('7');
+  const [sim, setSim] = useState(null);
+  const [simState, setSimState] = useState({});
+  const [simBusy, setSimBusy] = useState(false);
+
   // MARL
   const [marl, setMarl] = useState(null);
   const [marlState, setMarlState] = useState({});
@@ -78,7 +87,7 @@ export default function PaperIIIScreen() {
       body.proposal = p;
     }
     setCertBusy(true); setCertState({});
-    try { setCert({ request: body, result: await papersApi.certify(body) }); }
+    try { setCert({ request: body, result: await papersApi.certify(body) }); setBStep(0); }
     catch (e) { setCertState(classify(e)); }
     finally { setCertBusy(false); }
   }, [values, alpha, b, proposal, mode]);
@@ -94,6 +103,23 @@ export default function PaperIIIScreen() {
     try { setLift(await papersApi.lift({ N, alpha: al, q: qs })); }
     catch (e) { setLiftState(classify(e)); }
     finally { setLiftBusy(false); }
+  };
+
+  const runSim = async () => {
+    const N = Number(liftN);
+    const al = parseList(liftAlpha);
+    const qs = q.map(Number);
+    const tr = Number(trials); const sd = Number(seed);
+    if (!Number.isInteger(N) || !al || qs.some((x) => !Number.isFinite(x))) {
+      setSimState({ error: 'N, the alert limits and q must be filled in as for the prediction' }); return;
+    }
+    if (!Number.isInteger(tr) || !Number.isInteger(sd)) {
+      setSimState({ error: 'trials and seed must be whole numbers' }); return;
+    }
+    setSimBusy(true); setSimState({});
+    try { setSim(await papersApi.liftSimulate({ N, alpha: al, q: qs, trials: tr, seed: sd })); }
+    catch (e) { setSimState(classify(e)); }
+    finally { setSimBusy(false); }
   };
 
   useEffect(() => {
@@ -215,11 +241,46 @@ export default function PaperIIIScreen() {
               xLabel="b" yLabel="deficiency" yMin={0}
               yMax={Math.max(1, ...r.worst_case_curve.map((p) => p.deficiency)) + 0.5}
               series={[{ key: 'wc', label: 'worst case', color: t.accent,
-                points: r.worst_case_curve.map((p) => ({ x: p.b, y: p.deficiency })) }]} />
+                points: r.worst_case_curve.map((p) => ({ x: p.b, y: p.deficiency })) }]}
+              marker={r.replay?.length ? { x: Math.min(bStep, r.replay.length - 1), label: `b = ${Math.min(bStep, r.replay.length - 1)}` } : null} />
           </View>
 
-          <Text style={s.sub}>Count profile (tasks by α ascending)</Text>
+          <Text style={s.sub}>Why d = {r.deficiency}: the count profile (Lemma 1)</Text>
+          <Text style={s.hint}>{r.profile_note}</Text>
           <DataTable rows={profileRows} max={50} />
+          {r.k_star != null ? (
+            <Text style={[s.hint, { color: r.deficiency > 0 ? t.danger : t.ok }]}>
+              {r.deficiency > 0
+                ? `The ${r.k_star} tightest task(s) (α ≤ ${fmt(r.alpha_sorted[r.k_star - 1])} m) need ${r.k_star} agent(s) but only ${r.profile[r.k_star - 1].n_k} can serve them, so ${r.deficiency} task(s) must go uncovered.`
+                : `Every prefix of tightest tasks has at least as many eligible agents as tasks (k − n_k ≤ 0 throughout), so all ${r.M} tasks can be covered; the smallest slack, ${-Math.max(...r.profile.map((x) => x.k_minus_n_k))}, is the coverage margin.`}
+            </Text>
+          ) : null}
+          {r.replay?.length ? (
+            <>
+              <Text style={s.sub}>Replay the optimal attack, one collapse at a time</Text>
+              <Text style={s.hint}>{r.replay_note}</Text>
+              <Player max={r.replay.length - 1} value={Math.min(bStep, r.replay.length - 1)}
+                      onChange={setBStep} label="b" />
+              {(() => {
+                const st = r.replay[Math.min(bStep, r.replay.length - 1)];
+                return (
+                  <>
+                    <KV k={`after ${st.b} collapse(s): agents removed`}
+                        v={st.collapsed.length ? st.collapsed.map((i) => `A${i}`).join(', ') : 'none'} />
+                    <KV k="tasks still covered" v={`${st.covered} of ${r.M}`}
+                        tone={st.deficiency === 0 ? t.ok : t.danger} />
+                    {r.eligibility_matrix ? (
+                      <ScrollView horizontal style={{ marginTop: 6 }}>
+                        <EligibilityGrid matrix={r.eligibility_matrix} rho={r.rho} alpha={r.alpha}
+                                         assignment={st.assignment} collapsed={st.collapsed} />
+                      </ScrollView>
+                    ) : <Text style={s.hint}>The grid is drawn for fleets of up to 40 agents and 40 tasks.</Text>}
+                  </>
+                );
+              })()}
+            </>
+          ) : null}
+
           <Text style={s.sub}>Assignment per agent</Text>
           <DataTable rows={agentRows} max={50} />
           <Text style={s.source}>source: {r.source}</Text>
@@ -263,6 +324,57 @@ export default function PaperIIIScreen() {
               </View>
             </View>
           ) : null}
+          <Text style={s.sub}>Check the prediction by simulation</Text>
+          <Text style={s.hint}>
+            Draw fleets whose agents fall into the levels independently with the q
+            above, and count how often every task can be covered (deficiency 0,
+            computed by the paper's batch_deficiency). The estimate should settle
+            on the exact value; the paper made the same check in e2_lift.csv.
+          </Text>
+          <View style={{ flexDirection: 'row' }}>
+            <View style={{ flex: 1, marginRight: 8 }}>
+              <Field label="trials (fleets drawn, ≤ 20000)" value={trials} onChange={setTrials} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Field label="seed" value={seed} onChange={setSeed} />
+            </View>
+          </View>
+          <Button label="simulate" onPress={runSim} busy={simBusy} busyLabel="drawing fleets…" />
+          {simState.error ? <Text style={s.err}>{simState.error}</Text> : null}
+          {simState.unavailable ? <Unavailable message={simState.unavailable} /> : null}
+          {sim ? (
+            <View style={{ marginTop: 8 }}>
+              <KV k={`fully covered fleets`} v={`${sim.covered_fleets} of ${sim.trials}`} />
+              <KV k="simulated P(full coverage), 95 % interval"
+                  v={`${fmt(sim.p_hat)}  [${fmt(sim.ci95[0])}, ${fmt(sim.ci95[1])}]`} />
+              <KV k="exact (p_full_iid)" v={fmt(sim.p_exact)} tone={t.accent} />
+              <KV k="exact value inside the simulated interval?" v={sim.inside_ci ? 'yes' : 'no'}
+                  tone={sim.inside_ci ? t.ok : t.danger} />
+              <View nativeID="paper3-lift-sim">
+                <LineChart width={w} height={w < 420 ? 180 : 210}
+                  xLabel="fleets drawn" yLabel="P(full coverage)"
+                  yMin={Math.max(0, Math.min(sim.p_exact, ...sim.running.map((x) => x.p_hat)) - 0.05)}
+                  yMax={Math.min(1.05, Math.max(sim.p_exact, ...sim.running.map((x) => x.p_hat)) + 0.03)}
+                  series={[{ key: 'run', label: 'running estimate', color: t.accent,
+                    points: sim.running.map((x) => ({ x: x.trials, y: x.p_hat })) }]}
+                  threshold={{ y: sim.p_exact, label: 'exact', color: t.ok }} />
+              </View>
+              <Text style={s.hint}>
+                deficiency across the drawn fleets: {Object.entries(sim.deficiency_histogram)
+                  .map(([k, n]) => `d = ${k}: ${n}`).join(' · ')}
+              </Text>
+              <Text style={s.sub}>The first fleets drawn (ρ level per agent, m; — = above all limits)</Text>
+              {sim.examples.map((ex, i) => (
+                // eslint-disable-next-line react/no-array-index-key
+                <Text key={i} style={s.mono}>
+                  {ex.levels_m.map((v) => (v == null ? '—' : fmt(v))).join('  ')}   → d = {ex.deficiency}
+                </Text>
+              ))}
+              <Text style={s.hint}>{sim.note}</Text>
+              <Text style={s.source}>source: {sim.source}</Text>
+            </View>
+          ) : null}
+
           {defaults.lift_reference.length ? (
             <>
               <Text style={s.sub}>The paper's check: lift prediction against simulation</Text>
@@ -336,5 +448,6 @@ const styles = (t) => StyleSheet.create({
   hint: { color: t.muted, fontSize: 10.5, lineHeight: 16, marginTop: 4 },
   err: { color: t.danger, fontSize: 11.5, marginTop: 8 },
   source: { color: t.muted, fontSize: 9.5, fontFamily: fonts.mono, marginTop: 8 },
+  mono: { color: t.text, fontSize: 10.5, fontFamily: fonts.mono, marginTop: 2 },
   exportRow: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: 10 },
 });

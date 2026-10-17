@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, useWindowDimensions } from 'react-native';
 import { papersApi } from '../../api/papers';
 import { useTheme, fonts } from '../../theme';
 import Chip from '../../components/Chip';
 import ExportMenu from '../../components/ExportMenu';
+import LineChart from '../../components/LineChart';
+import { Steps, SweepControls } from './demo';
 import { ScreenHeader, Panel, Unavailable, KV } from '../uav/parts';
 import {
   usePaper, classify, fmt, provColor, Pills, Field, Button, DataTable, ResultsBrowser,
@@ -11,6 +13,8 @@ import {
 
 const REF_COLUMNS = ['fpr', 'm', 'theta_net', 'delta_adv', 's_available_m', 'floor_cp_sim'];
 const CUSTOM = '(typed)';
+const SWEEP = { m: 'm (m)', delta_adv: 'δ_adv (m)', net: 'net (m)' };
+const RANGE = { m: [4, 20], delta_adv: [0, 9], net: [0, 6] };
 
 /**
  * Paper IV: the attacker indistinguishable from the weather.
@@ -38,6 +42,29 @@ export default function PaperIVScreen() {
   const [out, setOut] = useState(null);
   const [runState, setRunState] = useState({});
   const [busy, setBusy] = useState(false);
+  const { width } = useWindowDimensions();
+
+  const [vary, setVary] = useState('m');
+  const [lo, setLo] = useState(String(RANGE.m[0]));
+  const [hi, setHi] = useState(String(RANGE.m[1]));
+  const [sweep, setSweep] = useState(null);
+  const [sweepState, setSweepState] = useState({});
+  const [sweepBusy, setSweepBusy] = useState(false);
+  const [margs, setMargs] = useState(null);
+
+  const runSweep = useCallback(async (opts = {}) => {
+    const v = opts.vary ?? vary;
+    const a = Number(opts.lo ?? lo); const b = Number(opts.hi ?? hi);
+    const base = opts.base ?? out?.request;
+    if (!base) return;
+    if (!Number.isFinite(a) || !Number.isFinite(b) || b <= a) {
+      setSweepState({ error: '"to" must be a number greater than "from"' }); return;
+    }
+    setSweepBusy(true); setSweepState({});
+    try { setSweep(await papersApi.floorSweep({ vary: v, lo: a, hi: b, n: 33, base })); }
+    catch (e) { setSweepState(classify(e)); }
+    finally { setSweepBusy(false); }
+  }, [vary, lo, hi, out]);
 
   const compute = useCallback(async (f = form) => {
     const body = {};
@@ -50,10 +77,14 @@ export default function PaperIVScreen() {
       body[k] = v;
     }
     setBusy(true); setRunState({});
-    try { setOut({ request: body, result: await papersApi.floor(body) }); }
+    try {
+      setOut({ request: body, result: await papersApi.floor(body) });
+      runSweep({ base: body });
+      papersApi.marginals(body.alpha).then(setMargs).catch(() => setMargs(null));
+    }
     catch (e) { setRunState(classify(e)); }
     finally { setBusy(false); }
-  }, [form]);
+  }, [form, runSweep]);
 
   useEffect(() => {
     papersApi.floorDefaults()
@@ -100,6 +131,12 @@ export default function PaperIVScreen() {
   };
 
   const r = out?.result;
+  const w = Math.min(width - 60, 720);
+  const pickVary = (v) => {
+    setVary(v); setLo(String(RANGE[v][0])); setHi(String(RANGE[v][1]));
+    runSweep({ vary: v, lo: RANGE[v][0], hi: RANGE[v][1] });
+  };
+  const SRC_COLOR = { gnss: t.accent, fault: t.danger, env: t.ok };
   const title = paper?.title ?? 'Paper IV - UAVPerturbation';
   const header = (
     <ScreenHeader eyebrow="Papers · Paper IV - UAVPerturbation" title={title}
@@ -196,6 +233,122 @@ export default function PaperIVScreen() {
         </Panel>
       ) : null}
 
+      {r && r.s > 0 && r.split_cp?.length ? (
+        <Panel title="Where the floor comes from"
+               subtitle={r.split_note}>
+          <Steps steps={[
+            { step: 'slack left for benign perturbation',
+              expr: `s = m − δ_adv − net = ${fmt(r.inputs.m)} − ${fmt(r.inputs.delta_adv)} − ${fmt(r.inputs.net)}`,
+              value: r.s, unit: 'm' },
+            ...r.split_cp.map((x) => ({
+              step: `${x.source}: share of the slack and its tail`,
+              expr: `s_${x.source} = ${fmt(x.s_i_m)} m → Pr[${x.source} > s_${x.source}] = ${fmt(x.empirical_tail)} observed, ≤ ${fmt(x.cp_upper_tail)} (CP upper)`,
+              value: x.cp_upper_tail, unit: '' })),
+            { step: 'sum of the three upper tails (the best split)',
+              expr: r.split_cp.map((x) => fmt(x.cp_upper_tail)).join(' + '),
+              value: r.pbar_union_cp, unit: '' },
+            { step: `floor, valid with probability ≥ ${fmt(r.confidence)}`,
+              expr: `1 − ${fmt(r.pbar_union_cp)}`, value: r.floor_cp, unit: '' },
+          ]} />
+          <View style={s.splitBar}>
+            {r.split_cp.map((x) => (
+              <View key={x.source} style={{ flex: Math.max(0.0001, x.s_i_m),
+                                            backgroundColor: SRC_COLOR[x.source] ?? t.muted }} />
+            ))}
+            {r.s - r.split_cp.reduce((a, x) => a + x.s_i_m, 0) > 1e-9 ? (
+              <View style={{ flex: r.s - r.split_cp.reduce((a, x) => a + x.s_i_m, 0),
+                             backgroundColor: t.border }} />
+            ) : null}
+          </View>
+          <Text style={s.hint}>
+            {r.split_cp.map((x) => `${x.source} ${fmt(x.s_i_m)} m`).join(' · ')} of s = {fmt(r.s)} m
+            (the CP grid is {'0.05'} m, so the shares sum to at most s). The point-estimate bound
+            splits it as {r.split_union.map((x) => `${x.source} ${fmt(x.s_i_m)} m`).join(', ')}.
+          </Text>
+        </Panel>
+      ) : null}
+
+      {r?.couplings ? (
+        <Panel title="Does the coupling matter?"
+               subtitle="The three benign sources have known marginals but an unknown coupling. The floor is what holds under every coupling; two particular couplings show how much of the gap is the unknown dependence.">
+          {r.couplings.map((c) => (
+            <View key={c.coupling} style={s.coupRow}>
+              <View style={{ flex: 1 }}>
+                <Text style={s.coupName}>{c.coupling}</Text>
+                <Text style={s.coupHow}>{c.how}</Text>
+              </View>
+              <View style={s.coupTrack}>
+                <View style={[s.coupBar, { width: `${Math.max(0, Math.min(1, c.floor)) * 100}%` }]} />
+              </View>
+              <Text style={s.coupVal}>{fmt(c.floor)}</Text>
+            </View>
+          ))}
+          <Text style={s.hint}>
+            Probability that the benign perturbations fit inside s, i.e. one minus Pr[gnss + fault + env &gt; s].
+            Independent and comonotone are two particular couplings; the last two rows hold for any coupling at all.
+          </Text>
+        </Panel>
+      ) : null}
+
+      {r ? (
+        <Panel title="Explore: sweep one input"
+               subtitle="The other inputs stay as computed above; each point is a full run of the paper's bounds. Rings are the paper's own rows from r5_floor_sensitivity.csv at the same δ_adv and network tube.">
+          <SweepControls options={SWEEP} vary={vary} onVary={pickVary}
+                         lo={lo} hi={hi} onLo={setLo} onHi={setHi}
+                         onRun={() => runSweep()} busy={sweepBusy} label="run sweep" />
+          {sweepState.error ? <Text style={s.err}>{sweepState.error}</Text> : null}
+          {sweep ? (
+            <View nativeID="paper4-sweep" style={{ marginTop: 10 }}>
+              <LineChart width={w} height={w < 420 ? 200 : 240}
+                xLabel={sweep.label} yLabel="floor" yMin={0} yMax={1.05}
+                series={[
+                  { key: 'cp', label: `floor, valid w.p. ≥ ${fmt(r.confidence)}`, color: t.accent,
+                    points: sweep.points.map((p) => ({ x: p.x, y: p.floor_cp })) },
+                  { key: 'u', label: 'floor, point estimate', color: t.network, dash: true,
+                    points: sweep.points.map((p) => ({ x: p.x, y: p.floor_union })) },
+                ]}
+                overlay={sweep.reference.map((p) => ({ x: p.x, y: p.floor_cp, color: t.ok }))}
+                marker={sweep.points.length && Number(r.inputs[sweep.vary]) >= sweep.points[0].x
+                  && Number(r.inputs[sweep.vary]) <= sweep.points[sweep.points.length - 1].x
+                  ? { x: Number(r.inputs[sweep.vary]), label: 'current' } : null} />
+              {sweep.reference.length ? (
+                <Text style={s.hint}>
+                  ○ the paper's rows: {sweep.reference.map((p) => `m = ${fmt(p.x)} → ${fmt(p.floor_cp)}`)
+                    .filter((v, i, a) => a.indexOf(v) === i).join(' · ')}
+                </Text>
+              ) : null}
+              <View style={s.exportRow}>
+                <ExportMenu title={`Paper IV floor sweep over ${sweep.vary}`} data={sweep}
+                            csv={sweep.points} sources={sweep.source} svgId="paper4-sweep" />
+              </View>
+            </View>
+          ) : null}
+        </Panel>
+      ) : null}
+
+      {margs ? (
+        <Panel title="The three benign perturbations"
+               subtitle={`Pr[X > t] for each source: solid is what the ${margs.marginals[0]?.n ?? ''} simulated samples show, dashed is the Clopper–Pearson upper tail the floor uses. Dotted lines mark each source's share of the slack in the current computation.`}>
+          <View nativeID="paper4-marginals">
+            <LineChart width={w} height={w < 420 ? 200 : 240}
+              xLabel="t (m)" yLabel="Pr[X > t]" yMin={0} yMax={1.05}
+              series={margs.marginals.flatMap((m) => [
+                { key: `${m.source}e`, label: `${m.source} observed`, color: SRC_COLOR[m.source] ?? t.muted,
+                  points: m.points.map((p) => ({ x: p.t, y: p.empirical })) },
+                { key: `${m.source}c`, label: `${m.source} CP upper`, color: SRC_COLOR[m.source] ?? t.muted,
+                  dash: true, points: m.points.map((p) => ({ x: p.t, y: p.cp_upper })) },
+              ])}
+              vlines={(r?.split_cp ?? []).map((x) => ({
+                x: x.s_i_m, label: `s_${x.source}`, color: SRC_COLOR[x.source] }))} />
+          </View>
+          {margs.marginals.map((m) => (
+            <KV key={m.source} k={`${m.source}: median · 99th · 99.9th percentile · max`}
+                v={`${fmt(m.quantiles_m['0.5'])} · ${fmt(m.quantiles_m['0.99'])} · ${fmt(m.quantiles_m['0.999'])} · ${fmt(m.max_m)} m`} />
+          ))}
+          <Text style={s.source}>source: {margs.source}</Text>
+        </Panel>
+      ) : null}
+
       {defaults?.reference?.length ? (
         <Panel title="The paper's check"
                subtitle="paperIV/results/r5_floor_sensitivity.csv — floor_cp_sim was computed by the same depbounds functions; the calculator reproduces it at the same m, δ_adv and net">
@@ -253,4 +406,17 @@ const styles = (t) => StyleSheet.create({
   },
   verdictText: { fontSize: 14, fontWeight: '800', letterSpacing: 1 },
   exportRow: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: 10 },
+  splitBar: {
+    flexDirection: 'row', height: 14, borderRadius: 7, overflow: 'hidden', marginTop: 10,
+    borderWidth: 1, borderColor: t.border,
+  },
+  coupRow: {
+    flexDirection: 'row', alignItems: 'center', paddingVertical: 6,
+    borderBottomWidth: 1, borderBottomColor: t.border,
+  },
+  coupName: { color: t.text, fontSize: 11.5, fontWeight: '700' },
+  coupHow: { color: t.muted, fontSize: 9.5, fontFamily: fonts.mono, marginTop: 1 },
+  coupTrack: { width: 140, height: 8, backgroundColor: t.bg, borderRadius: 4, marginHorizontal: 8 },
+  coupBar: { height: 8, backgroundColor: t.accent, borderRadius: 4 },
+  coupVal: { color: t.text, fontSize: 12, fontWeight: '800', fontFamily: fonts.mono, width: 56, textAlign: 'right' },
 });
