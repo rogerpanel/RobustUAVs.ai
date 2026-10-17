@@ -140,12 +140,12 @@ export default function PaperIIIScreen() {
     k: k + 1, 'alpha_(k)': r.alpha_sorted[k], n_k: n, 'k − n_k': k + 1 - n,
   })) : null;
 
-  const title = paper?.title ?? 'Paper III';
+  const title = paper?.title ?? 'Paper III - UAVCertification';
   const marlRows = marl && dir ? marl.tables[dir] : null;
 
   return (
     <ScrollView style={s.screen} contentContainerStyle={s.content}>
-      <ScreenHeader eyebrow="Papers · Paper III" title={title}
+      <ScreenHeader eyebrow="Papers · Paper III - UAVCertification" title={title}
         lede="Type a fleet's certified protection levels (or their navigation
               staleness) and the tasks' alert limits, and read off how many tasks
               can be covered, how many certificate collapses that survives, and

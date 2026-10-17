@@ -6,11 +6,11 @@ import { RAIL_W } from './useLayout';
 /**
  * The scroll chrome both rails share.
  *
- * Nested ScrollViews, vertical outer and horizontal inner, so a rail scrolls
- * up/down through its sections *and* left/right when a label is longer than
- * 196 px. The alternative -- truncating with an ellipsis -- hides exactly the
- * end of the string that distinguishes "GNSS Spoof Monitor" from "GNSS Spoof
- * Monitor (live)", so the content is reachable rather than clipped.
+ * Nested ScrollViews, vertical outer and horizontal inner. On the pinned rail
+ * the column has a fixed width, so a label longer than the rail wraps to a
+ * second line and is read in full; truncating with an ellipsis would hide
+ * exactly the end that tells two entries apart (e.g. "Paper II - AirworthinessSoK").
+ * The horizontal scroller stays as a fallback for an unbreakable token.
  *
  * The horizontal scroller must NOT be `flex: 1`: a horizontal ScrollView sizes
  * its content along x, and a flexed child collapses the cross-axis to zero on
@@ -62,5 +62,7 @@ const styles = (t, side, compact) => StyleSheet.create({
   vertical: { flex: 1 },
   verticalBody: { paddingVertical: 8 },
   horizontalBody: { minWidth: '100%' },
-  column: { minWidth: compact ? 260 : RAIL_W - 1, flexShrink: 0 },
+  // A fixed width on the pinned rail makes a long label wrap to a second line,
+  // so it is read in full without scrolling sideways.
+  column: compact ? { minWidth: 260, flexShrink: 0 } : { width: RAIL_W - 1, flexShrink: 0 },
 });

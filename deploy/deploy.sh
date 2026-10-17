@@ -165,7 +165,10 @@ fi
 # Control plane: install deps into the venv and restart the service if the
 # unit is installed. Absent unit means this host serves the static artifact
 # only, which is a valid deployment.
-if systemctl list-unit-files 2>/dev/null | grep -q '^robustuavs-api.service'; then
+# Asked directly, not via `list-unit-files | grep -q`: under `set -o pipefail`
+# grep -q exits on its first match, systemctl dies of SIGPIPE, the pipeline
+# reports failure, and the restart below was silently skipped on every deploy.
+if [ "$(systemctl show -p LoadState --value robustuavs-api.service 2>/dev/null)" = "loaded" ]; then
 	log "restarting the control plane"
 	# Not --quiet: when a wheel is missing and pip falls back to a source
 	# build, the reason is in the output and suppressing it turns a legible
@@ -191,7 +194,7 @@ elif curl -fsS --max-time 5 http://127.0.0.1:8000/api/health >/dev/null 2>&1; th
 	# the client is rebuilt from the new commit. Pages then report routes the
 	# API "does not serve". Say so and fail rather than finish green.
 	api_stale=1
-	log "control plane NOT restarted: robustuavs-api.service is not installed,"
+	log "control plane NOT restarted: robustuavs-api.service is not loaded,"
 	log "         but an API answers on :8000 and keeps running its old code:"
 	(ss -ltnp 'sport = :8000' 2>/dev/null || true) | sed 's/^/         /'
 	log "         install the unit once (deploy/robustuavs-api.service header),"

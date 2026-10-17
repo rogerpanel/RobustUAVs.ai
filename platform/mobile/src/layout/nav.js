@@ -165,7 +165,7 @@ export const LEFT_GROUPS = [
     // paper's own code with a browser over every CSV its harness wrote.
     label: 'Papers',
     items: [
-      { key: 'PaperI', glyph: 'Ⅰ', title: 'Paper I · Auth budget', grounded: true,
+      { key: 'PaperI', glyph: 'Ⅰ', title: 'Paper I - UAVAuthentication', grounded: true,
         blurb: 'What authenticity costs in metres',
         steps: [
           "Read the verdict first: with nothing changed it is the paper's unauthenticated case at θ = 0.25 s.",
@@ -175,7 +175,7 @@ export const LEFT_GROUPS = [
           "Browse the result files at the bottom and export any of them as CSV or JSON.",
         ],
         tip: "Typing θ re-derives Δ through the parent's Lemma 1; typing Δ overrides it." },
-      { key: 'PaperII', glyph: 'Ⅱ', title: 'Paper II · Corpus', grounded: true,
+      { key: 'PaperII', glyph: 'Ⅱ', title: 'Paper II - AirworthinessSoK', grounded: true,
         blurb: 'The quantifier-gap SoK, filterable',
         steps: [
           "Read the PRISMA flow: screening of the long tail is sampled, so its includes are an estimate with a 95 % interval.",
@@ -184,7 +184,7 @@ export const LEFT_GROUPS = [
           "Export the matching rows or the counts as CSV or JSON.",
         ],
         tip: "If this deployment does not carry paperII/, the page says so rather than showing an empty corpus." },
-      { key: 'PaperIII', glyph: 'Ⅲ', title: 'Paper III · Certificates', grounded: true,
+      { key: 'PaperIII', glyph: 'Ⅲ', title: 'Paper III - UAVCertification', grounded: true,
         blurb: 'Coverage, the lift, and the MARL tables',
         steps: [
           "Type staleness (s) or ρ (m) per agent and the tasks' alert limits, then press certify.",
@@ -194,7 +194,7 @@ export const LEFT_GROUPS = [
           "Switch MARL run directories to compare methods across fleet sizes.",
         ],
         tip: "Every number on this page is computed by paperIII/experiments code or read from paperIII/results." },
-      { key: 'PaperIV', glyph: 'Ⅳ', title: 'Paper IV · Budget floor', grounded: true,
+      { key: 'PaperIV', glyph: 'Ⅳ', title: 'Paper IV - UAVPerturbation', grounded: true,
         blurb: 'The certified floor under unknown coupling',
         steps: [
           "Read the floor first: it opens at m = 10 m with the R1 pooled stealth budget δ_adv and no network tube.",

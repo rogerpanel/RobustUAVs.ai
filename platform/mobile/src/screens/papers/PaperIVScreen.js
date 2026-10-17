@@ -100,9 +100,9 @@ export default function PaperIVScreen() {
   };
 
   const r = out?.result;
-  const title = paper?.title ?? 'Paper IV';
+  const title = paper?.title ?? 'Paper IV - UAVPerturbation';
   const header = (
-    <ScreenHeader eyebrow="Papers · Paper IV" title={title}
+    <ScreenHeader eyebrow="Papers · Paper IV - UAVPerturbation" title={title}
       lede="Read the certified floor of the unified perturbation budget. Set the
             margin, the stealth budget δ_adv and the network tube; what is left
             must absorb GNSS error, benign faults and wind, whose coupling is

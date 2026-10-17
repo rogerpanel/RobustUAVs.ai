@@ -4,8 +4,8 @@ import { useWindowDimensions } from 'react-native';
  * One breakpoint hook, so every component agrees on what "narrow" means.
  *
  * Both rails are 150 px, matching robustidps.ai. That is narrow enough that
- * many labels overflow, which is the point: the rails scroll horizontally, so
- * an overflowing label is reachable rather than clipped, and the centre column
+ * many labels overflow, which is the point: an overflowing label wraps to a
+ * second line (see Rail.js) rather than being clipped, and the centre column
  * keeps the width. At 196 px the two rails together ate 392 px of a 1280 px
  * screen -- nearly a third of it -- for navigation nobody reads while working.
  *

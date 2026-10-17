@@ -47,8 +47,8 @@ def open_page(pg, nav):
 
 
 def paper1(pg, shots):
-    print("Paper I · Auth budget")
-    open_page(pg, "Paper I · Auth budget")
+    print("Paper I - UAVAuthentication")
+    open_page(pg, "Paper I - UAVAuthentication")
     check("I: page title", wait_text(pg, r"What Authenticity Costs in Metres"))
     check("I: calculator shows the scheme list from dauth.csv", wait_text(pg, r"ed25519\s*·\s*[\d.]+\s*ms"))
     before = body(pg)
@@ -62,8 +62,8 @@ def paper1(pg, shots):
 
 
 def paper2(pg, shots):
-    print("Paper II · Corpus")
-    open_page(pg, "Paper II · Corpus")
+    print("Paper II - AirworthinessSoK")
+    open_page(pg, "Paper II - AirworthinessSoK")
     check("II: page title", wait_text(pg, r"Quantifier Gap"))
     m = wait_text(pg, r"(\d+) of (\d+) guarantees match")
     check("II: full study is the default table (287 coded papers)", m and m.group(2) == "287",
@@ -84,8 +84,8 @@ def paper2(pg, shots):
 
 
 def paper3(pg, shots):
-    print("Paper III · Certificates")
-    open_page(pg, "Paper III · Certificates")
+    print("Paper III - UAVCertification")
+    open_page(pg, "Paper III - UAVCertification")
     check("III: page title", wait_text(pg, r"Certificates as Constraints"))
     pg.get_by_text("certify", exact=True).first.click()
     check("III: certify returns a deficiency and coverage", wait_text(pg, r"deficiency") and wait_text(pg, r"coverage"))
@@ -95,8 +95,8 @@ def paper3(pg, shots):
 
 
 def paper4(pg, shots):
-    print("Paper IV · Budget floor")
-    open_page(pg, "Paper IV · Budget floor")
+    print("Paper IV - UAVPerturbation")
+    open_page(pg, "Paper IV - UAVPerturbation")
     check("IV: page title", wait_text(pg, r"Indistinguishable from the Weather"))
     pg.get_by_text("compute floor", exact=True).first.click()
     check("IV: m=10, R1 delta_adv, no tube gives floor_cp 0.541 (paper: r5_floor_sensitivity)",

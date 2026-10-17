@@ -91,7 +91,8 @@ const styles = (t, compact) => StyleSheet.create({
   },
   rowOn: { backgroundColor: `${t.accent}1A`, borderLeftColor: t.accent },
   glyph: { color: t.muted, fontSize: 11, width: 16 },
-  rowText: { flexShrink: 0, paddingRight: 8 },
+  // Shrinks so a long title wraps inside the rail instead of being clipped.
+  rowText: { flex: 1, flexShrink: 1, paddingRight: 8 },
   title: { color: t.muted, fontSize: compact ? 13.5 : 11, fontWeight: '600' },
   titleOn: { color: t.text, fontWeight: '700' },
   blurb: { color: t.muted, fontSize: 10, marginTop: 1 },

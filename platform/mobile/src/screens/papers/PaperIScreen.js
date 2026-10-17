@@ -138,9 +138,9 @@ export default function PaperIScreen() {
     compute({ dirty: {}, form: f, scheme: NONE, scenario: 'headline' });
   };
 
-  const title = paper?.title ?? 'Paper I';
+  const title = paper?.title ?? 'Paper I - UAVAuthentication';
   const header = (
-    <ScreenHeader eyebrow="Papers · Paper I" title={title}
+    <ScreenHeader eyebrow="Papers · Paper I - UAVAuthentication" title={title}
       lede="Price authentication in metres. Edit the budget inequality's inputs —
             each starts at the paper's own constant — or pick a signature scheme
             and transport to read its certified authentication delay, and see

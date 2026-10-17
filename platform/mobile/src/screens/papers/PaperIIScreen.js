@@ -86,12 +86,12 @@ export default function PaperIIScreen() {
     load({ filters: {}, yearMin: '', yearMax: '' });
   };
 
-  const title = paper?.title ?? 'Paper II';
+  const title = paper?.title ?? 'Paper II - AirworthinessSoK';
   const exportRows = d?.rows ?? null;
 
   return (
     <ScrollView style={s.screen} contentContainerStyle={s.content}>
-      <ScreenHeader eyebrow="Papers · Paper II" title={title}
+      <ScreenHeader eyebrow="Papers · Paper II - AirworthinessSoK" title={title}
         lede="Explore the coded corpus behind the SoK. Filter the guarantees by
               year and by any codebook field, read the counts per category for
               the filtered set, and export the rows. The PRISMA counts and the
