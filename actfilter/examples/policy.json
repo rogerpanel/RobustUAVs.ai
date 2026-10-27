@@ -1,0 +1,18 @@
+{
+  "models": {
+    "spend": {"kind": "budget", "params": {"max_spend": 5.0, "max_calls": 500, "abort_reserve": 0.25}},
+    "web":   {"kind": "egress", "params": {"max_requests": 200, "allow": [
+      {"host": "api.example.org",  "path_prefix": "/v1/", "methods": ["GET", "POST"]},
+      {"host": "docs.example.org", "path_prefix": "/",    "methods": ["GET"]}
+    ]}},
+    "fleet": {"kind": "uav", "params": {"n": 4, "m": 20.0, "b_tot": 0.0}}
+  },
+  "tools": {
+    "call_llm":  {"model": "spend", "units_field": "max_tokens", "unit_price": 0.00002, "min_units": 64},
+    "purchase":  {"model": "spend", "cost_field": "amount"},
+    "WebFetch":  {"model": "web", "url_field": "url"},
+    "http_post": {"model": "web", "url_field": "url", "method_field": "method"},
+    "fleet_command": {"model": "fleet", "accel_field": "accel"}
+  },
+  "passthrough": ["Read", "Grep", "Glob"]
+}
