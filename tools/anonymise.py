@@ -62,13 +62,13 @@ from pathlib import Path
 # --------------------------------------------------------------------------
 RULES: list[tuple[str, str]] = [
     # Kaggle dataset: URL, slug, and DOI all resolve to a named account.
-    (r"https://www\.kaggle\.com/datasets/rogernickanaedevha/[^\s)\"'>]*",
+    (r"https://www\.kaggle\.com/datasets/rogernickanaedevha/[^\s)\"'>}]*",
      "https://ANONYMISED.example/dataset"),
     (r"rogernickanaedevha", "ANON"),
     (r"10\.34740/kaggle/dsv/18346203", "10.XXXXX/anonymised"),
     # GitHub owner, repository URLs, and the UAV-EW-Bench repo under the same owner.
-    (r"https://github\.com/rogerpanel/[^\s)\"'>]*", "https://ANONYMISED.example/repo"),
-    (r"github\.com/rogerpanel/[^\s)\"'>]*", "ANONYMISED.example/repo"),
+    (r"https://github\.com/rogerpanel/[^\s)\"'>}]*", "https://ANONYMISED.example/repo"),
+    (r"github\.com/rogerpanel/[^\s)\"'>}]*", "ANONYMISED.example/repo"),
     (r"rogerpanel", "anon-owner"),
     # Live domain, in prose, config, SEO metadata, and deployment scripts.
     (r"https://(www\.)?robustuavs\.ai", "https://ANONYMISED.example"),
