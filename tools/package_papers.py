@@ -3,6 +3,7 @@
 
     python3 tools/package_papers.py --paper III            # from the working tree
     python3 tools/package_papers.py --paper II --ref origin/paperII/full-study
+    python3 tools/package_papers.py --paper D              # the mother paper, paper/paperD_v8.tex
 
 Per paper it writes, under dist/ (gitignored):
 
@@ -43,7 +44,13 @@ SUBSETS = {
     "III": ["paperIII", "results", "data/fetch_kaggle.py", "platform/backend/app", "requirements.txt",
             "LICENSE"],
     "IV": ["paperIV", "results/gamma_campaign_samples.csv", "requirements.txt", "LICENSE"],
+    # The mother paper (paper/paperD_v<N>.tex): its pipeline lives at the repository root.
+    "D": ["certificates", "experiments", "ingest", "schema", "results", "third_party", "patches",
+          "data/fetch_kaggle.py", "docs/SCHEMA.md", "docs/data_staging_layout.md",
+          "docs/KAGGLE_DATASET_DESCRIPTIONS.md", "requirements.txt", "LICENSE"],
 }
+# The mother paper's current version: paper/paperD_v<N>.tex, packaged as main.tex.
+PAPER_D = "paperD_v8"
 # Large or irrelevant artefacts left out of the reviewer copy.
 EXCLUDE = [re.compile(p) for p in (r"\.pt$", r"/logs_r/", r"/server_logs/", r"/__pycache__/",
                                    r"\.pyc$", r"/_smoke", r"/node_modules/", r"\.pdf$",
@@ -113,6 +120,28 @@ the public flight corpus or embedded boards (R3, R4, R8, E3 on an idle machine) 
 `run_server_paperIII.sh`; see `paperIII/RUNBOOK.md` for what was and was not run.
 Every result CSV carries a `provenance` column.
 """,
+    "D": """# Artifact for the paper "From Wire to Flight" (anonymised)
+
+Offline, ~10 min on a laptop CPU, no data download:
+
+```bash
+python3 -m pip install jsonschema numpy scipy
+python3 certificates/engine.py                 # certificate constants, asserted against the paper
+python3 experiments/make_paper_figures.py      # every figure/table block from the committed CSVs
+python3 experiments/provenance_ledger.py
+python3 experiments/compose_certified.py       # theta -> Delta -> delta -> certified floor
+cd paper && pdflatex main && bibtex main && pdflatex main && pdflatex main
+```
+
+`experiments/make_paper_figures.py` must reproduce `results/paper_figures/` byte for byte; the
+paper `\\input`s those blocks (copied to `paper/figures/`). The detector is the third-party DATAMUt
+replay in `third_party/datamut/`, unmodified; the epsilon sweep applies `patches/datamut_epsilon.patch`
+to a copy (`ingest/sweep_theta.py`, `experiments/sweep_full.py`).
+
+Full reproduction needs the public corpus (`python3 data/fetch_kaggle.py`, then
+`experiments/run_real_corpus.sh`), which skips, and says so, any stage whose inputs are absent.
+Every record carries a `pairing_basis` provenance flag; `results/provenance_distribution.csv` counts them.
+""",
     "IV": """# Artifact for Paper IV (anonymised)
 
 ```bash
@@ -178,8 +207,34 @@ def zip_dir(folder: Path, out: Path, prefix: str = ""):
                         else p.relative_to(folder).as_posix())
 
 
+def _paperD_manuscript(src: Path, dst: Path):
+    """paper/paperD_v<N>.tex as main.tex, refs.bib, and the figure blocks it inputs (the repo's
+    paper/figures is a symlink to results/paper_figures, so the files are copied, not linked)."""
+    tex = (src / "paper" / f"{PAPER_D}.tex").read_text()
+    dst.mkdir(parents=True, exist_ok=True)
+    (dst / "main.tex").write_text(tex)
+    shutil.copy2(src / "paper" / "refs.bib", dst / "refs.bib")
+    blocks = src / "results" / "paper_figures"
+    todo = re.findall(r"\\input\{figures/([^}]+)\}", tex)
+    seen = set()
+    while todo:
+        name = todo.pop()
+        if name in seen:
+            continue
+        seen.add(name)
+        f = blocks / (name if name.endswith(".tex") else name + ".tex")
+        q = dst / "figures" / f.name
+        q.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(f, q)
+        todo += re.findall(r"\\input\{figures/([^}]+)\}", f.read_text())
+
+
 def overleaf(paper: str, src: Path, work: Path) -> Path:
-    ms = src / f"paper{paper}" / "manuscript"
+    if paper == "D":
+        ms = work / "paperD_manuscript"
+        _paperD_manuscript(src, ms)
+    else:
+        ms = src / f"paper{paper}" / "manuscript"
     proj = work / f"paper{paper}_overleaf"
     for p in manuscript_files(ms):
         if p.name == "build.sh":
@@ -234,6 +289,8 @@ def reviewer(paper: str, src: Path, work: Path) -> Path:
             q = out_dir / r
             q.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(p, q)
+    if paper == "D":
+        _paperD_manuscript(anon, out_dir / "paper")
     (out_dir / "REVIEWERS.md").write_text(REVIEWERS[paper])
     hits = anonymise.verify(out_dir)
     if hits:
@@ -248,7 +305,7 @@ def reviewer(paper: str, src: Path, work: Path) -> Path:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--paper", choices=("I", "II", "III", "IV"), required=True)
+    ap.add_argument("--paper", choices=("I", "II", "III", "IV", "D"), required=True)
     ap.add_argument("--ref", default=None, help="package a git ref instead of the working tree")
     ap.add_argument("--skip-reviewer", action="store_true")
     a = ap.parse_args()

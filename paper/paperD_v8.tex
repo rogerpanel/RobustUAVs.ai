@@ -47,6 +47,9 @@
 % \anonfalse = named version for internal / supervisor review
 \newif\ifanon
 \anontrue
+% Own work is cited anonymously in the review version; the named entry
+% (uavewbench2026) returns with \anonfalse.
+\newcommand{\ownbenchcite}{\ifanon\cite{uavewbench2026anon}\else\cite{uavewbench2026}\fi}
 
 % ---- shared style tokens --------------------------------------------
 \definecolor{netcol}{RGB}{31,78,121}
@@ -796,7 +799,7 @@ pairings.}
 \dataset{UAV Attack Dataset}~\cite{whelan2020uav} & Real testbed & \layernet{} $\cdot$ C2 (MAVLink) & telemetry & Real PX4 GPS spoof/jam + ping-DoS on the \emph{same} airframe family we model: the measured bridge.\\
 \dataset{HCRL UAVCAN}~\cite{hcrl_uavcan} & Real testbed & \layernet{} $\cdot$ intra-bus & frame & On-board UAVCAN/DroneCAN flooding/fuzzy/replay, a third attack surface below the C2 link.\\
 \dataset{DATAMUt} traces~\cite{datamut2026} & Sim (event) & \layernet{} $\cdot$ mesh (DTN) & hop & Time-window-graph forwarding detector with a \emph{sweepable} operating point $\theta$.\\
-\dataset{UAV-EW-Bench-2026}~\cite{uavewbench2026} & Sim (physics-informed) & \layerauto{} $\cdot$ GNSS+ctrl & flight & The navigation anchor: full $0$--$40$\,dB $J/S$ sweep with per-flight MCR outcomes.\\
+\dataset{UAV-EW-Bench-2026}~\ownbenchcite & Sim (physics-informed) & \layerauto{} $\cdot$ GNSS+ctrl & flight & The navigation anchor: full $0$--$40$\,dB $J/S$ sweep with per-flight MCR outcomes.\\
 \bottomrule
 \end{tabularx}
 \end{table*}
