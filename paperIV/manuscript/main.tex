@@ -73,45 +73,30 @@ A Cross-Layer Benchmark and a Unified Perturbation Budget\\ for Certified UAV Au
 
 % =====================================================================
 \begin{abstract}
-An unmanned aerial vehicle (UAV) cannot tell, from its navigation inputs
-alone, whether a growing position error comes from a jammer, a drifting
-inertial sensor or a gust of wind. We treat this indistinguishability as a
-security principle rather than a nuisance. An attacker can shape its
-interference to resemble a benign disturbance the defender tolerates, so a
-mission-level guarantee is meaningful only if it does not rely on the detector
-noticing the disguise. We formalise this \emph{adversarial equivalence} with a
-total-variation bound on detection advantage. We show that a certificate gated
-on a detector's silence can be violated by an attack that is equivalent to a
-benign disturbance. We then construct a \emph{unified perturbation budget}. It
-combines deterministic adversarial residuals, stochastic satellite-navigation
-(GNSS) and sensor-fault terms, and a bounded-but-unknown environmental term,
-and bounds the probability that a mission both fails and goes undetected. The
-stochastic terms are aggregated with dependence-sharp bounds (Makarov bounds
-and the Rearrangement Algorithm), so the bound holds for every coupling of the
-benign sources, whether nature or an attacker who controls when jamming
-happens supplies it. The familiar union bound is already sharp for two
-sources. Against benign dependence it can be loose by a factor equal to the
-number of sources when the sources are comonotone, and by an arbitrarily
-large factor when they are independent. A cross-layer benchmark supports the
-analysis. Its unit of record is the pairing of a network or environmental
-event with the navigation window it induces, and each pairing carries a
-mandatory provenance flag. In a simulation pilot of \nMissionsTotal{}
-missions, cross-evaluating \nPooledAttackers{} optimised attackers shows that
-every one of five disguise families evades each of four detectors in at least
-\nCrossEvMin{} of missions. A trusted re-anchoring alarm keeps the frequent
-evasions within a few metres whatever the detector. Without it, the detectors
-differ sharply in the undetected deviation they admit, from \nNgCapDTwo\,m to
-\nNgMax\,m, depending on whether they model the disguise as benign. The bound
-held at all \nSoundPoints{} pilot operating points. A test scaled to
-\nROneTests{} points with stronger optimisers then found \nROneViol{}
-Holm-significant violations. None came from disguise: an unchecked actuator
-limit and a calibration sample too small to support a zero tail probability
-had broken two of the theorem's conditions. With a run-time saturation alarm
-and a finite-sample p-box, the bound held on fresh seeds (\nRevEmpViol{}
-violations in \nRevEmpTests{} tests). The empirical stealth budget, however,
-was again exceeded, and a provable budget is \nREightSatRatio$\times$ larger.
-Replacing simulated GNSS errors with measured jamming data halves the certified
-floor at a 10\,m margin.
+A drone cannot tell from its navigation inputs whether a growing position error comes from a
+jammer, a drifting sensor or wind. An attacker can therefore disguise interference as a
+tolerated benign disturbance, so mission guarantees must not rely on
+detection. We formalise this \emph{adversarial equivalence} with a total-variation
+bound on detection advantage and show that certificates gated on detector silence can be
+violated.
+
+A \emph{unified perturbation budget} over adversarial, GNSS, sensor-fault and environmental
+terms bounds the probability of undetected mission failure. Dependence-sharp aggregation
+(Makarov bounds, Rearrangement Algorithm) makes it hold for every coupling of benign sources,
+even one set by an attacker who controls when jamming happens. A cross-layer benchmark pairs each network or environmental event with the
+navigation window it induces, under a mandatory provenance flag.
+
+In \nMissionsTotal{} simulated missions, \nPooledAttackers{} optimised attackers in five
+disguise families evade four detectors in at least \nCrossEvMin{} of missions. A
+trusted re-anchoring alarm limits evasions to a few metres; without it, undetected deviation
+reaches \nNgCapDTwo--\nNgMax\,m. The bound held at all \nSoundPoints{} pilot
+points; stronger optimisers over \nROneTests{} points found \nROneViol{} violations, none
+from disguise, all from two broken theorem conditions (an unchecked actuator limit, a small
+calibration sample). Once fixed, \nRevEmpTests{} fresh-seed tests showed
+\nRevEmpViol{} violations, though the empirical stealth budget was again exceeded and a provable
+one is \nREightSatRatio$\times$ larger; measured jamming data halve the certified floor at
+10\,m. UAV safety cases should therefore budget for attacks disguised as tolerated
+disturbances, not trust detection to catch them.
 \end{abstract}
 
 % =====================================================================

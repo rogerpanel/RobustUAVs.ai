@@ -73,43 +73,28 @@ A Certified Budget for Cryptography and Sensing in UAV Navigation}
 
 % =====================================================================
 \begin{abstract}
-A recent line of work certifies that an unmanned aerial vehicle (UAV) completes its mission
-against an adversary who stays just below an intrusion detector's threshold. The certificate
-bounds the position error as the product of three factors: the delay the adversary can hide,
-the rate $\gamma$ at which delayed navigation input becomes position error, and a dynamics
-factor. We observe that authentication moves the first two factors in opposite directions.
-Authenticating a navigation source lowers $\gamma$, because a forged fix is rejected rather
-than fused. Signing, transmitting and verifying the authenticator raises the delay. The
-certificate is therefore a budget in which cryptography and sensing trade, and it decides
-the sign of the trade in metres.
+A known certificate guarantees drone mission completion while an attacker delays navigation
+messages just below a detector's threshold. It bounds position error by the hidden delay,
+times the rate $\gamma$ converting delay into error, times a dynamics factor. Authentication
+pulls the first two apart: rejecting forged fixes lowers $\gamma$, but signing and verifying
+add delay. The certificate thus prices a security design choice in metres.
 
-We make this budget explicit and measure both sides. On the sensing side, 674 post-onset
-samples from real global positioning system (GPS) spoofing and jamming flights show that a
-spoofed estimator degrades up to $\nRatioHead\times$ faster than one fed degraded but honest
-fixes. Within the first half-second of staleness, however, the two cannot be told apart. On
-the cryptographic side, a response-time analysis of a controller area network (CAN) bus,
-using a base load derived from a real UAVCAN capture, shows that the binding cost of
-post-quantum signatures (ML-DSA and SLH-DSA, standardised by the US National Institute of
-Standards and Technology, NIST) is bus occupancy, not latency. ML-DSA-44 costs $\nDauthCertML$\,ms
-per message, yet classic CAN admits only $\nRstarML$ signed messages per second.
-SLH-DSA cannot be carried at a usable rate at all.
+In 674 samples from real GPS spoofing and jamming
+flights, a spoofed estimator drifts up to $\nRatioHead\times$ faster than one given honest
+but degraded fixes, yet the two look identical for half a second. Under real UAVCAN
+bus load, post-quantum signatures are limited by capacity, not latency: ML-DSA-44 needs
+$\nDauthCertML$\,ms, yet only $\nRstarML$ messages fit per second; SLH-DSA does not fit.
 
-Four results follow. (i)~Under the certificate's supremum discipline, every per-message
-signature scheme that fits on the bus pays across the certified window. Authentication also
-rescues the tightest corridor, which the unauthenticated certificate cannot cover.
-(ii)~Matched to the horizon the detector actually admits, the data cannot show any benefit
-at the parent's operating point. The two error envelopes differ by $\nHzDiffOpCm$\,cm,
-well inside measurement noise, and authentication pays only from
-$\thx\approx\nHzCrossMac$--$\nHzCrossML$\,s. A sound certificate is therefore not
-necessarily a good design oracle. (iii)~Deployed freshness windows of 30--165\,s never bind
-against detector-scale delays. Where the signing clock is advanced from GNSS time, as
-MAVLink~2 prescribes at GPS lock, a spoofer who pushes that clock forward converts the delay
-adversary into a denial adversary. (iv)~An attacker who floods invalid Ed25519 signatures
-saturates the verifier using $\nAsatEd$ of the bus. Large post-quantum signatures are
-immune on classic CAN, but not on CAN with flexible data rate (CAN FD). A selection rule
-returns the cheapest certified configuration. Every number in the paper regenerates from
-released data, and a defined set of simulator and hardware experiments replaces each
-remaining modelled input.
+Four findings follow. (i)~Every scheme that fits pays off across the certified window and
+rescues the narrowest corridor, uncoverable without authentication. (ii)~At
+detector-admitted delays, the gain is $\nHzDiffOpCm$\,cm, within noise; authentication pays only from
+$\thx\approx\nHzCrossMac$--$\nHzCrossML$\,s, so a sound certificate is not always a good
+design guide. (iii)~Freshness windows of 30--165\,s never bind, but a MAVLink~2
+signing clock set from GPS time lets a spoofer turn delay attacks into denial. (iv)~Invalid
+Ed25519 signatures overwhelm the verifier with $\nAsatEd$ of the bus; large post-quantum
+signatures resist this on classic CAN, not CAN~FD. A selection rule picks the cheapest
+certified configuration; every number regenerates from released data, with planned
+experiments for the remaining modelled inputs.
 \end{abstract}
 
 \begin{IEEEkeywords}

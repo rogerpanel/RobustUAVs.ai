@@ -80,40 +80,29 @@ for Learned Task Allocation in UAV Swarms under Navigation Attacks}
 
 % =====================================================================
 \begin{abstract}
-Learned controllers are entering unmanned aerial vehicle (UAV) fleets, and so are the attacks
-that degrade navigation. A jammer forces aircraft to dead-reckon, an undetected relay-delay
-attack makes a stale correction arrive all at once, and a compromised aircraft can misreport
-its own state. Recent work bounds the resulting position error of each aircraft by a formal,
-time-varying certificate $\rho_i(t)$. We ask what a fleet can safely do with such
-certificates when its task allocator is a learned policy that may itself be poorly trained,
-poisoned or adversarially driven. A task with alert limit $\alpha_j$ may be held only while
-$\rho_i(t)\le\alpha_j$, so the feasible set moves with the attack. We place a certified
-projection layer between the policy and the fleet, acting as a reference monitor. For
-\emph{every} policy parameter and every certificate trajectory the adversary can produce, it
-executes no infeasible assignment, and it covers the maximum number of tasks the
-certificates allow. Because a scalar certificate makes eligibility nested, matching theory
-yields exact, linear-time security monitors: certified coverage, the number of certificate
-collapses the fleet tolerates, and the exact worst case against an adversary who degrades
-any $b$ aircraft. A predictive rule confines inter-epoch exposure to certificate jumps and
-fixes the allocator rate; with measured constants it is $\nRateMin$\,Hz. Misreporting
-aircraft shift the coverage monitor by at most their number and are the only aircraft that
-can violate the constraint. A population lift turns these per-operation guarantees into
-fleet-sizing statements and exposes their independence obligation: common-cause jamming
-breaks it, and the independent model then understates the probability of losing six of
-eight tasks by $\nLiftUnder\times$. Every constant comes from released measurements, and a
-brute-force oracle confirms every closed form on \nVerTotal\ checks with \nVerDisagree\
-disagreements. In a multi-agent study up to 96 aircraft, the monitor executes no infeasible
-assignment during learning, where in-expectation baselines (PPO-, PID- and
-MAPPO-Lagrangian, QMIX) execute millions, and it lifts every learned policy to maximal
-coverage at deployment. A classical consensus auction under the same monitor outperforms
-every learned allocator: the security guarantee comes from the monitor, not from learning.
-Closed-loop PX4 flight with a ground-truth oracle exposes the one point where the
-certificate premise fails, GNSS reacquisition: the estimate lagged the returning fix by up
-to \nRfPeakErr\,m, at a moment a jammer chooses. Two pre-registered fresh runs isolate a
-two-part rule: measure staleness at the estimator, which removes every metre-scale violation,
-and calibrate the benign floor for the receiver in use. With both, the certificate held on all
-\nRcSamples\ checked samples, including a reacquisition where the receiver-based certificate was
-off by \nRcRecvExcess\,m.
+Jamming, stale relayed corrections and misreporting aircraft degrade a drone fleet's
+navigation. Recent work bounds each aircraft's position error by a time-varying certificate
+$\rho_i(t)$. When a learned policy, possibly adversarial, allocates tasks, an
+aircraft may hold a task with alert limit $\alpha_j$ only while $\rho_i(t)\le\alpha_j$, so
+safe assignments shift with the attack.
+
+We place a certified projection layer between policy and fleet. For \emph{every} policy and
+adversarial certificate trajectory, it executes no unsafe assignment while covering as
+many tasks as possible. Nested eligibility yields exact linear-time monitors for coverage,
+tolerated certificate collapses and the worst case of $b$ degraded aircraft. A predictive
+rule fixes the allocator rate at $\nRateMin$\,Hz; misreporting aircraft shift coverage by at
+most their number and alone can break the constraint. A population lift sizes fleets but
+assumes independence, which common-cause jamming breaks, understating the risk of losing six
+of eight tasks by $\nLiftUnder\times$. A brute-force oracle confirms every closed form
+(\nVerTotal\ checks, \nVerDisagree\ disagreements).
+
+With up to 96 learning aircraft, the monitor executes no unsafe assignment where
+constrained-RL baselines (PPO-, PID- and MAPPO-Lagrangian, QMIX) execute millions, and a
+classical auction under it beats every learned allocator: safety comes from the
+monitor, not learning. PX4 flight shows one premise failure: at GNSS reacquisition
+estimates lagged the true fix by up to \nRfPeakErr\,m. Measuring staleness at the estimator
+and calibrating the receiver's benign floor fixes it; the certificate held on all
+\nRcSamples\ samples, where a receiver-based one erred by \nRcRecvExcess\,m.
 \end{abstract}
 
 % =====================================================================
