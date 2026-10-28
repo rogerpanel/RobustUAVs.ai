@@ -77,37 +77,29 @@
 
 % =====================================================================
 \begin{abstract}
-Certified-robustness research and aviation assurance both promise guarantees about learned
-systems, and regulators now ask them to meet. The European Union Aviation Safety Agency (EASA)
-expects quantifiable evidence about machine-learning constituents. The Specific Operations Risk
-Assessment (SORA) states its safety objectives per flight hour, and the forthcoming ED-324
-standard will codify learning assurance. Meanwhile the robustness literature produces
-certificates in quantity. We argue that the two rarely meet because they quantify over
-different things. A certified radius speaks about every perturbation of \emph{one input}. A
-contingency volume speaks about \emph{one operation}. A per-flight-hour objective speaks about a
-\emph{population of operations}.
+Regulators now want quantitative safety evidence for machine learning: EASA expects it for
+learned components, the SORA risk assessment sets safety targets per flight hour, and ED-324
+will codify learning assurance. Robustness research supplies guarantees, yet the two rarely
+meet, speaking about different things: a certified radius covers \emph{one input}, a
+contingency volume \emph{one flight}, and a per-flight-hour target a \emph{population of
+flights}.
 
-We systematize this gap. We give every guarantee and every objective a two-axis quantifier
-type, \emph{scope} times \emph{modality}, and formalize the arguments that connect them as
-\emph{lifts}: typed inference rules, each of which emits an evidence obligation. A computed lift
-graph decides, for every pair of guarantee class and objective, whether the guarantee
-discharges the objective, needs lifts whose assumptions must themselves be evidenced, or is a
-category error. Four structural results follow. No chain of proofs alone reaches a probability
-objective: every path crosses at least one statistical obligation. A per-input error budget
-converts to a per-hour rate without any independence assumption, but temporal confirmation
-earns its usual exponential credit only under independence. SORA's test-hour ladder is exactly
-the zero-failure ``rule of three''. Runtime assurance discharges per-operation objectives, but it
-moves the gap onto its monitor rather than closing it. A registered study screens
-$\fsScreened$ of $\fsCandidates$ searched records and three snowballing iterations, codes
-$\fdCoded$ full texts against $\nObj$ objectives, and estimates $\fdField$ eligible papers. The
-field has moved toward population-level statistical guarantees, conformal prediction above all.
-It is not saturated: each snowballing iteration added papers, but none added a new kind of
-guarantee. Only $\fdHTwoAcc$ of the lifted guarantees evidence the assumption their lift needs
-($\fdHTwoAccCA$--$\fdHTwoAccCB$ across coders). Almost none performs the rate lift, and no
-guarantee class discharges a per-flight-hour objective without one. A SORA Annex~A evidence generator demonstrates one
-sound path end to end and lists every assumption as an open obligation. Nothing here certifies
-an aircraft: we map mathematical guarantees onto an evidence framework, and we say where the
-map has holes.
+We label every guarantee and target by what it covers and whether it is proved or
+statistical, and model the bridging arguments as \emph{lifts}, steps that each owe
+evidence. A computed lift graph decides whether each guarantee meets each target directly,
+through assumptions needing their own evidence, or not at all. Four results follow. Proofs
+alone never reach a probability target. Per-input error budgets become hourly rates without
+assuming independence, but repeated confirmation needs it. SORA's test-hour ladder is exactly
+the zero-failure ``rule of three''. Runtime monitoring meets per-flight targets but moves the
+gap onto the monitor.
+
+A registered review screens $\fsScreened$ of $\fsCandidates$ records over three snowballing
+rounds and codes $\fdCoded$ papers against $\nObj$ objectives, estimating $\fdField$ eligible
+papers. The field is shifting to statistical guarantees, chiefly conformal prediction, and is
+not saturated: each round added papers but no new kind of guarantee. Only $\fdHTwoAcc$ of
+lifted guarantees ($\fdHTwoAccCA$--$\fdHTwoAccCB$ across coders) evidence the assumption
+their lift needs, and almost none reach per-flight-hour targets. A SORA evidence generator
+shows one sound end-to-end path. We certify no aircraft; we map where guarantees fall short.
 \end{abstract}
 
 \begin{IEEEkeywords}
