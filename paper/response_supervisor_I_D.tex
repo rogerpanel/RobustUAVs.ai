@@ -1,0 +1,316 @@
+% =====================================================================
+% Response to the supervisor's \federico{} comments on Paper I and Paper D.
+% Standalone: compiles with a bare `pdflatex response_supervisor_I_D.tex`.
+% =====================================================================
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[expansion=false]{microtype}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{qgrey}{HTML}{4A4A4A}
+\definecolor{rule}{HTML}{C9C9C4}
+\definecolor{tag}{HTML}{8A4B2A}
+
+\titleformat{\section}{\large\bfseries}{\thesection}{0.7em}{}
+\titlespacing*{\section}{0pt}{1.6em}{0.7em}
+\setlength{\parskip}{0.35em}
+\setlength{\parindent}{0pt}
+
+\newcommand{\thinrule}{\textcolor{rule}{\rule{\linewidth}{0.4pt}}}
+\newenvironment{qitem}[3]{%
+  \par\medskip\thinrule\par\smallskip
+  \noindent\textbf{\textcolor{tag}{#1}}\quad\textcolor{qgrey}{\small #2}\par\smallskip
+  \noindent\textcolor{qgrey}{\small\itshape #3}\par\smallskip
+}{\par}
+\newcommand{\where}[1]{\par\smallskip{\small\textcolor{tag}{$\hookrightarrow$}\ \textit{#1}}\par}
+
+\newcommand{\Dauth}{\Delta_{\mathrm{auth}}}
+\newcommand{\gu}{\gamma_{u}}
+\newcommand{\ga}{\gamma_{a}}
+\newcommand{\Rtx}{R_{\mathrm{tx}}}
+\newcommand{\tfresh}{\tau_{\mathrm{fresh}}}
+\newcommand{\eclk}{e_{\mathrm{clk}}}
+\newcommand{\Norm}[1]{\lVert #1\rVert}
+
+\begin{document}
+
+\begin{center}
+{\Large\bfseries Response to Supervisor Comments}\\[0.35em]
+{\large Paper I (authentication budget) and Paper D (cross-layer certificate)}\\[0.9em]
+\begin{tabular}{@{}ll@{}}
+\textbf{Re} & 15 comments on Paper I and 7 comments on Paper D\\
+\textbf{Outcome} & All addressed; both papers then received a full language pass\\
+\end{tabular}
+\end{center}
+
+\section*{Summary}
+
+Thank you for the careful reading. Each comment is answered below, with the place
+in the revised manuscript where the change was made. Three points summarise the
+revision.
+
+\textbf{Paper D now uses one value of $\gamma$ throughout.} The supremum rate
+$\gamma=1.625$\,m/s is the only rate used after \S6.3. Section~9 and Figures~6--7
+were regenerated from the result files at that rate. The arithmetic you flagged in
+\S6.3.3 was wrong: the tube at $\theta=0.25$\,s is $2.65$\,m, not $5.9$\,m.
+
+\textbf{Paper I no longer depends on Paper D.} All references to ``the parent'' and
+all citations of the unpublished manuscript have been removed. The certificate that
+Paper I uses is now stated and proved inside Paper I (\S II-A and the appendix).
+
+\textbf{The experiment list in Paper I now matches what was run.} The numbered
+experiments E1--E8 are gone. A new table, \emph{Validation Status of the Inputs}, states, input by input, which checks were performed and which are
+specified but not yet run.
+
+\textbf{Language.} Following your general comment, both papers have been reread
+and edited for tone and register: rhetorical devices, emphatic adverbs, aphorisms
+and question-style openings were removed, and spelling was made consistently
+British. Mathematics, numbers, labels and citations were checked mechanically to be
+unchanged by this pass.
+
+% ---------------------------------------------------------------------
+\section{Paper I}
+
+\begin{qitem}{I-1}{Abstract, finding (ii)}{The 1\,cm figure is the difference between
+the two error envelopes before $\Dauth$ is paid; the net gain at $\theta=0.25$\,s is
+slightly negative. Calling 1\,cm the gain contradicts \S V-C and Table V.}
+Agreed. Finding (ii) now reads: ``At detector-admitted delays the two error
+envelopes differ by 1\,cm, within noise, and the net effect is slightly negative;
+authentication pays only from $\theta_\times\approx0.259$--$0.284$\,s.'' The
+abstract remains at 249 words.
+\where{Abstract.}
+\end{qitem}
+
+\begin{qitem}{I-2}{Introduction and throughout}{Stop calling the other paper ``the
+parent''; it is unpublished and cannot be cited or posted without breaking
+anonymity.}
+Done. Every occurrence of ``parent'' and every \verb|\cite{parentpaper}| has been
+removed, including the row in the related-work table and the node in Fig.~1. The
+delay certificate is now introduced in a new background subsection, ``A
+Certificate for Delayed Navigation Input'' (\S II-A). It states the residual-delay
+lemma and the tube lemma, and both are proved in the appendix, so Paper I is
+self-contained. The overlap with Paper D is limited to that background; if both
+papers go to the same venue, we will declare it to the programme chairs as the
+concurrent-submission policy requires.
+\where{\S I, \S II-A (new), Appendix (two new proofs), Table of related work, Fig.~1.}
+\end{qitem}
+
+\begin{qitem}{I-3}{Introduction}{Did you run all the experiments? You mention eight.}
+No, and the paper now says so plainly. Two checks were performed: the
+response-time bound against a discrete-event simulation, and the GNSS-outage
+dead-reckoning experiment (together with the decoding of the HCRL capture). The
+others (SITL spoofer sweep, on-target cycle counts, raw-bus timing, GNSS time
+push) are specified but not yet run. The E-numbering has been removed. A new
+subsection and table, ``Validation Status of the Inputs'', mark each input as
+performed or not run, and Limitations refers to it.
+\where{\S IV (new subsection and table), Limitations, Fig.~1 box (5).}
+\end{qitem}
+
+\begin{qitem}{I-4}{All headings}{Revise all section, subsection and paragraph titles.}
+Done. Headings are now descriptive noun phrases (for example ``Crossover under a
+Constant Rate'', ``Transmission Cost and the Admissible Rate'', ``RQ2: Cost of
+Authentication'', ``Certification versus design'').
+\where{Throughout.}
+\end{qitem}
+
+\begin{qitem}{I-5}{\S II}{Clarify the physical path linking $\Delta(\theta)$ (mesh),
+$\Dauth$ (onboard bus) and $\gu\to\ga$ (RF flights).}
+A paragraph, ``Physical path of a navigation message'', now follows a correction
+from the peer mesh, where it may be delayed by up to $\Delta(\theta)$, to the
+onboard bus, where it is authenticated at cost $\Dauth$, and into the estimator.
+The two delays act in series and add. The rates $\gu$ and $\ga$ are measured at
+the estimator input, which is where both delays take effect. The transfer of
+those rates from RF-attack flights to delayed mesh traffic is stated as an
+explicit assumption (Definition ``Interface transfer'').
+\where{\S II-A.}
+\end{qitem}
+
+\begin{qitem}{I-6}{Threat model}{Table~III lists six adversaries, not two.}
+Corrected. The text now says there are six adversaries. The delay and denial
+adversaries define the two regimes, and the other four arise only once
+authentication is added.
+\where{\S II, threat model.}
+\end{qitem}
+
+\begin{qitem}{I-7}{Proposition on GNSS time push}{``Experiment E7 tests it'' cannot sit
+inside a proposition.}
+Removed from the proposition. A remark after the proposition refers to the
+validation table, where the GNSS time-push experiment is listed as not yet run.
+\where{\S III, Proposition and following remark.}
+\end{qitem}
+
+\begin{qitem}{I-8}{Eq.~(amort-lat)}{Write $\Rtx(k)$, since the transmission response
+time depends on the batch size.}
+Done, and $\Rtx(k)$ is now defined in the text. The text also states that $n(0)=0$,
+so no path frames are sent when $k=1$.
+\where{\S III, Batching and Configuration Selection.}
+\end{qitem}
+
+\begin{qitem}{I-9}{Algorithm~1}{The regime check in Line~2 is never referenced again.}
+A sentence before the algorithm now explains how the regime is used. Under denial,
+unauthenticated sources are withheld beyond $T_c$, so the baseline (none, 0) is
+inadmissible; Line~2 removes it, and Lines~5--16 then compare only the
+authenticated configurations.
+\where{\S III, text before Algorithm~1.}
+\end{qitem}
+
+\begin{qitem}{I-10}{Provenance tags}{``Four tags are used'' followed by five.}
+Corrected to five, with a note on the \textsc{proxy} qualifier.
+\where{\S IV, Inputs and Their Provenance.}
+\end{qitem}
+
+\begin{qitem}{I-11}{Transport}{Write out the frame-count formula.}
+Added: $n(\sigma)=\lceil(\sigma+2)/7\rceil$ on classic DroneCAN (seven payload
+bytes per frame plus a two-byte transfer CRC) and $\lceil(\sigma+2)/63\rceil$ on
+CAN~FD, with $n(0)=0$. We checked the formula against the frame column of the
+scheme table (MAC~3, Ed25519~10, FN-DSA~96, ML-DSA~346, SLH-DSA-s~1123,
+SLH-DSA-f~2442, TESLA~4) and against the artifact's transport model.
+\where{\S IV, Transport paragraph.}
+\end{qitem}
+
+\begin{qitem}{I-12}{Configuration grid}{Write ``two post-quantum flag settings''.}
+Done.
+\where{\S IV, Configuration Grid.}
+\end{qitem}
+
+\begin{qitem}{I-13}{RQ1}{The headline ratio uses \texttt{\textbackslash nRatioHead}
+in the abstract and \texttt{\textbackslash nGammaRatio} here.}
+The two macros hold the same value (1.74). RQ1 now uses \verb|\nRatioHead|, so the
+abstract, \S III and RQ1 share one macro.
+\where{\S V, RQ1.}
+\end{qitem}
+
+\begin{qitem}{I-14}{Freshness table}{Clarify what the 0.25\,s margin is compared against.}
+The text and the table note now say explicitly that the margin is the slack
+$\Delta(0.25)-\tfresh=0.50-0.25=0.25$\,s left for clock error $\eclk(t)$ before the
+binding condition $\tfresh+\eclk(t)<\Delta(\theta)$ fails.
+\where{\S V, RQ4 and Table (freshness).}
+\end{qitem}
+
+\begin{qitem}{I-15}{Figure (flooding)}{This figure is not referenced in the text.}
+It is now referenced in RQ5.
+\where{\S V, RQ5.}
+\end{qitem}
+
+% ---------------------------------------------------------------------
+\section{Paper D}
+
+\begin{qitem}{D-1}{Notation}{$m$ and $\delta$ are used for different things; $\theta$
+and $\varepsilon$ in the appendix; $LT$ and $LT_c$.}
+Fixed. $m$ now denotes only the corridor margin; the PAC-Bayes sample size is
+$n_{\mathcal{M}}$ and its confidence parameter is $\beta$. $\delta u$ denotes the
+input perturbation and $\delta(\theta)$ only its bound; the two places where
+``$\delta$'' stood for the calibration now say $\gamma$. The detector threshold is
+$\theta$ everywhere, including the operating-curve axes and Appendix~B, and the
+notation table no longer lists $\varepsilon$ as an alias. Every exponent is
+$LT_c$. The MWU regret in Table~V now uses $N$ for the number of rounds, as the
+text does.
+\where{\S6.3, \S8, \S9, Appendices A--B, Tables V and notation.}
+\end{qitem}
+
+\begin{qitem}{D-2}{\S6.2 / \S6.3.2}{State the physical link between forwarding delay and
+a $\gamma$ measured under jamming and spoofing.}
+Added to \S6.2. A delayed peer correction leaves the estimator without fresh
+information, which is physically the jamming (coasting) regime, where $\gamma$ is
+lowest. We nevertheless certify at the spoofing supremum. This is conservative for
+pure staleness, and it remains a bound if a delayed report passes the innovation
+gate and pulls the estimate as a counterfeit fix would. A sentence in \S6.3.2
+points back to this argument.
+\where{\S6.2 (new paragraph), \S6.3.2.}
+\end{qitem}
+
+\begin{qitem}{D-3}{\S6.3.3, \S6.3.4, \S9.2--9.5, Figs.~6--7}{One $\gamma$ throughout, and
+the \S6.3.3 arithmetic.}
+You were right on both counts. With $\gamma=1.625$\,m/s, $H=2$, $\theta=0.25$\,s and
+$L=1.181$, $\rho=0.50\times1.625\times e^{1.181}=2.65$\,m. \S6.3.3 now says so,
+and it states that $1.625$\,m/s is the only rate used in the rest of the paper.
+The secant values ($1.12$\,s, $2.22$\,m) now appear only once, as the comparison
+that motivates the choice. Every dependent number was recomputed from the result
+files:
+\begin{itemize}[leftmargin=1.4em,itemsep=1pt]
+\item window edge at $m=10$\,m: $\theta^*=0.94$\,s (window $[0.178,0.944]$\,s);
+\item worked example: $\Norm{\delta u}\le0.81$\,m, $\rho\approx2.65$\,m, floor
+$0.75$ (only the 2\,m corridor fails); kinematic tube $24.4$\,m;
+\item $\gamma_{\mathrm{req}}=6.14$\,m/s is $3.8\times$ the measured rate (was
+``4.5--5.1$\times$'');
+\item heading error needed for cruise to cross $\gamma_{\mathrm{req}}$: $0.30$\,rad,
+about $17^\circ$;
+\item the linear-model domain argument in \S6.3.4 now compares
+$\tau_{\mathrm{lin}}\approx2$\,s with $0.94$\,s.
+\end{itemize}
+Figures~6 and~7 and the pairing and constants tables were regenerated by the
+figure script, which now reads the supremum from the per-sample campaign file. The
+$2.22$ versus $2.25$\,m discrepancy is gone, because both now read $2.65$\,m. A
+further stale value turned up during this check: the kinematic window was quoted
+as $[0.178,0.243]$\,s, which came from the global Lipschitz constant. At the local
+constant used everywhere else, that window is empty at 10\,m and is
+$[0.178,0.205]$\,s at 20\,m. The text now says this.
+\where{\S6.3.3, \S6.3.4, \S9.2--9.5, \S10, Figs.~6--7, Tables V and X.}
+\end{qitem}
+
+\begin{qitem}{D-4}{\S5.1, Table~IV, \S9.6, \S11}{Contradictions about
+\texttt{measured\_same\_platform} pairings.}
+Reconciled along the lines you suggested; we did not annotate attack windows by
+hand. All four passages, and the corpus table caption, now say the same thing: the
+UAV Attack Dataset supplies same-platform \emph{calibration flights} for $\gamma$,
+and because its release lacks machine-readable attack intervals, the artifact
+contains no \texttt{measured\_same\_platform} pairing records (\S9.7). The pairing
+table's \texttt{pairing\_basis} row now lists the two classes that actually occur.
+\where{\S5 (Table I caption, \S5.1), Table IV caption, \S9.6, \S11.}
+\end{qitem}
+
+\begin{qitem}{D-5}{Appendix D, Definition 2}{The Grönwall step does not give
+$\delta(e^{LT_c}-1)$; Definition~2 and $e(0)=0$ disagree.}
+Agreed; the step was wrong. The proof now applies the comparison lemma to
+$\tfrac{d^+}{dt}\Norm{e}\le L\Norm{e}+L\delta(\theta)$ with $e(0)=0$, giving
+$\delta(\theta)(e^{LT_c}-1)$, and shows that the full integral form of Grönwall's
+inequality yields the same result. Definition~2 now states that the margin $m$ is
+defined net of the filter's nominal estimation error, so the deviation starts at
+zero at each re-anchoring. The proof also records your second reading: if
+re-anchoring leaves an offset $\Norm{e(0)}\le\delta(\theta)$, Grönwall gives
+$\delta(\theta)e^{LT_c}$ directly. The reported radius $\delta(\theta)e^{LT_c}$ is
+therefore valid under both readings, and no number changes. The theorem now assumes
+$F$ is Lipschitz in state \emph{and} input, which the proof uses.
+\where{Definition~2, Theorem~1 and its proof sketch, Appendix~D.}
+\end{qitem}
+
+\begin{qitem}{D-6}{Eq.~(floor), Fig.~6}{Clarify how the empirical probability is
+computed.}
+A paragraph, ``How the floor is computed'', now opens \S9.4, and the Fig.~6
+caption repeats it in brief. For each $\theta$, $H$ is fixed by the topology
+($H=2$ on the grid), so $\rho(\theta)$ is a single number. The floor is the
+equally weighted fraction of the margin family $\{2,5,10,20\}$\,m with
+$\rho(\theta)\le m$, so it takes values in $\{0,0.25,0.5,0.75,1\}$. The temporal
+conjunct is not evaluated numerically, because the navigation anchor records no
+mission durations. The paragraph says this and gives the mission length above which
+the conjunct holds ($5$\,s at $\theta=0.25$\,s; $100$\,s at saturation).
+\where{\S9.4, Fig.~6 caption.}
+\end{qitem}
+
+\begin{qitem}{D-7}{Appendix A}{``A reader fluent in \dots\ can proceed directly'' makes no
+sense in an appendix.}
+Removed.
+\where{Appendix A.}
+\end{qitem}
+
+% ---------------------------------------------------------------------
+\section{One item for your attention}
+
+The pairing table in Paper D reports the measured undetected delay at
+$\theta=0.25$\,s as median and maximum $0.00$\,s over 192 harness runs. This is what
+the result file contains: the harness attacker is not tuned to sit just below
+$0.25$\,s, so at that threshold everything it injects is flagged. The certificate
+uses the worst-case budget $\Delta(0.25)\le0.50$\,s, so no claim depends on this
+row. A reviewer may still ask about it, and we would welcome your view on whether
+to add a tuned-attacker run at $\theta=0.25$\,s or to explain the row in the
+caption.
+
+\end{document}

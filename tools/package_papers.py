@@ -3,7 +3,7 @@
 
     python3 tools/package_papers.py --paper III            # from the working tree
     python3 tools/package_papers.py --paper II --ref origin/paperII/full-study
-    python3 tools/package_papers.py --paper D              # the mother paper, paper/paperD_v8.tex
+    python3 tools/package_papers.py --paper D              # the mother paper, paper/paperD_v9.tex
 
 Per paper it writes, under dist/ (gitignored):
 
@@ -50,7 +50,7 @@ SUBSETS = {
           "docs/KAGGLE_DATASET_DESCRIPTIONS.md", "requirements.txt", "LICENSE"],
 }
 # The mother paper's current version: paper/paperD_v<N>.tex, packaged as main.tex.
-PAPER_D = "paperD_v8"
+PAPER_D = "paperD_v9"
 # Large or irrelevant artefacts left out of the reviewer copy.
 EXCLUDE = [re.compile(p) for p in (r"\.pt$", r"/logs_r/", r"/server_logs/", r"/__pycache__/",
                                    r"\.pyc$", r"/_smoke", r"/node_modules/", r"\.pdf$",

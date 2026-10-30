@@ -24,7 +24,7 @@
   fb/.style={->, draw=red!60!black, line width=0.6pt, dashed}
 ]
 % ---------------- (1) inputs ------------------------------------------
-\node[inbox] (par) {\textbf{Parent certificate}\\ $\Delta(\theta)\le H\min(\theta,s)$;\ $L,\,T_c,\,m$};
+\node[inbox] (par) {\textbf{Delay certificate}\\ $\Delta(\theta)\le H\min(\theta,s)$;\ $L,\,T_c,\,m$};
 \node[inbox, below=2.2mm of par] (fl) {\textbf{Real attack flights}\\ 674 post-onset $\gamma_\delta$ samples};
 \node[inbox, below=2.2mm of fl] (lit) {\textbf{Specifications}\\ FIPS 204/205, pqm4,\\ MAVLink~2, OSNMA};
 \node[inbox, below=2.2mm of lit] (bus) {\textbf{Real bus capture}\\ HCRL UAVCAN $\Rightarrow U_0$};
@@ -78,11 +78,11 @@
   node[draw=red!50!black, rounded corners=2pt, fill=red!5, align=center,
        text width={\x2-\x1-8pt}, inner sep=3pt, anchor=north west] (val)
   at (\x1,\y3-9mm)
- {\textbf{(5) Validation and replacement loop (Sec.~IV-G)}:\ \
-  response-time bound vs.\ discrete-event simulation\ \textbullet\
-  PX4 SITL spoofer sweep and cruise (E3)\ \textbullet\
-  STM32H7 cycle counts (E4)\ \textbullet\ raw-bus timing (E5)\ \textbullet\
-  GNSS time push (E7)};
+ {\textbf{(5) Validation status (Table~\ref{tab:validation})}:\ \
+  performed: response-time bound vs.\ discrete-event simulation\ \textbullet\
+  GNSS-outage dead reckoning\ \ \textbar\ \
+  specified, not yet run: SITL spoofer sweep\ \textbullet\
+  on-target cycle counts\ \textbullet\ raw-bus timing\ \textbullet\ GNSS time push};
 \draw[fb] (L1.south |- val.north) -- (L1.south)
   node[midway, right, font=\scriptsize, text=red!60!black]{replaces \textsc{literature}/\textsc{model} inputs};
 \draw[fb] (L4.south |- val.north) -- (L4.south)
@@ -93,8 +93,9 @@ real flights or buses, derived, taken from a specification, or modelled. (2)~Fou
 models quantify the two sides of the trade, sensing and cryptography, together with time
 and the flooding adversary. (3)~The certified budget composes them into one inequality in
 metres, from which the propositions follow. (4)~The decisions an engineer needs are read off
-the budget. (5)~Simulation and hardware experiments replace modelled inputs with measured
-ones; because every number in the paper is generated from result files, a replacement
-propagates to the text automatically.}
+the budget. (5)~Two checks have been performed; the remaining simulation and hardware
+measurements are specified but not yet run (Table~\ref{tab:validation}). Every number in
+the paper is generated from result files, so a measured input replaces a modelled one
+without manual edits to the text.}
 \label{fig:framework}
 \end{figure*}
