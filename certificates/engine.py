@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Certificate engine for the composed network->navigation guarantee.
 
-Wires the FOUR dissertation Ch.6 certificates (§6.6) to the pairing schema.
+Wires the FOUR reference certificates to the pairing schema.
 The math delegates to the reference implementation ported into
 `models/uav_defense/defenses/` (lipschitz.py, smoothing.py) — the same code
 behind the robustidps.ai /uav/certification dashboard.
 
-Phase-A constants (dissertation Ch.6, Table + §6.6 text; M1 CT-TGNN config:
+Phase-A constants (reference methods chapter, table and text; M1 CT-TGNN config:
 8 satellites, 8-dim CAF features, hidden H=32):
     L_g_hat   = 1.01     (power-iteration estimate of drift Lipschitz const)
     T         = 1.0      (integration horizon)
@@ -25,7 +25,7 @@ label them clearly, never conflate.
 
 The live dashboard values (screenshot: L_g 0.083, Gronwall radius 0.460,
 RS 0.111, PAC-Bayes 0.041) are recomputed per-visit on a 16-sample synthetic
-batch — demo variability, NOT the dissertation constants. Use the dissertation
+batch — demo variability, NOT the reference constants. Use the reference
 constants for the paper; use `measure_live()` semantics only for demos.
 """
 from __future__ import annotations
@@ -89,7 +89,7 @@ def _to_feature_l2(delta: "Perturbation"):
                   f"l2" + ("" if HAVE_BRIDGE else
                            " (unit_bridge unavailable: numpy/torch not installed)")}
 
-# ------------------------- dissertation constants -------------------------
+# ------------------------- reference constants -------------------------
 
 PHASE_A = {
     "L_g": 1.01,
@@ -108,7 +108,7 @@ PHASE_A = {
     "mcr_do326a_floor": 0.90,       # DO-326A operational floor (empirical)
 }
 # Two radii, both honest and both reported (P1(b), docs/certified_regime_analysis.md):
-#   0.182 from the global power-iteration L=1.01 (dissertation-reproducing);
+#   0.182 from the global power-iteration L=1.01 (reference-reproducing);
 #   0.153 from the measured local L=1.181 over the operating region (tighter,
 #   the defensible number for the paper). The local radius is NOT loose - it is
 #   SMALLER, refuting "the radius is too tight".
@@ -162,7 +162,7 @@ class LipschitzGronwallCertificate:
                  eps_out: float = PHASE_A["eps_out"], regime: str = "local"):
         # regime='local' uses the measured operating-region L=1.181 (radius
         # 0.153, the defensible paper number); 'global' uses L=1.01
-        # (radius 0.182, dissertation-reproducing). Explicit L_g overrides.
+        # (radius 0.182, reference-reproducing). Explicit L_g overrides.
         if L_g == PHASE_A["L_g"] and regime == "local":
             L_g = PHASE_A["L_g_local"]
         self.L_g, self.T, self.eps_out, self.regime = L_g, T, eps_out, regime
@@ -346,8 +346,8 @@ REGISTRY = {
 
 
 if __name__ == "__main__":
-    # self-check against the dissertation table
-    # global regime reproduces the dissertation radius 0.182
+    # self-check against the reference table
+    # global regime reproduces the reference radius 0.182
     lg_global = LipschitzGronwallCertificate(regime="global")
     assert abs(lg_global.radius - 0.18) < 0.005, lg_global.radius
     # default = local regime, the tighter measured radius 0.153 (P1(b))
@@ -371,7 +371,7 @@ if __name__ == "__main__":
                        f"{r2.params['delta_l2']} (plateau)")
     else:
         assert r2.certified_mcr is None and r2.params["status"] == "unit_bridge_missing"
-        bridge_note = "bridge unavailable (numpy/torch missing) - honest refusal kept"
+        bridge_note = "bridge unavailable (numpy/torch missing); refused rather than approximated"
 
     # kinds with no bridge still refuse honestly
     r4 = lg.certify(Perturbation("state_staleness_s", 2.0, "staleness_v0"))
@@ -395,7 +395,7 @@ if __name__ == "__main__":
     assert pb.bound(r_emp=0.0, m=256, kl=5.0).certified_mcr is not None
 
     print(f"OK  Gronwall radius local={lg.radius:.4f} (L=1.181), "
-          f"global={lg_global.radius:.4f} (dissertation 0.18); "
+          f"global={lg_global.radius:.4f} (reference 0.18); "
           f"RS radius={PHASE_A['rs_radius']}; "
           f"MWU bound(T=100)={MWURegretCertificate().bound(100).params['regret_bound']}; "
           f"{bridge_note}")

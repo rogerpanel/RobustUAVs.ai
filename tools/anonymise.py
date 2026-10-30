@@ -233,13 +233,17 @@ def copy_tree(src: Path, dst: Path) -> tuple[int, int, list[Path]]:
         out.parent.mkdir(parents=True, exist_ok=True)
         if path.suffix.lower() in TEXT_SUFFIXES or path.name in TEXT_NAMES:
             try:
-                text = path.read_text(encoding="utf-8")
+                # newline="" keeps CRLF/LF exactly as committed, so regenerated
+                # files in the mirror compare equal to the shipped ones
+                with path.open(encoding="utf-8", newline="") as fh:
+                    text = fh.read()
             except UnicodeDecodeError:
                 shutil.copy2(path, out)
                 binaries.append(rel)
                 copied += 1
                 continue
-            out.write_text(anonymise_text(text, tooling=not is_verbatim(rel)), encoding="utf-8")
+            with out.open("w", encoding="utf-8", newline="") as fh:
+                fh.write(anonymise_text(text, tooling=not is_verbatim(rel)))
             rewritten += 1
         else:
             shutil.copy2(path, out)

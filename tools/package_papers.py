@@ -296,6 +296,8 @@ def reviewer(paper: str, src: Path, work: Path) -> Path:
     readme = REPO / "tools" / "reviewer_readmes" / f"paper{paper}.md"
     if readme.exists():
         (out_dir / "README.md").write_text(readme.read_text())
+        (out_dir / ".gitignore").write_text(
+            "__pycache__/\n*.pyc\nbuild/\n*.aux\n*.bbl\n*.blg\n*.fdb_latexmk\n*.fls\n*.log\n*.out\nmain.pdf\n")
     else:
         (out_dir / "REVIEWERS.md").write_text(REVIEWERS[paper])
     hits = anonymise.verify(out_dir)

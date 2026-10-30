@@ -12,10 +12,10 @@ public data mirror have been removed and will be restored on acceptance.
 |---|---|
 | Language | Python 3.10 or newer; C++17 for the third-party detector replay |
 | Dependencies for the offline check | `numpy`, `scipy`, `jsonschema`; a TeX Live 2022+ installation to build the paper |
-| Offline check | about 5 minutes on a laptop CPU, no download, no GPU |
+| Offline check | about a minute on a laptop CPU, no download, no GPU |
 | Licence | MIT (`LICENSE`); third-party code and data remain under their own licences |
 
-## 1. Quick check (offline, about 5 minutes)
+## 1. Quick check (offline, about a minute)
 
 Every figure and table in the paper is generated from the CSV files in `results/`. The quickest
 useful check is to regenerate them and confirm that nothing changes.
@@ -54,13 +54,13 @@ cd paper && pdflatex main && bibtex main && pdflatex main && pdflatex main
 | Sensitivity to the mission distribution | `experiments/mission_distribution.py` | `results/mission_distribution.csv` |
 | Provenance of the corpus and of the pairings | `experiments/provenance_ledger.py` | `results/provenance_distribution.csv` |
 | Ingest volumes per source; HCRL attack classes derived from the frames | `experiments/ingest_stats.py`, `experiments/hcrl_type_signatures.py` | `results/ingest_stats.csv`, `results/hcrl_type_signatures.csv` |
-| Certificate constants (smoothing radius, MWU regret, PAC-Bayes form) | `certificates/engine.py` | printed; asserted against the paper's values |
+| Certificate constants (Gronwall radius, smoothing radius, MWU regret) | `certificates/engine.py` | printed, and asserted against the paper's values; the unit bridge for the RF classes also needs `torch` and reports itself unavailable without it |
 
 The schema is `schema/uavsec_schema.json` (JSON Schema 2020-12), with its rationale in
 `docs/SCHEMA.md`. Each adapter in `ingest/` writes events and windows that
 `python3 ingest/validate.py <events.jsonl> <windows.jsonl>` checks against it.
 
-## 3. Re-running the detector harness (about 2 minutes)
+## 3. Re-running the detector harness (under a minute)
 
 The detector is the third-party DATAMUt replay in `third_party/datamut/`, included unmodified.
 The threshold sweep needs the threshold to be configurable, which we apply as a patch to a copy:
