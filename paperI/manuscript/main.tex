@@ -79,7 +79,7 @@ A known certificate guarantees drone mission completion while an attacker delays
 messages just below a detector's threshold. It bounds position error by the hidden delay,
 times the rate $\gamma$ converting delay into error, times a dynamics factor. Authentication
 pulls the first two apart: rejecting forged fixes lowers $\gamma$, but signing and verifying
-add delay. The certificate thus prices a security design choice in metres.
+add delay.
 
 In 674 samples from real GPS spoofing and jamming
 flights, a spoofed estimator drifts up to $\nRatioHead\times$ faster than one given honest
@@ -88,15 +88,16 @@ bus load, post-quantum signatures are limited by capacity, not latency: ML-DSA-4
 $\nDauthCertML$\,ms, yet only $\nRstarML$ messages fit per second; SLH-DSA does not fit.
 
 Four findings follow. (i)~Every scheme that fits pays off across the certified window and
-rescues the narrowest corridor, uncoverable without authentication. (ii)~At
+rescues the narrowest corridor. (ii)~At
 detector-admitted delays, the two error envelopes differ by $\nHzDiffOpCm$\,cm, within
 noise, and the net effect is slightly negative; authentication pays only from
-$\thx\approx\nHzCrossMac$--$\nHzCrossML$\,s, so a sound certificate is not always a good
-design guide. (iii)~Freshness windows of 30--165\,s never bind, but a MAVLink~2
+$\thx\approx\nHzCrossMac$--$\nHzCrossML$\,s, so a sound certificate can mislead
+design. (iii)~Freshness windows of 30--165\,s never bind, but a MAVLink~2
 signing clock set from GPS time lets a spoofer turn delay attacks into denial. (iv)~Invalid
 Ed25519 signatures overwhelm the verifier with $\nAsatEd$ of the bus; large post-quantum
 signatures resist this on classic CAN, not CAN~FD. A selection rule picks the cheapest
-certified configuration; every number regenerates from released data.
+certified configuration, giving integrators a measured basis for deciding which messages to
+sign, and with which scheme, rather than assuming more authentication is always safer.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -1242,8 +1243,8 @@ in prior work~\cite{colton2025mavlink}. Before publication we will notify the MA
 maintainers of the conversion of delay into denial and of the rate-bound mitigation.
 
 \section*{Open Science}
-The calculator, simulations, result files, figure data and the runbook for the remaining
-experiments are included in the anonymised artifact. Every number in this paper is a macro
+The calculator, simulations, result files and figure data are included in the anonymised
+artifact, whose README also specifies the experiments not yet run. Every number in this paper is a macro
 generated from those files.
 
 \bibliographystyle{IEEEtran}

@@ -135,7 +135,10 @@ re-anchoring within a stated interval, and calibration transfer, and it bounds a
 population of missions rather than a single flight. Under these conditions the
 composed defence certifies a non-zero floor, whereas neither single-layer
 defence certifies one. The schema, adapters and certificate engine are released
-as an open artifact.
+as an open artifact. In practice, the bound lets an operator set an intrusion
+detector's threshold against the contingency buffer already declared for
+operational approval, so that detection and navigation safety are specified as
+one requirement rather than tuned separately.
 \end{abstract}
 
 % =====================================================================
@@ -2085,7 +2088,9 @@ before publication: a sweep harness that accumulated across operating points,
 and a set of bus-attack labels that are not machine-readable per scenario, which
 we therefore derive and flag rather than guess. We intend to submit the artifact for evaluation.
 \ifanon
-The repository is anonymised for review and will be de-anonymised on acceptance.
+An anonymised copy of the artifact is available for review at
+\url{https://anonymous.4open.science/r/From-Wire-to-Flight-UAVs/}; it will be
+de-anonymised on acceptance.
 \else
 The artifact is available at \url{https://robustuavs.ai}.
 \fi
