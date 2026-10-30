@@ -43,6 +43,7 @@ cd paper && pdflatex main && bibtex main && pdflatex main && pdflatex main
 | Claim in the paper | Script | Result file |
 |---|---|---|
 | Undetected delay saturates at the contact-window slack: no undetected per-hop residual above 4.84 s over 15,392 hops (Lemma 1) | `experiments/sweep_full.py` | `results/hop_ledger.csv`, `results/missed_windows.csv` |
+| Threshold-aware attacker: never flagged (1,248 runs); realises a median 73% of H·min(θ, s) at θ = 0.25 s (0.36 s of 0.50 s) and 99% once saturated; never exceeds the bound | `experiments/tuned_attacker.py` | `results/tuned_attacker_{perseed,summary}.csv` |
 | Detector operating curve with a knee and a floor, three topologies, two delay regimes, 8 seeds × 4 policies | `experiments/sweep_full.py` | `results/theta_operating_curve{,_perseed}.csv` |
 | Delay-to-position rate γ = 1.625 m/s, the supremum over 674 post-onset samples; 6.1× spread between median and supremum | `experiments/gamma_campaign.py`, `experiments/gamma_stability.py` | `results/gamma_campaign_{samples,bins,model}.csv`, `results/gamma_stability.csv` |
 | Per-flight calibration (benign, jamming, spoofing) | `experiments/whelan_delta_calibration.py` | `results/whelan_delta_calibration.csv` |
@@ -70,6 +71,7 @@ mkdir -p build && cp third_party/datamut/* build/ && cd build
 patch -p0 < ../patches/datamut_epsilon.patch
 g++ -O2 -std=c++17 datamut_paper_exact_demo.cc -o datamut_demo && cd ..
 python3 experiments/sweep_full.py            # 3 topologies x 2 regimes x 13 thresholds x 8 seeds
+python3 experiments/tuned_attacker.py        # threshold-aware attacker on the same grid
 python3 experiments/compose_certified.py
 python3 experiments/make_paper_figures.py
 ```
@@ -105,10 +107,11 @@ as claiming more.
 - **The linear rate model holds for delays up to about 2 s.** For θ > 1 s (Δ > 2 s), the
   floors and window edges computed with the linear model are upper bounds, not certified values.
   The operating point θ = 0.25 s (Δ = 0.5 s) is inside the domain.
-- **The harness attacker is not tuned to the threshold.** It draws per-hop delays from
-  U[1, 7] s or U[1, 10] s, so at θ = 0.25 s every malicious delay is flagged and the measured
-  undetected delay is zero. The certificate uses the worst-case budget Δ(0.25) ≤ 0.50 s, not the
-  measured value.
+- **Two attackers are evaluated.** The campaign attacker draws per-hop delays from U[1, 7] s
+  or U[1, 10] s whatever θ is, so at θ = 0.25 s every malicious delay is flagged and its
+  undetected delay is zero. The threshold-aware attacker (`tuned_attacker.py`) adds the largest
+  delay that keeps each hop below θ and realises 0.36 s (median) of the 0.50 s budget. The
+  certificate uses the worst-case budget Δ(0.25) ≤ 0.50 s, not either measured value.
 - **The PAC-Bayes bound is reported in symbolic form.** Its prior-to-posterior KL term is
   pending and is flagged rather than substituted.
 - **Certificate constants come from a reference model** trained on a synthetic corpus; they are

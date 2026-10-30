@@ -308,7 +308,20 @@ def block_paperC_fig4():
           "results/ewbench_mcr_anchor.csv)", "".join(body))
 
 
+def _tuned_row(theta="0.25"):
+    """Row for the threshold-aware attacker (experiments/tuned_attacker.py)."""
+    path = RESULTS / "tuned_attacker_perseed.csv"
+    if not path.exists():
+        return ""
+    rows = [r for r in csv.DictReader(open(path))
+            if r["variant"] == "tuned" and r["theta_s"] == theta]
+    und = sorted(float(r["undetected_s"]) for r in rows)
+    return (f"Undetected delay, threshold-aware attacker ({len(und)} runs) & "
+            f"median ${und[len(und) // 2]:.2f}$\\,s, max ${und[-1]:.2f}$\\,s\\\\\n")
+
+
 def block_paperC_tab2():
+    tuned_row = _tuned_row()
     per = load("composition_perseed.csv")
     sel = [r for r in per if r["epsilon"] == "0.25"]
     und = sorted(float(r["delta_undetected_s"]) for r in sel)
@@ -330,8 +343,9 @@ def block_paperC_tab2():
         f"Malicious hops $H$ & ${h}$ (grid/ring/double-ring routes)\\\\\n"
         f"Residual budget $\\Delta(\\theta)\\le H\\min(\\theta,s)$ & "
         f"$\\le {h * 0.25:.2f}$\\,s ($s{{=}}5$\\,s; measured cap $4.84$\\,s)\\\\\n"
-        f"Measured undetected delay ({n} runs) & median ${med:.2f}$\\,s, "
+        f"Undetected delay, campaign attacker ({n} runs) & median ${med:.2f}$\\,s, "
         f"max ${mx:.2f}$\\,s\\\\\n"
+        f"{tuned_row}"
         f"Staleness, measured $\\gamma{{=}}{G_SUP:.3f}$\\,m/s & "
         f"$\\le {G_SUP * h * 0.25:.2f}$\\,m (supremum, hover)\\\\\n"
         f"Staleness, kinematic $v_{{\\max}}{{=}}15$\\,m/s & "

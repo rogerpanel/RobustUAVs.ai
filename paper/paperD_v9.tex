@@ -986,7 +986,18 @@ plateaus instead of collapsing. We verify the cap directly on the
 released harness. Over $15{,}392$ observed hops across three topologies, two
 attack modes and eight seeds, no undetected malicious per-hop residual exceeds
 $4.84$\,s ($s=5$\,s), and every larger delay is flagged as a missed window
-($\ge55$\,s residual). This measurement replaces the classical additive budget
+($\ge55$\,s residual). That campaign attacker draws its delays independently of
+$\theta$, so it tests the cap but not the bound below the slack. We therefore
+also run a threshold-aware attacker, which adds the largest delay that keeps
+each hop below $\theta$ after allowing for the benign forwarding jitter
+($0.05$--$0.18$\,s). It is never flagged ($1{,}248$ runs over the same grid),
+and its undetected delay never exceeds Eq.~\eqref{eq:delta_budget}. At
+$\theta=0.25$\,s it realises a median of $73\%$ of the budget
+$H\min(\theta,s)$ (at most $83\%$), the shortfall being the jitter allowance;
+once the budget saturates it realises $99\%$, with no undetected hop above
+$4.99$\,s. An attacker that injects $0.99\,\theta$ without the allowance is
+flagged on every hop below the slack, and above it every delay misses its
+window. This measurement replaces the classical additive budget
 $H\theta+P_{\!c}\mathbf{1}[\theta>s]$ with the tighter, saturating bound of
 Eq.~\eqref{eq:delta_budget}, so the benchmark refines the theorem in addition
 to testing it.
@@ -1557,7 +1568,8 @@ To make Eq.~\eqref{eq:chain} concrete, we trace a single operating point through
 it. Consider the grid topology, whose routes carry $H=2$ attacker-controlled
 hops, and the detector setting $\theta=0.25$\,s. \emph{(1) Threshold to budget.}
 Since $\theta<s=5$\,s, Lemma~\ref{lem:residual} gives $\Delta(\theta)\le H\theta=0.50$\,s
-of undetected staleness. \emph{(2) Budget to perturbation.} With the measured
+of undetected staleness; the threshold-aware attacker of \S\ref{sec:interface}
+realises $0.36$\,s of it (median; maximum $0.41$\,s). \emph{(2) Budget to perturbation.} With the measured
 rate $\gamma=1.625$\,m/s, Eq.~\eqref{eq:gamma} gives
 $\Norm{\delta u}\le0.81$\,m; the kinematic bound would instead give $7.5$\,m.
 \emph{(3) Perturbation to tube.} With $\hat L_{\mathrm{loc}}=1.181$ and

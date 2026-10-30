@@ -345,15 +345,34 @@ freshness table caption referred to a ``holdover column'', which does not exist;
 it now refers to the note column.
 
 % ---------------------------------------------------------------------
-\section{One item for your attention}
+\section{The undetected-delay row of the pairing table}
 
-The pairing table in Paper D reports the measured undetected delay at
-$\theta=0.25$\,s as median and maximum $0.00$\,s over 192 harness runs. This is what
-the result file contains: the harness attacker is not tuned to sit just below
-$0.25$\,s, so at that threshold everything it injects is flagged. The certificate
-uses the worst-case budget $\Delta(0.25)\le0.50$\,s, so no claim depends on this
-row. A reviewer may still ask about it, and we would welcome your view on whether
-to add a tuned-attacker run at $\theta=0.25$\,s or to explain the row in the
-caption.
+The pairing table reported the measured undetected delay at $\theta=0.25$\,s as
+$0.00$\,s. The cause was the campaign attacker, which draws its per-hop delays from
+$U[1,7]$\,s or $U[1,10]$\,s whatever the threshold, so every malicious delay at
+$\theta=0.25$\,s was flagged. We have now added a threshold-aware attacker
+(\texttt{experiments/tuned\_attacker.py}) and run it on the same grid: three
+topologies, 13 thresholds, 8 seeds and 4 routing policies, 1{,}248 runs in all. It
+adds the largest delay that keeps each hop below $\theta$ after allowing for the
+benign forwarding jitter of $0.05$--$0.18$\,s.
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item It is never flagged, at any threshold, so the theorem's premise of an
+attacker that stays just below the threshold is now demonstrated rather than
+assumed.
+\item Its undetected delay never exceeds $H\min(\theta,s)$ in any run, so
+Lemma~1 holds against an attacker that is trying to reach it.
+\item At $\theta=0.25$\,s it realises $0.36$\,s (median; maximum $0.41$\,s) of the
+$0.50$\,s budget, that is 73\%; the shortfall is the jitter it must leave room for.
+Once the budget saturates it realises 99\%, with no undetected hop above $4.99$\,s,
+so the cap at the slack is tight.
+\item An attacker that injects $0.99\,\theta$ without the jitter allowance is
+flagged on every hop below the slack, and above the slack every delay misses its
+window.
+\end{itemize}
+The pairing table now has both rows (campaign attacker and threshold-aware
+attacker), and \S6.1 and the worked example in \S9.3 report the result in two
+sentences. The certificate still uses the worst-case budget, so no certified
+number changes. With the measured $0.41$\,s, the tube at $\theta=0.25$\,s would be
+$2.19$\,m, so the $2$\,m corridor fails on measurement as well as on the bound.
 
 \end{document}
