@@ -57,7 +57,7 @@ def delta_theta(theta: float, h: int = H, s: float = S_SLACK) -> float:
 # CAVEAT (independent review): that flight's receiver keeps fix_type=3 with
 # 12-14 satellites throughout the post-onset window, so the proxy is a
 # degraded-but-honest fused estimator, NOT dead reckoning after rejection.
-# Runbook experiments E1/E3 measure the latter; swap it in here when present.
+# The GNSS-outage experiment (e1_inertial_gamma.py) and a SITL sweep measure the latter; swap it in here when present.
 # --------------------------------------------------------------------------
 @dataclass(frozen=True)
 class GammaScenario:
@@ -73,10 +73,10 @@ class GammaScenario:
 
 
 # --------------------------------------------------------------------------
-# Measured overrides (runbook ground rule 2)
+# Measured overrides: a measured value replaces a literature one only when its file exists
 #
 # A measured value never silently replaces a literature value or a proxy. Each
-# override below is read from a runbook result file only when that file
+# override below is read from a measured result file only when that file
 # exists; otherwise the original value stands. Every decision, either way, is
 # recorded in results/provenance_paperI.csv by write_provenance().
 # --------------------------------------------------------------------------
@@ -271,7 +271,7 @@ TAU_FRESH_OSNMA_MAX = 165.0  # receiver-guideline upper value              [lite
 
 
 def write_provenance() -> None:
-    """Record which value each runbook-overridable constant used, and why."""
+    """Record which value each overridable constant used, and why."""
     import csv
     p = OUT / "provenance_paperI.csv"
     with p.open("w", newline="") as fh:

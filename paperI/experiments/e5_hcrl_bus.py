@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """E5 (HCRL part) -- bus validation from the raw HCRL UAVCAN capture.
 
-Runbook section E5. Replaces three modelling inputs of transport.py with
+Decoding of the HCRL UAVCAN capture. Replaces three modelling inputs of transport.py with
 measurements from a real DroneCAN bus (Pixhawk 4 testbed, Kim et al.):
 
   1. benign frame rate, DLC histogram, and the fraction of multi-frame

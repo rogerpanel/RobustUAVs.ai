@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """E1 -- inertial (dead-reckoning) gamma from real flight logs (RQ1).
 
-Runbook section E1. The authenticated rate gamma_a currently comes from the
+GNSS-outage experiment. The authenticated rate gamma_a currently comes from the
 Whelan jamming flight, whose receiver never lost its fix (fix_type = 3 in all
 496 post-onset samples, 11-14 satellites): it measures a degraded but still
 fused estimator, not dead reckoning after GNSS is rejected. This script
@@ -199,7 +199,7 @@ def main() -> int:
     missing = [k for k in REQUIRED if k not in topics]
     if missing:
         print(f"[E1] SKIPPED: benign flight lacks {', '.join(missing)} "
-              f"(found: {', '.join(sorted(topics)) or 'none'}). The runbook's "
+              f"(found: {', '.join(sorted(topics)) or 'none'}). The experiment's "
               "fallback is ulog2csv on the original .ulg. Nothing written.")
         return 0
 
