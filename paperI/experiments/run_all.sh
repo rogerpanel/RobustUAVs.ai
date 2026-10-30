@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Paper I: regenerate every result and figure-data file from committed inputs.
 # Inputs: ../../results/{gamma_campaign_samples,hcrl_type_signatures}.csv
-# (parent artifact) and the literature constants in constants.py.
+# (shared results/ directory) and the literature constants in constants.py.
 set -euo pipefail
 cd "$(dirname "$0")"
-# Runbook experiments on the raw corpus. Each prints SKIPPED and writes nothing
+# Experiments on the raw corpus. Each prints SKIPPED and writes nothing
 # when its data is not staged, so a missing corpus degrades the run and never
 # leaves a fabricated or stale result. constants.py then reads whichever
 # measured CSVs exist and falls back otherwise.

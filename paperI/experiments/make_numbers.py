@@ -145,7 +145,7 @@ def main():
     m["DRrmse"] = f(dr["rmse_m"], 2)
     m["DRn"] = dr["n"]
 
-    pt = rd("parent_table.csv")
+    pt = rd("certificate_table.csv")
     m["MminU"] = f(pick(pt, m="m_min_unauth")["theta_star_s"], 2)
     m["GammaReq"] = f(pick(pt, m="gamma_req@10")["theta_star_s"], 2)
 

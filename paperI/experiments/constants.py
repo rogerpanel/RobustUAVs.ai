@@ -1,6 +1,6 @@
 """Paper I constants, each with an explicit provenance tag.
 
-Provenance tags (same discipline as the parent artifact):
+Provenance tags (one tag per input):
   measured        -- computed in this repository from a real capture
   derived         -- arithmetic on measured quantities
   literature      -- copied from a cited, peer-reviewed or standard source
@@ -8,7 +8,7 @@ Provenance tags (same discipline as the parent artifact):
   assumption      -- a modelling choice we make and state; swept where it matters
 
 Nothing in this file is fitted to make a result come out; every value is
-either read from the parent artifact or from the cited source.
+either read from the shared results/ directory or from the cited source.
 """
 from __future__ import annotations
 
@@ -17,12 +17,12 @@ from dataclasses import dataclass
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-PARENT_RES = REPO / "results"
+SHARED_RES = REPO / "results"
 OUT = REPO / "paperI" / "results"
 OUT.mkdir(parents=True, exist_ok=True)
 
 # --------------------------------------------------------------------------
-# Parent certificate (paper D, "From Wire to Flight")
+# Delay certificate (Section II-A of the paper)
 # --------------------------------------------------------------------------
 H = 2                 # attacker-controlled hops, grid topology   [measured]
 S_SLACK = 5.0         # contact-window slack, s                   [measured]
@@ -45,7 +45,7 @@ GAMMA_JAM_EKF_SECANT = 0.5185
 
 
 def delta_theta(theta: float, h: int = H, s: float = S_SLACK) -> float:
-    """Lemma 1 of the parent: worst undetected cumulative delay."""
+    """Residual-delay lemma: worst undetected cumulative delay."""
     return h * min(theta, s)
 
 
@@ -214,7 +214,7 @@ TESLA_KEY_BYTES = 16
 # --------------------------------------------------------------------------
 def hcrl_benign_rates() -> list[float]:
     import csv
-    p = PARENT_RES / "hcrl_type_signatures.csv"
+    p = SHARED_RES / "hcrl_type_signatures.csv"
     with p.open() as fh:
         return [float(r["normal_rate_fps"]) for r in csv.DictReader(fh)]
 

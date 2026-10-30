@@ -16,7 +16,7 @@ measures the latter directly, by synthetic outage on the benign flight:
      subtract the EKF accelerometer bias at t0 if the log carries one;
   3. use the GNSS-aided EKF position as ground truth and record
         e(tau)       = || p_DR(tau) - p_EKF(tau) ||   (horizontal by default,
-                                                       matching the parent)
+                                                       matching the gamma campaign)
         gamma_d(tau) = (e(tau) - e(0)) / tau           (e(0) = 0 here);
   4. per tau bin (the same bins as results/gamma_campaign_bins.csv) report
      the supremum, p95 and median, plus a bootstrap interval for the
@@ -58,7 +58,7 @@ REPO = HERE.parents[1]
 
 G = 9.80665
 EDGE_S = 10.0
-# The parent campaign's staleness bins (results/gamma_campaign_bins.csv),
+# The gamma campaign's staleness bins (results/gamma_campaign_bins.csv),
 # truncated to the horizon this experiment integrates over.
 BINS = [(0.4, 1.0), (1.0, 2.0), (2.0, 5.0), (5.0, 10.0), (10.0, 20.0)]
 N_BOOT = 1000

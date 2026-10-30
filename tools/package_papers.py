@@ -39,7 +39,7 @@ BUILD_JUNK = {".aux", ".log", ".out", ".bbl", ".blg", ".fls", ".fdb_latexmk", ".
 
 # What a reviewer needs, per paper (paths relative to the repository root).
 SUBSETS = {
-    "I": ["paperI", "results", "certificates", "data/fetch_kaggle.py", "requirements.txt", "LICENSE"],
+    "I": ["paperI", "results", "data/fetch_kaggle.py", "requirements.txt", "LICENSE"],
     "II": ["paperII", "LICENSE"],
     "III": ["paperIII", "results", "data/fetch_kaggle.py", "platform/backend/app", "requirements.txt",
             "LICENSE"],
@@ -55,6 +55,8 @@ PAPER_D = "paperD_v9"
 EXCLUDE = [re.compile(p) for p in (r"\.pt$", r"/logs_r/", r"/server_logs/", r"/__pycache__/",
                                    r"\.pyc$", r"/_smoke", r"/node_modules/", r"\.pdf$",
                                    r"/paperIV/results/logs/",
+                                   # internal working notes, superseded for reviewers by README.md
+                                   r"/paperI/RUNBOOK\.md$",
                                    # runs only inside the hosted page runtime it was built for
                                    r"/paperII/experiments/screening_page\.html$")]
 
@@ -291,7 +293,11 @@ def reviewer(paper: str, src: Path, work: Path) -> Path:
             shutil.copy2(p, q)
     if paper == "D":
         _paperD_manuscript(anon, out_dir / "paper")
-    (out_dir / "REVIEWERS.md").write_text(REVIEWERS[paper])
+    readme = REPO / "tools" / "reviewer_readmes" / f"paper{paper}.md"
+    if readme.exists():
+        (out_dir / "README.md").write_text(readme.read_text())
+    else:
+        (out_dir / "REVIEWERS.md").write_text(REVIEWERS[paper])
     hits = anonymise.verify(out_dir)
     if hits:
         raise SystemExit(f"identifier survives in reviewer artifact: {hits[:5]}")

@@ -78,7 +78,7 @@ def simulate(scheme, transport, a_bus, beta, mitigation, attacker="insider",
     # priority) waits at most one attacker frame; attacker transfers progress
     # only while no legitimate transfer is on the bus (preemptive-resume at
     # frame granularity). Attacker frames above the legitimate priority would
-    # be plain bus flooding, which the parent's HCRL-class IDS addresses.
+    # be plain bus flooding, which an HCRL-class bus IDS addresses.
     done = []                  # (completion_time, kind, release)
     legit_busy = []
     for rel, kind in arrivals:

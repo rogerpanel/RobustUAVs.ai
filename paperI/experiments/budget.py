@@ -2,7 +2,7 @@
 """RQ1 and RQ3: the two sides of the crossover, and the crossover map.
 
 Side 1 (sensing):  gamma_u / gamma_a from the 674 real post-onset samples of
-                   the parent's gamma campaign (results/gamma_campaign_samples.csv)
+                   the shared gamma campaign (results/gamma_campaign_samples.csv)
 Side 2 (crypto):   Delta_auth = t_sign + R_tx + t_verify + t_proto per scheme
                    and transport (compute: constants.py; transport: transport.py)
 
@@ -14,7 +14,7 @@ Outputs (paperI/results/):
   dauth.csv                Delta_auth decomposition per scheme x transport
   crossover.csv            C(theta), B(theta,m), benefit in metres, theta_cross
   crossover_curves.csv     C(theta) on a log grid for the figure
-  parent_table.csv         re-derivation of the proposal's parent-constant table
+  certificate_table.csv         re-derivation of the delay-certificate constants
 """
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ import csv
 import math
 import random
 
-from constants import (E, GAMMA_SCENARIOS, H, L_LOC, MARGINS, OUT, PARENT_RES,
+from constants import (E, GAMMA_SCENARIOS, H, L_LOC, MARGINS, OUT, SHARED_RES,
                        S_SLACK, SCHEME, SCHEMES, T_C, THETA_BENIGN, THETA_OP,
                        TESLA_KEY_BYTES, TESLA_MAC_BYTES, delta_theta)
 from transport import (TRANSPORT, TRANSPORTS, background, rta_bound, tag_bytes,
@@ -45,7 +45,7 @@ def write(name, rows):
 # --------------------------------------------------------------------------
 
 def load_samples():
-    with (PARENT_RES / "gamma_campaign_samples.csv").open() as fh:
+    with (SHARED_RES / "gamma_campaign_samples.csv").open() as fh:
         return list(csv.DictReader(fh))
 
 
@@ -283,7 +283,7 @@ def horizon_matched(rows):
     write("horizon_crossover.csv", out)
 
 
-def parent_table():
+def certificate_table():
     """Re-derive the proposal's Section 4 table and the authenticated m_min."""
     gu = 1.625
     rows = []
@@ -297,7 +297,7 @@ def parent_table():
                      certified_at_0p25="", B_noauthgain_s=""))
     rows.append(dict(m="m_min_unauth", theta_star_s=round(d * gu * E, 3),
                      certified_at_0p25="", B_noauthgain_s=""))
-    write("parent_table.csv", rows)
+    write("certificate_table.csv", rows)
 
 
 def main():
@@ -312,7 +312,7 @@ def main():
                                      "t_proto_ms", "dauth_ms", "dauth_cert_ms")})
     crossover(rows)
     horizon_matched(rows)
-    parent_table()
+    certificate_table()
 
 
 if __name__ == "__main__":

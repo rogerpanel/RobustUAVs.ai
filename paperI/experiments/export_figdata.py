@@ -6,7 +6,7 @@ from __future__ import annotations
 import csv
 import math
 
-from constants import OUT, PARENT_RES
+from constants import OUT, SHARED_RES
 
 FIG = OUT.parent / "manuscript" / "figdata"
 FIG.mkdir(parents=True, exist_ok=True)
@@ -27,7 +27,7 @@ def dat(name, header, rows):
 
 def main():
     # gamma vs staleness: per-1-s-bin supremum for spoofing EKF and jamming EKF
-    s = read(PARENT_RES / "gamma_campaign_samples.csv")
+    s = read(SHARED_RES / "gamma_campaign_samples.csv")
     for flight, name in (("gps_spoofing", "gamma_spoof.dat"), ("gps_jamming", "gamma_jam.dat")):
         pts = [(float(r["staleness_s"]), float(r["gamma_delta_m_s"])) for r in s
                if r["flight"] == flight and r["source"] == "ekf"]
