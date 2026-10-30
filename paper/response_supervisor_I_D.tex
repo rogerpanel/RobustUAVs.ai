@@ -302,6 +302,49 @@ Removed.
 \end{qitem}
 
 % ---------------------------------------------------------------------
+\section{Further corrections found during the revision}
+
+Rereading both papers line by line turned up errors that you had not marked. We
+corrected them and list them here so that none of the changes is silent.
+
+\textbf{Paper D.}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item \emph{Linear domain of $\gamma$ (\S6.3.4).} The text said that the whole
+certified window lies inside the linear model's domain ($\tau_{\mathrm{lin}}\approx2$\,s).
+That compared $\theta^*$ with $\tau_{\mathrm{lin}}$, whereas the condition applies to
+$\Delta(\theta)=H\theta$. v8 was already wrong here: $2\times1.12=2.24$\,s exceeds
+$2$\,s. The text now says that the operating point ($\Delta=0.50$\,s) and the
+$10$\,m window edge ($\Delta=1.89$\,s) lie inside the domain, but that for
+$\theta>1$\,s, including the $20$\,m window edge, the linear model is applied
+outside its domain. Values in that range are therefore upper bounds, not certified
+values, because $b_{\mathrm{IMU}}$ has not been measured. No result at the
+operating point is affected.
+\item \emph{Significance (\S9.5).} ``Every adjusted $p<10^{-20}$'' held only for an
+earlier mapping. At $\gamma=1.625$\,m/s the largest Holm-adjusted $p$ is
+$7.9\times10^{-14}$, so the text now says $p<10^{-13}$. It also gives the sample
+size: $192$ paired runs per point.
+\item \emph{Local versus global Lipschitz constant (\S9.2).} At $\gamma=1.625$\,m/s
+the choice of constant no longer changes which corridors certify $\theta=0.25$\,s
+(the tube is $2.24$\,m with the global constant and $2.65$\,m with the local one).
+The sentence claiming that it does was removed.
+\item \emph{Wording errors.} ``Airspeeds below stall'' now reads ``above stall''.
+The saturation sentence in \S7 had its direction reversed; it now says that
+loosening the detector beyond $s$ does not lower the floor any further. Secure
+state estimation assumes a bound on \emph{how many} sensors are attacked, not
+knowledge of which ones. Verisig and NNV concern \emph{neural-network}-controlled
+systems. Two cross-references to runtime assurance pointed to the Discussion,
+which does not cover it, and now point to Related Work. The denial-duration
+exponent is written $e^{LT_d}$. ``Lemma~1'' is now a live reference.
+\end{itemize}
+
+\textbf{Paper I.} The Interface-transfer statement is now an \emph{Assumption}
+environment rather than a Definition. The sentence on ``two of the four factors''
+in the certificate now names $L$ and $m$ explicitly. The slot-budget bound in the
+introduction now matches the proposition ($k_s-1$ verification times). The
+freshness table caption referred to a ``holdover column'', which does not exist;
+it now refers to the note column.
+
+% ---------------------------------------------------------------------
 \section{One item for your attention}
 
 The pairing table in Paper D reports the measured undetected delay at
