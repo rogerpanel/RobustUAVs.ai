@@ -61,6 +61,7 @@
 \newtheorem{corollary}{Corollary}
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}
+\newtheorem{assumption}{Assumption}
 
 \begin{document}
 
@@ -107,18 +108,18 @@ CAN bus, GNSS spoofing, real-time analysis
 \section{Introduction}
 \label{sec:intro}
 % =====================================================================
-An autonomous unmanned aerial vehicle (UAV) navigates on inputs it does not produce itself.
+An autonomous unmanned aerial vehicle (UAV) navigates using inputs it does not generate itself.
 Satellite fixes from a global navigation satellite system (GNSS) receiver, position reports
 relayed by peers in a swarm, and commands from a ground station all arrive over links an
-adversary can reach. Two families of defence address this exposure, and they rarely meet.
-Cryptographic authentication proves where a message came from. Navigation-message
+adversary can reach. Two families of defence address this exposure, largely in isolation.
+Cryptographic authentication establishes the origin of a message. Navigation-message
 authentication for GNSS~\cite{gotzelmann2023osnma,anderson2017chimera}, message signing on
 the Micro Air Vehicle Link (MAVLink) protocol~\cite{mavlink_signing,koubaa2019mavlink}, and
 authentication schemes for the controller area network (CAN)
-bus~\cite{nurnberger2016vatican,radu2016leia,pese2021s2can} all belong here. Certified
-robustness proves that a navigation stack tolerates a bounded perturbation of its inputs. An
+bus~\cite{nurnberger2016vatican,radu2016leia,pese2021s2can} belong to this family. Certified
+robustness guarantees that a navigation stack tolerates a bounded perturbation of its inputs. An
 intrusion detector can be composed with such a certificate (Section~\ref{sec:background}).
-For an adversary who delays relayed messages by just less than the detector's threshold
+For an adversary who delays relayed messages by slightly less than the detector's threshold
 $\theta$, the composition bounds the worst-case deviation from the planned route as
 \begin{equation}
 \label{eq:rho-cert}
@@ -130,35 +131,35 @@ navigation dynamics, $T_c$ a re-anchoring horizon, and $m$ the lateral margin of
 corridor.
 
 \paragraph*{Authentication as a two-sided budget}
-Two of the four factors in Eq.~\eqref{eq:rho-cert} are fixed by physics ($L$) and by
-regulation ($m$). The other two are security-engineering choices, and authentication moves
+In Eq.~\eqref{eq:rho-cert}, the Lipschitz constant $L$ is fixed by physics and the margin
+$m$ by regulation. The delay $\Delta$ and the rate $\gamma$ are security-engineering choices, and authentication moves
 them in opposite directions. Authenticating a navigation source lowers $\gamma$, because an
 estimator that rejects a forged fix stops absorbing the forger's offset. Authenticating a
 message raises $\Delta$, because signing, transmitting and verifying the authenticator take
-time, and stale input is stale regardless of why it is stale. Authentication is therefore
-both a credit and a debit against one certified budget. Neither the cryptographic nor the
-certified-robustness literature can say which effect wins, because the two sides are
-measured on different instruments: a cycle counter on a microcontroller and a flight log of
-a spoofed receiver.
+time, and the estimator suffers from staleness whatever its cause. Authentication is therefore
+both a credit and a debit against a single certified budget. Neither the cryptographic nor the
+certified-robustness literature can determine which effect dominates, because the two are
+measured with different instruments: a cycle counter on a microcontroller and the
+flight log of a spoofed receiver.
 
 \paragraph*{Contributions}
-We write the budget down, derive when authentication increases the certified margin, and
-measure both sides on real data and real specifications. The results do not all point the
-same way, and the disagreement is itself a finding.
+We formalise this budget, derive when authentication increases the
+certified margin, and measure both sides on real data and actual specifications. The results
+do not all point the same way, and this disagreement is itself a finding.
 \begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
 \item \textbf{The crossover and its two readings} (Section~\ref{sec:theory},
-  Proposition~\ref{pr:crossover}, Theorem~\ref{th:horizon}). Under the certificate's
-  discipline of one supremum rate per configuration, authentication pays whenever its cost
+  Proposition~\ref{pr:crossover}, Theorem~\ref{th:horizon}). With one supremum rate per
+  configuration, as in the certificate, authentication pays whenever its cost
   $\Dauth$ is below $\Delta(\theta)(\gu/\ga-1)$. With the measured rates, every per-message
-  signature scheme that fits on the bus meets this across the certified window. It also
-  rescues the 2\,m corridor that the unauthenticated certificate cannot cover:
+  signature scheme that fits on the bus meets this throughout the certified window.
+  It also certifies the 2\,m corridor, which the unauthenticated certificate cannot cover:
   $\rho=\nRhoAML$\,m with ML-DSA-44, against $\nRhoU$\,m without. When the rates are matched
-  to the horizon the detector actually admits, the picture changes at tight settings. Within
-  half a second of staleness, the spoofed and the honest-but-degraded estimators have
-  accrued the same error to within $\nHzDiffOpCm$\,cm, so the data cannot show a benefit. On
-  the measured envelopes, authentication pays from $\thx=\nHzCrossMac$\,s (a group message authentication code, MAC) to
-  $\nHzCrossML$\,s (ML-DSA-44).
-\item \textbf{The cost is a cliff, not a slope} (Proposition~\ref{pr:cliff}). We consider
+  to the horizon the detector actually admits, the conclusion changes at tight settings. Within
+  half a second of staleness, the spoofed and the honest-but-degraded estimators
+  accrue the same error to within $\nHzDiffOpCm$\,cm, so the data cannot demonstrate a benefit. On
+  the measured envelopes, authentication pays from $\thx=\nHzCrossMac$\,s for a group message authentication code (MAC) to
+  $\nHzCrossML$\,s for ML-DSA-44.
+\item \textbf{The transmission cost is a cliff} (Proposition~\ref{pr:cliff}). We consider
   the post-quantum cryptography (PQC) signatures that NIST standardised as Federal
   Information Processing Standards (FIPS):
   the module-lattice-based digital signature algorithm ML-DSA (FIPS~204)~\cite{fips204} and
@@ -172,14 +173,14 @@ same way, and the disagreement is itself a finding.
   (Proposition~\ref{pr:push}). Deployed freshness windows exceed the largest delay the
   detector admits ($Hs=10$\,s) by a factor of 3--17: 60\,s for MAVLink~2, and 30--165\,s for
   Galileo's Open Service Navigation Message Authentication (OSNMA). Where the signing clock
-  is advanced from GNSS time, a spoofer who pushes it past the window makes every legitimate
-  signed packet stale.
+  is advanced from GNSS time, a spoofer who pushes it beyond the window renders every
+  legitimate signed packet stale.
 \item \textbf{Induced verification} (Proposition~\ref{pr:iv}). Forged signatures convert
   the defender's verification cost into delay. The classical Edwards-curve signature
-  Ed25519 is the scheme most exposed: $\nAsatEd$ of the bus suffices to saturate a verifier
+  Ed25519 is the most exposed scheme: $\nAsatEd$ of the bus suffices to saturate a verifier
   that has a 20\,\% share of the central processing unit (CPU). ML-DSA-44
-  is immune on classic CAN because its signature is too expensive to transmit, but not on
-  CAN FD. A slot-budget mitigation bounds the induced delay to one verification.
+  is immune on classic CAN, because its signature is too expensive to transmit, but not
+  on CAN FD. A per-source slot budget bounds the induced delay by $k_s-1$ verification times, whatever the attack load.
 \item \textbf{A certified selection rule} (Algorithm~\ref{alg:select}). For each detector
   setting, corridor, transport, adversary class and post-quantum requirement, the rule
   returns the cheapest configuration (scheme, batch size, mitigation) that keeps the
@@ -187,14 +188,14 @@ same way, and the disagreement is itself a finding.
 \end{itemize}
 
 \paragraph*{Scope of the evidence}
-The sensing side rests on three real flights of one airframe in hover~\cite{whelan2020uav}. The authenticated rate is a \emph{proxy}: it is measured on a
-jamming flight whose receiver kept a degraded three-dimensional fix, not on an estimator
-that rejected GNSS outright (Section~\ref{sec:method}). The cryptographic compute side rests on published Cortex-M
-cycle counts scaled to the flight controller's clock. The transport side rests on standard
+The sensing side rests on three real flights of one airframe in hover~\cite{whelan2020uav}. The authenticated rate is a proxy, measured on a
+jamming flight whose receiver retained a degraded three-dimensional fix rather than on an estimator
+that rejected GNSS outright (Section~\ref{sec:method}). The cryptographic compute costs come from published Cortex-M
+cycle counts scaled to the flight controller's clock. The transport side uses standard
 frame models and a base load derived from frame rates measured on a real bus. Each number carries a provenance tag.
 Section~\ref{sec:runbook} states which inputs were measured for this paper and which
-experiments, not performed here, would replace the modelled ones. Because every number in this paper is generated from result files, a
-replacement propagates to the text without hand editing.
+experiments, not performed here, would replace the modelled ones. Since every number in the paper is generated from result files,
+replacements propagate to the text without manual editing.
 
 % =====================================================================
 \section{Preliminaries and Problem Statement}
@@ -216,25 +217,25 @@ gated out, the EKF dead-reckons on the IMU, and its position error grows.
 We follow one navigation input from its source to the estimator: a GNSS fix produced by a
 receiver module, or a position report relayed by peers. Before the EKF fuses it, the message
 can be delayed at two points. If it is relayed, it first crosses the multi-hop mesh, where
-compromised relays can hold it back; Lemma~\ref{le:residual} bounds the delay they can hide.
+compromised relays can delay it; Lemma~\ref{le:residual} bounds the delay they can hide.
 It then crosses the vehicle's own bus. On PX4 hardware, the GNSS receiver and the companion
 radio are typically DroneCAN or serial peripherals of the flight controller, so
 authenticating the message adds signing at the source, transmission of the authenticator on
 that bus, and verification on the flight controller (Section~\ref{sec:theory}). Both delays
-act on the same message in series, so they add in Eq.~\eqref{eq:deff}. While the estimator
+act in series on the same message, so they are additive in Eq.~\eqref{eq:deff}. While the estimator
 waits for a delayed message, or follows a forged one, its position error grows at a rate
-$\gamma$. Only GNSS attacks on real flights provide a measurement of that rate, so the
-composition rests on the following assumption.
+$\gamma$. This rate has been measured only for GNSS attacks on real flights, so the
+composition relies on the following assumption.
 
-\begin{definition}[Interface transfer]
+\begin{assumption}[Interface transfer]
 \label{as:transfer}
 While an authenticated input is stale, the estimator's position error grows at most at the
 rate $\ga$ measured when its GNSS input is degraded but honest. While an unauthenticated
 input is stale or forged, it grows at most at the rate $\gu$ measured when its GNSS input is
 spoofed.
-\end{definition}
+\end{assumption}
 
-The assumption is the weakest link of the composition. Authentication lowers the rate because
+This assumption is the weakest link in the composition. Authentication lowers the rate because
 an adversary who can no longer forge a message can only delay it, and a delayed authentic
 message leaves the estimator coasting, as under jamming, rather than being pulled away, as
 under spoofing.
@@ -242,7 +243,7 @@ under spoofing.
 \paragraph*{Hidden delay}
 A multi-hop forwarding detector $D_\theta$ flags any hop whose forwarding delay exceeds a
 per-hop tolerance $\theta$. A forwarded message that misses its contact window, with slack
-$s$, is flagged whatever the threshold.
+$s$, is flagged regardless of the threshold.
 
 \begin{lemma}[Residual delay]
 \label{le:residual}
@@ -289,13 +290,13 @@ the \emph{certified window}. Its lower edge is the benign floor of 0.178\,s.
 
 \subsection{Threat Model}
 \label{sec:threat}
-Table~\ref{tab:adversaries} lists six adversaries and what authentication does against
+Table~\ref{tab:adversaries} lists six adversaries and the effect of authentication against
 each. The delaying relay and the denial adversary define the two regimes of the certificate;
 the other four arise only once authentication is deployed.
 
 \begin{table}[t]
 \centering
-\caption{Adversaries and what authentication buys against each.}
+\caption{Adversaries and the effect of authentication against each.}
 \label{tab:adversaries}
 \footnotesize
 \begin{tabularx}{\columnwidth}{@{}p{0.27\columnwidth}X@{}}
@@ -325,26 +326,26 @@ $\mathcal{A}_{\mathrm{time}}$: shifts the receiver's GNSS-disciplined clock &
 \end{tabularx}
 \end{table}
 
-Three points in Table~\ref{tab:adversaries} are easy to get wrong.
+Three entries in Table~\ref{tab:adversaries} are easily misread.
 
-\emph{First, a validly signed message forwarded four seconds late is still validly
-signed.} Authentication bounds delay only through a timestamp and a freshness check, and
-that check is only as good as the receiver's clock.
+First, a validly signed message forwarded four seconds late remains validly
+signed. Authentication bounds delay only through a timestamp and a freshness check, and
+that check is no more reliable than the receiver's clock.
 
-\emph{Second, the MAVLink~2 signature is a 48-bit truncation of the Secure Hash Algorithm
-SHA-256 over a shared
-secret, the packet and a timestamp, not a public-key signature}~\cite{mavlink_signing}.
+Second, the MAVLink~2 signature is not a public-key signature but a 48-bit truncation of the
+Secure Hash Algorithm SHA-256 over a shared
+secret, the packet and a timestamp~\cite{mavlink_signing}.
 CAN-layer schemes such as vatiCAN~\cite{nurnberger2016vatican}, LeiA~\cite{radu2016leia}
 and the CAN~XL security layer (CANsec)~\cite{cia613} are likewise group-keyed. Against a
 compromised relay, which holds the key, they authenticate group membership, not origin.
-This has been noted for in-vehicle multicast~\cite{macsec_cansec2025}.
+This limitation has been noted for in-vehicle multicast~\cite{macsec_cansec2025}.
 
-\emph{Third, Galileo's Open Service Navigation Message Authentication
+Third, Galileo's Open Service Navigation Message Authentication
 (OSNMA)~\cite{gotzelmann2023osnma} authenticates the navigation data, not the ranging
-signal.} Receivers must keep their clock within a loose time-synchronisation bound $T_L$ (30\,s
+signal. Receivers must keep their clock within a loose time-synchronisation bound $T_L$ (30\,s
 for the authentication-data-and-key-delay types ADKD0 and ADKD4). A meaconer that replays the
-signal with a delay inside $T_L$ therefore passes the check~\cite{wang2025osnmaspoof,anderson2024timesync}. For OSNMA, therefore,
-$\ga$ against a meaconer equals $\gu$. Our measured $\ga$ applies to forgery that a
+signal with a delay within $T_L$ therefore passes the check~\cite{wang2025osnmaspoof,anderson2024timesync}. For OSNMA,
+$\ga$ against a meaconer consequently equals $\gu$. Our measured $\ga$ applies to forgery that a
 verifier can detect.
 
 \paragraph*{Assumptions}
@@ -380,7 +381,7 @@ problem is
 \end{equation}
 where admissibility requires bus and processor utilisation below one, and security
 requires source authentication against $\mathcal{A}_{\mathrm{ins}}$, post-quantum security
-where mandated~\cite{nistir8547}, and resistance to $\mathcal{A}_{\mathrm{iv}}$. We ask five
+where mandated~\cite{nistir8547}, and resistance to $\mathcal{A}_{\mathrm{iv}}$. We address five
 research questions (RQs):
 \begin{description}[leftmargin=2.4em,style=sameline,itemsep=1pt,topsep=2pt]
 \item[RQ1] How much does authentication lower $\gamma$, and over which staleness horizon?
@@ -391,7 +392,7 @@ research questions (RQs):
 \item[RQ5] How much delay can an attacker induce through verification, and how much does
   mitigation recover?
 \end{description}
-Table~\ref{tab:notation} collects the notation. Fig.~\ref{fig:framework} shows how the
+Table~\ref{tab:notation} summarises the notation, and Fig.~\ref{fig:framework} shows how the
 answers are assembled.
 
 \begin{table}[t]
@@ -428,7 +429,7 @@ $k$ & batch size (messages per signature) \\
 % =====================================================================
 The framework (Fig.~\ref{fig:framework}) has five stages: inputs with provenance,
 component models, the budget, decisions, and a validation loop. This section develops
-stage~(3). Section~\ref{sec:method} develops stages~(2) and~(5). Proofs omitted here are in
+stage~(3); Section~\ref{sec:method} develops stages~(2) and~(5). Proofs omitted here are in
 Appendix~\ref{app:proofs}.
 
 \subsection{Crossover under a Constant Rate}
@@ -455,15 +456,15 @@ $C$ increases with slope $H(\gu/\ga-1)$. Tightening the detector therefore leave
 to afford authentication and less reason to want it.
 \end{proposition}
 
-The two halves answer different questions, \emph{can I pay for it?} and \emph{is it worth
-paying for?}. An engineer who conflates them will over-invest in cryptography on a platform
-whose detector is already tight.
+The two halves answer different questions: whether authentication is affordable, and whether
+it is worth its cost. An engineer who conflates them will over-invest in cryptography on a
+platform whose detector is already tight.
 
 \subsection{Crossover under a Staleness-Dependent Rate}
 Proposition~\ref{pr:crossover} follows the certificate's choice of one supremum rate per
 configuration. That choice is sound for certification, but it can mislead design. The
-supremum of $\gu$ may be attained at a staleness the detector never admits, and the
-unauthenticated configuration is then charged for an error it cannot suffer. We therefore
+supremum of $\gu$ may be attained at a staleness the detector never admits; the
+unauthenticated configuration is then charged for an error it cannot incur. We therefore
 also state the crossover in terms of the measured error envelope.
 
 \begin{definition}[Error envelope]
@@ -494,9 +495,9 @@ $\da(\Delta+\Dauth)\ge\da(\Delta)\ge\du(\Delta)$, which contradicts
 Eq.~\eqref{eq:horizon}.
 \end{proof}
 
-The corollary has a physical reading. A spoofer that walks the fix away gradually, as
-spoofers must to stay inside the EKF's innovation gate, needs time to out-run dead
-reckoning. Until it does, rejecting its data buys nothing.
+The corollary has a physical interpretation. A spoofer that drags the fix away gradually, as
+it must to remain inside the EKF's innovation gate, needs time to outpace the error of dead
+reckoning. Until then, rejecting its data yields no benefit.
 
 \subsection{Transmission Cost and the Admissible Rate}
 Decompose
@@ -522,11 +523,11 @@ term: schemes that minimise it, such as TESLA, pay instead in $\tproto$ through 
 key-disclosure delay.
 \end{proposition}
 
-The proposition is a direct consequence of level-$i$ busy-period analysis: the busy period
-closes if and only if the total utilisation is below one. Its content for this paper lies
-in the magnitudes (Section~\ref{sec:rq2}). Per-message latency is milliseconds, against
-budgets of hundreds of milliseconds, so the binding constraint is $\rstar$, not the
-latency.
+The proposition follows directly from level-$i$ busy-period analysis, since the busy period
+closes if and only if the total utilisation is below one. Its significance for this paper lies
+in the magnitudes (Section~\ref{sec:rq2}). Per-message latency is of the order of milliseconds,
+against budgets of hundreds of milliseconds, so the binding constraint is $\rstar$ rather
+than latency.
 
 \subsection{Delay and Denial Regimes, and the Freshness Clock}
 \begin{proposition}[Two regimes]
@@ -551,12 +552,12 @@ only at lock, a spoofer present at lock achieves the same with a single step.
 
 Part~(b) is conditional on the update rule. Whether an autopilot applies the update only at
 lock or continuously is implementation-specific, and confirming it requires the
-software-in-the-loop test listed in Table~\ref{tab:validation}. Part~(b) is the coupling
+software-in-the-loop test listed in Table~\ref{tab:validation}. Part~(b) expresses the coupling
 between time and attack that the drone-authentication literature
 has observed experimentally~\cite{colton2025mavlink} and the GNSS-authentication literature
-analysed for OSNMA~\cite{anderson2024timesync,wang2025osnmaspoof,ardizzon2025crystal}. Here
+analysed for OSNMA~\cite{anderson2024timesync,wang2025osnmaspoof,ardizzon2025crystal}; here,
 it is placed inside the certificate. The forward-only clock update prevents an attacker
-from rolling the clock back to admit replays, but it hands the attacker the opposite move.
+from rolling the clock back to admit replays, but leaves the opposite manipulation open.
 
 \subsection{Verification Delay Induced by Forged Traffic}
 \begin{proposition}[Verification amplification]
@@ -574,8 +575,8 @@ claiming a given source is capped at $k_s$ per expected slot, and $k_s\tver/\bet
 induced delay is at most $(k_s-1)\,\tver/\beta$ for any $a$.
 \end{proposition}
 
-$\riv$ is CPU time spent per unit of attacker bus time. It is small when a signature is
-expensive to transmit relative to verifying it, which is exactly the regime of large
+The ratio $\riv$ is CPU time spent per unit of attacker bus time. It is small when a
+signature is expensive to transmit relative to verifying it, which is the regime of large
 post-quantum signatures on slow buses.
 
 \subsection{Batching and Configuration Selection}
@@ -671,8 +672,8 @@ noise without denying the fix. We therefore take $\gu$ from the spoofing flight 
 from the jamming flight, both on the EKF signal the controller acts on, and call the latter
 a \emph{measured proxy}.
 
-The proxy is exact for an adversary-free estimator that keeps fusing honest GNSS. It is
-\emph{not} a measurement of dead reckoning after rejection. Pure dead reckoning may be
+The proxy is exact for an adversary-free estimator that keeps fusing honest GNSS. It does
+not measure dead reckoning after rejection. Pure dead reckoning may be
 slower, since the noisy fixes are gone, or faster, since nothing bounds the inertial drift.
 A GNSS-outage experiment on the benign flight measures it directly
 (Section~\ref{sec:rq1}). Rejection under spoofing and in cruise would need a
@@ -684,9 +685,9 @@ giving $\gu/\ga=\nRatioHead$. The \emph{conservative} scenario uses the largest 
 rate over either error signal, giving $\nRatioCons$. The \emph{per-flight secant} scenario
 gives $\nRatioSec$.
 
-Supremum ratios are not amenable to the bootstrap. We therefore also report the ratio of
-95th percentiles. Its interval combines the two moving-block bootstrap intervals (block of
-ten samples, respecting within-flight autocorrelation) at their extremes, and is therefore
+Supremum ratios are not amenable to the bootstrap, so we also report the ratio of
+95th percentiles. Its interval combines the extremes of the two moving-block bootstrap
+intervals (block of ten samples, respecting within-flight autocorrelation), which makes it
 conservative.
 
 \paragraph*{Envelopes and dead reckoning}
@@ -732,15 +733,15 @@ MAVLink~2 over serial we use 8N1 framing (eight data bits, no parity, one stop b
 each byte occupies ten bit times. We
 derive the base load from the benign segments of the HCRL UAVCAN capture~\cite{hcrl_uavcan}
 (508--619 frames/s). Decoding the raw capture shows that, across its \nEfiveScen\
-scenarios, the mean payload is \nEfiveDLCmin--\nEfiveDLCmax\ bytes per frame, not the 8-byte
+scenarios, the mean payload is \nEfiveDLCmin--\nEfiveDLCmax\ bytes per frame rather than the 8-byte
 worst case, and \nEfiveMFmin--\nEfiveMFmax\ of transfers are multi-frame. With the measured
 payload mix, $U_0\in[\nUzeroMin,\nUzeroMax]$, and we use the maximum. The frame rate and payload
 mix are measured; the bitrate is an assumption, so $U_0$ is tagged \prov{derived}.
 
 $\Rtx$ is the busy-period bound of a lowest-priority signed transfer below 24 periodic
 background streams carrying $U_0$. We check it against a discrete-event simulation (DES) of frame-level arbitration with
-random background phases. The simulation shares the periodic background model, so it checks
-the analysis for self-consistency and tightness; it does not validate the model. The HCRL
+random background phases. The simulation shares the periodic background model, so it tests
+the analysis for self-consistency and tightness but does not validate the model. The HCRL
 capture cannot do so either: its software timestamps place consecutive 8-byte frames closer
 than one frame time, implying \nEfiveLBmin--\nEfiveLBmax\,Mbit/s on a bus whose maximum is
 1\,Mbit/s, so they are not frame-accurate. Validating bus timing requires hardware
@@ -780,12 +781,12 @@ the processor load, with a small charge for slot budgeting.
 Two measurements in this paper go beyond the released corpora: a GNSS-outage experiment,
 which withholds GNSS at \nEoneOnsets\ onsets of the benign flight and dead-reckons on the
 logged IMU (Section~\ref{sec:rq1}), and the decoding of the HCRL bus capture described above.
-Every other input that is not tagged \prov{measured} rests on a cited specification or a
+Every other input not tagged \prov{measured} rests on a cited specification or a
 stated model, and its tag in Table~\ref{tab:inputs} says so. Table~\ref{tab:validation}
 lists the experiment that would replace each such input. These experiments have not been
 performed for this paper, and none of our results depends on them. The artifact specifies
 them so that a replacement propagates to every number without editing the text. The
-software-in-the-loop sweep matters most, because it would show how the crossover of
+software-in-the-loop sweep matters most, as it would show how the crossover of
 Theorem~\ref{th:horizon} moves with the spoofer's walk rate and with airspeed.
 
 \begin{table}[t]
@@ -825,31 +826,31 @@ $\gu/\ga=\nGammaU/\nGammaA=\nRatioHead$. The 95th-percentile ratio is
 $\nGammaRatioP$, with a conservative block-bootstrap interval of
 $[\nGammaRatioPlo,\nGammaRatioPhi]$.
 
-The structure matters more than the number. In the first second of staleness, both
-estimators accrue error at about 0.9\,m/s, and the curves cannot be told apart. From about
+The curve shapes are more informative than the ratio. In the first second of staleness, both
+estimators accrue error at about 0.9\,m/s and the curves are indistinguishable. From about
 one second onwards the spoofer walks the solution away, while the jammed estimator's rate
 falls to 0.6--0.9\,m/s and then decays. The fit to the jamming flight gives
 $v_0=\nDRvzero$\,m/s and $b=\nDRb$\,m/s$^2$, with a root-mean-square error (RMSE) of
 $\nDRrmse$\,m over $\nDRn$ samples. The growth is linear, which is consistent with a
 velocity bias in a degraded but still-fused estimator. Because this flight never lost its
-fix, the fit characterises the proxy and does not show what pure dead reckoning would do.
+fix, the fit characterises the proxy rather than pure dead reckoning.
 
-The GNSS-outage experiment answers that question. At \nEoneOnsets\ onsets on the benign flight we withhold GNSS,
+The GNSS-outage experiment addresses this gap. At \nEoneOnsets\ onsets on the benign flight we withhold GNSS,
 dead-reckon on the logged IMU with the EKF's accelerometer bias, and compare against the
 GNSS-aided EKF. In the first second the supremum is \nEoneSup\,m/s, with a bootstrap interval
-of \nEoneCIlo--\nEoneCIhi\,m/s that contains the proxy ($\nGammaA$\,m/s), so we keep the proxy:
-at the supremum, which is what the certificate uses, measured dead reckoning does not refute
-it. The typical rate is far lower, with a median of \nEoneMed\,m/s and a 95th percentile of
-\nEoneP\,m/s, so in the typical case the proxy overstates $\ga$ and understates what
-authentication buys. Two caveats bound this. The reference is the GNSS-aided EKF, whose
+of \nEoneCIlo--\nEoneCIhi\,m/s that contains the proxy ($\nGammaA$\,m/s), so we retain the proxy;
+at the supremum, which the certificate uses, measured dead reckoning does not
+contradict it. The typical rate is far lower, with a median of \nEoneMed\,m/s and a 95th percentile of
+\nEoneP\,m/s, so in the typical case the proxy overstates $\ga$ and understates the benefit of
+authentication. Two caveats qualify this result. First, the reference is the GNSS-aided EKF, whose
 position steps when a fix is fused, so part of the short-horizon supremum may be reference
-noise rather than drift. And the attitude used for dead reckoning stays GNSS-aided; after a
+noise rather than drift. Second, the attitude used for dead reckoning remains GNSS-aided; after a
 real rejection, attitude error would also grow, so true drift would be somewhat faster,
 mostly at long horizons (supremum \nEoneSupLong\,m/s at 10--20\,s here).
 
 \subsection{RQ2: Cost of Authentication}
 \label{sec:rq2}
-Table~\ref{tab:schemes} decomposes $\Dauth$ on classic CAN. Three observations stand out.
+Table~\ref{tab:schemes} decomposes $\Dauth$ on classic CAN. Three observations follow.
 
 \begin{table*}[t]
 \centering
@@ -876,28 +877,28 @@ TESLA, 0.1\,s interval & 26 & 4 & \nTsignMac & \nTverMac & \nRtxTeslaB & \nDauth
 \end{table*}
 
 \emph{Latency is not the binding cost.} Every per-message signature scheme that fits on
-the bus authenticates a message in at most $\nDauthCertML$\,ms (certified), against the
-hundreds of milliseconds of budget computed in Section~\ref{sec:rq3}. TESLA is the exception
-by design: its delay is the disclosure interval.
+the bus authenticates a message in at most $\nDauthCertML$\,ms (certified), compared with a
+budget of hundreds of milliseconds computed in Section~\ref{sec:rq3}. TESLA is an exception
+by design, since its delay equals the disclosure interval.
 
-\emph{Occupancy is.} ML-DSA-44 needs $\nFramesML$ frames per signature, so classic CAN
-admits only $\nRstarML$ signed messages per second ($\nRstarZeroML$ on an idle bus). One
-10\,Hz GNSS stream fits; two do not. Fig.~\ref{fig:cliff} shows the cliff, and on CAN FD
+\emph{Bus occupancy is.} ML-DSA-44 needs $\nFramesML$ frames per signature, so classic CAN
+admits only $\nRstarML$ signed messages per second ($\nRstarZeroML$ on an idle bus). A single
+10\,Hz GNSS stream fits, but two do not. Fig.~\ref{fig:cliff} shows the cliff; on CAN FD
 the admissible rate rises to $\nRstarFDML$/s. The DES of $\nDESn$ transfers stays within the
 analytical bound in \nDESok{} configurations (a self-consistency check, as noted in
 Section~\ref{sec:method}), with a maximum of $\nDESmaxEd$\,ms against a
 bound of $\nRTAEd$\,ms for Ed25519, and $\nDESmaxML$\,ms against $\nRTAML$\,ms for
-ML-DSA-44. The bound is tight where it matters: for the long transfers that define the
+ML-DSA-44. The bound is tight for the long transfers that define the
 cliff. If navigation messages are released sporadically rather than periodically, the cliff
 softens into a slope (dashed in Fig.~\ref{fig:cliff}). The mean transmission latency alone then reaches the
 benefit threshold $C(0.25)=\nCopHead$\,ms at about $\nMDcross\,\rstar$, so the usable rate
-is practically the same.
+is essentially unchanged.
 
-\emph{SLH-DSA fails on the signer, not the verifier.} At 480\,MHz, an SLH-DSA-128s signature
+\emph{SLH-DSA fails on the signer rather than the verifier.} At 480\,MHz, an SLH-DSA-128s signature
 takes $\nTsignSLHs$\,ms, about 16\,s, while verification takes $\nTverSLHs$\,ms. Its 7.9\,kB
-signature also exceeds the bus at the required rate. Stateless hash-based signatures are
+signature also exceeds the bus capacity at the required rate. Stateless hash-based signatures are
 usable on a flight controller only for rare artefacts, such as key-chain commitments or
-firmware, and not for navigation data.
+firmware, not for navigation data.
 
 \input{fig_cliff}
 
@@ -909,30 +910,30 @@ $C(0.25)=\nCopHead$\,ms (headline), $\nCopCons$\,ms (conservative) and $\nCopSec
 (secant). Fig.~\ref{fig:crossover}(a) places the schemes against $C(\theta)$. Under the
 headline ratio, the crossover setting is $\thx=\nThetaCrossHeadML$\,s for ML-DSA-44,
 $\nThetaCrossHeadEd$\,s for Ed25519 and $\nThetaCrossHeadMac$\,s for the group MAC. All lie
-below the benign floor, so every per-message scheme pays across the whole certified window.
+below the benign floor, so every per-message scheme is beneficial throughout the certified window.
 TESLA with intervals of 0.5\,s or more does not, because its delay exceeds $C(0.25)$. Under
 the conservative ratio, ML-DSA-44 crosses at $\thx=\nThetaCrossConsML$\,s, just above the
-benign floor of 0.178\,s, so at the tightest admissible detector it does not pay.
+benign floor of 0.178\,s, so it is not beneficial at the tightest admissible detector setting.
 
 \paragraph*{The 2\,m corridor}
 At $\theta=0.25$\,s the unauthenticated tube is $\nRhoU$\,m, which does not fit $m=2$\,m.
 With authentication it shrinks to $\nRhoAMac$\,m (group MAC), $\nRhoAEd$\,m (Ed25519) and
 $\nRhoAML$\,m (ML-DSA-44), so all three certify the 2\,m corridor under the headline
-scenario, conditional on the proxy for $\ga$. Under the conservative scenario, ML-DSA-44 gives $\nRhoAMLCons$\,m and the
-rescue fails. Of the $\nSelHeadDelay$ headline delay-regime cells of the selection grid,
-authentication is what makes $\nSelRescue$ of them feasible.
+scenario, conditional on the proxy for $\ga$. Under the conservative scenario, ML-DSA-44 gives $\nRhoAMLCons$\,m and
+authentication no longer suffices. Of the $\nSelHeadDelay$ headline delay-regime cells of the
+selection grid, $\nSelRescue$ become feasible only with authentication.
 
 \paragraph*{Under the measured envelopes}
 Table~\ref{tab:horizon} and Fig.~\ref{fig:crossover}(b) apply Theorem~\ref{th:horizon}. At
 $\Delta(0.25)=0.5$\,s, both estimators have accrued about $\nHzDu$\,m. The envelopes differ by
 $\nHzDiffOpCm$\,cm, far inside the $\nDRrmse$\,m residual noise of the error signal, so the
 data cannot show that authentication helps at the operating point. Taken at face value, the
-envelopes say that authentication enlarges the tube by $\nHzLossOpMac$ to $\nHzLossOpML$\,cm
+envelopes indicate that authentication enlarges the tube by $\nHzLossOpMac$ to $\nHzLossOpML$\,cm
 for the per-message schemes. The crossover moves to $\thx=\nHzCrossMac$--$\nHzCrossML$\,s. At
 $\theta=0.5$\,s the spoofed estimator has accrued $\nHzDuHalf$\,m against $\nHzDaHalfML$\,m
-for the proxy, and authentication saves about one metre of tube.
+for the proxy, and authentication reduces the tube radius by about one metre.
 
-TESLA illustrates the protocol term. With a 0.5\,s interval it pays only from
+TESLA illustrates the protocol term. With a 0.5\,s interval it is beneficial only from
 $\thx=\nHzCrossTeslaC$\,s; with a 1\,s interval, only from $\nHzCrossTeslaD$\,s.
 
 \begin{table}[t]
@@ -964,12 +965,12 @@ TESLA 0.5\,s & \nDauthCertTeslaC & \nHzCrossTeslaC & \nHzGainOpTeslaC & \nHzGain
 \paragraph*{Relation between the two analyses}
 The two readings answer different questions. The supremum
 discipline certifies a configuration for any staleness up to the window edge. It is the
-right object for an approval case, and under it, with the headline rates, authentication is
+appropriate basis for an approval case, and under it, with the headline rates, authentication is
 never harmful for any per-message signature scheme that fits on the bus. The horizon-matched reading asks what the detector setting actually lets the adversary
 do. It is an empirical estimate, not a bound, because each envelope rests on one onset, but
-it is the right question for a design decision. On the measured spoofer, a tight detector
-already denies the spoofer the time it needs, so cryptography has nothing measurable left to
-buy. The location of the horizon-matched crossover belongs to one
+it is the relevant question for a design decision. For the measured spoofer, a tight
+detector already denies it the time it needs, which leaves no measurable benefit for
+cryptography. The location of the horizon-matched crossover is specific to one
 spoofer on one hover flight. A faster spoofer, still inside the EKF's innovation gate, moves
 it to the left; mapping that dependence requires the software-in-the-loop sweep of
 Table~\ref{tab:validation}.
@@ -980,8 +981,8 @@ Table~\ref{tab:fresh} evaluates Proposition~\ref{pr:push}.
 
 \begin{table}[t]
 \centering
-\caption{Does freshness bound the hidden delay? Binding requires $\tfresh+\eclk<\Delta(\theta)$.
-The holdover column gives how long a free-running XO ($\pm20$\,ppm) keeps a tight window
+\caption{Freshness windows as a bound on the hidden delay. Binding requires $\tfresh+\eclk<\Delta(\theta)$.
+The note column states how long a free-running XO ($\pm20$\,ppm) keeps a tight window
 binding at $\theta=0.25$\,s. Specifications \prov{literature}; drift \prov{model}.}
 \label{tab:fresh}
 \footnotesize
@@ -999,18 +1000,18 @@ tight, $\tfresh=\theta$ & 0.25 & yes & slack $\Delta-\tfresh=0.25$\,s; XO holdov
 
 No deployed window binds. The largest delay the detector admits, $Hs=10$\,s, is 3--17 times
 smaller than the windows in use, so in the delay regime the detector, not the signature,
-bounds the hidden delay. A window tight enough to matter must be set at detector scale.
+bounds the hidden delay. A window tight enough to bind must be set at detector scale.
 Natural drift is then harmless. With $\tfresh=\theta=0.25$\,s and $\Delta(0.25)=0.5$\,s,
 the window keeps binding while the clock error stays below the slack
 $\Delta(0.25)-\tfresh=0.25$\,s. A $\pm20$\,ppm crystal accumulates 72\,ms per hour, so it
 stays within that slack for about 3.5\,h of GNSS-free holdover.
 
-The danger lies in adversarial time. Under a forward-only update from GNSS time
+The danger lies in adversarially controlled time. Under a forward-only update from GNSS time
 (Proposition~\ref{pr:push}(b)), a spoofer
 advancing GPS time at 100\,ms/s (or 10\,ms/s) makes all legitimate signed traffic stale
 after $\nPushHundred$\,s (or $\nPushTen$\,s); a step change does so immediately. Even a slow push of 1\,ms/s needs only $\nPushOne$\,h, although at 1000\,ppm such a push is
-far outside any oscillator's error and a rate-plausibility check would catch it. The
-result is a persistent-denial adversary manufactured from authentication itself.
+far outside any oscillator's error and a rate-plausibility check would catch it. Authentication
+itself thereby gives rise to a persistent-denial adversary.
 
 \subsection{RQ5: Induced Verification}
 \label{sec:rq5}
@@ -1044,14 +1045,14 @@ SLH-DSA-128s & \nRhoivSLHs & -- & \nAmaxSLHs & \nRhoivFDSLHs & \nAsatFDSLHs & \n
 \end{tabular}
 \end{table}
 
-Two results invert common intuition. First, the classical scheme is the most exposed:
+Two results run counter to common intuition. First, the classical scheme is the most exposed:
 an Ed25519 signature is cheap to send and comparatively expensive to verify. Second,
-post-quantum migration on classic CAN \emph{removes} the exposure, because ML-DSA-44 and
+post-quantum migration on classic CAN removes the exposure, because ML-DSA-44 and
 FN-DSA-512 cost more bus time than verification time. A faster bus restores it: on CAN FD,
 ML-DSA-44 has $\riv=\nRhoivFDML$, and a flood of about 80\,\% of the bus saturates the
 verifier.
 
-The pre-filter removes the outsider's leverage entirely but leaves the insider's unchanged,
+The pre-filter neutralises the outsider entirely but leaves the insider unaffected,
 as Table~\ref{tab:adversaries} predicts. The slot budget bounds the induced delay to one
 verification for both, and it is the only mitigation that makes Ed25519 flood-safe against
 an insider.
@@ -1084,9 +1085,9 @@ $\theta$ (s) & $m=2$\,m & $m=5$\,m & $m=10$\,m & $m=20$\,m \\
 \end{tabular}
 \end{table}
 
-The pattern generalises across the grid. Authentication matters exactly on the boundary of
-the unauthenticated certified window, where it buys one corridor size. The rule spends any
-slack beyond that on batching, to save bus capacity. In the denial regime, where no
+The pattern generalises across the grid. Authentication matters only at the boundary of
+the unauthenticated certified window, where it gains one corridor size. Any slack beyond
+that is spent on batching to save bus capacity. In the denial regime, where no
 unauthenticated configuration is certified (Proposition~\ref{pr:regimes}), the rule finds a
 certified configuration in all but $\nSelHeadDenialInf$ of $\nSelHeadDenial$ headline
 cells.
@@ -1096,38 +1097,38 @@ cells.
 \label{sec:discussion}
 % =====================================================================
 \paragraph*{Certification versus design}
-The supremum and horizon-matched readings agree on everything except the decision at tight
-detector settings, and there they disagree completely. We draw a general lesson.
-Certificates built to be conservative inherit their conservatism unevenly across the
-alternatives they compare. A design choice should be read from the bound that is tight for
-both alternatives, not from the one that is safe for each.
+The supremum and horizon-matched readings agree except on the decision at tight detector
+settings, where they reach opposite conclusions. More generally, a certificate built to be
+conservative may be unequally conservative across the alternatives it compares. A design
+choice should therefore rest on the bound that is tight for both alternatives, not on the
+one that is safe for each.
 
 \paragraph*{Implications for post-quantum migration}
 For navigation data on a classic CAN flight-controller bus, ML-DSA-44 at one 10\,Hz stream
 is admissible, certified, and flood-immune. FN-DSA-512 is limited by its signing cost on the
-MCU unless the signer is a companion computer. SLH-DSA belongs off the navigation path.
+MCU unless the signer is a companion computer. SLH-DSA should be kept off the navigation path.
 Moving to CAN FD relieves occupancy but reopens the induced-verification attack, so a slot
-budget should accompany the migration. Against an insider, group MACs, including MAVLink~2
-signing, must be supplemented by origin authentication.
+budget should accompany the migration. Against an insider, group MACs (including
+MAVLink~2 signing) must be supplemented by origin authentication.
 
 \paragraph*{Clock integrity}
-Freshness that matters must be set at detector scale. It must then be anchored to a clock
-the GNSS adversary cannot move. Network Time Security~\cite{rfc8915} over a two-way link is
-one option. Bounding the rate at which GNSS time may update the signing clock is another,
-and the cheapest.
+A useful freshness window must be set at detector scale and anchored to a clock that the
+GNSS adversary cannot shift. Network Time Security~\cite{rfc8915} over a
+two-way link is one option; the cheapest is to bound the rate at which GNSS time may update
+the signing clock.
 
 \paragraph*{Relevance to operational approval}
-The budget turns a security configuration into a quantity that an operational approval
-already uses: the lateral extent of the SORA contingency volume~\cite{jarus_sora25}. For an
+The budget translates a security configuration into a quantity already used in operational
+approval: the lateral extent of the SORA contingency volume~\cite{jarus_sora25}. In an
 assurance case under the airworthiness security process specification
-DO-326A~\cite{do326a}, the selection rule's output is a traceable
-argument that a given authentication configuration keeps a declared corridor.
+DO-326A~\cite{do326a}, the output of the selection rule is a traceable
+argument that a given authentication configuration respects a declared corridor.
 
 % =====================================================================
 \section{Related Work}
 \label{sec:related}
 % =====================================================================
-Table~\ref{tab:related} positions the paper against the closest work.
+Table~\ref{tab:related} compares this paper with the closest prior work.
 
 \begin{table*}[t]
 \centering
@@ -1167,13 +1168,13 @@ where the perturbation comes from, and what removing part of it costs \\
 \end{tabularx}
 \end{table*}
 
-Two observations sharpen the gap. The only conversions of authentication latency into
-distance we found are kinematic: latency multiplied by vehicle speed, as when in-vehicle
-authentication delays such as vatiCAN's 3.3\,ms~\cite{nurnberger2016vatican} are related to
-distance travelled. Such a conversion is neither certified nor sensitive to which source the
+Two observations clarify the gap. The only conversions of authentication latency
+into distance we found are kinematic: in-vehicle authentication delays such as vatiCAN's
+3.3\,ms~\cite{nurnberger2016vatican} are multiplied by vehicle speed to give distance
+travelled. Such a conversion is neither certified nor sensitive to which source the
 estimator trusts. Recent
 work on PQC transport over CAN FD recommends FN-DSA-512 on feasibility
-grounds~\cite{canfd_pqc2026}. Our analysis agrees on occupancy, but adds that FN-DSA's
+grounds~\cite{canfd_pqc2026}. Our analysis agrees on occupancy but shows that FN-DSA's
 signing cost on a 480\,MHz MCU exceeds a 20\,\% processor share at 10\,Hz.
 
 % =====================================================================
@@ -1181,49 +1182,49 @@ signing cost on a 480\,MHz MCU exceeds a 20\,\% processor share at 10\,Hz.
 \label{sec:limits}
 % =====================================================================
 \emph{The authenticated rate is a proxy.} The jamming flight kept a degraded
-three-dimensional fix throughout, so $\ga$ measures an estimator fed honest but noisy GNSS,
-not one that has rejected GNSS. Every conclusion that compares $\gu$ and $\ga$ inherits this
-proxy. The GNSS-outage experiment measured dead reckoning after a synthetic rejection: its
-first-second supremum (\nEoneSup\,m/s, interval \nEoneCIlo--\nEoneCIhi) contains the proxy,
-so the proxy stands, but the experiment rests on one hover flight and on GNSS-aided attitude.
+three-dimensional fix throughout, so $\ga$ measures an estimator fed honest but noisy GNSS
+rather than one that has rejected GNSS. Every conclusion that compares $\gu$ and $\ga$ rests
+on this proxy. The GNSS-outage experiment measured dead reckoning after a synthetic rejection.
+Its first-second supremum (\nEoneSup\,m/s, interval \nEoneCIlo--\nEoneCIhi) contains the proxy,
+which therefore stands, although the experiment rests on one hover flight and on GNSS-aided attitude.
 Rejection under spoofing and in cruise remains to be measured in simulation.
 
 \emph{The sensing side is one airframe in hover.} Both rates come from one spoofing and
 one jamming flight of a PX4 Holybro S500~\cite{whelan2020uav}. The spoofer's walk rate was
-chosen by the original experimenters; it is not a worst case. Platform, flight mode and
-airspeed are not varied; the software-in-the-loop sweep of Table~\ref{tab:validation} is
+chosen by the original experimenters and is not a worst case. Platform, flight mode and
+airspeed are not varied; the software-in-the-loop sweep in Table~\ref{tab:validation} is
 designed to vary them.
 
 \emph{Compute costs are scaled literature values.} Cortex-M4 and M7 cycle counts measured at
-24\,MHz will change at 480\,MHz with flash wait states and caches. ML-DSA's tail is modelled,
-not measured, and FN-DSA's tail is not modelled. On-target benchmarks would replace all of
-these.
+24\,MHz will change at 480\,MHz owing to flash wait states and caches. ML-DSA's tail is
+modelled rather than measured, and FN-DSA's is not modelled. On-target benchmarks would
+replace all of these.
 
 \emph{The transport model is worst-case and partly assumed.} The HCRL payload mix is
-measured, but the bitrate (1\,Mbit/s) is assumed: the capture's timestamps are too coarse to
-check it, and the DroneCAN framing rules should be confirmed against the specification. The
-busy-period bound treats the background as periodic. Both require hardware timing
-measurements.
+measured, but the bitrate (1\,Mbit/s) is assumed, since the capture's timestamps are too
+coarse to verify it; the DroneCAN framing rules should be confirmed against the
+specification. The busy-period bound treats the background as periodic. The assumed bitrate and the
+periodic background both require hardware timing measurements.
 
-\emph{Additivity.} Eq.~\eqref{eq:deff} adds $\Dauth$ to the hidden delay. This is
+\emph{Additivity.} Eq.~\eqref{eq:deff} adds $\Dauth$ to the hidden delay, which is
 conservative when the authenticated message is not on the delayed path.
 
 \emph{Single-onset envelopes.} The horizon-matched result at the operating point rests on a
 1\,cm difference between two single-onset envelopes. It shows that the data cannot
-distinguish the two configurations there, not that authentication is harmful.
+distinguish the two configurations at that point, not that authentication is harmful.
 
-\emph{External validity.} The crossover inequality and the cliff are structural; their
-locations are platform-specific. We therefore release the calculator, not only the numbers.
+\emph{External validity.} The crossover inequality and the cliff are structural, but their
+locations are platform-specific. We therefore release the calculator as well as the numbers.
 
 % =====================================================================
 \section{Conclusion}
 \label{sec:conclusion}
 % =====================================================================
-Authentication is neither free nor automatically beneficial for a UAV's navigation. Inside
-a certified mission-completion budget, it buys a lower error rate and pays in delay, and
-the exchange rate can be measured. On the data available today: the cost on a
-flight-controller bus is a cliff in occupancy, not a slope in latency; the benefit appears
-only once a spoofer has had time to out-run an honest estimator; freshness windows in use are too
+Authentication carries a cost for UAV navigation and is not automatically beneficial.
+Within a certified mission-completion budget, it lowers the error rate at the cost of
+delay, and the trade-off is measurable. On current data, the cost on a flight-controller
+bus is an occupancy cliff rather than a gradual rise in latency; the benefit appears only
+once a spoofer has had time to outrun an honest estimator; freshness windows in use are too
 loose to bound delay, and the clock that would tighten them can be turned against them; and
 the scheme most exposed to forged-signature floods is the classical one. The certified
 selection rule turns these findings into a configuration choice, and the released artifact
@@ -1232,17 +1233,17 @@ turns each remaining modelled input into a defined experiment.
 % =====================================================================
 \section*{Ethics Considerations}
 % =====================================================================
-No human subjects or personal data are involved. All flight and bus data are public research
-corpora, used under their licences and not redistributed. The time-push and
-induced-verification analyses describe attacker capabilities. Each is presented with its
-mitigation: bounding the GNSS-to-clock update rate, and slot budgeting. The time-push
+No human subjects or personal data are involved. All flight and bus data are public
+research corpora, used under their licences and not redistributed. The time-push and
+induced-verification analyses describe attacker capabilities; each is presented with its
+mitigation: bounding the GNSS-to-clock update rate and slot budgeting. The time-push
 behaviour follows from the public MAVLink specification and has been reported experimentally
 in prior work~\cite{colton2025mavlink}. Before publication we will notify the MAVLink
-maintainers of the conversion from delay to denial and of the rate-bound mitigation.
+maintainers of the conversion of delay into denial and of the rate-bound mitigation.
 
 \section*{Open Science}
 The calculator, simulations, result files, figure data and the runbook for the remaining
-experiments are released in the anonymised artifact. Every number in this paper is a macro
+experiments are included in the anonymised artifact. Every number in this paper is a macro
 generated from those files.
 
 \bibliographystyle{IEEEtran}
@@ -1256,7 +1257,7 @@ generated from those files.
 \begin{proof}[Proof of Lemma~\ref{le:residual}]
 A hop held back by more than $\theta$ beyond its benign forwarding delay is flagged by
 $D_\theta$, and a message held back by more than $s$ misses its contact window and is flagged
-whatever $\theta$ is. Each of the $H$ compromised hops can therefore add at most
+regardless of $\theta$. Each of the $H$ compromised hops can therefore add at most
 $\min(\theta,s)$ of undetected delay, and honest hops add none. Summing over the route gives
 Eq.~\eqref{eq:delta}.
 \end{proof}
@@ -1268,7 +1269,7 @@ estimation error. The delayed or forged input leaves a residual offset
 $\Norm{e(0)}\le\gamma\Delta$. Between re-anchorings the drift is $L$-Lipschitz, so
 $\tfrac{d}{dt}\Norm{e(t)}\le L\Norm{e(t)}$, and Grönwall's inequality gives
 $\Norm{e(t)}\le\Norm{e(0)}e^{Lt}\le\gamma\Delta e^{LT_c}$ for $t\le T_c$. The next uncorrupted
-update re-anchors the estimate, and the argument repeats.
+update re-anchors the estimate, and the argument then repeats.
 \end{proof}
 
 \begin{proof}[Proof of Proposition~\ref{pr:crossover}]
@@ -1296,15 +1297,15 @@ the signed stream is the least fixed point of
 $t=\lceil tr\rceil n\Cf+\sum_j\lceil t/T_j\rceil C_j$. A fixed point exists if and only if the
 total utilisation $rn\Cf+U_0<1$~\cite{davis2007can}, that is, if and only if $r<\rstar$.
 Within a finite busy period, the response time of each instance is the finite fixed point of
-its completion-time recurrence. Without one, the backlog grows without bound.
+its completion-time recurrence. Otherwise, the backlog grows without bound.
 \end{proof}
 
 \begin{proof}[Proof of Proposition~\ref{pr:regimes}]
 Under $\mathcal{A}_{\mathrm{deny}}$, no uncorrupted update arrives within $T_c$, so the
 re-anchoring hypothesis of Lemma~\ref{le:tube} fails and the tube grows with the denial
 duration.
-An authenticated source cannot be forged, so either it is delivered, and re-anchoring
-holds, or it is withheld, which is the denial case of that source alone.
+Since an authenticated source cannot be forged, it is either delivered, in which case
+re-anchoring holds, or withheld, which is the denial case for that source alone.
 \end{proof}
 
 \begin{proof}[Proof of Proposition~\ref{pr:push}]
