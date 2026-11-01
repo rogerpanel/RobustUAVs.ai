@@ -538,7 +538,7 @@ def main():
             raise SystemExit("revision c needs --theta-file (the R4c calibration)")
         cal = {r["metric"]: r["value"] for r in csv.DictReader(a.theta_file.open())}
         THETA = float(cal["theta_sitl_s"])
-        log(f"theta = {THETA} s (calibrated for the SITL receiver; parent {THETA_BENIGN} s)")
+        log(f"theta = {THETA} s (calibrated for the SITL receiver; relay-hop value {THETA_BENIGN} s)")
     pre = {"b": "r4b", "c": "r4c"}.get(a.revision, "r4")
     if not a.soundness_only:
         rows, inj = [], []

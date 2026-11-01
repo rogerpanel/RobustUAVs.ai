@@ -3,7 +3,7 @@
 # Resumable: a job is skipped when its *_eval.csv already exists.
 #   PAR=4 bash run_r_marl.sh            # all three blocks
 #   BLOCKS="r2" PAR=4 bash run_r_marl.sh
-# Budget actually used for the paper (4 CPU cores, no GPU): see RUNBOOK R1/R2/R9.
+# Budget actually used for the paper (4 CPU cores, no GPU): fleet size, baselines and sensitivity (see the README).
 set -euo pipefail
 cd "$(dirname "$0")"
 PAR=${PAR:-4}

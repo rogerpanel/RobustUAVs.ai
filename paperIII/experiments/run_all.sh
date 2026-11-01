@@ -2,7 +2,7 @@
 # Paper III: regenerate every result, figure-data file and number from the
 # committed shared results (../../results/*.csv). ~10 min on 2 CPU cores for
 # E1-E4; the MARL study (E5) is separate because it trains 25 policies:
-#   bash run_marl.sh            (about 1 h on 2 cores; see RUNBOOK for scale-up)
+#   bash run_marl.sh            (about 1 h on 2 cores; see the README for the larger runs)
 set -euo pipefail
 cd "$(dirname "$0")"
 python3 certcmdp/certificate.py

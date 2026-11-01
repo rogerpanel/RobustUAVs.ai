@@ -6,7 +6,7 @@ ground station must agree on it over its own mesh. Protocol, per epoch:
 
   1. Report flooding. Every aircraft floods its certificate report over the
      mesh (`platform/backend/app/corpus.py::sample_mesh`). Reports are signed
-     (their cost is budgeted in Paper I), so a relay cannot alter another
+     (the signing cost is outside this study), so a relay cannot alter another
      aircraft's report; it can only drop it. We run both relay behaviours:
      Byzantine aircraft forward honestly, or drop every report they relay. A Byzantine aircraft may report
      a false certificate and may equivocate (tell different neighbours

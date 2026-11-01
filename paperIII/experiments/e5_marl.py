@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """E5 -- MARL study (RQ1, RQ3), with the R1 (scale), R2 (baselines) and
-R9 (sensitivity) extensions of the runbook.
+R9 (sensitivity) extensions of the study.
 
 Parameter-shared actor (decentralised execution, one categorical over
 {KEEP, IDLE, k-th nearest task} per agent) and a centralised critic (own

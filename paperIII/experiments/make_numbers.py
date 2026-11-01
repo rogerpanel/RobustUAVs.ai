@@ -245,7 +245,7 @@ def main():
 
 
 # ---------------------------------------------------------------------------
-# R-experiments (runbook R1, R2, R5, R6, R9): macros, tables and figure data
+# extended experiments (fleet size, baselines, consensus, vector certificates, sensitivity): macros, tables and figure data
 # ---------------------------------------------------------------------------
 def tex_int(x):
     return f"{int(x):,}".replace(",", "{,}")

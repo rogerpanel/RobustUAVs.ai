@@ -30,22 +30,22 @@ from pathlib import Path
 import numpy as np
 
 REPO = Path(__file__).resolve().parents[3]
-PARENT_RES = REPO / "results"
+SHARED_RES = REPO / "results"
 OUT = REPO / "paperIII" / "results"
 OUT.mkdir(parents=True, exist_ok=True)
 
 # ---------------------------------------------------------------- constants
 L_LOC = 1.1814          # local Lipschitz constant, results/local_lipschitz.csv  [measured]
-T_C = 1.0               # certification horizon, s                             [assumption, parent]
+T_C = 1.0               # certification horizon, s                             [assumption]
 GAMMA_SUP = 1.625       # campaign supremum, results/gamma_campaign_samples.csv [measured]
-S_SLACK = 5.0           # contact-window slack, s                              [measured, parent]
+S_SLACK = 5.0           # contact-window slack, s                              [measured]
 THETA_BENIGN = 0.178    # benign residual ceiling, s, results/hop_ledger.csv   [measured]
-ALERT_LIMITS = (2.0, 5.0, 10.0, 20.0)   # corridor half-widths, m             [assumption, parent]
+ALERT_LIMITS = (2.0, 5.0, 10.0, 20.0)   # corridor half-widths, m             [assumption]
 KAPPA = math.exp(L_LOC * T_C) * GAMMA_SUP  # m of certified error per s of staleness [derived]
 
 
 def rho_of_staleness(delta_s):
-    """Parent tube: certified position-error bound for staleness delta (s)."""
+    """Delay-certificate tube: certified position-error bound for staleness delta (s)."""
     return KAPPA * np.asarray(delta_s, dtype=float)
 
 
@@ -57,7 +57,7 @@ def residual_pools():
     hidden:  residuals on malicious hops the detector did NOT flag [measured]
     """
     ben, hid = [], []
-    with (PARENT_RES / "hop_ledger.csv").open() as fh:
+    with (SHARED_RES / "hop_ledger.csv").open() as fh:
         for r in csv.DictReader(fh):
             x = float(r["residual_s"])
             if r["malicious_sender"] == "0":
@@ -70,7 +70,7 @@ def residual_pools():
 @lru_cache(maxsize=None)
 def gamma_samples():
     g = []
-    with (PARENT_RES / "gamma_campaign_samples.csv").open() as fh:
+    with (SHARED_RES / "gamma_campaign_samples.csv").open() as fh:
         for r in csv.DictReader(fh):
             g.append(float(r["gamma_delta_m_s"]))
     return np.asarray(g)
@@ -87,11 +87,11 @@ class ThreatProfile:
     jam_mean_s: float = 6.0        # mean jamming episode length, s
     relay_rate: float = 0.010      # onset rate of an undetected relay-delay attack
     relay_mean_s: float = 10.0     # mean duration of the stale-correction episode
-    relay_hops: int = 2            # attacker-controlled hops H (parent, grid)
+    relay_hops: int = 2            # attacker-controlled hops H (grid topology)
     fault_rate: float = 0.002      # sensor-fault onset rate
     fault_mean_s: float = 4.0
-    reanchor_s: float = 2.0        # re-anchoring time after an episode ends [assumption, parent]
-    stale_cap_s: float = 2 * S_SLACK  # staleness saturates (parent Lemma 1 slack x H)
+    reanchor_s: float = 2.0        # re-anchoring time after an episode ends [assumption]
+    stale_cap_s: float = 2 * S_SLACK  # staleness saturates (residual-delay lemma: slack x H)
 
 
 class CertificateProcess:

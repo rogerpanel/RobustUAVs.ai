@@ -1,25 +1,20 @@
 #!/usr/bin/env bash
-# Paper III -- experiments that need the Hetzner server (or a board):
-#   e3   E3 latency on an otherwise idle machine (runbook ground rule 4)
-#   r3   measured-trace replay: stage the Kaggle corpus, extract GNSS staleness
-#        traces, E2 part (c) and E5 with --process trace
-#   r4   PX4 SITL multi-vehicle vignette (Docker; ~1 h first build)
-#   r4b  R4b: pre-registered test of the latched certificate (R4B_PROTOCOL.md), fresh schedule
-#   r4c  R4c: latched certificate with theta calibrated on R4/R4b logs (R4C_PROTOCOL.md), third schedule
+# Paper III -- experiments that need a dedicated machine (or a board):
+#   e3   latency of the monitor on an otherwise idle machine
+#   r3   measured-trace replay: stage the corpus, extract GNSS staleness traces,
+#        then the degradation and learning studies with --process trace
+#   r4   PX4 software-in-the-loop multi-vehicle flights (Docker; ~1 h first build)
+#   r4b  pre-registered rerun of the latched certificate (R4B_PROTOCOL.md), fresh schedule
+#   r4c  third pre-registered run, theta calibrated on the earlier logs (R4C_PROTOCOL.md)
 #   r8   embedded latency: prints the one command to run on a Pi / Jetson
-# Results come back as one tarball (the server's deploy key is read-only).
+# Results are written to one tarball in the home directory.
 #
-# Usage, from a separate worktree on the server (do NOT switch the branch of a
-# checkout another job is using, e.g. ~/paper-work while Paper II runs):
-#   git -C ~/paper-work fetch -q origin claude/whelan-uavcas-ingest-u00isn
-#   git -C ~/paper-work worktree add -f -B p3 ~/paper3-work origin/claude/whelan-uavcas-ingest-u00isn
-#   cd ~/paper3-work
+# Usage, from a checkout of this artifact on the machine:
 #   bash paperIII/experiments/run_server_paperIII.sh e3 r3            # the quick part
 #   bash paperIII/experiments/run_server_paperIII.sh r4               # the SITL part
-#   scp deploy@<server>:~/paperIII-server-*.tgz .                     # bring results back
 #
-# Needs: python3 -m venv (numpy scipy torch pandas pyulog kagglehub mavsdk),
-# Kaggle credentials in ~/.kaggle/kaggle.json (chmod 600) or KAGGLE_USERNAME /
+# Needs: python3 -m venv (numpy scipy torch pandas pyulog kagglehub mavsdk), and
+# dataset credentials in ~/.kaggle/kaggle.json (chmod 600) or KAGGLE_USERNAME /
 # KAGGLE_KEY in the environment -- never in the repository.
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"

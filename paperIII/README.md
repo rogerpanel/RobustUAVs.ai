@@ -39,7 +39,7 @@ paperIII/
 
 ```bash
 cd paperIII/experiments
-bash run_all.sh          # closed forms, simulations, references, aggregation, numbers (~10 min)
+bash run_all.sh          # closed forms, simulations, references, aggregation, numbers (~5 min)
 bash run_marl.sh         # learning study, headline seeds 0-4 (~1 h on 2 cores)
 cd ../manuscript && latexmk -pdf main.tex
 ```

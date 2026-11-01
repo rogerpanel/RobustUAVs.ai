@@ -4,7 +4,7 @@
 Three estimates on the TRAINED Phase-A checkpoint (run scripts/run_phase_a.sh
 first; synthetic corpus, seeded):
 
-  1. L_power   — the dissertation's estimator: power iteration on the drift
+  1. L_power   — the reference estimator: power iteration on the drift
                  Jacobian wrt the hidden state at RANDOM (h, x). Global-ish;
                  reproduces ~1.01.
   2. L_local   — the same Jacobian probe, but along the DATA-DRIVEN hidden
@@ -102,7 +102,7 @@ def main() -> int:
     x = torch.stack(feats)          # (128, 8, 8)
     adj = torch.stack(adjs)
 
-    # 1. dissertation estimator (random h, random x)
+    # 1. reference estimator (random h, random x)
     L_power = model.estimate_lipschitz(n_iter=50, batch_size=8)
 
     # 2. local: along data-driven trajectories, batched over the corpus
@@ -131,7 +131,7 @@ def main() -> int:
         return EPS_OUT * math.exp(-L * T_HORIZON)
 
     rows = [
-        {"estimator": "L_power_random (dissertation)", "value": round(L_power, 4),
+        {"estimator": "L_power_random (reference)", "value": round(L_power, 4),
          "gronwall_radius": round(radius(L_power), 4)},
         {"estimator": "L_local_max (data-driven trajectories)",
          "value": round(L_local_max, 4),

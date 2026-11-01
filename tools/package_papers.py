@@ -42,7 +42,8 @@ SUBSETS = {
     "I": ["paperI", "results", "data/fetch_kaggle.py", "requirements.txt", "LICENSE"],
     "II": ["paperII", "results/certified_floor_vs_theta.csv", "results/local_lipschitz.csv",
            "results/gamma_campaign_bins.csv", "results/mission_distribution.csv", "LICENSE"],
-    "III": ["paperIII", "results", "data/fetch_kaggle.py", "platform/backend/app", "requirements.txt",
+    "III": ["paperIII", "results", "data/fetch_kaggle.py", "platform/backend/app/__init__.py", "platform/backend/app/corpus.py",
+            "platform/backend/app/results.py", "requirements.txt",
             "LICENSE"],
     "IV": ["paperIV", "results/gamma_campaign_samples.csv", "requirements.txt", "LICENSE"],
     # The mother paper (paper/paperD_v<N>.tex): its pipeline lives at the repository root.
@@ -53,7 +54,7 @@ SUBSETS = {
 # The mother paper's current version: paper/paperD_v<N>.tex, packaged as main.tex.
 PAPER_D = "paperD_v9"
 # Large or irrelevant artefacts left out of the reviewer copy.
-EXCLUDE = [re.compile(p) for p in (r"\.pt$", r"/logs_r/", r"/server_logs/", r"/__pycache__/",
+EXCLUDE = [re.compile(p) for p in (r"\.pt$", r"/logs_r/", r"/server_logs/(?!r4c_attempt1_)", r"/__pycache__/",
                                    r"\.pyc$", r"/_smoke", r"/node_modules/", r"\.pdf$",
                                    r"/paperIV/results/logs/",
                                    # internal working notes, superseded for reviewers by README.md

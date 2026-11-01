@@ -6,7 +6,7 @@ extracted from a measured PX4 flight (results/r3_staleness_traces.csv, written
 by r3_extract_traces.py). This replaces the Poisson jamming and sensor-fault
 onsets of the synthetic process.
 
-Relay channel. The runbook asked for per-packet residual time series from the
+Relay channel. The design calls for per-packet residual time series from the
 hop ledger. The ledger holds one packet per simulation run (2,496 runs, 8 per
 scenario cell), so there is no temporal sequence to replay. The relay channel
 therefore keeps the synthetic episode model: assumed onset rate, measured

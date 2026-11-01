@@ -34,7 +34,7 @@ def timeit(fn, reps):
 
 
 def cpu_model():
-    """CPU model string (runbook: record the CPU with every latency run)."""
+    """CPU model string (the CPU is recorded with every latency run)."""
     try:
         lines = Path("/proc/cpuinfo").read_text().splitlines()
         # x86 reports "model name"; ARM boards report "Model" (Pi) or "Hardware".
