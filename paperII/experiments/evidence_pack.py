@@ -24,18 +24,18 @@ from pathlib import Path
 from quantifier import OBLIGATIONS, shortest_path
 
 HERE = Path(__file__).resolve().parent
-PARENT = HERE.parent.parent / "results"
+SHARED = HERE.parent.parent / "results"
 R = HERE.parent / "results"
 R.mkdir(exist_ok=True)
 
-THETA = 0.25          # parent operating point (s)
-H = 2                 # attacker-controlled hops (parent)
+THETA = 0.25          # certificate operating point (s)
+H = 2                 # attacker-controlled hops
 MAPPINGS = ["empirical_ekf", "empirical_campaign_sup", "kinematic_v15"]
 MARGINS = [2.0, 5.0, 10.0, 20.0]
 
 
 def rows(name):
-    return list(csv.DictReader(open(PARENT / name)))
+    return list(csv.DictReader(open(SHARED / name)))
 
 
 def main():

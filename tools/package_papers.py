@@ -40,7 +40,8 @@ BUILD_JUNK = {".aux", ".log", ".out", ".bbl", ".blg", ".fls", ".fdb_latexmk", ".
 # What a reviewer needs, per paper (paths relative to the repository root).
 SUBSETS = {
     "I": ["paperI", "results", "data/fetch_kaggle.py", "requirements.txt", "LICENSE"],
-    "II": ["paperII", "LICENSE"],
+    "II": ["paperII", "results/certified_floor_vs_theta.csv", "results/local_lipschitz.csv",
+           "results/gamma_campaign_bins.csv", "results/mission_distribution.csv", "LICENSE"],
     "III": ["paperIII", "results", "data/fetch_kaggle.py", "platform/backend/app", "requirements.txt",
             "LICENSE"],
     "IV": ["paperIV", "results/gamma_campaign_samples.csv", "requirements.txt", "LICENSE"],

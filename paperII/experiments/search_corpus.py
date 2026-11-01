@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""E1/E3 of the Paper II runbook: database search and citation snowballing.
+"""Database search and citation snowballing for the systematic review.
 
-Runs on a machine with open internet (the drafting sandbox could not reach the
-APIs).  Sources: OpenAlex (works search + referenced_works + cited_by), and
+Needs open internet access to the APIs.  Sources: OpenAlex (works search + referenced_works + cited_by), and
 optionally Semantic Scholar (set S2_API_KEY for higher rate limits).  arXiv and
-DBLP venue sweeps are covered by OpenAlex, which indexes both; the runbook adds
+DBLP venue sweeps are covered by OpenAlex, which indexes both; the protocol adds
 a manual venue check.
 
   python3 search_corpus.py search   --out ../corpus/search_raw.jsonl
@@ -284,7 +283,7 @@ YEAR_GAP = 2        # a title merge also needs publication years this close
 
 def stable_id(r: dict) -> str:
     """O<number> from the OpenAlex work id: stable across re-runs, and no clash
-    with the X/A/S/W prefixes the runbook reserves for database exports."""
+    with the X/A/S/W prefixes the protocol reserves for database exports."""
     w = (r.get("openalex") or "").rsplit("/", 1)[-1]
     return "O" + w[1:] if w.startswith("W") else ""
 
@@ -375,7 +374,7 @@ def cmd_dedup(a):
 # display name contains it (proceedings are often one source per year); the
 # resolution is written to venue_sources.csv for audit. Each source's full
 # 2017-2026 table of contents is paged, and a paper is kept when its title
-# contains a block-A phrase, as the runbook specifies.
+# contains a block-A phrase, as the protocol specifies.
 # --------------------------------------------------------------------------
 VENUES = [
     ("S&P", "Symposium on Security and Privacy"), ("USENIX Sec", "USENIX Security"),

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""S1 of the Paper II runbook: PRISMA 2020 identification counts.
+"""PRISMA 2020 identification counts for the systematic review.
 
 Writes corpus/prisma_counts.csv with columns stage,n, for the stages the
-runbook names: identified, duplicates, screened, full-text, included.
+protocol names: identified, duplicates, screened, full-text, included.
 
   identified  OpenAlex records retrieved (lines of search_raw.jsonl) plus rows
               appended to candidates.csv from other databases (IEEE Xplore,
