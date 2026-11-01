@@ -1,18 +1,18 @@
 % RQ1 and RQ3: the multi-agent learning study. Numbers from numbers.tex / tab_main.tex.
-\subsection{RQ1: violations during learning}
+\subsection{RQ1: Violations during Learning}
 \label{sec:rq1}
 \Cref{fig:training} tracks certified coverage and cumulative violations over training.
 \begin{itemize}[leftmargin=1.2em,itemsep=1pt,topsep=1pt]
-\item \emph{Projection in the environment.} It executed \emph{zero} infeasible assignments
+\item \emph{Projection in the environment.} It executed zero infeasible assignments
   over $\nOursTrainSteps$ agent-epochs, pooled across \nNSeeds\ seeds, from the first update
   onwards. Per-agent masking also reached zero, as separability predicts. For both methods
-  zero holds by construction, so the CP bound in \cref{tab:main} only quantifies the
-  exposure observed. That bound assumes independent agent-epochs, which these are not.
+  zero holds by construction, so the CP bound in \cref{tab:main} merely quantifies the
+  exposure observed; it also assumes independent agent-epochs, which these are not.
 \item \emph{PPO-Lagrangian.} Although it observes the certificate, it executed
   \nLagTrainViol\ infeasible assignments while learning, $\nLagTrainRate\%$ of agent-epochs.
   Its multiplier then rose until the policy largely stopped serving tasks. Final certified
   coverage is $\nLagCov$, and evaluation violations still average $\nLagViolMean\%$ of
-  agent-epochs, above the 0.5\% limit.
+  agent-epochs (mean over seeds; \cref{tab:main} reports the IQM), above the 0.5\% limit.
 \item \emph{Jamming-blind PPO.} It executed \nBlindTrainViol\ infeasible assignments
   ($\nBlindTrainRate\%$).
 \item \emph{Stronger in-expectation learners} (\cref{tab:r2}). MAPPO-Lagrangian with a cost
@@ -23,8 +23,8 @@
   actions by construction, our layer and masking (with PPO or with QMIX), learned without a
   violation.
 \end{itemize}
-In-expectation methods violate the constraint while they learn, and learning is when a
-fleet would be flight-tested. No setting of the Lagrangian's cost limit or dual step changed
+In-expectation methods violate the constraint while they learn, the phase in which a fleet
+would be flight-tested. No setting of the Lagrangian's cost limit or dual step changed
 this (\cref{app:sens}).
 
 \begin{figure*}[t]
@@ -61,11 +61,11 @@ curves lie on the floor throughout.}
 \label{fig:training}
 \end{figure*}
 
-\subsection{RQ3: what the policy learns and what the mechanism enforces}
+\subsection{RQ3: Contributions of the Learned Policy and of the Projection}
 \label{sec:rq3}
-\Cref{tab:main} evaluates every method greedily on held-out missions. Four findings stand out.
+\Cref{tab:main} evaluates every method greedily on held-out missions. Four findings emerge.
 
-\emph{The mechanism does most of the work.} Adding the projection at deployment to \emph{any}
+\emph{The mechanism does most of the work.} Adding the projection at deployment to any
 learned policy removed every violation and lifted the coverage ratio to at least
 $\nLagProjRatio$:
 \begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=1pt]
@@ -88,13 +88,13 @@ does not matter.}
 \item The policy trained with the projection reaches $\nOursCov$ [$\nOursCovLo$,
   $\nOursCovHi$] at a coverage ratio of $\nOursRatio$, over \nNSeeds\ training seeds.
 \item The keep-or-nearest heuristic with the same projection reaches $\nHeurCov$; the
-  intervals only just separate.
+  two intervals touch but do not overlap.
 \item Policies trained with masking, or blind, and projected at deployment do as well
   ($\nMaskProjCov$, $\nBlindProjCov$), and the deviation penalty makes no measurable
   difference ($\nNoDevCov$ without it).
 \end{itemize}
-What training \emph{with} the projection buys is the zero-violation learning of RQ1, not a
-better final policy.
+Training with the projection therefore yields the zero-violation learning of RQ1 rather
+than a better final policy.
 
 \emph{Static and design-time allocators fail in opposite ways.} The tightest-fit greedy
 re-solves from scratch every epoch, keeps its aircraft in transit ($\nGnpSwitch\%$
@@ -115,16 +115,17 @@ agent-epochs. Train viol.: executed infeasible assignments over all of training.
 \input{tab_main}
 \end{table*}
 
-\subsection{RQ3 (continued): stronger baselines and a classical auction}
+\subsection{RQ3 (Continued): Stronger Baselines and a Classical Auction}
 \label{sec:rq3b}
 \Cref{tab:r2} adds the stronger learners and a non-learned consensus auction at the
 headline size. Three findings matter for the security argument.
 
 \emph{Better in-expectation learners still violate, and the monitor still repairs them.}
-MAPPO-Lagrangian with a cost critic is the strongest unconstrained learner: it reaches
+MAPPO-Lagrangian with a cost critic is the strongest learner that does not enforce the
+constraint: it reaches
 $\nMLagCov$ certified coverage and, once trained, violates on only $\nMLagEvalViolPct\%$ of
-agent-epochs. Its guarantee is nonetheless in expectation: it paid for that policy with
-\nMLagTrainViol\ violations during learning, and lowering its cost limit to zero did not
+agent-epochs. Its guarantee, however, holds only in expectation: it paid for that policy
+with \nMLagTrainViol\ violations during learning, and lowering its cost limit to zero did not
 remove them. With the projection at deployment, every learned policy in the table executes
 no violation and reaches a coverage ratio of at least $\nProjMinRatio$.
 
@@ -134,13 +135,13 @@ $\nCbbaCovHi$] of the task value, against $\nOursCov$ [$\nOursCovLo$, $\nOursCov
 best learned policy, with no violation and a coverage ratio of $\nCbbaRatio$. The comparison
 favours the auction in one respect: its consensus phase gives every aircraft the fleet's full
 state at every epoch, while the learned policies act on local observations in one shot. In
-our setting, that information is worth more than learning.
+our setting, this information outweighs what learning adds.
 
-\emph{The result supports the paper's claim, not a learning claim.} Our guarantees do not
+\emph{The result supports the security argument only.} Our guarantees do not
 depend on which allocator proposes: they hold for the auction, for the heuristic, for every
 learned policy and for an adversarially chosen one (A4). The learning study shows that the
 monitor can sit in the training loop at no cost to learning; it does not show that learning
-is the best allocator, and we do not claim it.
+yields the best allocator, and we make no such claim.
 
 \begin{table}[t]
 \centering\footnotesize
@@ -152,7 +153,7 @@ evaluation seeds $\times$ 16 fleets; CBBA is deterministic, 3 $\times$ 16). Colu
 \resizebox{\columnwidth}{!}{\input{tab_r2}}
 \end{table}
 
-\subsection{RQ3 (continued): fleet size}
+\subsection{RQ3 (Continued): Fleet Size}
 \label{sec:rq3c}
 \Cref{tab:scale,fig:scale} repeat the core methods at $N\in\{\nScaleSizes\}$.
 \begin{itemize}[leftmargin=1.2em,itemsep=1pt,topsep=1pt]
@@ -164,22 +165,24 @@ evaluation seeds $\times$ 16 fleets; CBBA is deterministic, 3 $\times$ 16). Colu
   of the reason.} Certified coverage of the learned policy fell from $\nScaleTwelveOurs$ at
   $N=12$ to $\nScaleFortyEightOurs$ at $N=48$ and $\nScaleNinetySixOurs$ at $N=96$, where
   aircraft were reassigned on $\nScaleNinetySixOursSwitch\%$ of agent-epochs and rarely
-  reached a site. Two causes compound. First, a confound of ours: the actor's keep prior was a
-  fixed logit, so the initial probability of keeping a task fell as the action set grew.
+  reached a site. Two causes compound. First, as a confound in our set-up, the actor's keep
+  prior was a fixed logit, so the initial probability of keeping a task fell as the action
+  set grew.
   Scaling the prior to hold the $N=12$ value changed coverage only to
   $\nScaleFortyEightOursKbs$ at $N=48$ and $\nScaleNinetySixOursKbs$ at $N=96$. Second,
   \cref{alg:proj} maximises cardinality, then value, and only then agreement with the
-  proposal, and none of the three terms sees travel distance. With a weak proposal on a large
-  fleet it moves aircraft between equally valued tasks, which keeps every guarantee (zero
-  violations, coverage ratio $\nScaleMinRatio$) but not the aircraft on site. A keep term
-  ($\epsilon_{\mathrm{prev}}>0$ in \cref{alg:proj}) or a distance-aware value is the obvious
+  proposal, and none of the three terms accounts for travel distance. With a weak proposal on
+  a large fleet it moves aircraft between equally valued tasks, which preserves every
+  guarantee (zero violations, coverage ratio $\nScaleMinRatio$) but leaves aircraft in
+  transit. A keep term in
+  the weights $W$ of \cref{alg:proj} or a distance-aware value is the obvious
   remedy; we did not evaluate it.
 \item \emph{The auction does scale.} CBBA certified $\nScaleTwelveCbba$, $\nScaleTwentyFourCbba$,
   $\nScaleFortyEightCbba$ and $\nScaleNinetySixCbba$ of the task value at the four sizes,
   ahead of keep-or-nearest plus projection ($\nScaleNinetySixHeur$ at $N=96$).
 \end{itemize}
-Our budget per size was 200 updates (150 at $N=96$) on 4 CPU cores, below the runbook's
-400--600; larger budgets may narrow the gap to the auction, and the artifact runs them
+Our budget per size was 200 updates (150 at $N=96$) on 4 CPU cores, below the 400--600
+updates planned in the artifact's README; larger budgets may narrow the gap to the auction, and the artifact runs them
 unchanged.
 
 \begin{table*}[t]

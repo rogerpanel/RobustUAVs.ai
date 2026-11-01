@@ -25,13 +25,13 @@
 % ================= band 1: measured inputs
 \node[data] (hop) at (0,0)     {Relay-hop ledger\\ \nNHops\ hops, residual $\le\nHiddenMax$\,s};
 \node[data] (gam) at (3.55,0)  {GNSS degradation\\ 674 samples, $\gamma_{\sup}=\nGammaSup$\,m/s};
-\node[data] (lip) at (7.1,0)   {Closed-loop Lipschitz\\ $L=\nLloc$, $T=1$\,s};
+\node[data] (lip) at (7.1,0)   {Closed-loop Lipschitz\\ $L=\nLloc$, $T_c=1$\,s};
 \node[data] (thr) at (10.65,0) {Threat mechanisms\\ jamming, relay delay, faults};
 \node[lane, fit=(hop)(gam)(lip)(thr)] (L1) {};
 \node[lbl] at (L1.west) {\textcircled{\tiny 1}\\ Inputs};
 
 % ================= band 2: certificate as constraint
-\node[cert] (rho)  at (0.55,-2.25) {Certified protection level\\ $\rho_i(t)=e^{LT}\gamma_{\sup}\Delta_i(t)$};
+\node[cert] (rho)  at (0.55,-2.25) {Certified protection level\\ $\rho_i(t)=e^{LT_c}\gamma_{\sup}\Delta_i(t)$};
 \node[cert] (proc) at (5.32,-2.25) {Adversarial c\`adl\`ag process: drift\\ $\le L_\rho=\nKappa$\,m/s, jumps $\approx\nJumpMed$\,m};
 \node[cert] (al)   at (10.1,-2.25) {Task alert limits $\alpha_j\in\{2,5,10,20\}$\,m;\\ constraint (C): $\rho_i(t_k)\le\alpha_{\sigma(i)}$};
 \node[lane, fit=(rho)(proc)(al)] (L2) {};
@@ -41,7 +41,7 @@
 \node[cons] (graph)  at (0,-4.5)     {Nested eligibility graph\\ $(i,j)\in E\iff\rho_i\le\alpha_j$};
 \node[cons] (closed) at (3.55,-4.5)  {Exact monitors\\ $d(t)$, $\mu(t)$, $d_b$ (Lem.~\ref{lem:ore}--Prop.~\ref{prop:graded})};
 \node[cons] (proj)   at (7.1,-4.5)   {Certified projection $\Pi$\\ feasible, maximal, closest (Alg.~\ref{alg:proj})};
-\node[cons] (dyn)    at (10.65,-4.5) {Dynamics: hysteresis $\eta$,\\ look-ahead $L_\rho H$, rate $\Delta t$};
+\node[cons] (dyn)    at (10.65,-4.5) {Dynamics: hysteresis $\eta$,\\ look-ahead $L_\rho T_{\mathrm{a}}$, rate $\Delta t$};
 \node[learn] (pol)   at (3.55,-6.35) {Policy $\pi_\theta(a\mid o_t)$, $o_t\ni\rho(t)$;\\ shared actor, central critic};
 \node[learn] (env)   at (7.1,-6.35)  {Fleet environment\\ \textsc{CertSwarm} ($N$ UAVs, $M$ tasks)};
 \node[learn] (upd)   at (10.65,-6.35){Update on proposals (SE)\\ $r=r_{\mathrm{cert}}-\lambda_{\mathrm{dev}}\,\mathrm{dev}$};
@@ -50,9 +50,9 @@
 \node[lbl] at (L3.west) {\textcircled{\tiny 3}\\ Allocation and learning};
 
 % ================= band 4: guarantees and evaluation
-\node[outb] (qop)  at (0,-9.2)     {$\mathbf{Q_{op}}$: zero violations at every epoch (Thm.~\ref{thm:proj})};
+\node[outb] (qop)  at (0,-9.2)     {$\Qop$: zero violations at every epoch (Thm.~\ref{thm:proj})};
 \node[outb] (exp)  at (3.55,-9.2)  {Inter-epoch exposure only from jumps (Thm.~\ref{thm:predict})};
-\node[outb] (qpop) at (7.1,-9.2)   {$\mathbf{Q_{pop}}$: sizing and tails, obligations O1--O2 (Prop.~\ref{prop:lift})};
+\node[outb] (qpop) at (7.1,-9.2)   {$\Qpop$: sizing and tails, obligations O1--O2 (Prop.~\ref{prop:lift})};
 \node[outb] (ev)   at (10.65,-9.2) {Evidence: oracle checks, IQM CIs, CP bounds};
 \node[lane, fit=(qop)(exp)(qpop)(ev)] (L4) {};
 \node[lbl] at (L4.west) {\textcircled{\tiny 4}\\ Guarantees};
@@ -86,7 +86,7 @@
 \node[rq, anchor=south east] at ([yshift=-0.5pt]ev.north east) {RQ3, RQ4};
 \end{tikzpicture}}
 \caption{Methodological framework, read top to bottom. \textcircled{\scriptsize 1}~Measured
-quantities from the parent artifact determine \textcircled{\scriptsize 2}~each aircraft's
+quantities from public flight logs and the released relay-hop captures determine \textcircled{\scriptsize 2}~each aircraft's
 certified protection level $\rho_i(t)$, a bounded c\`adl\`ag process that drifts under
 jamming and jumps under relay delay; a task may be held only while $\rho_i(t)$ does not
 exceed its alert limit $\alpha_j$. \textcircled{\scriptsize 3}~Because the constraint is a
@@ -95,6 +95,7 @@ coverage the fleet can certify, and a projection inside the environment maps eve
 of the learning policy to a feasible, coverage-maximal assignment, so training never executes
 an infeasible one. \textcircled{\scriptsize 4}~The outputs are a per-operation guarantee and
 a population statement whose assumptions are listed as evidence obligations. Tags give the
-research question that each output answers.}
+research questions that evaluate each output; RQ7 and RQ8 test the monitor's inputs
+(Byzantine reports and certificate soundness).}
 \label{fig:framework}
 \end{figure*}
