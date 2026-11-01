@@ -76,10 +76,6 @@ S.~M. Katz, A.~L. Corso, C.~A. Strong, and M.~J. Kochenderfer, ``Verification
   of image-based neural network controllers using generative models,''
   \emph{Journal of Aerospace Information Systems}, vol.~19, no.~9, 2022.
 
-\bibitem{parentpaper}
-{Anonymous}, ``{From Wire to Flight: A Conditional Mission-Completion Guarantee
-  for UAVs},'' 2026, under submission; anonymised for double-blind review.
-
 \bibitem{katz2019marabou}
 G.~Katz, D.~A. Huang, D.~Ibeling, K.~Julian, C.~Lazarus, R.~Lim, P.~Shah,
   S.~Thakoor, H.~Wu, A.~Zelji{\'c}, D.~L. Dill, M.~J. Kochenderfer, and
@@ -134,15 +130,14 @@ C.~Huang, J.~Fan, X.~Chen, W.~Li, and Q.~Zhu, ``{POLAR}: A polynomial
   Bound Behavior of Aircraft Systems Containing Complex Functions Using
   Run-Time Assurance},'' ASTM International, Tech. Rep., Jul. 2021.
 
-\bibitem{paperI}
-{Anonymous}, ``{What Authenticity Costs in Metres: A Certified Budget for
-  Cryptography and Sensing in UAV Navigation},'' 2026, under submission;
-  anonymised for double-blind review.
-
 \bibitem{gronwall1919}
 T.~H. Gr{\"o}nwall, ``Note on the derivatives with respect to a parameter of
   the solutions of a system of differential equations,'' \emph{Annals of
   Mathematics}, vol.~20, no.~4, pp. 292--296, 1919.
+
+\bibitem{whelan2020uav}
+J.~Whelan, T.~Sangarapillai, O.~Minawi, A.~Almehmadi, and K.~El-Khatib, ``{UAV
+  Attack Dataset},'' IEEE DataPort, 2020.
 
 \bibitem{zhao2021ram}
 X.~Zhao, W.~Huang, A.~Banks, V.~Cox, D.~Flynn, S.~Schewe, and X.~Huang,

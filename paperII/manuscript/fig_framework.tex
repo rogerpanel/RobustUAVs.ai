@@ -26,7 +26,7 @@
 \node[inbox] (lit) {\textbf{Guarantee literature}\\ OpenAlex (IEEE, ACM, arXiv),\\ 18 venue sweeps, 2017--2026};
 \node[inbox, below=2.2mm of lit] (seed) {\textbf{Seed set}\\ canonical verifiers, NNCS,\\ RTA, conformal, PAC-Bayes};
 \node[inbox, below=2.2mm of seed] (reg) {\textbf{Objective corpus}\\ SORA 2.5 (Annexes A, E),\\ EASA CP Issue 02/03, MLEAP,\\ ED-324, AC 23.1309, F3269};
-\node[inbox, below=2.2mm of reg] (par) {\textbf{Parent artifact}\\ certificate engine and\\ committed result files};
+\node[inbox, below=2.2mm of reg] (par) {\textbf{Running example}\\ delay certificate and\\ committed result files};
 \node[lane, fit=(lit)(par)] (L1) {};
 \node[lbl, above=0.4mm of L1] {(1) Inputs, frozen at a cut-off date};
 
@@ -47,8 +47,8 @@
   \begin{tabular}{@{}l@{}}
   D1--D4\ \ type, dominance, lift, path\\
   P1\ \ dominance is a partial order\\
-  T1\ \ transfer soundness (union bound)\\
-  P2\ \ no modality for free\\
+  Th1\ \ transfer soundness (union bound)\\
+  P2\ \ statistical obligation for $\forall\to\mathbb{P}$\\
   P3\ \ rate lift and confirmation credit\\
   P4\ \ zero-failure ladder $=$ SORA Annex E\\
   P5\ \ runtime assurance relocates the gap
@@ -78,7 +78,7 @@
        text width={\x2-\x1-8pt}, inner sep=3pt, anchor=north west] (val)
   at (\x1,\y3-9mm)
  {\textbf{(5) Demonstrator and validation loop}:\ \
-  SORA Annex A evidence pack from the parent certificate, every lift listed as an open or discharged obligation (Sec.~\ref{sec:case})\ \textbullet\
+  SORA Annex A evidence pack from the delay certificate, every lift listed as an open or discharged obligation (Sec.~\ref{sec:case})\ \textbullet\
   sensitivity analyses (tier, venue, period, strict coding)\ \textbullet\
   every decision and code released; a human re-coding regenerates every number};
 \draw[fb] (par.south) -- (par.south |- val.north);
@@ -87,7 +87,8 @@
 \end{tikzpicture}}
 \caption{Methodological framework. (1)~Two corpora enter the study: guarantees about learned
 components, and assurance objectives from aviation regulation and standards, both frozen at a
-cut-off date. (2)~A registered protocol identifies, screens, snowballs and codes the
+cut-off date. A seed set and the result files of the running example
+(Section~\ref{sec:certificate}) enter beside them. (2)~A registered protocol identifies, screens, snowballs and codes the
 guarantees. Two LLM coders work independently from a frozen codebook, reliability is reported
 per field before adjudication, and corpus-level results are weighted estimates from a stratified
 sample. (3)~Every guarantee and objective

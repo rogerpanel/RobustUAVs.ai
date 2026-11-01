@@ -322,7 +322,7 @@ def main():
     sup = [c for c in cont if c["mapping"] == "empirical_campaign_sup"]
     kin = [c for c in cont if c["mapping"] == "kinematic_v15"]
     N["epTubeEkf"] = f2(ekf[0]["tube_m"]); N["epTubeSup"] = f2(sup[0]["tube_m"]); N["epTubeKin"] = f"{float(kin[0]['tube_m']):.1f}"
-    N["epDeltaPos"] = f2(ekf[0]["delta_pos_m"]); N["epGammaEkf"] = f"{float(ekf[0]['gamma_m_s']):.3f}"
+    N["epDeltaPos"] = f2(sup[0]["delta_pos_m"]); N["epGammaEkf"] = f"{float(ekf[0]['gamma_m_s']):.3f}"
     N["epGammaSup"] = f"{float(sup[0]['gamma_m_s']):.3f}"
     obl = rd("evidence_obligations.csv")
     N["epNObl"] = len(obl); N["epNOpen"] = sum(o["status"] in ("open", "assumed") for o in obl)

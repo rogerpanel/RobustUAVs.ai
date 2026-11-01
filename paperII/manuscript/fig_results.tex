@@ -27,7 +27,7 @@
 \end{tikzpicture}
 \caption{The estimated field by component and scope: weighted estimates of the number of
 eligible papers in the expanded field (searched corpus and three snowballing iterations). (a)~Across both tiers, perception guarantees are mostly per input or
-per population, and control guarantees mostly per trajectory. (b)~Among guarantees evaluated on
+per population, and control guarantees most often per trajectory. (b)~Among guarantees evaluated on
 vehicles (tier A), perception is still mostly per input; closed-loop perception through
 surrogates, which dominated the pilot, is rare. Provenance: \prov{full study, LLM coding}.}
 \label{fig:dist}
@@ -47,23 +47,23 @@ surrogates, which dominated the pilot, is rare. Provenance: \prov{full study, LL
 \addplot[thick, green!45!black] table[x=f, y=l2] {figdata/rate_req.dat};
 \addplot[thick, red!70!black] table[x=f, y=l3] {figdata/rate_req.dat};
 \addplot[thick, black, dashed] table[x=f, y=l4] {figdata/rate_req.dat};
-\legend{$10^{-3}$/h, $10^{-4}$/h, $10^{-5}$/h, $10^{-7}$/h, $10^{-9}$/h}
-\nextgroupplot[title={(b) credit for 3-of-3 confirmation}, ymode=log, xlabel={error persistence $\rho$},
+\legend{$10^{-3}$/FH, $10^{-4}$/FH, $10^{-5}$/FH, $10^{-7}$/FH, $10^{-9}$/FH}
+\nextgroupplot[title={(b) credit for 3-of-3 confirmation}, ymode=log, xlabel={error persistence $q$},
   ylabel={gain over $k{=}1$}, xmin=0, xmax=1, ymin=1, ymax=3e6, ytick={1,10,100,1e4,1e6}]
 \addplot[thick, blue!70!black, mark=*, mark size=1.2pt] table[x=rho, y=gain] {figdata/rate_corr.dat};
 \addplot[dashed, red!70!black, domain=0:1] {6.75};
 \addplot[dashdotted, gray, domain=0:1] {3};
 \addplot[dotted, black, thick, domain=0:1] {1.05e6};
-\node[font=\tiny, anchor=south, text=red!70!black] at (axis cs:0.45,7.5) {Markov floor 6.75};
+\node[font=\tiny, anchor=south, text=red!70!black] at (axis cs:0.45,7.5) {Markov floor \rateGainBound};
 \node[font=\tiny, anchor=north] at (axis cs:0.45,9e5) {independence ($\approx10^{6}$)};
 \node[font=\tiny, anchor=north, text=gray] at (axis cs:0.45,2.9) {any dependence: $k=3$};
 \end{groupplot}
 \end{tikzpicture}
 \caption{The arithmetic of the per-flight-hour quantifier. (a)~Largest per-decision hazard
 probability compatible with a per-hour target, $p^\star=\lambda/(3600f)$ (Proposition~\ref{pr:rate}(a)).
-At 30\,Hz and $10^{-4}$/h it is $\ratePstarThirty$. (b)~What temporal confirmation buys at
-30\,Hz and $10^{-4}$/h. Under independence the gain is about $10^{6}$. Under a first-order
-Markov error process the gain is never below $6.75$, whatever the persistence $\rho$, and under
+At 30\,Hz and $10^{-4}$/FH it is $\ratePstarThirty$. (b)~What temporal confirmation buys at
+30\,Hz and $10^{-4}$/FH. Under independence the gain is about $10^{6}$. Under a first-order
+Markov error process the gain is never below $\rateGainBound$, whatever the persistence $q$, and under
 arbitrary stationary dependence it is only guaranteed to be $k=3$ (Proposition~\ref{pr:rate}(b)). Provenance: \prov{derived} (closed form).}
 \label{fig:rate}
 \end{figure}

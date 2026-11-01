@@ -18,13 +18,13 @@
 % axes labels
 \foreach \s/\i/\lab in {in/0/$\mathsf{in}$, tr/1/$\mathsf{tr}$, op/2/$\mathsf{op}$,
                          popd/3/$\mathsf{pop}_\mathsf{d}$, poph/4/$\mathsf{pop}_\mathsf{h}$}
-  {\node[font=\footnotesize] at (\i*\dx, 4.2*\dy) {\lab};}
+  {\node[font=\footnotesize] at (\i*\dx, 4.5*\dy) {\lab};}
 \foreach \m/\j/\lab in {A/3.2/$\forall$, Ac/2.2/$\forall_\alpha$, P/1.1/$\mathbb{P}$, E/0/$\mathbb{E}$, X/-1/$\exists$}
   {\node[font=\footnotesize, anchor=east] at (-0.75, \j*\dy) {\lab};}
 \draw[black!15] (-0.65, 3.75*\dy) -- (4*\dx+0.7, 3.75*\dy);
 % states
-\node[st] (inA)   at (0*\dx, 3.2*\dy) {BP, SMT, LIP\\[-1pt]SEM, IMPL$^{+}$};
-\node[obj] (T6)   at (0*\dx, 3.2*\dy+0.62) {T6};
+\node[st] (inA)   at (0*\dx, 3.2*\dy) {BP, SMT, LIP\\[-1pt]SEM, MON\\[-1pt]IMPL$^{+}$};
+\node[obj] (T6)   at (0*\dx, 3.2*\dy+0.66) {T6};
 \node[st] (inAc)  at (0*\dx, 2.2*\dy) {RS};
 \node[st] (inP)   at (0*\dx, 1.1*\dy) {PROB};
 \node[st] (trA)   at (1*\dx, 3.2*\dy) {CLR, PIL\\[-1pt]NCERT};
@@ -34,8 +34,7 @@
 \node[st] (opP)   at (2*\dx, 1.1*\dy) {CP};
 \node[st, fill=gray!20] (opX) at (2*\dx, -1*\dy) {FALS};
 \node[st, fill=gray!20] (inE) at (0*\dx, 0*\dy) {GLOB$^{+}$};
-\node[st, fill=gray!20] (opE) at (2*\dx, 0*\dy) {ALG$^{+}$};
-\node[obj] (pdP)  at (3*\dx, 1.1*\dy) {PACB, GEN$^{+}$\\[-1pt]OPREL, CP$^{\mathrm{f}}$, T2};
+\node[obj] (pdP)  at (3*\dx, 1.1*\dy) {PACB, GEN$^{+}$\\[-1pt]ALG$^{+}$, OPREL\\[-1pt]CP$^{\mathrm{f}}$, T2};
 \node[obj] (pdE)  at (3*\dx, 0*\dy) {DTMC, T3};
 \node[obj] (phP)  at (4*\dx, 1.1*\dy) {T1};
 \draw[black!35] (T6) -- (inA);
@@ -65,6 +64,7 @@ guarantee classes ($^{+}$ added in the full study, $^{\mathrm{f}}$ a field varia
 types T1--T6. Each arrow is a lift with obligations
 (Table~\ref{tab:lifts}). Red arrows carry a statistical obligation, and every path from a
 $\forall$ state to a $\mathbb{P}$ state crosses one (Proposition~\ref{pr:nofree}). No arrow
-points left, and none leaves $\exists$ or $\mathbb{E}$.}
+points left, and none leaves $\exists$ or $\mathbb{E}$. For legibility the monitor lift is drawn
+from $\langle\scin,\modP\rangle$ only; it also applies from $\langle\scin,\modA\rangle$.}
 \label{fig:lattice}
 \end{figure}
