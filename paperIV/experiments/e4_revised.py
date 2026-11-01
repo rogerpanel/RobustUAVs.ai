@@ -15,7 +15,7 @@ Revisions, fixed BEFORE this evaluation and judged on fresh seeds:
   (ii)  two stealth budgets, each tested as its own Holm family:
         "r1_pooled" -- the R1 calibration supremum (results/r1_delta_adv.csv),
                        fixed before this run and NOT widened with the R1
-                       held-out maxima (runbook ground rule);
+                       held-out maxima (fixed in advance);
         "lp_revised" -- the R8 linear-programming bound for the revised stack
                        (anchor gate + D1 + D_sat, T_a = 5 s), which holds for
                        EVERY stealthy attack with probability >= 1 - eps over

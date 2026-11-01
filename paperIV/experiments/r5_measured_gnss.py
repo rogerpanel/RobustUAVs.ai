@@ -37,11 +37,11 @@ import run_pilot as RP
 import depbounds as db
 
 RES = RP.RES
-PARENT = Path(__file__).resolve().parents[2] / "results"
+SHARED = Path(__file__).resolve().parents[2] / "results"
 
 
 def envelope():
-    rows = [r for r in csv.DictReader((PARENT / "gamma_campaign_samples.csv").open())
+    rows = [r for r in csv.DictReader((SHARED / "gamma_campaign_samples.csv").open())
             if r["flight"] == "gps_jamming"]
     s = np.array([float(r["staleness_s"]) for r in rows]); e = np.array([float(r["err_m"]) for r in rows])
     order = np.argsort(s)

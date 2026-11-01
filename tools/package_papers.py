@@ -45,7 +45,9 @@ SUBSETS = {
     "III": ["paperIII", "results", "data/fetch_kaggle.py", "platform/backend/app/__init__.py", "platform/backend/app/corpus.py",
             "platform/backend/app/results.py", "requirements.txt",
             "LICENSE"],
-    "IV": ["paperIV", "results/gamma_campaign_samples.csv", "requirements.txt", "LICENSE"],
+    "IV": ["paperIV", "results/gamma_campaign_samples.csv", "results/provenance_distribution.csv",
+           "results/local_lipschitz.csv", "results/hop_ledger.csv", "schema", "ingest",
+           "docs/SCHEMA.md", "requirements.txt", "LICENSE"],
     # The mother paper (paper/paperD_v<N>.tex): its pipeline lives at the repository root.
     "D": ["certificates", "experiments", "ingest", "schema", "results", "third_party", "patches",
           "data/fetch_kaggle.py", "docs/SCHEMA.md", "docs/data_staging_layout.md",
@@ -60,6 +62,7 @@ EXCLUDE = [re.compile(p) for p in (r"\.pt$", r"/logs_r/", r"/server_logs/(?!r4c_
                                    # internal working notes, superseded for reviewers by README.md
                                    r"/paperI/RUNBOOK\.md$", r"/paperII/RUNBOOK\.md$",
                                    r"/paperIII/RUNBOOK\.md$", r"/paperIV/RUNBOOK\.md$",
+                                   r"/paperIV/experiments/r8_assemble\.py$",
                                    # runs only inside the hosted page runtime it was built for
                                    r"/paperII/experiments/screening_page\.html$")]
 

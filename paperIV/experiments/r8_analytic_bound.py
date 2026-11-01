@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""R8 -- an analytic stealth budget for the linear loop (runbook R8).
+"""R8 -- an analytic stealth budget for the linear loop (analytic stealth budget).
 
 The pilot's delta_adv is an empirical supremum over optimised attackers. Here
 we bound the attack-only deviation of EVERY stealthy attack by a linear

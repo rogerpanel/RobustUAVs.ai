@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""R1 -- stronger attackers and a re-pooled stealth budget (runbook R1, load-bearing).
+"""R1 -- stronger attackers and a re-pooled stealth budget (scaled attacker study).
 
 1. Optimisers, per (stack x family x operating point), on the same objective as
    the pilot's CEM (mean over K missions of the post-onset deviation of stealthy

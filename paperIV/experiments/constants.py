@@ -9,7 +9,7 @@ Tags
 """
 import math
 
-# ---------------------------------------------------------------- parent chain
+# ---------------------------------------------------------------- delay certificate
 GAMMA_SUP = 1.625        # [shared] m/s, campaign supremum over 674 samples
 SLACK_S = 4.84           # [shared] s, saturation of the undetected relay delay
 H_HOPS = 2               # [shared] malicious hops in the paper operating point

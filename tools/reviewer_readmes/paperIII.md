@@ -22,7 +22,7 @@ mirror and the original commit history have been removed and will be restored on
 
 ## 1. Quick check (about 5 minutes)
 
-No number in `manuscript/main.tex` is typed by hand. Each one is a macro in
+Every result in `manuscript/main.tex` is a macro in
 `manuscript/numbers.tex` (456 macros), which `make_numbers.py` writes from the result files,
 together with the tables `tab_*.tex` and the plotted points in `manuscript/figdata/`.
 

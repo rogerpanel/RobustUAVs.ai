@@ -32,7 +32,7 @@
 \node[b={cBlue}{27mm}] (net) at (0, 0.2)  {\textbf{Network corpora}\\HCRL UAVCAN $\cdot$ UAVIDS-2025\\UAV-CAS $\cdot$ DATAMUt replay};
 \node[b={cBlue}{27mm}] (nav) at (0,-1.25) {\textbf{Navigation corpora}\\Whelan (real flights)\\UAV-EW-Bench};
 \node[b={cBlue}{27mm}] (flt) at (0,-2.7)  {\textbf{Fault / env.\ (added)}\\RflyMAD $\cdot$ ALFA\\Dryden (MIL-F-8785C)};
-\node[b={cBlue}{30mm}] (schema) at (3.75,-0.45) {\textbf{Lossless adapters}\\cross-layer schema v0.2\\Event $\cdot$ AttackWindow\\\textbf{CrossLayerPairing}};
+\node[b={cBlue}{30mm}] (schema) at (3.75,-0.45) {\textbf{Adapters}\\cross-layer schema v0.2\\Event $\cdot$ AttackWindow\\\textbf{CrossLayerPairing}};
 \node[b={cBlue}{30mm}] (prov) at (3.75,-2.3) {\textbf{Provenance flag}\\{\tiny\texttt{measured\_same\_platform}\\\texttt{physics\_model}\\\texttt{synthetic\_alignment}}};
 \draw[arr] (net.east) -- ++(1.5mm,0) |- (schema.west);
 \draw[arr] (nav.east) -- ++(1.5mm,0) |- (schema.west);

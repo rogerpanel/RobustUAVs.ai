@@ -40,7 +40,7 @@ STK = ["D1", "D2", "D3", "D4", "ALL"]
 DET = ["D1", "D2", "D3", "D4"]
 hum = lambda f: f.replace("_", " ")
 
-# ------------------------------------------------------------- parent + run
+# ------------------------------------------------------------- certificate constants + run
 mac("nParentSlack", fmt(SLACK_S, 2)); mac("nParentHops", th_(15392))
 mac("nParentGamma", fmt(GAMMA_SUP, 3)); mac("nParentL", fmt(L_LOC, 3))
 net_tube = lambda t: AMP * GAMMA_SUP * H_HOPS * min(t, SLACK_S)

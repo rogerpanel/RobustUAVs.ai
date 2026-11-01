@@ -13,7 +13,7 @@ have been removed and will be restored on acceptance.
 |---|---|
 | Language | Python 3.10 or newer |
 | Dependencies | `numpy`, `scipy` (quick check, pilot, analytic and measured-marginal studies); `cma`, `optuna` in addition for the scaled attacker study and the revised instantiation; TeX Live 2022+ to build the paper |
-| Run time | quick check about a minute; pilot about 27 min on 2 cores; scaled attacker study about 10 CPU-hours; revised instantiation about 30 min on 4 cores; analytic stealth budget at T_a = 5 s about 1 h on 4 cores (full T_a sweep about 14 h) |
+| Run time | quick check about a minute; pilot about 27 min on 2 cores; scaled attacker study about 10 CPU-hours; revised instantiation about 30 min on 4 cores; analytic stealth budget at T_a = 5 s about 40 min on 4 cores (full T_a sweep about 14 h) |
 | Hardware | CPU only, no GPU and no flight simulator; the pilot peaks below 1.5 GB of RAM |
 | Licence | MIT (`LICENSE`); third-party data remain under their own licences |
 
@@ -30,7 +30,7 @@ git status --short               # expected: no output
 cd paperIV/manuscript && latexmk -pdf main.tex
 ```
 
-No number in the manuscript is typed by hand. Each one is a macro in `manuscript/numbers.tex`
+Every result in the manuscript is a macro in `manuscript/numbers.tex`
 (309 macros), which `make_numbers.py` writes from the files in `paperIV/results/`; the four table
 bodies (`tab_*_body.tex`) and the pgfplots data (`figdata/*.dat`) are written by the same script.
 `r5_measured_gnss.py` and `r1_diagnose.py` recompute two of the studies from committed inputs and
@@ -97,9 +97,10 @@ cd ../manuscript && latexmk -pdf main.tex
 
 Each stage reads the outputs of the stages above it, so the order matters. The paper uses the
 analytic budget at T_a = 5 s only; `r8_analytic_bound.py --par 4 --anchors 5 --out r8_ta5.csv`
-computes those rows in about an hour and writes them next to the committed table for comparison.
-The other intervals add about 13 h. `r8_assemble.py` builds the same table from the log of a
-sweep run in parts.
+computes those rows in about 40 minutes and writes them next to the committed table for
+comparison; the other intervals add about 13 h. `r8_assemble.py` is the script that assembled the
+committed table from a sweep run in parts; running `r8_analytic_bound.py` with its default
+intervals writes the table directly.
 
 The simulation scripts write to `paperIV/results/`, or to the directory named by `P4_RESULTS`
 (`make_numbers.py` always reads `paperIV/results/`). To re-run the pilot without touching the
@@ -148,7 +149,10 @@ representation:
   airframe), `physics_model` (coupled through a stated physical relation) or
   `synthetic_alignment` (aligned in simulation).
 
-The evasion study runs in simulation, so its records carry `synthetic_alignment`. The result files
+The evasion study runs in simulation, so its results belong to the class the schema flags as
+`synthetic_alignment`. The schema files are `schema/uavsec_schema.json` (v0.1) and
+`schema/uavsec_schema_v0.2.json`, which adds `perturbation_source` as an optional field, so v0.1
+records remain valid; the adapters are in `ingest/`. The result files
 of the follow-up studies carry a `provenance` column on every row: `sim` for simulation outputs,
 `physics_model` for the analytic stealth budget, `measured` for the jamming envelope, and
 `measured+sim` where that envelope is combined with simulated marginals. The pilot's result files
@@ -222,8 +226,8 @@ paperIV/experiments/   constants.py         every input, with a provenance tag
                        e2y_no_anchor_gate.py   cross-evaluation with the anchor gate removed
                        r1_attackers.py      scaled attacker study and soundness test
                        r1_diagnose.py       diagnosis of the scaled test's violations
-                       r8_analytic_bound.py analytic (LP) stealth budget; r8_assemble.py builds its
-                                            table from a sweep run in parts
+                       r8_analytic_bound.py analytic (LP) stealth budget; r8_assemble.py assembled
+                                            its committed table from a sweep run in parts
                        r5_measured_gnss.py  measured jamming marginal
                        e4_revised.py        revised instantiation on fresh seeds
                        make_numbers.py      numbers.tex, tab_*_body.tex, figdata/*.dat

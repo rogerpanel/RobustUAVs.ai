@@ -618,25 +618,22 @@ number of released \code{measured\_same\_platform} pairings is therefore zero,
 and every record states this.
 
 \paragraph{Corpora and tooling.}
-The schema's lossless adapters ingest the HCRL UAVCAN bus corpus~\cite{kim2022uavcan},
+The schema's adapters ingest the HCRL UAVCAN bus corpus~\cite{kim2022uavcan},
 UAVIDS-2025~\cite{zeng2025uavids}, UAV-CAS~\cite{mishra2026uavcas}, a replay of
 the DATAMUt time-delay detector~\cite{soltani2026datamut}, the UAV Attack
 Dataset, and the physics-informed UAV-EW-Bench~\cite{uavewbench2026}. Together
 these give \nEventsTotal{} events, of which \nEventsReal{} were captured on real
-hardware. Each adapter is verified by a hash round-trip, so that no source
-column is discarded. The fault and environment sources added in this paper
+hardware. The fault and environment sources added in this paper
 enter through the RflyMAD~\cite{le2025rflymad} and ALFA~\cite{keipour2021alfa}
-fault taxonomies and the Dryden model~\cite{milf8785c}. The artifact also ships
-a detector-operating-curve harness that sweeps $\theta$, the dependence-bound
-library (union, RA, independence, comonotone), the disguise-evasion harness of
-\cref{sec:evasion}, and datasheets~\cite{gebru2021} that map each pitfall of Arp
-et al.~\cite{arp2022dos} to its mitigation. Third-party data is fetched from its
+fault taxonomies and the Dryden model~\cite{milf8785c}. The artifact also ships the schema (versions~0.1 and~0.2) with its adapters,
+the dependence-bound library (union, RA, independence, comonotone) and the
+disguise-evasion harness of \cref{sec:evasion}. Third-party data is fetched from its
 origin under its own licence. We release adapters and unified labels but do
 not redistribute the corpora. In this paper the substrate supplies the interface
 constants of the network term ($\gamma$, $s$, $L$; \cref{sec:background}), and
-the event totals come from the artifact's provenance ledger. The evasion study
-itself runs in simulation, and its records enter the schema with the provenance
-flag \code{synthetic\_alignment}.
+the event totals come from the provenance ledger shipped with the artifact. The evasion study
+itself runs in simulation, so its results belong to the class the schema flags
+as \code{synthetic\_alignment}.
 
 % =====================================================================
 \section{Evasion Study Design}
