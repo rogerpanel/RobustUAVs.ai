@@ -52,35 +52,40 @@ The γ samples (`results/gamma_campaign_samples.csv`) and the HCRL rate signatur
 (`results/hcrl_type_signatures.csv`) at the repository root are measured inputs shared with the
 pipeline that produced them; they are committed, so no download is needed.
 
-## 3. Experiments that need raw data
+## 3. Re-running the measurements on raw data
 
-`e1_inertial_gamma.py` and `e5_hcrl_bus.py` read raw flight logs and bus captures. Their
-outputs are committed. Without the raw data, `run_all.sh` prints `SKIPPED` for these two steps, writes nothing for them, and uses the committed outputs. To re-run them, stage
-the public source datasets under `data/raw/` as `data/fetch_kaggle.py` describes. The address of
-the aggregated mirror is withheld during review because it identifies the authors; the sources
-themselves are public and cited in the paper.
+`e1_inertial_gamma.py` and `e5_hcrl_bus.py` read raw flight logs and bus captures, and their
+outputs are committed. Without the raw data, `run_all.sh` prints `SKIPPED` for these two steps,
+writes nothing for them, and uses the committed outputs. To re-run them, stage the public source
+datasets under `data/raw/` as `data/fetch_kaggle.py` describes. The address of the aggregated
+mirror is withheld during review because it identifies the authors; the sources themselves are
+public and cited in the paper.
 
-## 4. What has and has not been measured
+## 4. Measured inputs and extensions
 
-Table "Validation Status of the Inputs" in the paper lists, for each modelled input, the
-experiment that would replace it. Two have been performed: the GNSS-outage experiment and the
-decoding of the HCRL capture. The others have not been run, and no result depends on them:
+Two measurements in the paper go beyond the released corpora: the GNSS-outage experiment, which
+measures dead reckoning at 200 onsets on the benign flight's IMU log, and the decoding of the
+HCRL UAVCAN capture, which gives the bus payload mix. Every other input carries a provenance tag
+(derived, literature, physics model or assumption), and the paper's table "Validation Status of
+the Inputs" names the measurement that would refine each one.
 
-- visual-inertial odometry on EuRoC (γ without GNSS);
+The pipeline is built for such refinements. A new measured result file replaces the
+corresponding constant in `constants.py`, the literature value is kept as the fallback, and
+`provenance_paperI.csv` records which one was used. Every number in the paper then updates
+without any edit to the text. Natural extensions include:
+
+- visual-inertial odometry on EuRoC, for γ without GNSS;
 - a PX4 software-in-the-loop sweep with a rejection arm, in hover and at 5–15 m/s cruise;
 - STM32H7 cycle counts and the ML-DSA signing tail;
 - hardware CAN bus timing and a hardware flood test;
 - a GNSS time push against MAVLink 2 signing in simulation;
 - an OSNMA time-offset replay.
 
-Because every number is generated from the result files, a measured input that replaces a
-modelled one changes the paper without any edit to the text.
-
-Two caveats the paper states are worth repeating here. The authenticated rate γ_a is a proxy
-taken from a jamming flight on which the receiver kept its fix. The GNSS-outage measurement
-(1.14 m/s, interval 0.68–1.14 m/s) contains the proxy, so the proxy is kept, but the difference
-is not resolved. The CAN bit rate (1 Mbit/s) is assumed, because the capture's timestamps are
-too coarse to measure it (`e5_hcrl_bus.csv`, column `bitrate_verdict`).
+Two modelling choices, both stated in the paper, are worth knowing when reading the results. The
+authenticated rate γ_a is taken from a jamming flight on which the receiver kept its fix; the
+GNSS-outage measurement (1.14 m/s, interval 0.68–1.14 m/s) contains this value, so it is
+retained. The CAN bit rate is set to the DroneCAN default of 1 Mbit/s, because the capture's
+timestamps are too coarse to measure it (`e5_hcrl_bus.csv`, column `bitrate_verdict`).
 
 ## 5. Layout
 

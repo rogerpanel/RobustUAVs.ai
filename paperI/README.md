@@ -30,5 +30,6 @@ cd paperI/manuscript && latexmk -pdf main.tex
 
 For Overleaf, upload the `manuscript/` folder; the main file is `main.tex`.
 
-The experiments that have and have not been run are listed in the paper's table "Validation
-Status of the Inputs" and in the README at the root of the review artifact.
+Measured inputs, and the measurements that would refine the modelled ones, are listed in the
+paper's table "Validation Status of the Inputs" and in the README at the root of the review
+artifact.
