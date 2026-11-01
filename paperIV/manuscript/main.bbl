@@ -65,10 +65,6 @@ M.~Lecuyer, V.~Atlidakis, R.~Geambasu, D.~Hsu, and S.~Jana, ``Certified
   robustness to adversarial examples with differential privacy,'' in
   \emph{Proc. IEEE Symp. Security and Privacy (S\&P)}, 2019, pp. 656--672.
 
-\bibitem{parentpaper}
-{Anonymous}, ``From wire to flight: A conditional mission-completion guarantee
-  for {UAVs},'' 2026, under submission; anonymised for double-blind review.
-
 \bibitem{roy2023}
 T.~Roy and S.~Dey, ``On distinguishability of anomalies as physical faults or
   actuation cyberattacks,'' arXiv:2311.09342, 2023.
@@ -103,9 +99,14 @@ G.~D. Makarov, ``Estimates for the distribution function of a sum of two random
 L.~R{\"u}schendorf, ``Random variables with maximum sums,'' \emph{Advances in
   Applied Probability}, vol.~14, no.~3, pp. 623--632, 1982.
 
-\bibitem{paperII}
-{Anonymous}, ``{SoK}: The quantifier gap between certified robustness and
-  airworthiness assurance,'' 2026, under submission.
+\bibitem{artifact}
+{Anonymous}, ``Cross-layer {UAV} security benchmark: Adapters, pairing
+  pipeline, certificate engine and evasion harness,'' 2026, anonymised
+  artifact; public DOI withheld for review.
+
+\bibitem{whelan2020dataset}
+J.~Whelan, T.~Sangarapillai, O.~Minawi, A.~Almehmadi, and K.~El-Khatib, ``{UAV}
+  attack dataset,'' IEEE DataPort, 2020.
 
 \bibitem{gronwall1919}
 T.~H. Gr{\"o}nwall, ``Note on the derivatives with respect to a parameter of
@@ -157,23 +158,19 @@ M.~J. Frank, R.~B. Nelsen, and B.~Schweizer, ``Best-possible bounds for the
   distribution of a sum---a problem of {Kolmogorov},'' \emph{Probability Theory
   and Related Fields}, vol.~74, no.~2, pp. 199--211, 1987.
 
-\bibitem{puccetti2012}
-G.~Puccetti and L.~R{\"u}schendorf, ``Computation of sharp bounds on the
-  distribution of a function of dependent risks,'' \emph{J. Computational and
-  Applied Mathematics}, vol. 236, no.~7, pp. 1833--1840, 2012.
-
 \bibitem{embrechts2013var}
 P.~Embrechts, G.~Puccetti, and L.~R{\"u}schendorf, ``Model uncertainty and
   {VaR} aggregation,'' \emph{J. Banking \& Finance}, vol.~37, no.~8, pp.
   2750--2764, 2013.
 
+\bibitem{puccetti2012}
+G.~Puccetti and L.~R{\"u}schendorf, ``Computation of sharp bounds on the
+  distribution of a function of dependent risks,'' \emph{J. Computational and
+  Applied Mathematics}, vol. 236, no.~7, pp. 1833--1840, 2012.
+
 \bibitem{hofert2020}
 M.~Hofert, ``Implementing the rearrangement algorithm: An example from
   computational risk management,'' \emph{Risks}, vol.~8, no.~2, p.~47, 2020.
-
-\bibitem{whelan2020dataset}
-J.~Whelan, T.~Sangarapillai, O.~Minawi, A.~Almehmadi, and K.~El-Khatib, ``{UAV}
-  attack dataset,'' IEEE DataPort, 2020.
 
 \bibitem{mishra2026uavcas}
 S.~Mishra, B.~Bhargava, Z.~Liu, and S.~Islam, ``{UAV-CAS}: A calibrated
@@ -587,11 +584,6 @@ R.~B. Ilyes, Q.~H. Ho, and M.~Lahijanian, ``Stochastic robustness interval for
 {USENIX Association}, ``{USENIX Security '25} ethics guidelines,''
   \url{https://www.usenix.org/conference/usenixsecurity25/ethics-guidelines},
   2024.
-
-\bibitem{artifact}
-{Anonymous}, ``Cross-layer {UAV} security benchmark: Adapters, pairing
-  pipeline, certificate engine and evasion harness,'' 2026, anonymised
-  artifact; public DOI withheld for review.
 
 \bibitem{elsheimy2008}
 N.~El-Sheimy, H.~Hou, and X.~Niu, ``Analysis and modeling of inertial sensors

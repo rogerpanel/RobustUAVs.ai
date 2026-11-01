@@ -35,7 +35,7 @@
 \end{axis}
 \end{tikzpicture}\\[-1pt]
 \pgfplotslegendfromname{rocleg}
-\caption{Detector operating curves against two \emph{naive} offsets, with
+\caption{Detector operating curves against two naive offsets, with
 thresholds swept over \nCalMissions{} benign missions (dashed line: the 5\%
 operating point). Only D2 and D4 separate a naive 5\,m step, and only D2
 separates the ramp.}
@@ -61,8 +61,8 @@ optimised against the full stack) and maximised over the five disguise
 families, on the same missions at every $T_a$. With every interval closed, the
 largest undetected contribution grows from \nAnchorMaxFive{} to
 \nAnchorMaxTwenty\,m (\nAnchorMultTwenty$\times$). With the final segment
-before mission end unchecked, it grows \nOpenMultTwenty$\times$ to
-\nOpenMaxTwenty\,m.}
+before mission end unchecked, it grows \nOpenMultTwenty$\times$, from
+\nOpenMaxFive{} to \nOpenMaxTwenty\,m.}
 \label{fig:anchor}
 \end{figure}}
 
@@ -82,8 +82,8 @@ before mission end unchecked, it grows \nOpenMultTwenty$\times$ to
 \addplot[cGray, mark=*, mark size=1pt, only marks] table[x=s,y=joint]{figdata/gap.dat}; \addlegendentry{joint simulation}
 \end{semilogyaxis}
 \end{tikzpicture}
-\caption{Where the looseness lives (tail of the benign budget). Union and RA
-nearly coincide. The steps down from RA are: to independent sums at the upper
+\caption{Decomposition of the looseness (tail of the benign budget). Union and
+RA nearly coincide. The steps down from RA are: to independent sums at the upper
 wind envelope (dependence gap); to independent sums at the wind actually
 flown (envelope gap); to the sum of per-source suprema on the same missions,
 which confirms that the simulated sources are independent; and to the joint

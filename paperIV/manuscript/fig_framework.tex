@@ -31,8 +31,8 @@
 % Phase I
 \node[b={cBlue}{27mm}] (net) at (0, 0.2)  {\textbf{Network corpora}\\HCRL UAVCAN $\cdot$ UAVIDS-2025\\UAV-CAS $\cdot$ DATAMUt replay};
 \node[b={cBlue}{27mm}] (nav) at (0,-1.25) {\textbf{Navigation corpora}\\Whelan (real flights)\\UAV-EW-Bench};
-\node[b={cBlue}{27mm}] (flt) at (0,-2.7)  {\textbf{Fault / environment}\\RflyMAD $\cdot$ ALFA\\Dryden (MIL-F-8785C)};
-\node[b={cBlue}{30mm}] (schema) at (3.75,-0.45) {\textbf{Lossless adapters}\\two-layer schema v0.2\\Event $\cdot$ AttackWindow\\\textbf{CrossLayerPairing}};
+\node[b={cBlue}{27mm}] (flt) at (0,-2.7)  {\textbf{Fault / env.\ (added)}\\RflyMAD $\cdot$ ALFA\\Dryden (MIL-F-8785C)};
+\node[b={cBlue}{30mm}] (schema) at (3.75,-0.45) {\textbf{Lossless adapters}\\cross-layer schema v0.2\\Event $\cdot$ AttackWindow\\\textbf{CrossLayerPairing}};
 \node[b={cBlue}{30mm}] (prov) at (3.75,-2.3) {\textbf{Provenance flag}\\{\tiny\texttt{measured\_same\_platform}\\\texttt{physics\_model}\\\texttt{synthetic\_alignment}}};
 \draw[arr] (net.east) -- ++(1.5mm,0) |- (schema.west);
 \draw[arr] (nav.east) -- ++(1.5mm,0) |- (schema.west);
@@ -49,9 +49,9 @@
 \draw[arr] (denv.east) -- ++(1.5mm,0) |- (marg.west);
 \draw[arr] (prov.east) -- ++(2.5mm,0) |- node[lab, pos=0.3, left] {source\\tags} (dfault.west);
 % Phase IV
-\node[b={cPurple}{36mm}] (gron)  at (14.0, 0.55) {\textbf{Gr\"onwall tube} (parent)\\$\rho=\delta\,e^{LT}\le m$\\under (C1)--(C3)};
+\node[b={cPurple}{36mm}] (gron)  at (14.0, 0.55) {\textbf{Gr\"onwall tube} (\S\ref{sec:background})\\$\rho=\delta\,e^{LT_c}\le m$\\under (C1)--(C3)};
 \node[b={cPurple}{36mm}] (agg)   at (14.0,-0.9) {\textbf{Dependence-sharp aggregation}\\$\overline p(s)=\sup_{C}\Pr_C[\sum_i X_i>s]$\\union, RA (indep., comon.\ for reference)};
-\node[b={cPurple}{36mm}] (floor) at (14.0,-2.55) {\textbf{Certified bound}\\$\Pr[\mathrm{fail}\wedge U]\le\overline p(s_m)$\\$s_m=m-e^{LT}\dnet-\delta_{\mathrm{adv}}$};
+\node[b={cPurple}{36mm}] (floor) at (14.0,-2.55) {\textbf{Certified bound}\\$\Pr[\mathrm{fail}\wedge U]\le\overline p(s_m)$\\$s_m=m-e^{LT_c}\dnet-\delta_{\mathrm{adv}}$};
 \draw[arr] (marg.east) -- (agg.west);
 \draw[arr] (gron) -- (agg);
 \draw[arr] (agg) -- (floor);
@@ -83,15 +83,16 @@
 \node[phase, fit=(threat)(dets)(opt)(dadv)] (P3) {};
 \node[phase, fit=(eval)(sound)(audit)(rel)] (P5) {};
 \end{scope}
-\node[ptitle] at ([yshift=0.5mm]P1.north west) {I.\ Cross-layer benchmark (\S\ref{sec:benchmark})};
+\node[ptitle] at ([yshift=0.5mm]P1.north west) {I.\ Cross-layer substrate (\S\ref{sec:benchmark})};
 \node[ptitle] at ([yshift=0.5mm]P2.north west) {II.\ Sources and semantics (\S\ref{sec:budget})};
 \node[ptitle] at ([yshift=0.5mm]P4.north west) {IV.\ Source-agnostic floor (\S\ref{sec:budget})};
 \node[ptitle] at ([yshift=0.5mm]P3.north west) {III.\ Threat model and evasion (\S\ref{sec:threat}, \S\ref{sec:evasion})};
 \node[ptitle] at ([yshift=0.5mm]P5.north west) {V.\ Measurement and soundness (\S\ref{sec:eval})};
 \end{tikzpicture}}
-\caption{Methodological framework. Phase~I unifies network, navigation, fault and
-environment corpora under one schema whose unit of record is the cross-layer
-pairing, each carrying a mandatory provenance flag. Phase~II assigns every
+\caption{Methodological framework. Phase~I is the experimental substrate: network
+and navigation corpora under a cross-layer schema whose unit of record is the
+cross-layer pairing, extended here with fault and environment sources; every
+pairing carries a mandatory provenance flag. Phase~II assigns every
 perturbation source its probabilistic semantics and estimates its marginal on a
 calibration split. Phase~III formalises adversarial equivalence and searches,
 for each detector stack and operating point~$\theta$, for the disguise that

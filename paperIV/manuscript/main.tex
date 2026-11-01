@@ -66,7 +66,7 @@
 
 \begin{document}
 \title{When the Attacker Is Indistinguishable from the Weather:\\
-A Cross-Layer Benchmark and a Unified Perturbation Budget\\ for Certified UAV Autonomy}
+A Unified Perturbation Budget for Certified UAV Autonomy}
 \author{\IEEEauthorblockN{Paper \#XXX}
 \IEEEauthorblockA{Submitted for double-blind review}}
 \maketitle
@@ -83,8 +83,8 @@ violated.
 A \emph{unified perturbation budget} over adversarial, GNSS, sensor-fault and environmental
 terms bounds the probability of undetected mission failure. Dependence-sharp aggregation
 (Makarov bounds, Rearrangement Algorithm) makes it hold for every coupling of benign sources,
-even one set by an attacker who controls when jamming happens. A cross-layer benchmark pairs each network or environmental event with the
-navigation window it induces, under a mandatory provenance flag.
+even one set by an attacker who controls when jamming happens. We extend a cross-layer event schema with fault and environmental sources, each tagged
+with its provenance.
 
 In \nMissionsTotal{} simulated missions, \nPooledAttackers{} optimised attackers in five
 disguise families evade four detectors in at least \nCrossEvMin{} of missions. A
@@ -94,8 +94,8 @@ points; stronger optimisers over \nROneTests{} points found \nROneViol{} violati
 from disguise, all from two broken theorem conditions (an unchecked actuator limit, a small
 calibration sample). Once fixed, \nRevEmpTests{} fresh-seed tests showed
 \nRevEmpViol{} violations, though the empirical stealth budget was again exceeded and a provable
-one is \nREightSatRatio$\times$ larger; measured jamming data halve the certified floor at
-10\,m. UAV safety cases should therefore budget for attacks disguised as tolerated
+one is \nREightSatRatio$\times$ larger; measured jamming data cut the certified floor at
+10\,m two- to threefold. UAV safety cases should therefore budget for attacks disguised as tolerated
 disturbances, not trust detection to catch them.
 \end{abstract}
 
@@ -113,34 +113,35 @@ literature: network intrusion detection systems (IDSs) for the links and the
 bus~\cite{zeng2025uavids,kim2022uavcan,whelan2020novelty}, physical-invariant
 and residual monitors for the estimator~\cite{choi2018,quinonez2020savior,dash2019},
 and certified robustness for learned
-components~\cite{cohen2019smoothing,lecuyer2019}. Our concern is a question none
-of these defences is designed to answer. When some attacks inevitably get
-through, can the mission still be completed, and can that be proved?
+components~\cite{cohen2019smoothing,lecuyer2019}. We address a question that
+none of these defences is designed to answer: whether, once some attacks
+inevitably get through, the mission can still be completed, and whether this
+can be proved.
 
-A companion paper~\cite{parentpaper} answered a narrow version of this question
-for a single attack class. A relay that delays peer position reports by just
-less than a detector's threshold produces a bounded staleness, the staleness
-produces a bounded navigation error, and a Lipschitz--Gr\"onwall tube converts
-that error into a certified floor on the mission-completion rate (MCR). That
-chain assumed the attacker announces itself as an attacker: its perturbation
-was the only one in the budget, and its type was known.
+For a single attack class, a narrow version of this question has a known
+answer, which \cref{sec:background} restates. A relay that delays peer position
+reports by just less than a detector's threshold produces a bounded staleness,
+the staleness produces a bounded navigation error, and a Lipschitz--Gr\"onwall
+tube converts that error into a certified floor on the mission-completion rate
+(MCR). That chain assumes a declared attacker, whose perturbation is the only
+one in the budget and whose type is known.
 
-\paragraph{The attacker who dresses as the weather.}
+\paragraph{Attacks disguised as benign disturbances.}
 Real navigation errors have many causes. A GNSS receiver drifts with the
 ionosphere and multipath; an accelerometer bias steps or random-walks; wind
-pushes the airframe, and the controller fights back. A defender therefore tunes
-every monitor to tolerate these benign disturbances, and the tolerance is
-precisely the space in which an attacker can hide. Dash et
+pushes the airframe, and the controller compensates. A defender therefore tunes
+every monitor to tolerate these benign disturbances, and that tolerance is the
+space in which an attacker can hide. Dash et
 al.\ observed that control-invariant monitors ``have to accommodate some degree
 of deviation \ldots due to environmental factors such as friction or
 wind''~\cite{dash2019}. Roy and Dey proved that an actuator attack lying in the
 range of the fault-input matrix is indistinguishable from a
 fault~\cite{roy2023}. Khazraei et al.\ showed that a GPS-only attacker can cause
-arbitrarily large deviation against \emph{any} detector when the closed loop is
+arbitrarily large deviation against any detector when the closed loop is
 incrementally exponentially stable~\cite{khazraei2024}, and a recent spoofer
 deliberately exploited the controller's wind compensation to deviate a PX4
-vehicle undetected~\cite{kim2024predictable}. We take these observations to
-their security conclusion:
+vehicle undetected~\cite{kim2024predictable}. These observations lead to
+the following security conclusion.
 
 \begin{quote}\itshape
 From the navigation input alone, shaped adversarial interference, a sensor
@@ -151,12 +152,12 @@ against the attacker who dresses as the weather.
 \end{quote}
 
 \noindent
-The conclusion has two consequences that the single-source view misses. First,
-a detector tuned to malicious signatures is the wrong last line of defence: the
-decisive attack is the one that looks benign. Second, a guarantee is worth
-having only if it is \emph{source-agnostic}, meaning it bounds the mission
-outcome whatever mixture of attack, fault, outage and wind produced the
-perturbation, and whatever their mutual dependence.
+The conclusion has two consequences that a single-source view misses. First,
+a detector tuned to malicious signatures is a poor last line of defence, since
+the decisive attack is the one that looks benign. Second, a useful guarantee
+must be \emph{source-agnostic}: it must bound the mission outcome
+whatever mixture of attack, fault, outage and wind produced the perturbation,
+and whatever their mutual dependence.
 
 \paragraph{Contributions.}
 \begin{itemize}
@@ -165,10 +166,10 @@ perturbation, and whatever their mutual dependence.
   benign disturbances, bound any detector's advantage by the total-variation
   (TV) distance (\cref{lem:lecam}), and show that a detector-gated certificate
   can be violated by an equivalent attack whose undetected deviation exceeds
-  the corridor (\cref{prop:gated}). The observation that attacks can mimic faults
-  is not new~\cite{roy2023,bai2017,hashemi2018}; what is new is making the
-  disguise an optimisation variable of the attacker and deriving from it a
-  requirement on the certificate.
+  the corridor (\cref{prop:gated}). That attacks can mimic faults is
+  known~\cite{roy2023,bai2017,hashemi2018}; we make the disguise an
+  optimisation variable of the attacker and derive from it a requirement on
+  the certificate.
 \item \textbf{A unified perturbation budget with mixed semantics
   (\cref{sec:budget}).} The budget
   $\dtot=\dnet(\theta)\oplus\dadv(\theta)\oplus\dgnss\oplus\dfault\oplus\denv$
@@ -178,17 +179,18 @@ perturbation, and whatever their mutual dependence.
   (\cref{thm:floor}) and characterise its tightness (\cref{prop:union}). The
   union bound is the classical standard bound~\cite{makarov1981,ruschendorf1982}.
   It is sharp for two sources, so it is the right quantity when the coupling is
-  unknown. Against a \emph{known} benign coupling it is loose: by a factor up to
-  the number of sources under comonotonicity, and without bound under
-  independence. Deterministic terms add no dependence gap at all. This corrects
-  the hypothesis in our earlier proposal, that a joint treatment recovers the
-  slack precisely under comonotonicity.
-\item \textbf{A cross-layer benchmark with enforced provenance
-  (\cref{sec:benchmark}).} Six network and navigation corpora are ingested
-  through lossless adapters, and fault and environment sources are added under
-  a schema whose unit of record is the cross-layer pairing. Every pairing states
-  whether its coupling was measured on one airframe, derived from a physical
-  model, or aligned in simulation.
+  unknown. Against a known benign coupling it is loose, by a factor of up to
+  the number of sources under comonotonicity and without bound under
+  independence. Deterministic terms add no dependence gap. Contrary to a
+  common intuition, comonotonicity is therefore not the case in which a joint
+  treatment recovers most of the slack.
+\item \textbf{Fault and environmental sources in a cross-layer event schema
+  (\cref{sec:benchmark}).} The evaluation runs on a cross-layer event schema,
+  released in the artifact, whose unit of record is the pairing of a network or
+  environmental window with the navigation window it induces. We extend it
+  with fault and environmental perturbation sources, each of whose pairings
+  states whether its coupling was measured on one airframe, derived from a
+  physical model, or aligned in simulation.
 \item \textbf{An evasion study and a soundness test (\cref{sec:evasion,sec:eval}).}
   Against four detector designs and their combination, an optimising attacker
   searches over five disguise families. We cross-evaluate every optimised
@@ -201,9 +203,9 @@ perturbation, and whatever their mutual dependence.
 \item \textbf{A negative result and its repair (\cref{sec:scaled,sec:revised}).}
   Stronger optimisers and a test scaled to \nROneTests{} points found the
   pilot instantiation unsound: \nROneViol{} Holm-significant violations,
-  traced to two conditions that it assumed but did not secure. Neither
-  concerns disguise. We repair both with a run-time saturation alarm and a
-  finite-sample p-box, and judge the repair on fresh seeds. A linear-programming
+  traced to two conditions that it assumed but did not secure, neither of
+  which concerns disguise. We repair both with a run-time saturation alarm and
+  a finite-sample p-box, and evaluate the repair on fresh seeds. A linear-programming
   bound on the stealth budget, valid for every attack, exists only once the
   saturation alarm is armed, and it is \nREightSatRatio$\times$ the empirical
   one.
@@ -212,11 +214,11 @@ perturbation, and whatever their mutual dependence.
 \paragraph{Scope.}
 The pilot evaluation in this paper uses a reduced-order lateral model of a
 multirotor with a Kalman filter (KF) rather than PX4's EKF2 on a full airframe.
-\Cref{sec:discussion} and the released runbook state precisely which results
+\Cref{sec:discussion} and the artifact's README state which results
 must be re-established in software-in-the-loop (SITL) simulation before they
-are claimed for a deployed autopilot. The adversarial term we can use is an
-empirical supremum over optimised attackers, not a proof. The provable bound
-we derive is too loose to certify useful margins. We test the empirical term
+are claimed for a deployed autopilot. The adversarial term available to us is
+an empirical supremum over optimised attackers rather than a proven bound, and
+the provable bound we derive is too loose to certify useful margins. We test the empirical term
 against independently seeded attackers and report every exceedance and every
 violation.
 
@@ -228,7 +230,7 @@ violation.
 \subsection{Navigation loop and mission completion}
 Let $x(t)\in\R^n$ be the navigation state of the aircraft and
 $\dot x=F(x,u)$ its closed-loop dynamics under feedback $u$ computed from the
-\emph{estimated} state $\hat x$. A mission $\omega$ of horizon $T$ follows a
+estimated state $\hat x$. A mission $\omega$ of horizon $T$ follows a
 nominal path $x^{\mathrm{nom}}$ inside a corridor of half-width (margin) $m$.
 Writing $e(t)$ for the cross-track deviation of the true position from the
 nominal path, the mission completes if and only if
@@ -239,31 +241,48 @@ nominal path, the mission completes if and only if
 The mission-completion rate is
 $\MCR=\Pr_{\omega\sim\mathcal M}[\eqref{eq:complete}]$ for a stated mission
 distribution $\mathcal M$; it is a population quantity, not a statement about
-any single flight~\cite{paperII}.
+any single flight. \Cref{app:notation} collects the notation.
 
-\paragraph{The parent chain.}
-If $F$ is $L$-Lipschitz on the operating region (condition C1) and the
-navigation input is perturbed by at most $\delta$, Gr\"onwall's
-inequality~\cite{gronwall1919} bounds the deviation over a certification
-horizon $T_c$ by the tube radius $\rho=\delta e^{LT_c}$. For the relay-delay
-attacker, the companion paper~\cite{parentpaper} proved a residual-budget lemma:
-an attacker below a detector threshold $\theta$ on $H$ malicious hops hides at
-most $\Delta(\theta)\le H\min(\theta,s)$ of staleness, with the contact-window
-slack $s$ measured at \nParentSlack\,s over \nParentHops{} relay hops. It also
-calibrated the delay-to-position rate on real jamming and spoofing flights at
-the supremum $\gamma=\nParentGamma$\,m/s. The network contribution to the
-deviation is therefore at most
+\subsection{Background: A certificate for delayed navigation input}
+\label{sec:background}
+This subsection states the certificate for a single attack class on which the
+network term of our budget rests, together with its constants. The constants
+are computed in the released artifact~\cite{artifact}: the rate $\gamma$ from
+the real GPS jamming and spoofing flights of the UAV Attack
+Dataset~\cite{whelan2020dataset}, and the slack $s$ and the local Lipschitz
+estimate $L$ in the artifact's relay and dynamics analyses.
+
+\emph{Tube.} Suppose $F$ is $L$-Lipschitz on the operating region (condition
+C1), and the filter re-anchors on an uncorrupted update at least once every
+certification horizon $T_c$ (condition C2). If a perturbation leaves an error of
+at most $\delta$ in the state at the start of a window, the error then obeys
+$\|\dot e\|\le L\|e\|$ with $\|e(0)\|\le\delta$, and Gr\"onwall's
+inequality~\cite{gronwall1919} bounds the deviation over the window by the tube
+radius $\rho=\delta e^{LT_c}$.
+
+\emph{Hidden delay.} A multi-hop forwarding detector flags any hop whose
+forwarding delay exceeds a per-hop threshold $\theta$, and a message that misses
+its contact window, with slack $s$, is flagged regardless of the threshold. An
+attacker controlling $H$ relays on a route can therefore hide at most
+$\min(\theta,s)$ of delay per hop, and at most
+$\Delta(\theta)\le H\min(\theta,s)$ of staleness in total. In the released detector replay, no
+undetected per-hop delay exceeded \nParentSlack\,s over \nParentHops{} relay hops, below the
+5\,s contact-window slack, and we use this measured cap for $s$.
+
+\emph{Delay-to-position rate.} While the estimator waits for a delayed message,
+its position error grows at a rate $\gamma$, evaluated at the supremum over 674
+post-onset samples of the flights above, $\gamma=\nParentGamma$\,m/s. The
+network contribution to the deviation is therefore at most
 \begin{equation}
 \label{eq:dnet}
 e^{LT_c}\,\dnet(\theta),\qquad \dnet(\theta)=\gamma\,H\min(\theta,s),
 \end{equation}
-with the measured local Lipschitz constant $L=\nParentL$ and $T_c=1$\,s. At
-the paper operating point ($\theta=0.25$\,s, $H=2$) this contributes
-\nNetTubeQuarter\,m.
+with $L=\nParentL$ and $T_c=1$\,s. At the operating point used throughout
+($\theta=0.25$\,s, $H=2$) this contributes \nNetTubeQuarter\,m.
 
 \subsection{Perturbation sources and their semantics}
-Five sources perturb the navigation loop. They differ not only in magnitude
-but in the \emph{kind of statement} that can be made about them:
+Five sources perturb the navigation loop. They differ in magnitude and in the
+kind of statement that can be made about them.
 
 \begin{center}\small
 \begin{tabularx}{\columnwidth}{@{}l>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
@@ -285,10 +304,10 @@ stochastic term has a cumulative distribution function (CDF) that we estimate
 on a calibration split. A bounded-unknown term has a distribution known only to
 lie between a lower and an upper CDF, a probability box~\cite{ferson2003}. For
 wind, the box is spanned by the Dryden turbulence model of
-MIL-F-8785C~\cite{milf8785c} between light and moderate intensity. What the
-sources do \emph{not} come with is a joint distribution. Nature couples gusts and
-outages in ways nobody has measured, and an attacker who induces jamming can
-choose when GNSS degradation coincides with gusts.
+MIL-F-8785C~\cite{milf8785c} between light and moderate intensity. The sources
+do not, however, come with a joint distribution. Nature couples gusts and
+outages in ways that have not been measured, and an attacker who induces
+jamming can choose when GNSS degradation coincides with gusts.
 
 \subsection{Problem statement}
 Given (i)~the marginal laws of the stochastic sources, (ii)~an envelope for the
@@ -298,8 +317,8 @@ to choose both the shape of its interference and its coupling to the benign
 sources, we seek:
 \begin{description}[leftmargin=1.6em,style=sameline]
 \item[P1] an upper bound on the probability that a mission fails
-  \emph{and} its attack goes undetected, valid for every coupling of the benign
-  sources and every attacker, i.e., a \emph{source-agnostic} bound;
+  and its attack goes undetected, valid for every coupling of the benign
+  sources and every attacker, i.e., a source-agnostic bound;
 \item[P2] a characterisation of how much tightness each aggregation rule
   sacrifices and where the slack comes from;
 \item[P3] a measurement substrate that keeps the evidence behind every coupling
@@ -327,15 +346,15 @@ these questions.
 % =====================================================================
 \subsection{Capabilities, knowledge and goal}
 The attacker can (a) delay relayed messages on up to $H$ hops of the mesh, as in
-the companion paper, and (b) add an offset $d(t)$ to the GNSS position the
+\cref{sec:background}, and (b) add an offset $d(t)$ to the GNSS position the
 navigation filter receives. Capability (b) is realised in practice by
 signal-level spoofing~\cite{humphreys2008,tippenhauer2011,kerns2014}; in this
 paper it is exercised only through simulator interfaces. The attacker cannot
 corrupt the inertial measurement unit (IMU), and it cannot corrupt a trusted
 re-anchoring fix, such as a visual landmark or an authenticated position
 broadcast, that arrives at least once every $T_a$ seconds (condition C2$'$, which
-generalises the parent's re-anchoring condition from the network channel to the
-GNSS channel). We return to IMU injection~\cite{son2015,trippel2017} in
+generalises the re-anchoring condition C2 of \cref{sec:background} from the
+network channel to the GNSS channel). We return to IMU injection~\cite{son2015,trippel2017} in
 \cref{sec:discussion}.
 
 Following Kerckhoffs's principle, the attacker knows the detector designs and
@@ -388,8 +407,8 @@ $\{\Dclass_k\}$, each parameterised by $\phi\in\Phi_k$, the attacker solves
 \mathbb 1\{\psi_{D,\theta_D}(O^\phi)=0\ \forall D\}\big],
 \end{equation}
 where $\Delta_\phi=\sup_t|e(t)|$ is the induced deviation. It then selects
-$k^\star(\theta)=\arg\max_k\delta^\star_k(\theta)$. Dressing as the weather means
-choosing $k^\star$ to be the class the stack tolerates most.
+$k^\star(\theta)=\arg\max_k\delta^\star_k(\theta)$, so that $k^\star$ is the
+disguise class the stack tolerates most.
 \end{definition}
 
 \begin{proposition}[Detector-gated certificates and equivalence]
@@ -402,9 +421,7 @@ $q_a=\Pr_a[\text{fail}\mid\psi=0]$. Then
 \MCR_a\;\le\;1-q_a\,(1-\alpha-\varepsilon).
 \]
 Hence $f_\Dclass$ is violated by $a$ whenever
-$q_a(1-\alpha-\varepsilon)>1-f_\Dclass$. A floor that is to remain valid against
-every such attack must therefore bound the deviation the attack itself causes
-on undetected missions; the detector's silence is no evidence of benignity.
+$q_a(1-\alpha-\varepsilon)>1-f_\Dclass$.
 \end{proposition}
 \begin{proof}
 By \cref{lem:lecam}, $\Pr_a[\psi=0]\ge\Pr_d[\psi=0]-\varepsilon\ge1-\alpha-\varepsilon$.
@@ -412,12 +429,15 @@ Then $1-\MCR_a\ge\Pr_a[\text{fail}\wedge\psi=0]=q_a\Pr_a[\psi=0]$.
 \end{proof}
 
 \noindent
-The proposition is the formal content of ``the decisive attack is the one that
-looks benign''. Without condition C2$'$, Khazraei et al.\ show that a GPS-only
-attacker can make the undetected deviation grow without bound in an
+A floor that is to remain valid against every such attack must therefore bound
+the deviation the attack itself causes on undetected missions, because
+detector silence is not evidence of a benign disturbance. The
+proposition formalises the statement that ``the decisive attack is the one
+that looks benign''. Without condition C2$'$, Khazraei et al.\ show that a
+GPS-only attacker can make the undetected deviation grow without bound in an
 incrementally exponentially stable closed loop~\cite{khazraei2024}, so $q_a$
-approaches one for any fixed corridor. With C2$'$, the deviation an undetected attacker
-can accumulate is limited by the anchor interval. The stealth budget
+approaches one for any fixed corridor. With C2$'$, the deviation an
+undetected attacker can accumulate is limited by the anchor interval. The stealth budget
 $\dadv(\theta)$ of \cref{sec:budget} is our estimate of that limit.
 
 % =====================================================================
@@ -443,9 +463,9 @@ Superposition for a linear time-varying system, then the triangle inequality.
 \end{proof}
 
 \noindent
-Two remarks bound the lemma's reach. First, actuator saturation is not linear,
-so the lemma holds only inside the region where (C1) holds; the parent paper
-excludes saturation from that region for the same reason~\cite{parentpaper}.
+Two remarks limit the scope of the lemma. First, actuator saturation is not linear,
+so the lemma holds only inside the region where (C1) holds, and (C1) excludes
+saturation from that region for this reason.
 Second, outages and loss of effectiveness are \emph{parametric} sources: they
 change the system rather than add an input. The further decomposition of
 $e_{\mathrm{ben}}$ into per-source suprema,
@@ -454,7 +474,7 @@ state as condition (C5) and test mission by mission in \cref{sec:eval}.
 
 \subsection{Dependence-sharp aggregation}
 Because the $X_i$ share no known joint law, we bound the tail of their sum over
-\emph{all} couplings consistent with the marginals. For non-negative $X_1,\dots,X_d$
+all couplings consistent with the marginals. For non-negative $X_1,\dots,X_d$
 with survival functions $S_i(t)=\Pr[X_i>t]$, define the worst-case and standard bounds
 \begin{align}
 \pbar(s)&=\sup_{C}\Pr_C\Big[\textstyle\sum_{i}X_i>s\Big],\\
@@ -467,9 +487,7 @@ where the supremum runs over all copulas $C$.
 (a)~$\pbar(s)\le p_U(s)$ for all $s$.
 (b)~For $d=2$, $\pbar=p_U$ at every continuity point: the union bound is
 sharp~\cite{makarov1981,ruschendorf1982,frank1987}.
-(c)~For $d\ge3$ the inequality can be strict; the Rearrangement Algorithm (RA)
-approximates $\pbar$, with excellent empirical accuracy but no general
-convergence proof~\cite{puccetti2012,embrechts2013var}.
+(c)~For $d\ge3$ the inequality can be strict.
 (d)~Against a known benign coupling $C_0$, the ratio
 $p_U(s)/\Pr_{C_0}[\sum X_i>s]$ never exceeds $d$ under comonotonicity (take
 $s_i=F_i^{-1}(u)$) and equals $d$ for identically distributed comonotone sources
@@ -484,27 +502,31 @@ variable, so it shifts $s$ by $c$ and contributes no dependence gap.
 Makarov's theorem~\cite{makarov1981}, proved independently by
 R\"uschendorf~\cite{ruschendorf1982}; Frank et al.\ give the
 attaining coupling~\cite{frank1987}. (c) Embrechts et al.\ give examples of
-strict inequality and the RA~\cite{embrechts2013var}. (d) is direct
+strict inequality~\cite{embrechts2013var}. (d) is direct
 computation; for independent exponentials, $p_U$ is attained at the equal split
-and the ratio $2e^{s/2}/(1+s)$ diverges. (e) The Fr\'echet class of a Dirac
-marginal is a singleton.
+and the ratio $2e^{s/2}/(1+s)$ diverges (\cref{app:proofs}). (e) The Fr\'echet
+class of a Dirac marginal is a singleton.
 \end{proof}
 
 \noindent
-\paragraph{Who chooses the coupling?}
+For $d\ge3$, the Rearrangement Algorithm (RA) approximates $\pbar$ with
+excellent empirical accuracy but without a general convergence
+proof~\cite{puccetti2012,embrechts2013var}.
+
+\paragraph{Control of the coupling.}
 The adversarial offset enters as a deterministic term, so by (e) it has no
 coupling to choose. The dependence-sharp bound is needed for two other
 reasons. First, nature's coupling of gusts, outages and faults has never been
-measured. Second, an attacker who controls a \emph{stochastic} source, for
+measured. Second, an attacker who controls a stochastic source, for
 example by jamming to induce the outages and noise of $\dgnss$, chooses when
 that source fires relative to the others, and hence its coupling, provided the
 induced episodes leave the marginal of $X_{\mathrm{gnss}}$ within its
-calibration (C3). Our proposal
-had hypothesised that a joint treatment recovers the union bound's slack
-precisely when the sources are comonotone. \Cref{prop:union} corrects this.
+calibration (C3). A common intuition holds that a joint treatment recovers the
+union bound's slack precisely when the sources are comonotone.
+\Cref{prop:union} shows otherwise.
 When the coupling is unknown or adversarial, the union bound is already the
-right quantity for two sources and nearly right for three. The slack exists only
-relative to a coupling that is \emph{known} to be benign.
+right quantity for two sources and nearly right for three, and slack exists
+only relative to a coupling that is known to be benign.
 
 \subsection{The floor}
 \begin{theorem}[Source-agnostic, dependence-sharp bound]
@@ -528,23 +550,25 @@ $\Pr[\text{complete}\mid U]\ge1-\pbar(s_m)/\Pr[U]$, and in the population of
 all missions $\Pr[\text{fail}\wedge U]\le1-f(m)$ with $f(m)=1-\pbar(s_m)$.
 \end{theorem}
 \begin{proof}
-On $U$, (C3) gives $\sup_t|e_{\mathrm{adv}}|\le\dadv$, so by \cref{lem:subadd} and
+On $U$, (C3) gives $\sup_t|e_{\mathrm{adv}}|\le\dadv$, and \eqref{eq:dnet} bounds
+the network contribution by $e^{LT_c}\dnet(\theta)$. Treating this contribution as additive to
+the others (an assumption: \cref{lem:subadd} does not cover the network term), by \cref{lem:subadd} and
 (C5), failure on $U$ implies $\sum_iX_i>s_m$. Hence
 $\Pr[\text{fail}\wedge U]\le\Pr[\sum_iX_i>s_m]\le\pbar(s_m)$, which needs no
 conditioning on $U$. The tail of a sum is non-decreasing under first-order
 stochastic dominance of any summand, for every coupling and hence for the
-supremum, so the stochastically largest member of the p-box is the worst. The
-conditional form follows by dividing by $\Pr[U]$.
+supremum, so the stochastically largest member of the p-box is the worst
+(\cref{app:proofs}). The conditional form follows by dividing by $\Pr[U]$.
 \end{proof}
 
 \begin{remark}
-The theorem is conditional in exactly the sense of the parent
-guarantee~\cite{parentpaper}: its first and last links are proved, and its
+The theorem is conditional in the same sense as the delay certificate of
+\cref{sec:background}: its first and last links are proved, and its
 interface quantities are measured. We therefore test (C3)--(C5) empirically
-in \cref{sec:eval} instead of asserting them. Bounding the \emph{joint} event
+in \cref{sec:eval} instead of asserting them. Bounding the joint event
 $\{\text{fail}\wedge U\}$, rather than the completion rate conditional on
-silence, is what lets the bound use unconditional benign marginals: conditioning
-on silence would select benign realisations and change their law.
+silence, allows the bound to use unconditional benign marginals, since
+conditioning on silence would select benign realisations and change their law.
 \end{remark}
 
 \subsection{Computing the floor}
@@ -552,62 +576,67 @@ The marginals are estimated on a calibration split (seed block 1xxx) from
 \nCalMissions{} missions per source. $p_U$ is minimised over a grid of splits.
 $\pbar$ is approximated by the RA with $N=1{,}000$ quantile levels, using both the
 upper and the lower discretisation, keeping the larger value, and bisecting on
-the confidence level~\cite{embrechts2013var,hofert2020}. $p_U$ is a proven upper
+the confidence level~\cite{embrechts2013var,hofert2020}; \cref{app:ra} gives the
+procedure. $p_U$ is a proven upper
 bound on $\pbar$; the RA value, with the conservative discretisation, is a
 numerical approximation of $\pbar$ that is not proven in general. We report
 $\min(\mathrm{RA},p_U)$ as our estimate of $\pbar$, which also removes the RA's
 $1/N$ resolution floor in the far tail, and we give $p_U$ alongside wherever a
 bound must be strictly certified. For reference only, we
 also report the tail under independence (Monte Carlo) and under comonotonicity
-(quantile sum). Neither is a certificate.
+(quantile sum); neither is a certificate.
 
 % =====================================================================
-\section{The Cross-Layer Benchmark}
+\section{Cross-Layer Experimental Substrate}
 \label{sec:benchmark}
 % =====================================================================
 A guarantee that spans layers needs data objects that record the coupling
-between them, and no public corpus provides such objects. The benchmark extends
-the parent's two-layer schema~\cite{parentpaper}. Its three record kinds are an
+between them, and no public corpus provides such objects. Our evaluation
+therefore runs on a cross-layer event schema released in the
+artifact~\cite{artifact}. We describe it here and state what this paper adds.
+Its three record kinds are an
 \emph{Event} (an atomic observation), an \emph{AttackWindow} (a labelled
 interval) and a \emph{CrossLayerPairing}, which joins a network or environmental
 window to the navigation window it induces. A pairing carries the detector
 operating point, the residual budget, the induced perturbation and the mission
-outcome. Version~0.2 adds a \code{perturbation\_source} field taking values
+outcome. For this paper we extend the schema to version~0.2, which adds a
+\code{perturbation\_source} field taking values
 \code{net}, \code{gnss}, \code{fault}, \code{env} or \code{adv}, so that fault and
 environment pairings share the attack pairings' representation.
 
-\paragraph{Provenance is mandatory.}
+\paragraph{Provenance flag.}
 Every pairing carries one of three flags:
 \code{measured\_same\_platform} (both windows observed on one airframe),
 \code{physics\_model} (coupled through a stated physical relation) or
 \code{synthetic\_alignment} (aligned in simulation). Readers can therefore
 filter by strength of evidence rather than trust an unaudited join. The flag
-keeps the most important qualification in plain view. Of the six corpora, only
-the UAV Attack Dataset~\cite{whelan2020dataset,whelan2020novelty} observes a
-network or radio event and the flight it degrades on the same platform, and its
-release carries no machine-readable attack intervals. The number of released
-\code{measured\_same\_platform} pairings is therefore zero, and every record of the
-benchmark says so.
+also makes the most important qualification explicit. Of the six corpora listed
+below, only the UAV Attack Dataset~\cite{whelan2020dataset,whelan2020novelty}
+observes a network or radio event and the flight it degrades on the same
+platform, and its release carries no machine-readable attack intervals. The
+number of released \code{measured\_same\_platform} pairings is therefore zero,
+and every record states this.
 
-\paragraph{Contents.}
-Lossless adapters ingest the HCRL UAVCAN bus corpus~\cite{kim2022uavcan},
+\paragraph{Corpora and tooling.}
+The schema's lossless adapters ingest the HCRL UAVCAN bus corpus~\cite{kim2022uavcan},
 UAVIDS-2025~\cite{zeng2025uavids}, UAV-CAS~\cite{mishra2026uavcas}, a replay of
 the DATAMUt time-delay detector~\cite{soltani2026datamut}, the UAV Attack
 Dataset, and the physics-informed UAV-EW-Bench~\cite{uavewbench2026}. Together
 these give \nEventsTotal{} events, of which \nEventsReal{} were captured on real
 hardware. Each adapter is verified by a hash round-trip, so that no source
-column is discarded. Fault and environment sources enter through the
-RflyMAD~\cite{le2025rflymad} and ALFA~\cite{keipour2021alfa} fault taxonomies
-and the Dryden model~\cite{milf8785c}. The benchmark ships a detector-operating-curve
-harness that sweeps $\theta$, the dependence-bound library (union, RA,
-independence, comonotone), the disguise-evasion harness of \cref{sec:evasion},
-and datasheets~\cite{gebru2021} that map each pitfall of Arp et
-al.~\cite{arp2022dos} to its mitigation. Third-party data is fetched from its
-origin under its own licence. We release adapters and unified labels, never
-redistributed corpora. In this paper the benchmark supplies the interface
-constants of the network term ($\gamma$, $s$, $L$; the event totals come from the
-parent's provenance ledger). The evasion study itself runs in simulation, and
-its records enter the benchmark with the provenance flag \code{synthetic\_alignment}.
+column is discarded. The fault and environment sources added in this paper
+enter through the RflyMAD~\cite{le2025rflymad} and ALFA~\cite{keipour2021alfa}
+fault taxonomies and the Dryden model~\cite{milf8785c}. The artifact also ships
+a detector-operating-curve harness that sweeps $\theta$, the dependence-bound
+library (union, RA, independence, comonotone), the disguise-evasion harness of
+\cref{sec:evasion}, and datasheets~\cite{gebru2021} that map each pitfall of Arp
+et al.~\cite{arp2022dos} to its mitigation. Third-party data is fetched from its
+origin under its own licence. We release adapters and unified labels but do
+not redistribute the corpora. In this paper the substrate supplies the interface
+constants of the network term ($\gamma$, $s$, $L$; \cref{sec:background}), and
+the event totals come from the artifact's provenance ledger. The evasion study
+itself runs in simulation, and its records enter the schema with the provenance
+flag \code{synthetic\_alignment}.
 
 % =====================================================================
 \section{Evasion Study Design}
@@ -621,6 +650,7 @@ It is driven by a proportional--derivative (PD) controller acting on the KF
 estimate and saturated at 4\,m/s$^2$. The KF has states (position, velocity,
 accelerometer bias), propagates with the 20\,Hz accelerometer, and corrects
 with 10\,Hz GNSS fixes and the anchor fix every $T_a=5$\,s.
+\Cref{app:constants} lists the simulator constants.
 
 \emph{Environment.} The lateral wind $w$ follows the Dryden spectrum of
 MIL-F-8785C at 100\,ft altitude. With $W_{20}$ the wind speed at 20\,ft, it has
@@ -688,7 +718,8 @@ The attacker solves~\eqref{eq:attacker} with the cross-entropy method
 \nCemGens{} generations and \nCemK{} missions per candidate. Each
 (stack $\times$ family $\times$ operating point) combination gets its own
 optimiser seed in block 2xxx; stronger optimisers (CMA-ES~\cite{hansen2016cma},
-Bayesian optimisation) are runbook item R1. Because a local optimiser can fail
+Bayesian optimisation) are the subject of the scaled attacker study
+(\cref{sec:scaled}). Because a local optimiser can fail
 to find an evading parameterisation that exists, we do not read detector
 strength off the optimiser's own target. Instead, we \emph{cross-evaluate} every
 optimised attacker against every stack.
@@ -696,7 +727,7 @@ optimised attacker against every stack.
 \subsection{Metrics and statistical protocol}
 For each optimised attacker, evaluated on fresh missions (block 4xxx), we report:
 \begin{itemize}
-\item the \emph{evasion rate} (no alarm during the whole mission);
+\item the \emph{evasion rate} (no alarm at any point in the mission);
 \item the attack's own contribution $\sup_t|e_{\mathrm{adv}}|$ on evading
   missions, computed on the same realisation with the additive benign inputs set
   to zero but the parametric ones (outages, LoE) kept, as in \cref{lem:subadd};
@@ -707,7 +738,7 @@ For each optimised attacker, evaluated on fresh missions (block 4xxx), we report
 In the cross-evaluated disguise matrix, a cell's contribution is the maximum
 over attackers that evade in at least 5\% (and at least 10) of missions; we
 report the unfiltered maxima separately. The stealth budget $\dadv(\theta)$ is
-the supremum of the attack-only deviation over \emph{all} evading missions, with
+the supremum of the attack-only deviation over all evading missions, with
 no such filter. It is pooled over all \nPooledAttackers{} optimised
 attackers on calibration missions (block 1xxx). Every attacker uses the same
 missions at every operating point, and an attack that is stealthy against
@@ -762,7 +793,7 @@ intervals~\cite{clopper1934}.
 \bibliography{refs}
 
 \normalsize
-\appendix
+\appendices
 \input{sec_appendix}
 
 \end{document}

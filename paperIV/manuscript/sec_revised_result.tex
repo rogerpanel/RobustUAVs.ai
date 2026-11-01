@@ -3,24 +3,26 @@ three CEM seeds per (family, FPR) cell plus one tail-objective TPE. Each was
 evaluated on \nROneEvalN{} missions under three wind conditions, from a seed
 block never used before (\nRevUndet{} undetected-attack missions).
 \begin{itemize}
-\item \emph{No violation under either budget.} With the R1 budget, the test found
+\item \emph{No violation under either budget.} With the empirical budget, the test found
   \nRevEmpViol{} Holm-significant violations in \nRevEmpTests{} tests; with the
   LP budget, \nRevLpViol{} in \nRevLpTests. Superposition was exact on every
-  undetected mission (largest excess \nRevSupUnsat\,m). Missions like the benign-tail failures that broke the pilot instantiation
-  saturate, so they now raise the alarm and leave the event $U$.
+  undetected mission (largest excess \nRevSupUnsat\,m). Missions like the
+  benign-tail failures that broke the pilot instantiation saturate, so they now
+  raise the alarm and leave the event $U$.
 \item \emph{The empirical budget was exceeded again.} In \nRevEmpExceed{} of
   \nRevEmpCells{} cells a held-out attacker went beyond $\dadv=\nROneDadvFive$\,m,
   up to \nRevAdvMax\,m (\nRevAdvMaxFam, \nRevAdvMaxOpt). Benign slack absorbed it
-  and no violation followed, but the stealth budget we can use is still not a
-  sound constant. The LP budget was never exceeded. It can be exceeded only with probability
-  $\epsilon$, or on missions with a GNSS outage, which its proof does not cover.
-\item \emph{What the bound certifies.} With the R1 budget, the floor at 5\% FPR
+  and no violation followed, but the usable stealth budget is still not a
+  sound constant. The LP budget was never exceeded; it can be exceeded only with
+  probability $\epsilon$, or on missions with a GNSS outage, which its proof does
+  not cover.
+\item \emph{What the bound certifies.} With the empirical budget, the floor at 5\% FPR
   is \nRevEmpFloorTen{} at $m=10$\,m and \nRevEmpFloorTwenty{} at $m=20$\,m.
   With the LP budget it is \nRevLpFloorTen{} at both, so it certifies nothing
   in the corridors we test.
 \item \emph{Limited power.} Of the \nRevEmpInformative{} tests at which the bound
   is informative, \nRevEmpFailInf{} saw any undetected failure. The revision is
-  therefore \emph{not refuted}, not \emph{confirmed tight}. The negative
-  controls remain the evidence that the test can fail, and the scaled run of
-  \cref{sec:scaled} shows that it does when a condition is missing.
+  therefore not refuted, nor is it confirmed to be tight. The
+  negative controls remain the evidence that the test can fail, and the scaled
+  run of \cref{sec:scaled} shows that it does when a condition is missing.
 \end{itemize}

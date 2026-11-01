@@ -1,7 +1,7 @@
 % ------------------------------------------------------------- Discussion
-\paragraph{What a defender should take away.}
-Five design rules follow from the measurements, and each is a mitigation of
-the attack the paper describes.
+\paragraph{Design rules for defenders.}
+Five design rules follow from the measurements, and each mitigates the attack
+described in this paper.
 \begin{enumerate}
 \item \emph{Re-anchor, and size the interval rather than the threshold.} With a
   trusted fix every 5\,s and its gate armed, frequent evasions contributed at
@@ -9,21 +9,21 @@ the attack the paper describes.
   detector and disguise. Without the gate, the contribution reached
   \nNgMax\,m. Lengthening the interval from 5 to 20\,s multiplied the budget by
   \nAnchorMultTwenty{} (\cref{fig:anchor}), while moving the operating point
-  from 1\% to 10\% FPR left the pooled budget unchanged (\cref{sec:eval}). For a corridor of
+  from 1\% to 10\% FPR left the pooled budget unchanged in the pilot (\cref{sec:eval}). For a corridor of
   margin $m$, choose $T_a$ such that
   $\dadv(T_a)\le m-e^{LT_c}\dnet-s^\star$, where $s^\star$ is the smallest
   budget with $\pbar(s^\star)$ below the tolerated risk.
 \item \emph{Close the last interval.} An unchecked segment before mission end
   lets the attacker skip the return leg and multiplied the budget by
-  \nOpenRatioTwenty{} at $T_a=20$\,s. Landing and terminal approach are where
-  a trusted fix matters most.
-\item \emph{Model the inertial bias, not just cross-check the inertial sensor.}
+  \nOpenRatioTwenty{} at $T_a=20$\,s. A trusted fix therefore matters most
+  during landing and terminal approach.
+\item \emph{Model the inertial bias as well as cross-checking the inertial sensor.}
   Without the anchor gate, the only detector that capped every disguise was the
   one whose filter models the accelerometer bias (D2). D1 and D3 admitted tens
   of metres to the GNSS and weather mimics, and even the inertial invariant D4
   admitted \nNgCapDFour\,m to the fault mimic, whose bias-shaped curvature it
   tolerates by design.
-\item \emph{Certify the undetected outcome, not the alarm.} \Cref{thm:floor}
+\item \emph{Certify the undetected outcome rather than the alarm.} \Cref{thm:floor}
   bounds $\Pr[\text{fail}\wedge U]$ for every attacker whose undetected
   contribution stays within $\dadv$, without relying on the detector catching
   any particular disguise. A floor computed from benign marginals alone and
@@ -35,24 +35,25 @@ the attack the paper describes.
   should be either proved or monitored.
 \end{enumerate}
 
-\paragraph{On the separability counter-claim.}
+\paragraph{Relation to separability results.}
 Li et al.~\cite{li2026unified} and Xue et al.~\cite{xue2025dual} argue that
 faults and attacks act through different subspaces and can be separated by
 residual design. Our gate-free results are compatible with that view for a
-\emph{given} residual: D2 and D4 do separate several disguises. They differ in
-the quantifier. Separability holds for a fixed attack against a fixed detector.
+given residual, since D2 and D4 do separate several disguises. The two views
+differ in the quantifier. Separability holds for a fixed attack against a fixed detector.
 Equivalence concerns the attacker's best response, and against every detector
 we built, some family of small-amplitude offsets evaded in at least
 \nCrossEvMin{} of missions. Whether a residual exists that tolerates the benign
-classes and still rejects all of their imitations is open. Our evidence says
-only that none of ours does.
+classes and still rejects all of their imitations remains open; our evidence
+shows only that none of ours does.
 
 \paragraph{Limitations.}
 \begin{itemize}
 \item \emph{Reduced-order model.} The pilot simulates one lateral channel with
   a linear KF. PX4's EKF2 has more states, different gating and nonlinear
-  coupling. The disguise matrix and soundness must be re-established in SITL
-  (runbook R3) before they are claimed for a deployed autopilot.
+  coupling. The disguise matrix and soundness results hold for this model; a
+  SITL transfer study, specified in the artifact's README, must re-establish
+  them before they are claimed for a deployed autopilot.
 \item \emph{Empirical adversarial term.} The usable $\dadv$ is a pooled supremum
   over optimised attackers. Stronger optimisers raised it by
   \nROneDadvRatioFive$\times$, and a held-out mixed-family attacker then
@@ -61,8 +62,9 @@ only that none of ours does.
   every non-convex detector. Tightening it requires reachable-set bounds for
   detectors that alarm on runs of exceedances, for example by mixed-integer
   programming, or detectors redesigned so that silence implies a convex
-  constraint. We have done neither. A white-box gradient attacker through a
-  differentiable simulator (runbook R1, step 3) was not run.
+  constraint. Both lie beyond the scope of this paper, as does a white-box
+  gradient attacker through a differentiable simulator, which would extend the
+  scaled attacker study.
 \item \emph{Finite calibration.} With \nCalMissions{} samples per source, the
   simultaneous band certifies at most $\nRFiveFloorCpTwenty$. Certifying a
   floor of $1-10^{-k}$ needs several times $10^{k+1}$ calibration missions
@@ -73,17 +75,19 @@ only that none of ours does.
   the revised bound has not been stressed near its value. Closing the temporal
   gap would make it tight enough to be stressed directly.
 \item \emph{GNSS marginal.} Replacing the simulated GNSS marginal by the
-  measured jamming envelope (\cref{sec:r5}) halved the floor at $m=10$\,m. The
-  fault marginal is still simulated: the RflyMAD and ALFA adapters of runbook
-  R5 were not run, and the measured envelope comes from one campaign on one
-  airframe.
-\item \emph{Network term not simulated.} $\dnet$ enters as the parent's
-  certified tube; R4 injects measured relay staleness into SITL.
+  measured jamming envelope (\cref{sec:r5}) cut the floor at $m=10$\,m by a factor of two to
+  three. The
+  measured-marginal study covers GNSS only: the fault marginal remains
+  simulated, and calibrating it on RflyMAD and ALFA flight logs is an extension
+  of that study. The measured envelope comes from one campaign on one airframe.
+\item \emph{Analytic network term.} $\dnet$ enters as the certified tube of
+  \cref{sec:background} rather than through simulation; injecting measured
+  relay staleness into SITL is a stated extension.
 \item \emph{Covert attackers only.} The bound covers undetected failure. An
   attacker indifferent to detection is bounded instead by detection latency and
   the failsafe, which we do not certify here.
 \item \emph{No IMU injection.} An attacker who can also inject into the IMU
   (acoustically~\cite{son2015,trippel2017} or through bus
   reconfiguration~\cite{erba2025}) defeats the inertial cross-checks, and
-  condition C2$'$ then carries the whole burden.
+  condition C2$'$ alone then limits the attacker.
 \end{itemize}
