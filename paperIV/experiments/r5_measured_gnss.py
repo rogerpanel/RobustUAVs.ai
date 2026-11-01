@@ -3,7 +3,7 @@
 
 The pilot's delta_gnss marginal is simulated (Gauss-Markov drift, white noise,
 outages of mean 5 s, 10 s jamming-noise episodes): median 1.3 m, max 3.9 m.
-The parent artifact holds measured navigation error during real GPS jamming
+The shared results directory holds measured navigation error during real GPS jamming
 (results/gamma_campaign_samples.csv, flight gps_jamming: two episodes, a
 3x-noise episode and a fix loss, 496 one-second samples). Spoofing samples are
 excluded: spoofing is adversarial and belongs to delta_adv.

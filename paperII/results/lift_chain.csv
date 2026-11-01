@@ -4,4 +4,4 @@ step,from,to,type_from,type_to,lift,obligations,status
 3,delta,trajectory tube rho,in/A,tr/A,L_dyn,O_lip,local L = 1.181 measured on the checkpoint
 4,rho over Tc,"corridor predicate over [0,T]",tr/A,op/A,L_hor,O_hor,assumed (Definition 2); holds by construction for a delay adversary only
 5,per-operation predicate,MCR over the mission distribution,op/A,popd/P,L_sup,O_odd,distribution named; MCR 0.882-0.893 across 9 profiles (simulation)
-6,MCR per mission,per flight hour objective,popd/P,poph/P,L_rate,O_dep,open: not claimed by the parent
+6,MCR per mission,per flight hour objective,popd/P,poph/P,L_rate,O_dep,open: not claimed by the certificate

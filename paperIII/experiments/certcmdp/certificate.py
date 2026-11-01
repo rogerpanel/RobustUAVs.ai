@@ -1,13 +1,13 @@
 """Certified protection-level process rho_i(t) for Paper III.
 
-Every constant is read from, or derived from, the parent artifact
-(paper D, "From Wire to Flight") and carries a provenance tag:
+Every constant is read from, or derived from, the shared results directory
+(../../results) and carries a provenance tag:
 
   measured      computed in this repository from a real capture
   derived       arithmetic on measured quantities
   assumption    a modelling choice we state and sweep where it matters
 
-The parent certificate bounds the position error of an aircraft whose
+The delay certificate bounds the position error of an aircraft whose
 navigation input is Delta seconds stale by the Gronwall tube
 
     rho = exp(L*T) * gamma_sup * Delta                               (P-D, Thm 1)
@@ -51,7 +51,7 @@ def rho_of_staleness(delta_s):
 
 @lru_cache(maxsize=None)
 def residual_pools():
-    """Empirical per-hop residual pools from the parent's 15,392-hop ledger.
+    """Empirical per-hop residual pools from the 15,392-hop detector-replay ledger.
 
     benign:  residuals on hops whose sender is honest           [measured]
     hidden:  residuals on malicious hops the detector did NOT flag [measured]
@@ -167,7 +167,7 @@ def write_constants_csv():
     g = gamma_samples()
     rows = [
         ("L_loc", L_LOC, "measured", "results/local_lipschitz.csv"),
-        ("T_c_s", T_C, "assumption", "parent certificate horizon"),
+        ("T_c_s", T_C, "assumption", "certificate horizon"),
         ("gamma_sup_m_s", GAMMA_SUP, "measured", f"max over {len(g)} post-onset samples"),
         ("gamma_sup_check", float(g.max()), "measured", "recomputed here"),
         ("kappa_m_per_s", KAPPA, "derived", "exp(L*T)*gamma_sup"),

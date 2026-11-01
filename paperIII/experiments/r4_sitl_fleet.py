@@ -455,7 +455,7 @@ def calibrate(dirs):
     A sample is benign when its staleness is below CAL_STALE s and it lies more than CAL_REACQ s
     after any GNSS reacquisition. theta_sitl is the largest benign residual err / KAPPA - staleness,
     i.e. the smallest theta for which every benign sample satisfies err <= KAPPA (theta + staleness).
-    This is the parent's definition of theta (the measured benign ceiling), applied to the SITL
+    This is the certificate's definition of theta (the measured benign ceiling), applied to the SITL
     receiver. Logs without ground truth or without any fix contribute nothing."""
     from pyulog import ULog
     rows, best = [], (-np.inf, "")
@@ -493,10 +493,10 @@ def calibrate(dirs):
                          "max_err_m": round(float(err[ok].max()), 3)})
             if res.max() > best[0]:
                 best = (float(res.max()), name)
-    out = [{"metric": "theta_parent_s", "value": THETA_BENIGN},
+    out = [{"metric": "theta_relay_s", "value": THETA_BENIGN},
            {"metric": "theta_sitl_s", "value": round(best[0], 4)},
            {"metric": "theta_sitl_from_log", "value": best[1]},
-           {"metric": "floor_parent_m", "value": round(KAPPA * THETA_BENIGN, 3)},
+           {"metric": "floor_relay_m", "value": round(KAPPA * THETA_BENIGN, 3)},
            {"metric": "floor_sitl_m", "value": round(KAPPA * best[0], 3)},
            {"metric": "benign_samples", "value": sum(r["benign_samples"] for r in rows)},
            {"metric": "logs", "value": len(rows)}]

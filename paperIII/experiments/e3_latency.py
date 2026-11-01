@@ -6,7 +6,7 @@ and coverage margin), (ii) unweighted greedy nested projection, (iii) the
 exact lexicographic projection (Hungarian, scipy), (iv) a generic
 Hopcroft-Karp maximum matching on the same graph, for N agents and M = N/2
 tasks. Hardware is recorded in the CSV. Output: results/e3_latency.csv
-(R8: `--board pi5` writes results/e3_latency_pi5.csv on a companion computer).
+(`--board pi5` writes results/e3_latency_pi5.csv on an onboard companion computer).
 """
 from __future__ import annotations
 

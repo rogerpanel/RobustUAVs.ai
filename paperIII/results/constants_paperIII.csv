@@ -1,6 +1,6 @@
 name,value,provenance,source
 L_loc,1.1814,measured,results/local_lipschitz.csv
-T_c_s,1,assumption,parent certificate horizon
+T_c_s,1,assumption,certificate horizon
 gamma_sup_m_s,1.625,measured,max over 674 post-onset samples
 gamma_sup_check,1.625,measured,recomputed here
 kappa_m_per_s,5.29577,derived,exp(L*T)*gamma_sup

@@ -1,7 +1,7 @@
 """Every constant used by the Paper IV pilot, with a provenance tag.
 
 Tags
-  [parent]   measured or proved in the parent manuscript (paper D) and read
+  [shared]   measured in the shared results directory (../../results) and read
              from ../../results where possible
   [std]      taken from a published standard or datasheet class
   [model]    a modelling choice stated in the manuscript (sweepable)
@@ -10,11 +10,11 @@ Tags
 import math
 
 # ---------------------------------------------------------------- parent chain
-GAMMA_SUP = 1.625        # [parent] m/s, campaign supremum over 674 samples
-SLACK_S = 4.84           # [parent] s, saturation of the undetected relay delay
-H_HOPS = 2               # [parent] malicious hops in the paper operating point
-L_LOC = 1.1814           # [parent] local Lipschitz estimate (results/local_lipschitz.csv)
-T_C = 1.0                # [parent] certification horizon (s)
+GAMMA_SUP = 1.625        # [shared] m/s, campaign supremum over 674 samples
+SLACK_S = 4.84           # [shared] s, saturation of the undetected relay delay
+H_HOPS = 2               # [shared] malicious hops in the paper operating point
+L_LOC = 1.1814           # [shared] local Lipschitz estimate (results/local_lipschitz.csv)
+T_C = 1.0                # [shared] certification horizon (s)
 AMP = math.exp(L_LOC * T_C)  # Gronwall amplification e^{LT}
 
 # ---------------------------------------------------------------- simulation
@@ -72,4 +72,4 @@ CUSUM_KAPPA = 1.0
 ANCHOR_GATE = 10.83      # chi2(1) 0.999 quantile
 FPR_TARGET = 0.05        # per-mission false-alarm budget for the operating point
 
-CORRIDOR_M = (2.0, 5.0, 10.0, 20.0)   # [parent] corridor-margin classes
+CORRIDOR_M = (2.0, 5.0, 10.0, 20.0)   # [shared] corridor-margin classes

@@ -8,8 +8,8 @@ file is changed after the run. A change would be a new, dated amendment.
 R4b showed two things. Holding ρ at its pre-reacquisition value until the
 estimator has fused the fix (the latch) removes every metre-scale violation.
 But it still failed its zero-violation criterion by at most 0.22 m, because
-the release test and the benign floor use θ = 0.178 s, measured on the
-parent's hardware receiver, not on the simulator's. RQ8 therefore states a
+the release test and the benign floor use θ = 0.178 s, taken from the
+delay certificate's relay-hop residuals, not from the simulator's receiver. RQ8 therefore states a
 two-part rule: staleness from the estimator, **and** a benign floor calibrated
 for the receiver in use. R4c tests both parts together, on flights neither
 part has seen.
@@ -24,7 +24,7 @@ so R4c's own logs are never used.
   after any reacquisition.
 - **θ_sitl** = the largest benign residual `err/κ − staleness`, i.e. the
   smallest θ for which every benign sample satisfies `err ≤ κ(θ + staleness)`.
-  This is the parent's own definition of θ (the measured benign ceiling),
+  This is the certificate's own definition of θ (the measured benign ceiling),
   applied to the simulator's receiver. No margin is added.
 - The reacquisition windows are excluded, so the calibration cannot absorb the
   post-release errors that made R4b fail.
@@ -72,3 +72,6 @@ same protocol, and the failed attempt is reported.
 
 Command: `bash paperIII/experiments/run_server_paperIII.sh r4c`.
 Analysis: `python3 paperIII/experiments/r4b_analysis.py --run r4c`.
+
+*Editorial note: two phrases were reworded after the run to remove references to an unpublished
+paper; the protocol's rule, schedule and criteria are unchanged.*

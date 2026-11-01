@@ -56,7 +56,8 @@ EXCLUDE = [re.compile(p) for p in (r"\.pt$", r"/logs_r/", r"/server_logs/", r"/_
                                    r"\.pyc$", r"/_smoke", r"/node_modules/", r"\.pdf$",
                                    r"/paperIV/results/logs/",
                                    # internal working notes, superseded for reviewers by README.md
-                                   r"/paperI/RUNBOOK\.md$",
+                                   r"/paperI/RUNBOOK\.md$", r"/paperII/RUNBOOK\.md$",
+                                   r"/paperIII/RUNBOOK\.md$", r"/paperIV/RUNBOOK\.md$",
                                    # runs only inside the hosted page runtime it was built for
                                    r"/paperII/experiments/screening_page\.html$")]
 
