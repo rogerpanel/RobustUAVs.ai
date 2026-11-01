@@ -12,18 +12,18 @@ mirror and the original commit history have been removed and will be restored on
 
 | | |
 |---|---|
-| Language | Python 3.10 or newer |
-| Dependencies | `numpy`, `scipy`, `torch` (the CPU build is enough): `python3 -m pip install numpy scipy torch`; TeX Live 2022+ with `pgfplots` to build the paper. The flight experiments also need Docker, `pyulog` and `mavsdk<4` (Section 4) |
-| Quick check | about 5 minutes on a 4-core laptop or server CPU, no download, no GPU |
+| Language | Python 3.10 or newer (tested with 3.11) |
+| Dependencies | `numpy`, `scipy`, `torch` (`python3 -m pip install numpy scipy torch`; the CPU wheel from `https://download.pytorch.org/whl/cpu` is enough and a smaller download); TeX Live 2022+ with `pgfplots` to build the paper. The flight experiments also need Docker, `pyulog` and `mavsdk<4` (Section 4) |
+| Quick check | about 5 minutes on a laptop or server CPU, no download, no GPU |
 | Aggregation, consensus and vector-certificate studies | about 12 minutes |
 | Learning study | headline seeds 0–4: about 1 hour on 2 cores; all extended runs: about 6 hours on 4 cores (Section 3) |
-| Hardware | any x86-64 or ARM CPU; a learning run peaks at about 1.2 GB of memory; no GPU is used anywhere |
+| Hardware | any laptop or server CPU; every script is single-threaded, the learning scripts run several in parallel (`PAR`); a learning run peaks at about 1.2 GB of memory; no GPU is used |
 | Licence | MIT (`LICENSE`); third-party data remain under their own licences |
 
 ## 1. Quick check (about 5 minutes)
 
 No number in `manuscript/main.tex` is typed by hand. Each one is a macro in
-`manuscript/numbers.tex` (457 lines), which `make_numbers.py` writes from the result files,
+`manuscript/numbers.tex` (456 macros), which `make_numbers.py` writes from the result files,
 together with the tables `tab_*.tex` and the plotted points in `manuscript/figdata/`.
 
 ```bash
@@ -39,14 +39,14 @@ cd ../manuscript && latexmk -pdf main.tex
 `run_all.sh` first prints the brute-force oracle check (`e1_verify.py`): nine rows, 83,872
 comparisons in total, each with `'disagreements': 0`. It then regenerates every closed-form,
 simulation and reference result, re-runs the analyses of the three flight campaigns from their
-committed logs, aggregates the committed learning runs and rewrites `numbers.tex`.
+committed result files, aggregates the committed learning runs and rewrites `numbers.tex`.
 
 Every stage is seeded, so the regenerated files are identical to the committed ones, with one
 intended exception. `e3_latency.py` times the monitor on your machine, so it rewrites
 `results/e3_latency.csv`, the four `manuscript/figdata/lat_*.dat` files and the latency macros of
 `numbers.tex` (`\nLatCPU`, `\nLatCFThousand`, …). The paper quotes the run on an otherwise idle
 4-vCPU AMD EPYC-Genoa server, which is the committed CSV. Restoring that CSV and regenerating, as
-in the fourth line, returns the tree to the committed state; an empty `git status` then shows that
+the `git checkout` line does, returns the tree to the committed state; an empty `git status` then shows that
 the paper, the result files and the code agree.
 
 ## 2. Where each result comes from
@@ -55,7 +55,7 @@ Scripts are in `paperIII/experiments/` and result files in `paperIII/results/`.
 
 | Result in the paper | Script | Result file |
 |---|---|---|
-| Certificate constants: γ_sup = 1.625 m/s, L = 1.181, L_ρ = 5.30 m/s, θ_ben = 0.178 s, benign floor 0.94 m, two-hop jump 41.8 m | `certcmdp/certificate.py` | `constants_paperIII.csv` (inputs: `results/hop_ledger.csv`, `results/gamma_campaign_samples.csv`, `results/local_lipschitz.csv` at the repository root) |
+| Certificate constants: γ_sup = 1.625 m/s, L = 1.181, L_ρ = 5.30 m/s, θ_ben = 0.178 s, benign floor 0.94 m, median two-hop jump 41.8 m | `certcmdp/certificate.py` | `constants_paperIII.csv` (inputs: `results/hop_ledger.csv`, `results/gamma_campaign_samples.csv`, `results/local_lipschitz.csv` at the repository root) |
 | Verification of the closed forms: 83,872 comparisons over 10,000 instances, 0 disagreements; 4,000 instances per misreporting level, no honest violation | `e1_verify.py`, `e4_dynamics.py` | `e1_verify.csv`, `e4_liars.csv` |
 | RQ1: the projection executed zero infeasible assignments over 5.8×10⁷ agent-epochs (10 seeds); PPO-Lagrangian executed 8,193,222 (14.22%), jamming-blind PPO 9,506,180 | `e5_marl.py` (`run_marl.sh`, `run_r_marl.sh`), `e6_aggregate.py` | `e5_marl/*_train.csv`, `e6_main.csv`, `e6_curves.csv` |
 | RQ1, stronger learners: MAPPO-Lagrangian 2,897,602 training violations, PID-Lagrangian 8,089,556, QMIX without masks 7,526,523; masked QMIX 0 | `e5_marl.py` (`run_r_marl.sh`, block `r2`) | `e5_marl/{mappo_lag,mappo_lag0,pid_lag,qmix,qmix_mask}_s*`, `e6_main.csv`, `manuscript/tab_r2.tex` |
@@ -66,9 +66,9 @@ Scripts are in `paperIII/experiments/` and result files in `paperIII/results/`.
 | RQ4: closed-form monitor 0.058 ms at N = 1000 and 11.0 ms at N = 10⁵; exact projection (Hungarian) 11.4 ms at N = 1000 and 30 ms at N = 2000 | `e3_latency.py` | `e3_latency.csv` |
 | RQ5: allocator rate 5.01 Hz; the predictive rule cuts exposure by 8.1× and leaves 0 exposures without a jump; hysteresis bound held for 100% of aircraft | `e4_dynamics.py` | `e4_lookahead.csv`, `e4_hysteresis.csv` |
 | RQ6: population lift exact under independence (0.934 predicted, 0.927 simulated); under common-cause jamming it puts the loss of six or more tasks at 6.5% against 24.1%, 3.7× too low; N⋆ = 15 | `e2_degradation.py` | `e2_lift.csv`, `e2_fleet_sizing.csv` |
-| Replay of measured traces: 11 PX4 flight logs; independent model 6.5% against 20.8% simulated (3.2×); CBBA 0.546, our layer 0.505 [0.495, 0.513] with zero training violations | `r3_extract_traces.py`, `e2_degradation.py --process trace`, `e5_marl.py --process trace` | `r3_staleness_traces.csv`, `r3_trace_summary.csv`, `e2_lift_trace.csv`, `e5_marl_trace/`, `e6_main_e5_marl_trace.csv` |
+| Replay of measured traces: 11 PX4 flight logs; with common-cause jammers the independent model puts the loss of six or more tasks at 6.5% against 20.8% simulated (3.2×); CBBA 0.546, our layer 0.505 [0.495, 0.513] with zero training violations | `r3_extract_traces.py`, `e2_degradation.py --process trace`, `e5_marl.py --process trace` | `r3_staleness_traces.csv`, `r3_trace_summary.csv`, `e2_lift_trace.csv`, `e5_marl_trace/`, `e6_main_e5_marl_trace.csv` |
 | RQ7: honest aircraft executed 0 violations, liars 4,819; the complete graph agreed in every instance within 6 rounds; the ring-plus-chords meshes agreed with two equivocating liars in only 26%, 51% and 74% of instances | `r5_consensus.py` | `r5_consensus.csv`, `manuscript/tab_r5.tex` |
-| Vector certificates: at N = 12, 74% of exact eligibility graphs nested and the scalar surrogate lost 0.65 of 8 tasks on average | `r6_vector.py` | `r6_vector.csv` |
+| Vector certificates: at N = 12 and dispersion 0.5, 74% of exact eligibility graphs nested and the scalar surrogate lost 0.65 of 8 tasks on average | `r6_vector.py` | `r6_vector.csv` |
 | RQ8, first flight campaign: 0 infeasible assignments over 9,462 aircraft-epochs; the oracle found 89 violations of the premise, 75 of them in 2 reacquisition episodes, peak 13.9 m against ρ_i = 0.96 m | `r4_sitl_fleet.py`, `r4_analysis.py` | `r4_sitl.csv`, `r4_sitl_summary.csv`, `r4_injections.csv`, `r4_soundness.csv`, `r4_soundness_violations.csv`, `r4_px4_events.csv`, `r4_analysis.csv` |
 | RQ8, pre-registered rerun: latch cut the worst excess from 5.2 m to 0.22 m, 70 violations remained (criterion failed); third run with θ_ben = 0.206 s, floor 1.09 m: 0 violations over 374,578 samples and 10 reacquisitions, receiver certificate 53 | `r4_sitl_fleet.py`, `r4b_analysis.py`, `r4b_analysis.py --run r4c` | `r4b_*.csv`, `r4c_*.csv` (incl. `r4c_calibration.csv`, `r4c_calibration_logs.csv`), `r4b_analysis.csv`, `r4c_analysis.csv` |
 | Sensitivity of the learning study: our layer executed no infeasible assignment in training under any setting, coverage ratio at least 0.99; every PPO-Lagrangian setting at least 1,866,671 | `e5_marl.py` (`run_r_marl.sh` block `r9`) | `r9/`, `e6_main_r9.csv`, `manuscript/tab_r9.tex` |
@@ -76,11 +76,13 @@ Scripts are in `paperIII/experiments/` and result files in `paperIII/results/`.
 Every constant of the certificate is listed with its provenance (measured, derived or assumption)
 in `constants_paperIII.csv`, and the measured-trace, flight, consensus and vector-certificate files
 carry a `provenance` column. The certificate's measured inputs come from the shared `results/`
-directory at the repository root, which ships with this artifact; `certificate.py` recomputes the
-residual pools and γ_sup from those files. `r5_consensus.py` samples its meshes with the platform's
-mesh generator in `platform/backend/app/corpus.py`, which is included for that purpose.
+directory at the repository root, which ships with this artifact: `certificate.py` reads the
+relay-hop residuals and the γ samples from those files and takes L from
+`results/local_lipschitz.csv`. `r5_consensus.py` samples its meshes with the platform's mesh
+generator in `platform/backend/app/corpus.py`, which is included for that purpose.
 
-The extended aggregations and the two remaining studies are regenerated, from `paperIII/experiments/`, by:
+The extended aggregations and the two remaining studies are regenerated, from
+`paperIII/experiments/`, by:
 
 ```bash
 for d in e5_marl_N24 e5_marl_N48 e5_marl_N96 r9; do python3 e6_aggregate.py --dir $d; done   # ~30 s
@@ -124,14 +126,22 @@ python3 e6_aggregate.py && python3 export_figdata.py && python3 make_numbers.py
 | Replay of measured traces (`run_server_paperIII.sh r3`) | 12 | 0.9 CPU-hours |
 
 `run_r_marl.sh` is resumable: it skips any job whose `*_eval.csv` already exists, so on the
-committed tree it only re-runs the per-size references. To retrain a block, move its directory
-aside first, for example `mv ../results/r9 ../results/r9_committed`. Training is seeded per run;
-retrained runs reproduce the committed statistics up to the floating-point nondeterminism of
-PyTorch across CPUs and library versions. The trained actors (`*_actor.pt`) are left out of the
-artifact for size; every number in the paper comes from the train and eval CSVs.
+committed tree it trains nothing and only re-runs the cheap N = 12 references. To retrain a
+block, move its directory aside first, for example `mv ../results/r9 ../results/r9_committed`.
+Training is seeded per run and single-threaded: on a different CPU and PyTorch version than ours,
+the first updates of a retrained run match the committed `*_train.csv` digit for digit; over a
+full run, floating-point differences between CPUs and library versions can accumulate. The
+trained actors (`*_actor.pt`) are left out of the artifact for size; every number in the paper
+comes from the train and eval CSVs.
 
-A short smoke run checks the pipeline in about 10 seconds:
-`python3 e5_marl.py --method ours --seed 0 --updates 3 --outdir _smoke`.
+A short run checks the pipeline in about 10 seconds; its three rows equal the first three rows
+of `results/e5_marl/ours_s0_train.csv` (except `wall_s`):
+
+```bash
+python3 e5_marl.py --method ours --seed 0 --updates 3 --outdir _smoke
+head -4 ../results/_smoke/ours_s0_train.csv; head -4 ../results/e5_marl/ours_s0_train.csv
+rm -r ../results/_smoke
+```
 
 ## 4. Flight experiments and pre-registration
 
@@ -148,8 +158,9 @@ sample (`--soundness-only`).
 | Pre-registered third run (latch and receiver-calibrated floor) | `paperIII/R4C_PROTOCOL.md` | `SCHEDULE_C` | `r4b_analysis.py --run r4c` | `r4c_*.csv` |
 
 Each protocol fixes the rule, the outage schedule, the primary and informativeness outcomes and
-the pass criterion before its flight, and states that it was committed before the run; the
-analysis applies the criterion mechanically and writes the verdict (`fail` for the rerun, `pass`
+the pass criterion before its flight, and records the date on which it was committed, before the
+run; the artifact's history is a single fresh commit, so that date is the one stated in the file.
+The analysis applies the criterion mechanically and writes the verdict (`fail` for the rerun, `pass`
 for the third run) into `r4b_analysis.csv` and `r4c_analysis.csv`. The third run's calibration was
 computed once from the logs of the two earlier campaigns and committed before its flight
 (`r4c_calibration.csv`, `r4c_calibration_logs.csv`). Its first attempt aborted before flight when
@@ -183,14 +194,24 @@ learning runs need no download.
 
 ## 5. Extensions
 
-The pipeline regenerates every number from the result files, so each extension below adds a
-result file and updates the paper without any edit to the text.
+The code is set up for the following extensions. Each writes its results next to the committed
+ones, and where a run replaces a committed result file, `make_numbers.py` carries the new values
+into the paper without any edit to the text.
 
-- **Larger learning budgets.** The fleet-size block reads its budget from the environment:
-  `UPDATES` sets the updates for N ≤ 48 and `UPDATES_N96` for N = 96. Moving a size's directory
-  aside and running, for example, `UPDATES=600 UPDATES_N96=600 BLOCKS=r1 PAR=4 bash run_r_marl.sh`
-  trains at the 400–600 updates per size that the paper's fleet-size study refers to; the
-  scaled-prior scripts carry their budget in their command lines (`--updates`).
+- **Larger learning budgets.** The fleet-size study refers to budgets of 400 updates for
+  N ≤ 24 and 600 for N ≥ 48. `run_r_marl.sh` reads its budget from the environment (`UPDATES`
+  for N ≤ 48, `UPDATES_N96` for N = 96) and trains every size whose results are absent, so these
+  budgets run with the committed code (from `paperIII/experiments/`):
+
+  ```bash
+  mv ../results/e5_marl_N24 ../results/e5_marl_N24_u200
+  UPDATES=400 BLOCKS=r1 PAR=4 bash run_r_marl.sh
+  mv ../results/e5_marl_N48 ../results/e5_marl_N48_u200 && mv ../results/e5_marl_N96 ../results/e5_marl_N96_u150
+  UPDATES=600 UPDATES_N96=600 BLOCKS=r1 PAR=4 bash run_r_marl.sh
+  ```
+
+  At the recorded run times this is about 40 CPU-hours, most of it at N = 96. The scaled-prior
+  scripts carry their budget in their command lines (`--updates`).
 - **A keep term in the projection.** `certcmdp.combinatorics.lexicographic_projection` already
   takes the previous assignment and a weight `eps_prev`, added to the agreement level of the
   weights W without disturbing the lexicographic order; the environment calls it with
@@ -201,14 +222,15 @@ result file and updates the paper without any edit to the text.
 - **Further learners.** New learners plug into the `METHODS` table of `e5_marl.py` and share the
   environment, the step budget, the evaluation and the aggregation; MACPO's second-order update is
   the natural next one.
-- **Adversarial outage timing.** The outage schedules of the flights are plain tables in
-  `r4_sitl_fleet.py` (`SCHEDULE`, `SCHEDULE_B`, `SCHEDULE_C`), so a jammer that times
-  reacquisition, the window identified in RQ8, is scheduled the same way, and the soundness oracle
-  checks it unchanged.
+- **Adversarial outage timing.** The outage schedules of the flights are plain tables of vehicle,
+  onset and duration in `r4_sitl_fleet.py` (`SCHEDULE`, `SCHEDULE_B`, `SCHEDULE_C`). A jammer
+  that chooses when the fix returns, and so when the reacquisition window of RQ8 opens, is written
+  as such a table, and the soundness oracle checks it unchanged.
 - **Other receivers and simulators.** The benign floor is recalibrated for any receiver from its
   own logs with `r4_sitl_fleet.py --calibrate <log dirs>`, by the definition the paper uses. The
-  driver already attempts a spoofing ramp and logs whether the simulator accepts it, so a
-  simulator that does adds the spoofing case to the same oracle.
+  driver already issues PX4's falsified-fix failure injection (the `wrong` entries of `SCHEDULE`)
+  and logs whether the simulator accepts it, so a simulator that accepts it adds the spoofing case
+  to the same oracle.
 
 ## 6. Layout
 
