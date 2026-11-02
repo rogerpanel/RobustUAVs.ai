@@ -1,7 +1,7 @@
 # From Wire to Flight: artifact for review
 
-This repository is the anonymised artifact for the paper *From Wire to Flight: A Conditional
-Mission-Completion Guarantee for UAVs*. It contains the schema, the ingestion adapters, the
+This repository is the anonymised artifact for the paper *From Wire to Flight: Certifying
+UAV Mission Completion Against Detector-Evading Attacks*. It contains the schema, the ingestion adapters, the
 detector harness, the certificate engine, every result file, and the scripts that turn those
 files into the figures and tables of the paper.
 
