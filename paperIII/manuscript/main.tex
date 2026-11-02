@@ -97,85 +97,77 @@ monitor can therefore sit beneath any allocator, learned or not, as a verifiable
 \section{Introduction}
 \label{sec:intro}
 % =====================================================================
-A swarm of UAVs flies a monitoring or delivery mission over a city. Each task tolerates only a bounded position error, from a 2\,m corridor between buildings to a 20\,m
-transect over open ground, and the navigation of every aircraft is under attack. GNSS
-jamming and spoofing are practical and
-inexpensive~\cite{humphreys2008spoofer,tippenhauer2011spoofing,kerns2014capture}. The drift
-caused by an adversary who delays an aircraft's navigation input just below an intrusion
-detector's threshold can be bounded, and the bound yields a per-aircraft certificate
-$\rho_i(t)$ (\cref{sec:cert}). The certificate varies over time. It grows while a jammer forces the
-aircraft to dead-reckon, and it jumps when a compromised relay delivers a stale correction.
-
-At the same time, the choice of which aircraft serves which task is increasingly delegated
-to a learned multi-agent policy, and learned policies are a security liability in their own
-right. They can be driven into unsafe actions by adversarial
-observations~\cite{huang2017adversarialpolicies}, by adversarial
+A swarm of UAVs flies a monitoring or delivery mission over a city while an adversary attacks
+the navigation of every aircraft. Each task tolerates only a bounded position error, from a
+2\,m corridor between buildings to a 20\,m transect over open ground, and GNSS jamming and
+spoofing are practical and inexpensive~\cite{humphreys2008spoofer,tippenhauer2011spoofing,kerns2014capture}.
+The drift caused by an adversary who delays an aircraft's navigation input just below an
+intrusion detector's threshold can be bounded by a per-aircraft certificate $\rho_i(t)$
+(\cref{sec:cert}), which grows while a jammer forces the aircraft to dead-reckon and jumps when
+a compromised relay delivers a stale correction. The choice of which aircraft serves which task
+is increasingly delegated to a learned multi-agent policy, and such policies can be driven into
+unsafe actions by adversarial observations~\cite{huang2017adversarialpolicies}, by adversarial
 co-players~\cite{gleave2020adversarial} or by backdoors planted in
-training~\cite{kiourti2020trojdrl,wang2021backdoorl}. Safe reinforcement learning (RL)
-offers two kinds of guarantee, and neither suits this setting. Lagrangian and trust-region methods for
-constrained Markov decision processes (CMDPs)~\cite{altman1999cmdp,achiam2017cpo,stooke2020pid,gu2023macpo}
-satisfy the constraint in expectation, and only for the policy that training produced. A
-fleet that flies outside its certified envelope on 5\% of steps is unacceptable, and a
-poisoned policy invalidates the expectation in any case. Shields, safety layers and control
-barrier functions~\cite{alshiekh2018shielding,elsayedaly2021marlshield,dalal2018safety,ames2019cbf}
-hold a constraint at every step, but only for a safe set fixed in advance, and they give no
-guarantee on the mission.
+training~\cite{kiourti2020trojdrl,wang2021backdoorl}.
 
-We take a security engineer's view, in which the allocator is untrusted, the certificate
-is the security policy, and the mechanism that enforces it must be a small,
-always-invoked, verifiable reference monitor~\cite{anderson1972planning}, in the spirit of
-runtime assurance for aircraft~\cite{sha2001simplex,astm2021f3269}. Given certificates that
-an adversary moves, we ask which assignments can be executed safely, how much of the mission
-survives, and how much a learned policy can add.
+Safe reinforcement learning (RL) does not provide the guarantee this setting requires.
+Lagrangian and trust-region methods for constrained Markov decision processes
+(CMDPs)~\cite{altman1999cmdp,achiam2017cpo,stooke2020pid,gu2023macpo} satisfy the constraint in
+expectation, and only for the policy that training produced, which a poisoned policy
+invalidates. Shields, safety layers and control barrier
+functions~\cite{alshiekh2018shielding,elsayedaly2021marlshield,dalal2018safety,ames2019cbf}
+hold a constraint at every step, but only for a safe set fixed in advance and with no guarantee
+on the mission.
 
-\paragraph*{Relation to classical results} The combinatorial core is classical. With a scalar
-certificate, eligibility has nested neighbourhoods: an aircraft that qualifies for a
-demanding task qualifies for every easier one. On such \emph{difference
-graphs}~\cite{hammer1990difference}, Ore's deficiency theorem~\cite{ore1955} gives the
-maximum coverage in closed form, the condition for surviving $b$ removals is the $b$-extended
-Hall condition of robust assignment~\cite{laroche2014interdiction}, and pointwise
+We therefore treat the allocator as untrusted and the certificate as the security policy, and we
+enforce it with a small, always-invoked, verifiable reference
+monitor~\cite{anderson1972planning}, in the spirit of runtime assurance for
+aircraft~\cite{sha2001simplex,astm2021f3269}. Given certificates that an adversary moves, we ask
+which assignments can be executed safely, how much of the mission survives, and how much a
+learned policy can add.
+
+\paragraph*{Relation to classical results} With a scalar certificate, eligibility has nested
+neighbourhoods, since an aircraft that qualifies for a demanding task qualifies for every easier
+one. On such difference graphs~\cite{hammer1990difference}, Ore's deficiency
+theorem~\cite{ore1955} gives the maximum coverage in closed form, surviving $b$ removals is the
+$b$-extended Hall condition of robust assignment~\cite{laroche2014interdiction}, and pointwise
 feasibility under projection is the standard shield
 guarantee~\cite{alshiekh2018shielding,krasowski2023provably}. We use these results as attributed
-tools. Our contribution is to compose them with a certificate that
-an adversary moves and with a learned allocator that we do not trust, and to derive the
-security results that this composition makes possible.
+tools and compose them with a certificate that an adversary moves and with a learned allocator
+that we do not trust, which yields the following contributions.
 
 \paragraph*{Contributions}
 \begin{enumerate}[leftmargin=1.4em,itemsep=1pt,topsep=2pt]
-\item \textbf{Threat model and security goals} (\cref{sec:threat}). We model four
-  adversaries: a jammer, a relay-delay attacker, misreporting aircraft and a compromised
-  policy. We state integrity, availability and bounded-influence goals, and we grade the
-  guarantee by quantifier against safe RL (\cref{tab:quantifiers}).
-\item \textbf{A certified reference monitor} (\cref{thm:proj}). Placed in the environment,
-  the projection makes every executed assignment feasible at every decision epoch for every
-  policy parameter, poisoned or not. It also assigns the maximum number of tasks, then
-  maximises value, then follows the policy. Policy gradients stay unbiased for the
-  projected process, so the monitor can be present while the policy learns.
-\item \textbf{Exact security monitors} (\cref{sec:theory}): worst-case coverage after any
-  $b$ certificate collapses and after graded degradation of any $b$ aircraft, both exact and
-  attained by an adversary (\cref{prop:collapse,prop:graded}); a hysteresis bound
-  (\cref{thm:hyst}); a predictive rule under which exposure between decisions comes only
-  from certificate jumps, with the allocator rate it implies (\cref{thm:predict}); and a
-  misreporting bound (\cref{prop:liars}), with decentralised agreement on the monitor's
-  inputs by resilient consensus.
-\item \textbf{A population lift with explicit obligations} (\cref{prop:lift}) that turns the
-  per-operation guarantee into fleet-sizing statements and shows quantitatively how
-  common-cause jamming breaks it.
-\item \textbf{A measured, reproducible evaluation.} Every measured constant comes from released
-  flight logs or detector-replay results, the others are stated as assumptions
-  (\cref{tab:constants}), and a brute-force oracle verifies every closed form. A
-  multi-agent RL (MARL) study with stronger in-expectation baselines and larger fleets, a
-  scalability study, a consensus study with Byzantine aircraft and a vector-certificate
-  study are among the experiments that answer RQ1--RQ7 (\cref{sec:problem}). They separate
-  what a learned policy contributes from what the monitor enforces, and they show that a
-  classical auction under the monitor is the stronger allocator in our setting.
-\item \textbf{A closed-loop test of the premise} (\cref{sec:rq8}). Software-in-the-loop PX4
-  flight with a ground-truth oracle identifies the one point at which a seemingly sound
-  certificate ceases to be sound. At GNSS reacquisition the estimate lags the fix by up to
-  \nRfPeakErr\,m, and a jammer controls when that window opens. Two pre-registered reruns
-  establish a two-part design rule (estimator-sourced staleness and a receiver-calibrated
-  floor) under which the certificate held on every sample of a fresh flight.
+\item \textbf{Threat model and goals} (\cref{sec:threat}). We model a jammer, a relay-delay
+  attacker, misreporting aircraft and a compromised policy, state integrity, availability and
+  bounded-influence goals, and grade the guarantee by quantifier against safe RL
+  (\cref{tab:quantifiers}).
+\item \textbf{A certified reference monitor} (\cref{thm:proj}). Placed in the environment, the
+  projection makes every executed assignment feasible at every decision epoch for every policy
+  parameter, poisoned or not. It assigns the maximum number of tasks, then maximises value, then
+  follows the policy, and it keeps policy gradients unbiased, so the policy can learn under the
+  monitor.
+\item \textbf{Exact security monitors} (\cref{sec:theory}). Worst-case coverage after any $b$
+  certificate collapses or graded degradations is exact and attained
+  (\cref{prop:collapse,prop:graded}). A hysteresis bound (\cref{thm:hyst}), a predictive rule
+  that confines exposure between decisions to certificate jumps (\cref{thm:predict}) and a
+  misreporting bound (\cref{prop:liars}) complete the set.
+\item \textbf{A population lift with explicit obligations} (\cref{prop:lift}), which turns the
+  per-operation guarantee into fleet-sizing statements and quantifies how common-cause jamming
+  breaks it.
+\item \textbf{A measured, reproducible evaluation} of RQ1--RQ7 (\cref{sec:problem}).
+  Constants come from released flight logs and detector replays or are stated as assumptions
+  (\cref{tab:constants}), and a brute-force oracle verifies every closed form. Multi-agent RL
+  (MARL), scalability, Byzantine and vector-certificate studies show that a classical auction
+  under the monitor is the stronger allocator in our setting.
+\item \textbf{A closed-loop test of the premise} (RQ8, \cref{sec:rq8}). In PX4
+  software-in-the-loop flight the estimate lags the fix at GNSS reacquisition by up to
+  \nRfPeakErr\,m, in a window the jammer controls, and two pre-registered reruns establish a
+  design rule (estimator-sourced staleness and a receiver-calibrated floor) under which the
+  certificate held on every sample of a fresh flight.
 \end{enumerate}
+Apart from this closed-loop test, attacks that break the certificate itself lie outside our
+scope (\cref{sec:threat}).
 
 % =====================================================================
 \section{Background, Threat Model and Goals}
