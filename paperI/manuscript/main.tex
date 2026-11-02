@@ -99,18 +99,17 @@ CAN bus, GNSS spoofing, real-time analysis
 \label{sec:intro}
 % =====================================================================
 An autonomous unmanned aerial vehicle (UAV) navigates using inputs it does not generate itself.
-Satellite fixes from a global navigation satellite system (GNSS) receiver, position reports
-relayed by peers in a swarm, and commands from a ground station all arrive over links an
-adversary can reach. Two families of defence address this exposure, largely in isolation.
-Cryptographic authentication establishes the origin of a message. Navigation-message
-authentication for GNSS~\cite{gotzelmann2023osnma,anderson2017chimera}, message signing on
-the Micro Air Vehicle Link (MAVLink) protocol~\cite{mavlink_signing,koubaa2019mavlink}, and
-authentication schemes for the controller area network (CAN)
-bus~\cite{nurnberger2016vatican,radu2016leia,pese2021s2can} belong to this family. Certified
-robustness guarantees that a navigation stack tolerates a bounded perturbation of its inputs. An
-intrusion detector can be composed with such a certificate (Section~\ref{sec:background}).
-For an adversary who delays relayed messages by slightly less than the detector's threshold
-$\theta$, the composition bounds the worst-case deviation from the planned route as
+Fixes from a global navigation satellite system (GNSS) receiver, position reports relayed by
+swarm peers and commands from a ground station all arrive over links an adversary can reach,
+and two families of defence address this exposure largely in isolation. Cryptographic
+authentication establishes the origin of a message, as in GNSS navigation-message
+authentication~\cite{gotzelmann2023osnma,anderson2017chimera}, signing on the Micro Air Vehicle
+Link (MAVLink)~\cite{mavlink_signing,koubaa2019mavlink} and authentication on the controller area
+network (CAN) bus~\cite{nurnberger2016vatican,radu2016leia,pese2021s2can}. Certified robustness
+guarantees that the navigation stack tolerates a bounded perturbation of its inputs. Composed
+with an intrusion detector (Section~\ref{sec:background}), it bounds the worst-case deviation
+from the planned route, for an adversary who delays relayed messages just below the detector's
+threshold $\theta$, as
 \begin{equation}
 \label{eq:rho-cert}
 \rho(\theta)\;=\;\Delta(\theta)\cdot\gamma\cdot e^{LT_c}\;\le\;m ,
@@ -120,72 +119,57 @@ second) at which stale input becomes position error, $L$ a Lipschitz constant of
 navigation dynamics, $T_c$ a re-anchoring horizon, and $m$ the lateral margin of the safe
 corridor.
 
-\paragraph*{Authentication as a two-sided budget}
-In Eq.~\eqref{eq:rho-cert}, the Lipschitz constant $L$ is fixed by physics and the margin
-$m$ by regulation. The delay $\Delta$ and the rate $\gamma$ are security-engineering choices, and authentication moves
-them in opposite directions. Authenticating a navigation source lowers $\gamma$, because an
-estimator that rejects a forged fix stops absorbing the forger's offset. Authenticating a
-message raises $\Delta$, because signing, transmitting and verifying the authenticator take
-time, and the estimator suffers from staleness whatever its cause. Authentication is therefore
-both a credit and a debit against a single certified budget. Neither the cryptographic nor the
-certified-robustness literature can determine which effect dominates, because the two are
-measured with different instruments: a cycle counter on a microcontroller and the
-flight log of a spoofed receiver.
+In Eq.~\eqref{eq:rho-cert}, $L$ is fixed by physics and $m$ by regulation, whereas $\Delta$ and
+$\gamma$ are security-engineering choices, and authentication moves them in opposite
+directions. Authenticating a navigation source lowers $\gamma$, because an estimator that
+rejects a forged fix stops absorbing the forger's offset. Authenticating a message raises
+$\Delta$, because signing, transmitting and verifying the authenticator take time, and the
+estimator suffers from staleness whatever its cause. Neither the cryptographic nor the
+certified-robustness literature can determine which effect dominates, since each measures only
+its own side, the former with cycle counters on microcontrollers and the latter with flight logs
+of spoofed receivers.
 
-\paragraph*{Contributions}
-We formalise this budget, derive when authentication increases the
-certified margin, and measure both sides on real data and actual specifications. The results
-do not all point the same way, and this disagreement is itself a finding.
+We therefore treat authentication as a credit and a debit against a single certified budget.
+We formalise this budget, derive when authentication increases the certified margin, and
+measure both sides on real data and published specifications. The results do not all point
+the same way, and this disagreement is itself a finding.
 \begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
 \item \textbf{The crossover and its two readings} (Section~\ref{sec:theory},
-  Proposition~\ref{pr:crossover}, Theorem~\ref{th:horizon}). With one supremum rate per
-  configuration, as in the certificate, authentication pays whenever its cost
-  $\Dauth$ is below $\Delta(\theta)(\gu/\ga-1)$. With the measured rates, every per-message
-  signature scheme that fits on the bus meets this throughout the certified window.
-  It also certifies the 2\,m corridor, which the unauthenticated certificate cannot cover:
-  $\rho=\nRhoAML$\,m with ML-DSA-44, against $\nRhoU$\,m without. When the rates are matched
-  to the horizon the detector actually admits, the conclusion changes at tight settings. Within
-  half a second of staleness, the spoofed and the honest-but-degraded estimators
-  accrue the same error to within $\nHzDiffOpCm$\,cm, so the data cannot demonstrate a benefit. On
-  the measured envelopes, authentication pays from $\thx=\nHzCrossMac$\,s for a group message authentication code (MAC) to
-  $\nHzCrossML$\,s for ML-DSA-44.
-\item \textbf{The transmission cost is a cliff} (Proposition~\ref{pr:cliff}). We consider
-  the post-quantum cryptography (PQC) signatures that NIST standardised as Federal
-  Information Processing Standards (FIPS):
-  the module-lattice-based digital signature algorithm ML-DSA (FIPS~204)~\cite{fips204} and
-  the stateless hash-based SLH-DSA (FIPS~205)~\cite{fips205}. We use a base load derived from
-  a real capture of UAVCAN (now DroneCAN, the CAN protocol linking a flight controller to its
-  peripherals). On that bus, the worst-case transmission latency of a signed message is flat
-  up to an admissible rate $\rstar$ and unbounded beyond it. On classic CAN, $\rstar$ is
-  $\nRstarML$/s for ML-DSA-44 and $\nRstarSLHs$/s for SLH-DSA-128s. A discrete-event
-  simulation of $\nDESn$ transfers stays within the analytical bound.
-\item \textbf{Freshness does not bound delay, and the clock can turn delay into denial}
-  (Proposition~\ref{pr:push}). Deployed freshness windows exceed the largest delay the
-  detector admits ($Hs=10$\,s) by a factor of 3--17: 60\,s for MAVLink~2, and 30--165\,s for
-  Galileo's Open Service Navigation Message Authentication (OSNMA). Where the signing clock
-  is advanced from GNSS time, a spoofer who pushes it beyond the window renders every
-  legitimate signed packet stale.
+  Proposition~\ref{pr:crossover}, Theorem~\ref{th:horizon}). Authentication pays whenever its
+  cost $\Dauth$ is below $\Delta(\theta)(\gu/\ga-1)$. With the certificate's supremum rates,
+  every per-message signature scheme that fits on the bus meets this and certifies the 2\,m
+  corridor ($\rho=\nRhoAML$\,m with ML-DSA-44, against $\nRhoU$\,m without). With rates matched
+  to the horizon the detector admits, the spoofed and honest-but-degraded estimators accrue the
+  same error to within $\nHzDiffOpCm$\,cm over the first half-second, so the data cannot
+  demonstrate a benefit there. On the measured envelopes, authentication pays only from $\thx=\nHzCrossMac$\,s for a
+  group message authentication code (MAC) to $\nHzCrossML$\,s for ML-DSA-44.
+\item \textbf{The transmission cost is a cliff} (Proposition~\ref{pr:cliff}). For the
+  post-quantum cryptography (PQC) signatures ML-DSA (FIPS~204)~\cite{fips204} and SLH-DSA
+  (FIPS~205)~\cite{fips205}, we load the bus from a real capture of UAVCAN (now DroneCAN, the
+  CAN protocol linking a flight controller to its peripherals). The worst-case transmission
+  latency of a signed message is flat up to an admissible rate $\rstar$ and unbounded beyond
+  it, and on classic CAN $\rstar$ is $\nRstarML$/s for ML-DSA-44 and $\nRstarSLHs$/s for
+  SLH-DSA-128s.
+\item \textbf{Freshness does not bound delay} (Proposition~\ref{pr:push}). Deployed freshness
+  windows exceed the largest delay the detector admits by a factor of 3--17, and a spoofer who
+  advances a GNSS-derived signing clock beyond the window renders every legitimate signed
+  packet stale.
 \item \textbf{Induced verification} (Proposition~\ref{pr:iv}). Forged signatures convert
-  the defender's verification cost into delay. The classical Edwards-curve signature
-  Ed25519 is the most exposed scheme: $\nAsatEd$ of the bus suffices to saturate a verifier
-  that has a 20\,\% share of the central processing unit (CPU). ML-DSA-44
-  is immune on classic CAN, because its signature is too expensive to transmit, but not
-  on CAN FD. A per-source slot budget bounds the induced delay by $k_s-1$ verification times, whatever the attack load.
-\item \textbf{A certified selection rule} (Algorithm~\ref{alg:select}). For each detector
-  setting, corridor, transport, adversary class and post-quantum requirement, the rule
-  returns the cheapest configuration (scheme, batch size, mitigation) that keeps the
-  setting certified, or reports that none exists.
+  verification cost into delay. For Ed25519, $\nAsatEd$ of the bus saturates a verifier with a
+  20\,\% CPU share, whereas ML-DSA-44 is immune on classic CAN but not on CAN FD. A per-source
+  slot budget bounds the induced delay by $k_s-1$ verification times.
+\item \textbf{A certified selection rule} (Algorithm~\ref{alg:select}) returns, for each
+  operating setting, the cheapest configuration that keeps it certified, or reports that none
+  exists.
 \end{itemize}
 
 \paragraph*{Scope of the evidence}
-The sensing side rests on three real flights of one airframe in hover~\cite{whelan2020uav}. The authenticated rate is a proxy, measured on a
-jamming flight whose receiver retained a degraded three-dimensional fix rather than on an estimator
-that rejected GNSS outright (Section~\ref{sec:method}). The cryptographic compute costs come from published Cortex-M
-cycle counts scaled to the flight controller's clock. The transport side uses standard
-frame models and a base load derived from frame rates measured on a real bus. Each number carries a provenance tag.
-Section~\ref{sec:runbook} states which inputs were measured for this paper and which
-experiments, not performed here, would replace the modelled ones. Since every number in the paper is generated from result files,
-replacements propagate to the text without manual editing.
+The sensing side rests on three real flights of one airframe in hover~\cite{whelan2020uav}, and
+the authenticated rate is a proxy measured on a jamming flight (Section~\ref{sec:method}). The
+compute costs are scaled from published Cortex-M cycle counts, and the transport side combines
+standard frame models with a base load derived from frame rates measured on a real bus. Every
+number carries a provenance tag and is generated from result files, so the experiments that
+Section~\ref{sec:runbook} lists would replace the modelled inputs without manual editing.
 
 % =====================================================================
 \section{Preliminaries and Problem Statement}

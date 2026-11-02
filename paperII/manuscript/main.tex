@@ -100,84 +100,72 @@ systematization of knowledge
 \label{sec:intro}
 % =====================================================================
 An unmanned aerial vehicle (UAV) that navigates with a learned component now meets two kinds of
-guarantee. The first comes from the certified-robustness and formal-verification literature. It
-states that a neural network (NN) does not change its decision for any input within a radius
-of a given point~\cite{cohen2019certified,katz2017reluplex,wang2021beta}. It may also state that
-a closed loop with an NN controller stays inside a reachable tube~\cite{ivanov2019verisig,tran2020nnv}.
-The second comes from aviation. It states that an operation keeps the aircraft inside its
-operational volume with a probability of failure below $10^{-3}$ or $10^{-4}$ per flight hour
-(FH)~\cite{jarus_sora25_E}. It also states that a learned constituent generalises over its
-operational design domain (ODD)~\cite{easa_cp2,mleap2024}. The two communities increasingly
-cite each other. EASA's concept paper asks for robustness and generalisation evidence on
-machine-learning (ML) constituents~\cite{easa_cp2}. The joint standard ED-324/ARP6983 of the
-European Organisation for Civil Aviation Equipment (EUROCAE) and SAE International will turn
-that request into objectives~\cite{ed324}. The verification community, for its part, motivates
-its benchmarks with airborne collision avoidance (ACAS~Xu) and aircraft taxiing~\cite{katz2017reluplex,katz2022taxi}.
+guarantee. The certified-robustness and formal-verification literature states that a neural
+network (NN) keeps its decision for every input within a radius of a given
+point~\cite{cohen2019certified,katz2017reluplex,wang2021beta}, or that a closed loop with an NN
+controller stays inside a reachable tube~\cite{ivanov2019verisig,tran2020nnv}. Aviation states that
+an operation keeps the aircraft inside its operational volume with a probability of failure below
+$10^{-3}$ or $10^{-4}$ per flight hour (FH)~\cite{jarus_sora25_E}, and that a learned constituent
+generalises over its operational design domain (ODD)~\cite{easa_cp2,mleap2024}. The two
+communities increasingly cite each other. The concept paper of the European Union Aviation Safety
+Agency (EASA) asks for robustness and
+generalisation evidence on machine-learning (ML) constituents~\cite{easa_cp2}, the joint standard of the European Organisation for Civil Aviation
+Equipment (EUROCAE) and SAE, ED-324/ARP6983 will turn that request into objectives~\cite{ed324}, and the
+verification community motivates its benchmarks with airborne collision avoidance (ACAS~Xu) and
+aircraft taxiing~\cite{katz2017reluplex,katz2022taxi}.
 
 \paragraph*{The quantifier mismatch}
-Mutual citation, however, does not transfer evidence. The two kinds of statement rarely support
-one another, because they quantify over different objects. A certified radius is a statement
-about every perturbation of one input. A reachable tube is a statement about every disturbance
-along one trajectory over a horizon. A contingency volume is a statement about one operation, and
-a safety objective per flight hour is a statement about a population of operations. The gap is not
-only in scope but also in modality. ``For all'' and ``with probability at least $1-\delta$'' are
-different claims. So are ``with probability over the certifier's own random noise'' and ``with
-probability over the operations the aircraft will fly'', and the literature routinely
-conflates them. Evidence transfers from a guarantee to an objective only when the guarantee's
-quantifier covers the objective's. Otherwise an argument must bridge the two, such as a
-dynamics bound, a concentration inequality or a runtime monitor. We call such an argument a
-\emph{lift}. Each lift introduces an assumption that itself needs evidence.
+Mutual citation, however, does not transfer evidence, because the two kinds of statement
+quantify over different objects. A certified radius covers every perturbation of one input, a
+reachable tube every disturbance along one trajectory, a contingency volume one operation, and a
+per-flight-hour objective a population of operations. The modalities differ as well. ``For all''
+and ``with probability at least $1-\delta$'' are different claims, and so are probability over the
+certifier's own random noise and probability over the operations the aircraft will fly, which the
+literature routinely conflates. Evidence transfers from a guarantee to an objective only when the
+guarantee's quantifier covers the objective's. Otherwise an argument such as a dynamics bound, a
+concentration inequality or a runtime monitor must bridge the two. We call such an argument a
+\emph{lift}, and each lift introduces an assumption that itself needs evidence.
 
 \paragraph*{Contributions}
-We systematise the certified-guarantee literature for learned perception, estimation and
-control by what each guarantee quantifies over. We code aviation and UAS assurance objectives the
-same way, and we compute which transfers are sound, which need which lifts, and which are
-category errors. Our contributions are as follows.
+We systematise certified guarantees for learned perception, estimation and control, and aviation
+and UAS assurance objectives, by what each quantifies over, and compute which transfers are sound,
+which need lifts and which are category errors.
 \begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
-\item \textbf{A quantifier type system and a lift calculus} (Section~\ref{sec:theory}). Every
-  guarantee and objective receives a type $\langle\text{scope},\text{modality}\rangle$. Seven
-  lifts are typed edges between types, and each lift emits named obligations with an evidence
-  kind. Dominance is a partial order (Proposition~\ref{pr:order}), and transfer along a path is
-  sound with a union-bound confidence (Theorem~\ref{th:sound}).
-\item \textbf{Four structural results.} Every path from a ``for all'' guarantee to a
-  probability objective crosses a statistical obligation
-  (Proposition~\ref{pr:nofree}). The rate lift needs no independence assumption, but
-  confirmation credit does (Proposition~\ref{pr:rate}). The SORA~2.5 Annex~E test-hour ladder is
-  the zero-failure rule of three, and testing per frame buys no economy over testing per hour
-  (Proposition~\ref{pr:ladder}). Runtime assurance relocates the gap to its monitor rather than
-  closing it (Proposition~\ref{pr:rta}).
-\item \textbf{A registered systematisation protocol} (Section~\ref{sec:protocol}). It specifies
-  block search strings, two inclusion tiers, a snowballing stop rule, an eight-field codebook,
-  per-field reliability with Cohen's $\kappa$, Krippendorff's $\alpha$, Gwet's AC1 and the
-  prevalence-adjusted bias-adjusted kappa (PABAK), and a disclosed amendment log for every
-  deviation, including screening and coding by large language model (LLM) instances.
-\item \textbf{A computed transfer table and a full study} (Sections~\ref{sec:results}
-  and~\ref{sec:agenda}). Stratified probability samples of the $\fsCandidates$ searched records
-  and of three snowballing iterations give weighted estimates with intervals for the searched
-  corpus and its citation neighbourhood. The table types $\fdTtRows$ class states,
-  $\fdClassesAdded$ of them classes added to the pilot's $\nClasses$, against six objective types:
-  $\fdTtD$ discharges, $\fdTtL$ lifts and $\fdTtX$ category errors. No class discharges a
-  per-flight-hour objective without a lift. One pilot finding is reversed: vehicle-facing
-  perception guarantees are mostly per input. A second, that statistical guarantees for
-  perception are not the least developed, holds in the searched corpus but not in the expanded
-  field, where perception and control tie.
-\item \textbf{An evidence generator} (Section~\ref{sec:case}). From the committed results of the
-  certificate for delayed navigation input stated in Section~\ref{sec:certificate}, it emits a
-  SORA Annex~A-shaped evidence pack in which every lift's assumption appears as an obligation
-  with its status.
+\item \textbf{A quantifier type system and lift calculus} (Section~\ref{sec:theory}). Seven lifts
+  are typed edges between $\langle\text{scope},\text{modality}\rangle$ types that emit evidence
+  obligations; dominance is a partial order (Proposition~\ref{pr:order}), and transfer along a
+  path is sound with a union-bound confidence (Theorem~\ref{th:sound}).
+\item \textbf{Four structural results.} Every path from a ``for all'' guarantee to a probability
+  objective crosses a statistical obligation (Proposition~\ref{pr:nofree}); the rate lift needs no
+  independence assumption, but confirmation credit does (Proposition~\ref{pr:rate}); the Specific
+  Operations Risk Assessment (SORA)~2.5
+  Annex~E test-hour ladder is the zero-failure rule of three, so testing per frame buys no economy
+  (Proposition~\ref{pr:ladder}); and runtime assurance relocates the gap to its monitor
+  (Proposition~\ref{pr:rta}).
+\item \textbf{A registered systematisation protocol} (Section~\ref{sec:protocol}) with an
+  eight-field codebook, per-field reliability under Cohen's $\kappa$, Krippendorff's $\alpha$,
+  Gwet's AC1 and the prevalence-adjusted bias-adjusted kappa (PABAK), and an amendment log that
+  discloses screening and coding by large language model (LLM) instances.
+\item \textbf{A computed transfer table and full study} (Sections~\ref{sec:results}
+  and~\ref{sec:agenda}). From stratified samples of the $\fsCandidates$ searched records and of
+  three snowballing iterations, the table types $\fdTtRows$ class states against six objective
+  types, giving $\fdTtD$ discharges, $\fdTtL$ lifts and $\fdTtX$ category errors. No class
+  discharges a per-flight-hour objective without a lift, and, reversing a pilot finding,
+  vehicle-facing perception guarantees are mostly per input.
+\item \textbf{An evidence generator} (Section~\ref{sec:case}) that turns the running certificate
+  (Section~\ref{sec:certificate}) into a SORA Annex~A-shaped evidence pack listing every lift's
+  assumption as an obligation with its status.
 \end{itemize}
 
 \paragraph*{Scope of the evidence}
-Three limits qualify these claims. First, the transfer table is computed from a calculus
-that we define. Its verdicts are only as good as the lift rules, which we therefore state in full
-(Table~\ref{tab:lifts}) and release as code. Second, every screening and coding decision was
-made by LLM instances working independently from a frozen codebook, with full texts limited to
-open-access copies (Section~\ref{sec:pilot}). The reliability we report therefore measures the
-clarity of the codebook, not agreement between experts. Every number is a macro generated from
-committed result files, so a human re-coding regenerates the paper. Third, nothing in this paper certifies an aircraft. We map
-mathematical guarantees onto an evidence framework. Several regulatory documents we code were in
-flux at our cut-off date (7~October~2026), and we key our claims to stable concepts rather than
-clause numbers.
+Three limits qualify these claims. First, the verdicts are only as good as the lift rules of our
+own calculus, which we state in full (Table~\ref{tab:lifts}) and release as code. Second, all
+screening and coding was done by independent LLM instances from a frozen codebook on open-access
+full texts (Section~\ref{sec:pilot}), so the reported reliability measures codebook clarity rather
+than expert agreement; every number is generated from committed result files, so a human re-coding
+regenerates the paper. Third, nothing in this paper certifies an aircraft, and because several
+regulatory documents were in flux at our cut-off date (7~October~2026), we key our claims to
+stable concepts rather than clause numbers.
 
 % =====================================================================
 \section{Preliminaries and Problem Statement}
