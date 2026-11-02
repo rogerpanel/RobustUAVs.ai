@@ -75,29 +75,18 @@ A Certified Budget for Cryptography and Sensing in UAV Navigation}
 
 % =====================================================================
 \begin{abstract}
-A known certificate guarantees drone mission completion while an attacker delays navigation
-messages just below a detector's threshold. It bounds position error by the hidden delay,
-times the rate $\gamma$ converting delay into error, times a dynamics factor. Authentication
-pulls the first two apart: rejecting forged fixes lowers $\gamma$, but signing and verifying
-add delay.
-
-In 674 samples from real GPS spoofing and jamming
-flights, a spoofed estimator drifts up to $\nRatioHead\times$ faster than one given honest
-but degraded fixes, yet the two look identical for half a second. Under real UAVCAN
-bus load, post-quantum signatures are limited by capacity, not latency: ML-DSA-44 needs
-$\nDauthCertML$\,ms, yet only $\nRstarML$ messages fit per second; SLH-DSA does not fit.
-
-Four findings follow. (i)~Every scheme that fits pays off across the certified window and
-rescues the narrowest corridor. (ii)~At
-detector-admitted delays, the two error envelopes differ by $\nHzDiffOpCm$\,cm, within
-noise, and the net effect is slightly negative; authentication pays only from
-$\thx\approx\nHzCrossMac$--$\nHzCrossML$\,s, so a sound certificate can mislead
-design. (iii)~Freshness windows of 30--165\,s never bind, but a MAVLink~2
-signing clock set from GPS time lets a spoofer turn delay attacks into denial. (iv)~Invalid
-Ed25519 signatures overwhelm the verifier with $\nAsatEd$ of the bus; large post-quantum
-signatures resist this on classic CAN, not CAN~FD. A selection rule picks the cheapest
-certified configuration, giving integrators a measured basis for deciding which messages to
-sign, and with which scheme, rather than assuming more authentication is always safer.
+Authenticating a drone's navigation messages pulls a certified position-error bound in two
+directions: rejecting forged fixes lowers the rate at which delay becomes error, but signing and
+verifying add delay. We measure both sides. Across 674 samples from real GPS spoofing and jamming
+flights, a spoofed estimator drifts up to $\nRatioHead\times$ faster than one given honest but
+degraded fixes, yet the two are indistinguishable for half a second. On a real UAVCAN bus,
+post-quantum signatures are limited by capacity rather than latency: ML-DSA-44 needs
+$\nDauthCertML$\,ms, but only $\nRstarML$ messages fit per second. Every scheme that fits pays off
+across the certified window, yet at the delays a detector admits the net effect is slightly
+negative, and authentication pays only from $\thx\approx\nHzCrossMac$--$\nHzCrossML$\,s. A MAVLink~2
+signing clock set from GPS time lets a spoofer turn delay attacks into denial. A selection rule
+picks the cheapest certified configuration, so integrators can decide on measured grounds which
+messages to sign, and how.
 \end{abstract}
 
 \begin{IEEEkeywords}

@@ -80,28 +80,17 @@ for Learned Task Allocation in UAV Swarms under Navigation Attacks}
 
 % =====================================================================
 \begin{abstract}
-Jamming, stale relayed corrections and misreporting aircraft degrade a drone fleet's
-navigation. A time-varying certificate $\rho_i(t)$ can bound each aircraft's position error. When a learned policy, possibly adversarial, allocates tasks, an
-aircraft may hold a task with alert limit $\alpha_j$ only while $\rho_i(t)\le\alpha_j$, so
-safe assignments shift with the attack.
-
-We place a certified projection layer between policy and fleet. For \emph{every} policy and
-adversarial certificate trajectory, it executes no unsafe assignment while covering as
-many tasks as possible. Nested eligibility yields exact linear-time monitors for coverage,
-tolerated certificate collapses and the worst case of $b$ degraded aircraft. A predictive
-rule fixes the allocator rate at $\nRateMin$\,Hz; misreporting aircraft shift coverage by at
-most their number and alone can break the constraint. Fleet sizing that assumes
-independence understates, under common-cause jamming, the risk of losing six of eight tasks by
-$\nLiftUnder\times$. A brute-force oracle confirms every closed form
-(\nVerTotal\ checks, \nVerDisagree\ disagreements).
-
-With up to 96 learning aircraft, the monitor executes no unsafe assignment where
-constrained-RL baselines (PPO-, PID- and MAPPO-Lagrangian, QMIX) execute millions, and a
-classical auction under it beats every learned allocator. PX4 flights exposed one premise
-failure, a \nRfPeakErr\,m estimator lag at GNSS reacquisition; measuring staleness at the
-estimator and recalibrating the benign floor fixed it, and the certificate held on all
-\nRcSamples\ samples. The monitor can thus sit beneath any allocator, giving operators a
-verifiable safety layer that does not require trusting the policy.
+Jamming, stale relayed corrections and misreporting aircraft degrade a drone fleet's navigation,
+and a time-varying certificate $\rho_i(t)$ can bound each aircraft's position error as the attack
+evolves. When a learned, possibly adversarial, policy allocates tasks, an aircraft may hold a task
+with alert limit $\alpha_j$ only while $\rho_i(t)\le\alpha_j$. We place a certified projection
+layer between policy and fleet that, for every policy and certificate trajectory, executes no
+unsafe assignment while covering as many tasks as possible, with exact linear-time monitors for
+coverage and worst-case degradation. A brute-force oracle confirms every closed form
+(\nVerTotal\ checks, \nVerDisagree\ disagreements). With up to 96 learning aircraft, the layer
+executes no unsafe assignment where constrained-RL baselines execute millions, and in PX4 flights,
+once staleness is measured at the estimator, the certificate held on all \nRcSamples\ samples. The
+monitor can therefore sit beneath any allocator, learned or not, as a verifiable safety layer.
 \end{abstract}
 
 % =====================================================================

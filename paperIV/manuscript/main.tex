@@ -74,29 +74,17 @@ A Unified Perturbation Budget for Certified UAV Autonomy}
 % =====================================================================
 \begin{abstract}
 A drone cannot tell from its navigation inputs whether a growing position error comes from a
-jammer, a drifting sensor or wind. An attacker can therefore disguise interference as a
-tolerated benign disturbance, so mission guarantees must not rely on
-detection. We formalise this \emph{adversarial equivalence} with a total-variation
-bound on detection advantage and show that certificates gated on detector silence can be
-violated.
-
-A \emph{unified perturbation budget} over adversarial, GNSS, sensor-fault and environmental
-terms bounds the probability of undetected mission failure. Dependence-sharp aggregation
-(Makarov bounds, Rearrangement Algorithm) makes it hold for every coupling of benign sources,
-even one set by an attacker who controls when jamming happens. We extend a cross-layer event schema with fault and environmental sources, each tagged
-with its provenance.
-
-In \nMissionsTotal{} simulated missions, \nPooledAttackers{} optimised attackers in five
-disguise families evade four detectors in at least \nCrossEvMin{} of missions. A
-trusted re-anchoring alarm limits evasions to a few metres; without it, undetected deviation
-reaches \nNgCapDTwo--\nNgMax\,m. The bound held at all \nSoundPoints{} pilot
-points; stronger optimisers over \nROneTests{} points found \nROneViol{} violations, none
-from disguise, all from two broken theorem conditions (an unchecked actuator limit, a small
-calibration sample). Once fixed, \nRevEmpTests{} fresh-seed tests showed
-\nRevEmpViol{} violations, though the empirical stealth budget was again exceeded and a provable
-one is \nREightSatRatio$\times$ larger; measured jamming data cut the certified floor at
-10\,m two- to threefold. UAV safety cases should therefore budget for attacks disguised as tolerated
-disturbances, not trust detection to catch them.
+jammer, a drifting sensor or wind, so an attacker can disguise interference as a tolerated
+disturbance. We formalise this \emph{adversarial equivalence}, show that certificates gated on
+detector silence can be violated, and instead bound the probability of undetected mission failure
+with a unified perturbation budget over adversarial, GNSS, fault and environmental terms that holds
+for every coupling of the benign sources. In \nMissionsTotal{} simulated missions,
+\nPooledAttackers{} optimised attackers evade four detectors in at least \nCrossEvMin{} of
+missions, and a trusted re-anchoring alarm limits evasion to a few metres. Stronger optimisers
+exposed two broken theorem conditions; once these were repaired, \nRevEmpTests{} fresh-seed tests
+showed \nRevEmpViol{} violations, and measured jamming data cut the certified floor at 10\,m two-
+to threefold. UAV safety cases should therefore budget for attacks disguised as tolerated
+disturbances rather than trust detection to catch them.
 \end{abstract}
 
 % =====================================================================
