@@ -91,22 +91,21 @@ disturbances rather than trust detection to catch them.
 \section{Introduction}
 \label{sec:intro}
 % =====================================================================
-An autonomous UAV can be attacked through its command-and-control link, its
-peer mesh, its on-board bus and the sensors that its navigation filter fuses.
-Each interface has its own line of defence, with network intrusion detection
+An autonomous UAV can be attacked through its command-and-control link, peer
+mesh, on-board bus and navigation sensors.
+Each interface has its own defences, with network intrusion detection
 systems (IDSs) for the links and the
 bus~\cite{zeng2025uavids,kim2022uavcan,whelan2020novelty}, physical-invariant
 and residual monitors for the estimator~\cite{choi2018,quinonez2020savior,dash2019},
 and certified robustness for learned
 components~\cite{cohen2019smoothing,lecuyer2019}. None of them is designed
-to establish whether, once some attacks get through, the mission can still be
-completed and whether this can be proved. For a single
+to show whether, once some attacks get through, the mission can still be
+provably completed. For a single
 declared attacker the question has a known answer, restated in
 \cref{sec:background}, in which a Lipschitz--Gr\"onwall tube converts the
 bounded navigation error caused by a relay delay just below a detector's
-threshold into a certified floor on the mission-completion rate (MCR). That
-argument assumes that the attacker's perturbation is the only one in the
-budget.
+threshold into a certified floor on the mission-completion rate (MCR). This
+answer assumes that the attacker is the only source of perturbation.
 
 \paragraph{Attacks disguised as benign disturbances.}
 Real navigation errors have many benign causes. A GNSS receiver drifts with
@@ -130,16 +129,15 @@ perturbation, under any coupling.
 
 \paragraph{Approach and contributions.}
 We therefore replace the detection gate with a unified perturbation budget and
-test the resulting bound against attackers optimised to evade it. The paper
-makes five contributions.
+test the resulting bound against attackers optimised to evade it.
 \begin{itemize}
 \item \textbf{A threat model of adversarial equivalence (\cref{sec:threat}).}
   We define $\varepsilon$-observational equivalence, bound any detector's
   advantage by the total-variation (TV) distance (\cref{lem:lecam}), and show
   that an equivalent attack can violate a detector-gated certificate
-  (\cref{prop:gated}). Unlike prior work on fault
-  mimicry~\cite{roy2023,bai2017,hashemi2018}, we treat the disguise as an
-  optimisation variable of the attacker.
+  (\cref{prop:gated}). Unlike earlier work on fault
+  mimicry~\cite{roy2023,bai2017,hashemi2018}, we let the attacker optimise
+  the disguise.
 \item \textbf{A unified budget with mixed semantics (\cref{sec:budget}).}
   $\dtot=\dnet(\theta)\oplus\dadv(\theta)\oplus\dgnss\oplus\dfault\oplus\denv$
   combines deterministic, stochastic and probability-box (p-box) terms. We prove
@@ -149,31 +147,31 @@ makes five contributions.
   against a known coupling by up to the number of sources under comonotonicity
   and without bound under independence (\cref{prop:union}).
 \item \textbf{Fault and environmental sources (\cref{sec:benchmark}).} We
-  extend the cross-layer event schema used in the evaluation with fault and
+  extend the evaluation's cross-layer event schema with fault and
   environmental sources, labelling each coupling as measured on one airframe,
-  physically modelled or aligned in simulation.
+  physically modelled or simulation-aligned.
 \item \textbf{An evasion study and a soundness test
   (\cref{sec:evasion,sec:eval}).} We cross-evaluate attackers optimised over
   five disguise families against four detectors and their combination, and test
   the bound on held-out attackers under Holm correction, using negative
   controls to show the test's power.
 \item \textbf{A negative result and its repair (\cref{sec:scaled,sec:revised}).}
-  Stronger optimisers and a test scaled to \nROneTests{} points found
-  \nROneViol{} Holm-significant violations in the pilot instantiation, traced to
-  two unsecured conditions unrelated to disguise. We repair both with a run-time
-  saturation alarm and a finite-sample p-box and re-evaluate on fresh seeds; a
-  linear-programming stealth bound valid for every attack exists only with the
-  alarm armed, at \nREightSatRatio$\times$ the empirical one.
+  Stronger optimisers and a test scaled to \nROneTests{} points found the
+  pilot instantiation unsound, with \nROneViol{} Holm-significant violations
+  traced to two unsecured conditions unrelated to disguise. A run-time saturation
+  alarm and a finite-sample p-box repair both, and a linear-programming stealth bound valid
+  for every attack exists only with the alarm armed, at
+  \nREightSatRatio$\times$ the empirical one.
 \end{itemize}
 
 \paragraph{Scope.}
 The pilot evaluation uses a reduced-order lateral multirotor model with a
 Kalman filter (KF) rather than PX4's EKF2, and \cref{sec:discussion} lists
-the results that must be re-established in software-in-the-loop (SITL)
-simulation before deployment. The adversarial term is an
-empirical supremum over optimised attackers, since our provable bound is too
-loose to certify useful margins, and we test it against independently seeded
-attackers, reporting every exceedance and violation.
+the results to be re-established in software-in-the-loop (SITL) simulation.
+Because our provable bound is too loose to certify useful margins, the
+adversarial term is an empirical supremum over optimised attackers, which we
+test against independently seeded attackers, reporting every exceedance and
+violation.
 
 % =====================================================================
 \section{Preliminaries and Problem Statement}
