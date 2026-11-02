@@ -91,124 +91,89 @@ disturbances rather than trust detection to catch them.
 \section{Introduction}
 \label{sec:intro}
 % =====================================================================
-An autonomous UAV is exposed to an adversary at several interfaces at once.
-Commands arrive over a command-and-control radio link, peers exchange position
-reports over a multi-hop mesh, the flight controller talks to its motor
-controllers over an on-board bus, and the navigation filter fuses
-satellite, inertial and occasionally visual measurements into the state
-estimate on which the control loop acts. Each interface has its own defensive
-literature: network intrusion detection systems (IDSs) for the links and the
+An autonomous UAV can be attacked through its command-and-control link, its
+peer mesh, its on-board bus and the sensors that its navigation filter fuses.
+Each interface has its own line of defence, with network intrusion detection
+systems (IDSs) for the links and the
 bus~\cite{zeng2025uavids,kim2022uavcan,whelan2020novelty}, physical-invariant
 and residual monitors for the estimator~\cite{choi2018,quinonez2020savior,dash2019},
 and certified robustness for learned
-components~\cite{cohen2019smoothing,lecuyer2019}. We address a question that
-none of these defences is designed to answer: whether, once some attacks
-inevitably get through, the mission can still be completed, and whether this
-can be proved.
-
-For a single attack class, a narrow version of this question has a known
-answer, which \cref{sec:background} restates. A relay that delays peer position
-reports by just less than a detector's threshold produces a bounded staleness,
-the staleness produces a bounded navigation error, and a Lipschitz--Gr\"onwall
-tube converts that error into a certified floor on the mission-completion rate
-(MCR). That chain assumes a declared attacker, whose perturbation is the only
-one in the budget and whose type is known.
+components~\cite{cohen2019smoothing,lecuyer2019}. None of them is designed
+to establish whether, once some attacks get through, the mission can still be
+completed and whether this can be proved. For a single
+declared attacker the question has a known answer, restated in
+\cref{sec:background}, in which a Lipschitz--Gr\"onwall tube converts the
+bounded navigation error caused by a relay delay just below a detector's
+threshold into a certified floor on the mission-completion rate (MCR). That
+argument assumes that the attacker's perturbation is the only one in the
+budget.
 
 \paragraph{Attacks disguised as benign disturbances.}
-Real navigation errors have many causes. A GNSS receiver drifts with the
-ionosphere and multipath; an accelerometer bias steps or random-walks; wind
-pushes the airframe, and the controller compensates. A defender therefore tunes
-every monitor to tolerate these benign disturbances, and that tolerance is the
-space in which an attacker can hide. Dash et
-al.\ observed that control-invariant monitors ``have to accommodate some degree
-of deviation \ldots due to environmental factors such as friction or
-wind''~\cite{dash2019}. Roy and Dey proved that an actuator attack lying in the
-range of the fault-input matrix is indistinguishable from a
-fault~\cite{roy2023}. Khazraei et al.\ showed that a GPS-only attacker can cause
-arbitrarily large deviation against any detector when the closed loop is
-incrementally exponentially stable~\cite{khazraei2024}, and a recent spoofer
-deliberately exploited the controller's wind compensation to deviate a PX4
-vehicle undetected~\cite{kim2024predictable}. These observations lead to
-the following security conclusion.
+Real navigation errors have many benign causes. A GNSS receiver drifts with
+the ionosphere and multipath, an accelerometer bias steps or random-walks, and
+wind pushes the airframe. Every monitor must therefore tolerate these
+disturbances, and that tolerance is the space in which an attacker can hide.
+Control-invariant monitors must accommodate deviation due to friction or
+wind~\cite{dash2019}, and an actuator attack lying in the range of the
+fault-input matrix is indistinguishable from a fault~\cite{roy2023}. A
+GPS-only attacker can cause arbitrarily large deviation against any detector
+when the closed loop is incrementally exponentially
+stable~\cite{khazraei2024}, and a recent spoofer exploited a PX4 vehicle's
+wind compensation to deviate it undetected~\cite{kim2024predictable}. From the
+navigation input alone, shaped interference, a sensor fault and an
+environmental disturbance can thus be indistinguishable, and an attacker will
+choose the disguise that the defender models least well. A certificate gated on
+detector silence is then unsound against an attacker who dresses as the
+weather. A useful guarantee must instead be source-agnostic, bounding the
+mission outcome whatever mixture of attack, fault, outage and wind produced the
+perturbation, under any coupling.
 
-\begin{quote}\itshape
-From the navigation input alone, shaped adversarial interference, a sensor
-fault and an environmental disturbance can be indistinguishable. An attacker
-will therefore choose the disguise the defender models least well. A
-certificate that is sound only against a declared attack model is unsound
-against the attacker who dresses as the weather.
-\end{quote}
-
-\noindent
-The conclusion has two consequences that a single-source view misses. First,
-a detector tuned to malicious signatures is a poor last line of defence, since
-the decisive attack is the one that looks benign. Second, a useful guarantee
-must be \emph{source-agnostic}: it must bound the mission outcome
-whatever mixture of attack, fault, outage and wind produced the perturbation,
-and whatever their mutual dependence.
-
-\paragraph{Contributions.}
+\paragraph{Approach and contributions.}
+We therefore replace the detection gate with a unified perturbation budget and
+test the resulting bound against attackers optimised to evade it. The paper
+makes five contributions.
 \begin{itemize}
-\item \textbf{A formal threat model of adversarial equivalence (\cref{sec:threat}).}
-  We define $\varepsilon$-observational equivalence between an attack and a class of
-  benign disturbances, bound any detector's advantage by the total-variation
-  (TV) distance (\cref{lem:lecam}), and show that a detector-gated certificate
-  can be violated by an equivalent attack whose undetected deviation exceeds
-  the corridor (\cref{prop:gated}). That attacks can mimic faults is
-  known~\cite{roy2023,bai2017,hashemi2018}; we make the disguise an
-  optimisation variable of the attacker and derive from it a requirement on
-  the certificate.
-\item \textbf{A unified perturbation budget with mixed semantics
-  (\cref{sec:budget}).} The budget
+\item \textbf{A threat model of adversarial equivalence (\cref{sec:threat}).}
+  We define $\varepsilon$-observational equivalence, bound any detector's
+  advantage by the total-variation (TV) distance (\cref{lem:lecam}), and show
+  that an equivalent attack can violate a detector-gated certificate
+  (\cref{prop:gated}). Unlike prior work on fault
+  mimicry~\cite{roy2023,bai2017,hashemi2018}, we treat the disguise as an
+  optimisation variable of the attacker.
+\item \textbf{A unified budget with mixed semantics (\cref{sec:budget}).}
   $\dtot=\dnet(\theta)\oplus\dadv(\theta)\oplus\dgnss\oplus\dfault\oplus\denv$
-  combines deterministic worst-case terms, stochastic terms and a
-  bounded-unknown term represented as a probability box (p-box). We prove a
-  dependence-sharp bound on the probability that a mission fails undetected
-  (\cref{thm:floor}) and characterise its tightness (\cref{prop:union}). The
-  union bound is the classical standard bound~\cite{makarov1981,ruschendorf1982}.
-  It is sharp for two sources, so it is the right quantity when the coupling is
-  unknown. Against a known benign coupling it is loose, by a factor of up to
-  the number of sources under comonotonicity and without bound under
-  independence. Deterministic terms add no dependence gap. Contrary to a
-  common intuition, comonotonicity is therefore not the case in which a joint
-  treatment recovers most of the slack.
-\item \textbf{Fault and environmental sources in a cross-layer event schema
-  (\cref{sec:benchmark}).} The evaluation runs on a cross-layer event schema,
-  released in the artifact, whose unit of record is the pairing of a network or
-  environmental window with the navigation window it induces. We extend it
-  with fault and environmental perturbation sources, each of whose pairings
-  states whether its coupling was measured on one airframe, derived from a
-  physical model, or aligned in simulation.
-\item \textbf{An evasion study and a soundness test (\cref{sec:evasion,sec:eval}).}
-  Against four detector designs and their combination, an optimising attacker
-  searches over five disguise families. We cross-evaluate every optimised
-  attacker against every detector. We then measure how much undetected
-  deviation each detector admits per disguise, how the stealth budget scales
-  with the re-anchoring interval, and where each aggregation rule loses
-  tightness. Finally, we test whether the bound holds on held-out attackers
-  under Holm-corrected tests, with negative controls that demonstrate the
-  test's power.
+  combines deterministic, stochastic and probability-box (p-box) terms. We prove
+  a dependence-sharp bound on the probability of undetected mission failure
+  (\cref{thm:floor}) and show that the classical union
+  bound~\cite{makarov1981,ruschendorf1982}, sharp for two sources, is loose
+  against a known coupling by up to the number of sources under comonotonicity
+  and without bound under independence (\cref{prop:union}).
+\item \textbf{Fault and environmental sources (\cref{sec:benchmark}).} We
+  extend the cross-layer event schema used in the evaluation with fault and
+  environmental sources, labelling each coupling as measured on one airframe,
+  physically modelled or aligned in simulation.
+\item \textbf{An evasion study and a soundness test
+  (\cref{sec:evasion,sec:eval}).} We cross-evaluate attackers optimised over
+  five disguise families against four detectors and their combination, and test
+  the bound on held-out attackers under Holm correction, using negative
+  controls to show the test's power.
 \item \textbf{A negative result and its repair (\cref{sec:scaled,sec:revised}).}
-  Stronger optimisers and a test scaled to \nROneTests{} points found the
-  pilot instantiation unsound: \nROneViol{} Holm-significant violations,
-  traced to two conditions that it assumed but did not secure, neither of
-  which concerns disguise. We repair both with a run-time saturation alarm and
-  a finite-sample p-box, and evaluate the repair on fresh seeds. A linear-programming
-  bound on the stealth budget, valid for every attack, exists only once the
-  saturation alarm is armed, and it is \nREightSatRatio$\times$ the empirical
-  one.
+  Stronger optimisers and a test scaled to \nROneTests{} points found
+  \nROneViol{} Holm-significant violations in the pilot instantiation, traced to
+  two unsecured conditions unrelated to disguise. We repair both with a run-time
+  saturation alarm and a finite-sample p-box and re-evaluate on fresh seeds; a
+  linear-programming stealth bound valid for every attack exists only with the
+  alarm armed, at \nREightSatRatio$\times$ the empirical one.
 \end{itemize}
 
 \paragraph{Scope.}
-The pilot evaluation in this paper uses a reduced-order lateral model of a
-multirotor with a Kalman filter (KF) rather than PX4's EKF2 on a full airframe.
-\Cref{sec:discussion} and the artifact's README state which results
-must be re-established in software-in-the-loop (SITL) simulation before they
-are claimed for a deployed autopilot. The adversarial term available to us is
-an empirical supremum over optimised attackers rather than a proven bound, and
-the provable bound we derive is too loose to certify useful margins. We test the empirical term
-against independently seeded attackers and report every exceedance and every
-violation.
+The pilot evaluation uses a reduced-order lateral multirotor model with a
+Kalman filter (KF) rather than PX4's EKF2, and \cref{sec:discussion} lists
+the results that must be re-established in software-in-the-loop (SITL)
+simulation before deployment. The adversarial term is an
+empirical supremum over optimised attackers, since our provable bound is too
+loose to certify useful margins, and we test it against independently seeded
+attackers, reporting every exceedance and violation.
 
 % =====================================================================
 \section{Preliminaries and Problem Statement}
