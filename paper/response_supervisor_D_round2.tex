@@ -1,0 +1,138 @@
+% =====================================================================
+% Response to the supervisor's second round of \federico{} comments on
+% Paper D (v10 -> v11). Standalone: pdflatex twice.
+% =====================================================================
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[expansion=false]{microtype}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\definecolor{qgrey}{HTML}{4A4A4A}
+\definecolor{rule}{HTML}{C9C9C4}
+\definecolor{tag}{HTML}{8A4B2A}
+\setlength{\parskip}{0.35em}
+\setlength{\parindent}{0pt}
+\newcommand{\thinrule}{\textcolor{rule}{\rule{\linewidth}{0.4pt}}}
+\newenvironment{qitem}[3]{%
+  \par\medskip\thinrule\par\smallskip
+  \noindent\textbf{\textcolor{tag}{#1}}\quad\textcolor{qgrey}{\small #2}\par\smallskip
+  \noindent\textcolor{qgrey}{\small\itshape #3}\par\smallskip
+}{\par}
+\newcommand{\where}[1]{\par\smallskip{\small\textcolor{tag}{$\hookrightarrow$}\ \textit{#1}}\par}
+
+\begin{document}
+\begin{center}
+{\Large\bfseries Response to Supervisor Comments, Second Round}\\[0.35em]
+{\large Paper D: \emph{From Wire to Flight: Certifying UAV Mission Completion
+Against Detector-Evading Attacks}}\\[0.6em]
+\end{center}
+
+Thank you for the second reading. Each comment is answered below with the
+place where the revision was made. Two of them changed more than wording. The
+comment on the six datasets exposed an overstatement: one of the six was never
+ingested. The suggested related work bears directly on our novelty claim, which
+is now positioned against it. The paper remains within the S\&P limit
+(13~pages of body, 18 in total).
+
+\begin{qitem}{1}{Abstract, terminology and claims}{Use ``unmanned aerial
+vehicle (UAV)'' once, then ``UAV''; reserve ``certified''; avoid ``none'',
+``never'', ``first'', ``universal'', ``any'', ``no prior''; one term each for
+corpus and benchmark; define acronyms once; the novelty claim is too strong.}
+All six points are applied across the paper.
+\begin{itemize}[leftmargin=1.4em,itemsep=1pt]
+\item ``Unmanned aerial vehicle (UAV)'' is defined in the abstract and at its
+first use in the body, and ``UAV'' is used thereafter. ``Drone'', ``aircraft''
+and ``uncrewed'' no longer denote the vehicle; ``airframe'' remains only where it
+means the physical platform.
+\item The Scope paragraph now states: ``Throughout, `certified' means proved
+under (C1)--(C3).'' The paper has three conditions, so we write (C1)--(C3)
+rather than (C1)--(C4); please tell us if you had a fourth condition in mind.
+\item Empirical and rhetorical absolutes are qualified (``in the settings we
+simulate'', ``in our evaluation'', ``to the best of our knowledge'').
+Mathematical quantifiers inside definitions, theorems and proofs are unchanged.
+\item ``Corpus'' now means the six sources and ``benchmark'' the corpus, schema
+and harness together.
+\item Every acronym is defined at its first use in the body and not again. The
+background appendix no longer redefines terms.
+\item The novelty claim is positioned against the related work in item~3.
+\end{itemize}
+\where{Abstract, Introduction, Scope, throughout.}
+\end{qitem}
+
+\begin{qitem}{2}{Definition 1}{``Every attack'' is too broad, since the
+adversary can also drop or forge traffic and manipulate RF.}
+Agreed. The definition now reads ``for every time-delay attack $a$ with
+$D_\theta(a)=$ clean'', which is the class the theorem covers.
+\where{\S II-D, Definition 1.}
+\end{qitem}
+
+\begin{qitem}{3}{Related work}{Consider Mo \& Sinopoli (TAC 2016), Urbina et
+al.\ (CCS 2016), Choi et al.\ (CCS 2018) and SAVIOR (USENIX Security 2020).}
+Added, as a new paragraph, ``Impact of Stealthy Attacks''. These works share our
+premise that a detector's threshold limits what an attacker can achieve, and
+they establish it for integrity attacks within a single control loop, where the
+detector observes the same physical residuals that the attack perturbs. We now
+describe our contribution as transferring that premise across layers. Our
+detector observes network forwarding, the attack delays messages rather than
+falsifying them, the bounded quantity is the fraction of missions that complete,
+and the link between the layers is measured rather than modelled. The
+Introduction was adjusted so that it does not suggest that no one has linked a
+threshold to bounded damage.
+\where{\S III (new paragraph), Introduction.}
+\end{qitem}
+
+\begin{qitem}{4}{Appendix references}{Every reference to an appendix section
+prints ``Appendix A'', and the appendix itself is just called ``Appendix''.}
+This was a LaTeX error (\verb|\appendix| instead of IEEEtran's
+\verb|\appendices|). The appendices are now lettered A--G, and every reference
+resolves to its own letter.
+\where{Appendices.}
+\end{qitem}
+
+\begin{qitem}{5}{Corpus table}{You talk about six datasets, but are you using
+all of them in the experiments?}
+No, and the paper now says so. Adapters exist for all six, but only five are
+ingested: the UAV-CAS release could not be retrieved for this study, so only its
+adapter is included. The ingestion table had already listed it as ``adapter
+ready; file pending'', while the abstract and introduction said ``we unify six''.
+They now say ``adapters for six, five ingested''. The corpus section and the
+table caption also state each dataset's role:
+\begin{itemize}[leftmargin=1.4em,itemsep=1pt]
+\item Three supply the certificate's constants: DATAMUt (residual budget and
+operating curve), the UAV Attack Dataset (the rate $\gamma$) and UAV-EW-Bench
+(the completion anchor).
+\item UAVIDS-2025 and HCRL UAVCAN exercise the schema and contribute the corpus
+statistics and the bus-attack classes, but they do not enter the certified
+chain.
+\end{itemize}
+Paper IV made the same claim about UAV-CAS and is corrected in the same way.
+\where{Abstract, Introduction, \S V and the Table I caption; related work no
+longer says ``we ingest'' UAV-CAS.}
+\end{qitem}
+
+\begin{qitem}{6}{Proposition 1 (Soundness)}{There are no conditions in the
+statement, but the proof relies on (C1)--(C3).}
+Agreed. The proposition now begins ``Under conditions (C1)--(C3)'' and covers
+every $D_\theta$-evading time-delay attack.
+\where{\S VIII, Proposition 1.}
+\end{qitem}
+
+\begin{qitem}{7}{Figure (residual budget)}{``Scenario~1'' is never defined.}
+The harness section now defines the three scenarios: scenario~1 is a $4\times4$
+grid, scenario~2 a nine-node ring and scenario~3 a double ring. The caption
+names the grid.
+\where{\S VI and the residual-budget figure caption.}
+\end{qitem}
+
+\begin{qitem}{8}{Appendix on learned detectors}{$\sigma$ is already used for the
+smoothing noise.}
+The learned detector's score is now $\zeta(a)$, so $\sigma$ denotes only the
+smoothing noise.
+\where{Appendix D.}
+\end{qitem}
+
+\end{document}
