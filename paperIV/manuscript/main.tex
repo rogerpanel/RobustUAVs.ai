@@ -570,10 +570,11 @@ and every record states this.
 
 \paragraph{Corpora and tooling.}
 The schema's adapters ingest the HCRL UAVCAN bus corpus~\cite{kim2022uavcan},
-UAVIDS-2025~\cite{zeng2025uavids}, UAV-CAS~\cite{mishra2026uavcas}, a replay of
-the DATAMUt time-delay detector~\cite{soltani2026datamut}, the UAV Attack
-Dataset, and the physics-informed UAV-EW-Bench~\cite{uavewbench2026}. Together
-these give \nEventsTotal{} events, of which \nEventsReal{} were captured on real
+UAVIDS-2025~\cite{zeng2025uavids}, a replay of the DATAMUt time-delay
+detector~\cite{soltani2026datamut}, the UAV Attack Dataset, and the
+physics-informed UAV-EW-Bench~\cite{uavewbench2026}; an adapter for
+UAV-CAS~\cite{mishra2026uavcas} is included, but its release could not be
+retrieved for this study. Together the ingested sources give \nEventsTotal{} events, of which \nEventsReal{} were captured on real
 hardware. The fault and environment sources added in this paper
 enter through the RflyMAD~\cite{le2025rflymad} and ALFA~\cite{keipour2021alfa}
 fault taxonomies and the Dryden model~\cite{milf8785c}. The artifact also ships the schema (versions~0.1 and~0.2) with its adapters,
