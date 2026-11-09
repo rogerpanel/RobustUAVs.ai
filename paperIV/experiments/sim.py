@@ -118,7 +118,8 @@ class _CRN:
 
 def simulate(N, seed, *, w20=None, gnss=True, fault=True, attack="none",
              aparams=None, attack_seed=None, anchor=T_ANCHOR, env_on=True,
-             w20_attacker=W20_KT["moderate"], terminal=True, noise=True, crn=None):
+             w20_attacker=W20_KT["moderate"], terminal=True, noise=True, crn=None,
+             record_r3=False):
     """Run N rollouts. Returns a dict of per-rollout arrays.
 
     w20     : scalar or (N,) array of W20 in knots for the airframe wind
@@ -229,6 +230,7 @@ def simulate(N, seed, *, w20=None, gnss=True, fault=True, attack="none",
     z_prev = np.full(N, np.nan)
     maxdev = np.zeros(N); maxdev_after = np.zeros(N)
     first_alarm = {}
+    r3_hist = []                              # optional: D3 residual per GNSS epoch (record_r3)
 
     sat = np.zeros(N, bool)                   # actuator saturation reached during the mission
     umax = np.zeros(N)                        # largest |raw command| (R8 benign margin)
@@ -349,6 +351,8 @@ def simulate(N, seed, *, w20=None, gnss=True, fault=True, attack="none",
             S2 = np.where(valid & (nis_fill >= CONSEC_CHI2), np.maximum(S2, nis_buf.min(1)), S2)
             # D3 observer residual + CUSUM, then correction
             r3 = z - po
+            if record_r3:
+                r3_hist.append(np.where(valid, r3, np.nan))
             g3 = np.where(valid, np.maximum(0.0, g3 + r3 * r3 / 1.0 - (1.0 + CUSUM_KAPPA)), g3)
             S3 = np.maximum(S3, g3)
             po = np.where(valid, po + 0.3 * r3, po); vo = np.where(valid, vo + 0.2 * r3 / dtg, vo)
@@ -374,8 +378,11 @@ def simulate(N, seed, *, w20=None, gnss=True, fault=True, attack="none",
         maxdev = np.maximum(maxdev, ap)
         maxdev_after = np.where(t >= t0, np.maximum(maxdev_after, ap), maxdev_after)
 
-    return {"maxdev": maxdev, "maxdev_after": maxdev_after,
-            "S1": S1, "S2": S2, "S3": S3, "S4": S4, "SA": SA, "sat": sat, "umax": umax}
+    out = {"maxdev": maxdev, "maxdev_after": maxdev_after,
+           "S1": S1, "S2": S2, "S3": S3, "S4": S4, "SA": SA, "sat": sat, "umax": umax}
+    if record_r3:
+        out["r3"] = np.array(r3_hist).T
+    return out
 
 
 DETECTORS = ("D1", "D2", "D3", "D4")
