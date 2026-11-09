@@ -1,0 +1,320 @@
+#!/usr/bin/env python3
+"""Tables of the Paper IV PX4 SITL study, from results/px4/<exp>/missions.jsonl.
+
+  calibrate  E0: thresholds (single detector at 1-f, stack at 1-f/4 as in the
+             reduced-order model, anchor gate at 0.99), FPR by benign source,
+             replay floor (benign mission flown twice with the same seed)
+  smoke      injection, anchor fusion and replay diagnostics of the bring-up run
+  e1         naive offsets: detection rate per detector at the operating points, ROC
+  e2         cross-evaluated disguise matrix in PX4 and the pre-registered reading
+  e3         PX4 stealth budget (best CEM attacker per family, fresh seeds)
+  e4neg      negative control without the anchor
+Every table carries provenance = px4_sitl. Nothing is filled in when an input is
+missing: the table is skipped and the reason printed.
+Usage: python3 p4_analyze.py [calibrate smoke e1 e2 e3 e4neg]
+"""
+from __future__ import annotations
+
+import csv
+import json
+import sys
+from pathlib import Path
+
+import numpy as np
+
+HERE = Path(__file__).resolve().parent
+RES = HERE.parents[1] / "results"
+PX = Path(__import__("os").environ.get("P4_PX4_RESULTS") or RES / "px4")
+FPR_GRID = (0.01, 0.02, 0.05, 0.10, 0.20)
+DETS = ("D1", "D2", "D3", "D4")
+STACKS = {"D1": ("D1",), "D2": ("D2",), "D3": ("D3",), "D4": ("D4",), "ALL": DETS}
+# reduced-order reference values (results/e2x_cross.csv, e2y_no_anchor_gate.csv; attackers 20-24, full stack, 5 %)
+REF_GATE = {"step": (0.841, 2.108), "ramp": (0.872, 1.511), "fault_mimic": (0.790, 2.255),
+            "gnss_mimic": (0.763, 2.406), "weather_mimic": (0.691, 2.880)}
+REF_D2_NOGATE_MAX = 3.383          # largest undetected attack-only deviation under D2 alone, gate removed
+REF_DELTA_ADV = {0.01: (4.371, 5.463)}   # pilot and pooled stealth budget (results/r1_delta_adv.csv)
+
+
+def rows(d, exp=None):
+    """ok missions of results directory d (one fleet run); exp filters on the spec's experiment tag."""
+    f = PX / d / "missions.jsonl"
+    if not f.exists():
+        return []
+    out = {}
+    for line in f.read_text().splitlines():
+        try:
+            r = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if r.get("status") == "ok" and (exp is None or r.get("exp") == exp):
+            out[r["mid"]] = r
+    return list(out.values())
+
+
+def write(name, rs):
+    if not rs:
+        print(f"  {name}: nothing to write"); return
+    keys = list(dict.fromkeys(k for r in rs for k in r))
+    with open(PX / name, "w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=keys); w.writeheader(); w.writerows(rs)
+    print(f"  wrote results/px4/{name} ({len(rs)} rows)")
+
+
+def series(d, mid):
+    f = PX / d / "series" / f"{mid}.npz"
+    return np.load(f) if f.exists() else None
+
+
+def twin_mid(r):
+    return f"twin_{r['exp']}_a{r['anchor_s']}_s{r['seed']}"
+
+
+def attack_only(r, d):
+    """sup_t |e_attack(t) - e_twin(t)| after the attack onset (twin flown in the same run d), or None."""
+    a = series(d, r["mid"]); b = series(d, twin_mid(r))
+    if a is None or b is None:
+        return None
+    t = a["t"]; t0 = r.get("attack_t0") or 0.0
+    m = t >= t0
+    return float(np.max(np.abs(a["e"][m] - b["e"][m]))) if m.any() else 0.0
+
+
+def cal_load():
+    f = PX / "calibration.json"
+    return json.loads(f.read_text()) if f.exists() else None
+
+
+def alarm(r, cal, stack, fpr, gate=True):
+    th = cal["stack"][str(fpr)] if stack == "ALL" else cal["single"][str(fpr)]
+    a = any(r["S" + d[1]] > th[d] for d in STACKS[stack])
+    if gate and r.get("anchor_s"):
+        a |= r["SA"] > cal["anchor"]
+    return a
+
+
+# ---------------------------------------------------------------------- E0
+def calibrate():
+    R = rows("e0", "e0")
+    if len(R) < 50:
+        print(f"calibrate: only {len(R)} E0 missions; need >= 50"); return
+    st = {d: np.array([r["S" + d[1]] for r in R]) for d in DETS}
+    single = {str(f): {d: float(np.quantile(st[d], 1 - f)) for d in DETS} for f in FPR_GRID}
+    stack = {str(f): {d: float(np.quantile(st[d], 1 - f / 4)) for d in DETS} for f in FPR_GRID}
+    SA = np.array([r["SA"] for r in R]); stock = np.array([r["Sstk"] for r in R]); sat = np.array([r["Ssat"] for r in R])
+    cal = {"n": len(R), "single": single, "stack": stack, "anchor": float(np.quantile(SA, 0.99)),
+           "stock_fpr_any": float(np.mean(stock > 0)), "sat_any_fpr": float(np.mean(sat > 0)),
+           "sat_q99_s": float(np.quantile(sat, 0.99)), "provenance": "px4_sitl"}
+    (PX / "calibration.json").write_text(json.dumps(cal, indent=1))
+    print(f"  calibration on {len(R)} benign PX4 missions -> results/px4/calibration.json")
+    out = [{"fpr_target": f, "detector": d, "theta": round(single[str(f)][d], 5), "theta_stack": round(stack[str(f)][d], 5),
+            "provenance": "px4_sitl"} for f in FPR_GRID for d in DETS]
+    write("px4_e0_thresholds.csv", out)
+    # FPR at 5 % by benign source present in the mission
+    src = []
+    for key in ("outage", "jam", "bias_step", "drift", "loe"):
+        for present in (True, False):
+            sub = [r for r in R if bool(r["benign_meta"][key]) == present]
+            if not sub:
+                continue
+            row = {"source": key, "present": present, "n": len(sub)}
+            for d in DETS:
+                row[d] = round(float(np.mean([r["S" + d[1]] > single["0.05"][d] for r in sub])), 4)
+            row["ALL+gate"] = round(float(np.mean([alarm(r, cal, "ALL", 0.05) for r in sub])), 4)
+            row["provenance"] = "px4_sitl"
+            src.append(row)
+    write("px4_e0_fpr_by_source.csv", src)
+    # benign envelope of the mission metric
+    md = np.array([r["maxdev"] for r in R])
+    write("px4_e0_benign_maxdev.csv", [{"q": q, "maxdev_m": round(float(np.quantile(md, q)), 3), "n": len(R),
+                                         "provenance": "px4_sitl"} for q in (0.5, 0.9, 0.95, 0.99, 1.0)])
+    replay()
+    health("e0", R)
+
+
+def replay():
+    R = {r["mid"]: r for r in rows("e0", "e0")}
+    P = {r["mid"]: r for r in rows("e0", "e0_replay")}
+    out = []
+    for mid, b in P.items():
+        a = R.get(mid.replace("e0_replay_", "e0_"))
+        if not a:
+            continue
+        sa, sb = series("e0", a["mid"]), series("e0", mid)
+        dev = float(np.max(np.abs(sa["e"] - sb["e"]))) if sa is not None and sb is not None else None
+        row = {"seed": a["seed"], "sup_e_diff_m": None if dev is None else round(dev, 4),
+               "maxdev_a": round(a["maxdev"], 3), "maxdev_b": round(b["maxdev"], 3)}
+        for d in DETS + ("A",):
+            k = "S" + (d[1] if d != "A" else "A")
+            row[f"d{k}"] = round(abs(a[k] - b[k]), 4)
+        row["provenance"] = "px4_sitl"
+        out.append(row)
+    write("px4_e0_replay.csv", out)
+    if out:
+        v = [r["sup_e_diff_m"] for r in out if r["sup_e_diff_m"] is not None]
+        print(f"  replay floor: median {np.median(v):.3f} m, max {np.max(v):.3f} m over {len(v)} seed pairs")
+
+
+def health(exp, R):
+    n = len(R)
+    if not n:
+        return
+    f = lambda k: int(sum(bool(r.get(k)) for r in R))
+    print(f"  {exp}: {n} ok missions; failsafe {f('failsafe')}, disarmed in window {f('disarmed_in_window')}, "
+          f"mission restarted after arming {f('mission_restarted_after_arm')}; anchors fused per mission "
+          f"median {np.median([r['n_anchor_fused'] for r in R]):.0f} (published {np.median([r['n_anchor_pub'] for r in R]):.0f})")
+
+
+def smoke():
+    R = {r["mid"]: r for r in rows("smoke")}
+    for mid, r in R.items():
+        print(f"  {mid}: maxdev {r['maxdev']:.2f} m, offset applied max {r['dmax_applied']:.2f} m, "
+              f"S1 {r['S1']:.2f} S2 {r['S2']:.2f} S3 {r['S3']:.1f} S4 {r['S4']:.3f} SA {r['SA']:.2f}, "
+              f"anchors {r['n_anchor_fused']}/{r['n_anchor_pub']}, GNSS rejected {r['n_gnss_rejected']}, "
+              f"resets {r['n_pos_reset_gps']}, along-track at end {r['along_m_end']:.0f} m, nav {r['nav_states']}")
+    a, b = series("smoke", "smoke_benign_a"), series("smoke", "smoke_benign_b")
+    if a is not None and b is not None:
+        print(f"  replay (same seed, benign): sup|e_a - e_b| = {np.max(np.abs(a['e'] - b['e'])):.4f} m")
+    for mid in ("smoke_step5", "smoke_ramp05"):
+        s = series("smoke", mid)
+        if s is not None and a is not None:
+            print(f"  {mid}: sup|e - e_benign| = {np.max(np.abs(s['e'] - a['e'])):.2f} m; offset at end {s['d'][-1]:.2f} m")
+
+
+# ---------------------------------------------------------------------- E1
+def e1():
+    cal = cal_load()
+    if not cal:
+        print("e1: no calibration"); return
+    R = rows("e1", "e1"); E0 = rows("e0", "e0")
+    st0 = {d: np.array([r["S" + d[1]] for r in E0]) for d in DETS}
+    out, roc = [], []
+    for aid in ("step5", "ramp05"):
+        sub = [r for r in R if r["attacker_id"] == aid]
+        if not sub:
+            continue
+        for fpr in (0.01, 0.05, 0.10):
+            row = {"attack": aid, "fpr": fpr, "n": len(sub)}
+            for d in DETS:
+                row[d] = round(float(np.mean([r["S" + d[1]] > cal["single"][str(fpr)][d] for r in sub])), 4)
+            row["ALL"] = round(float(np.mean([alarm(r, cal, "ALL", fpr, gate=False) for r in sub])), 4)
+            row["ALL+gate"] = round(float(np.mean([alarm(r, cal, "ALL", fpr) for r in sub])), 4)
+            row["stock_any"] = round(float(np.mean([r["Sstk"] > 0 for r in sub])), 4)
+            ao = [attack_only(r, "e1") for r in sub]
+            ao = [x for x in ao if x is not None]
+            row["attack_only_dev_median_m"] = round(float(np.median(ao)), 3) if ao else None
+            row["provenance"] = "px4_sitl"
+            out.append(row)
+        for d in DETS:
+            for q in np.linspace(0, 1, 41):
+                th = float(np.quantile(st0[d], q))
+                roc.append({"attack": aid, "detector": d, "fpr": round(1 - q, 4),
+                            "tpr": round(float(np.mean([r["S" + d[1]] > th for r in sub])), 4), "provenance": "px4_sitl"})
+    write("px4_e1_detection.csv", out); write("px4_e1_roc.csv", roc)
+
+
+# ---------------------------------------------------------------------- E2
+def e2():
+    cal = cal_load()
+    if not cal:
+        print("e2: no calibration"); return
+    R = rows("e2", "e2")
+    by = {}
+    for r in R:
+        by.setdefault(r["attacker_id"], []).append(r)
+    ref = {int(x["attacker_id"]): x for x in csv.DictReader(open(RES / "e2_attackers.csv"))}
+    out = []
+    for aid, sub in sorted(by.items()):
+        fpr = float(ref[aid]["origin_fpr"])
+        ao = {r["mid"]: attack_only(r, "e2") for r in sub}
+        for stack in STACKS:
+            for gate in (True, False):
+                st = [r for r in sub if not alarm(r, cal, stack, fpr if stack == "ALL" else 0.05, gate)]
+                aos = [ao[r["mid"]] for r in st if ao[r["mid"]] is not None]
+                out.append({"attacker_id": aid, "family": ref[aid]["family"], "origin_stack": ref[aid]["origin_stack"],
+                            "origin_fpr": fpr, "stack": stack, "anchor_gate": gate, "n": len(sub),
+                            "evasion_rate": round(len(st) / len(sub), 4), "n_stealthy": len(st),
+                            "attack_only_dev_max": round(max(aos), 3) if aos else 0.0,
+                            "stealthy_dev_max": round(max(r["maxdev_after"] for r in st), 3) if st else 0.0,
+                            "n_twins_missing": sum(v is None for v in ao.values()), "provenance": "px4_sitl"})
+    write("px4_e2_cross.csv", out)
+    reading(out)
+
+
+def reading(out):
+    """Pre-registered reading of E2 (PX4_PREREG.md, section E2)."""
+    cell = lambda aid, stack, gate: next((r for r in out if r["attacker_id"] == aid and r["stack"] == stack
+                                          and r["anchor_gate"] == gate), None)
+    fams = ["step", "ramp", "fault_mimic", "gnss_mimic", "weather_mimic"]
+    a_rows = []
+    for k, fam in enumerate(fams):
+        c = cell(20 + k, "ALL", True)
+        if c is None:
+            print("  E2 reading: primary attackers missing"); return
+        ev_ok = c["evasion_rate"] >= 0.5
+        dev_ok = c["attack_only_dev_max"] <= 2 * REF_GATE[fam][1]
+        a_rows.append({"family": fam, "evasion_px4": c["evasion_rate"], "evasion_ro": REF_GATE[fam][0],
+                       "dev_px4_m": c["attack_only_dev_max"], "dev_ro_m": REF_GATE[fam][1],
+                       "evasion_ge_50pct": ev_ok, "dev_within_2x": dev_ok})
+    a_holds = all(r["evasion_ge_50pct"] and r["dev_within_2x"] for r in a_rows)
+    d2 = {fam: max((r["attack_only_dev_max"] for r in out if r["family"] == fam and r["stack"] == "D2"
+                    and not r["anchor_gate"]), default=0.0) for fam in fams}
+    d4 = {fam: max((r["attack_only_dev_max"] for r in out if r["family"] == fam and r["stack"] == "D4"
+                    and not r["anchor_gate"]), default=0.0) for fam in fams}
+    cap = 2 * REF_D2_NOGATE_MAX
+    b1 = all(v <= cap for v in d2.values()); b2 = any(v > cap for v in d4.values())
+    res = {"a": {"holds": a_holds, "cells": a_rows},
+           "b": {"holds": b1 and b2, "cap_m": cap, "D2_caps_every_family": b1, "some_family_exceeds_cap_under_D4": b2,
+                 "D2_max_by_family": d2, "D4_max_by_family": d4},
+           "transfer_holds_qualitatively": a_holds and b1 and b2, "provenance": "px4_sitl"}
+    (PX / "px4_e2_reading.json").write_text(json.dumps(res, indent=1))
+    print(f"  E2 pre-registered reading: (a) {a_holds}, (b) {b1 and b2} "
+          f"-> transfer holds qualitatively: {res['transfer_holds_qualitatively']}")
+
+
+# ---------------------------------------------------------------------- E3
+def e3():
+    cal = cal_load()
+    R = rows("e3eval", "e3eval")
+    if not cal or not R:
+        print("e3: needs calibration and e3eval missions"); return
+    out = []
+    pooled = []
+    for fpr in (0.01, 0.05, 0.10):
+        for fam in sorted(set(r["family"] for r in R)):
+            sub = [r for r in R if r["family"] == fam]
+            st = [r for r in sub if not alarm(r, cal, "ALL", fpr)]
+            aos = [attack_only(r, "e3eval") for r in st]; aos = [x for x in aos if x is not None]
+            out.append({"fpr": fpr, "family": fam, "n": len(sub), "evasion_rate": round(len(st) / len(sub), 4),
+                        "attack_only_dev_max": round(max(aos), 3) if aos else 0.0, "provenance": "px4_sitl"})
+        # pooled over the PX4-optimised attackers and the transferred ones (E2), as in the paper
+        E2 = rows("e2", "e2")
+        aos = [attack_only(r, "e3eval") for r in R if not alarm(r, cal, "ALL", fpr)]
+        aos += [attack_only(r, "e2") for r in E2 if not alarm(r, cal, "ALL", fpr)]
+        aos = [x for x in aos if x is not None]
+        ref = REF_DELTA_ADV.get(fpr)
+        pooled.append({"fpr": fpr, "delta_adv_px4_m": round(max(aos), 3) if aos else 0.0, "n_stealthy": len(aos),
+                       "delta_adv_ro_pilot_m": ref[0] if ref else None, "delta_adv_ro_pooled_m": ref[1] if ref else None,
+                       "provenance": "px4_sitl"})
+    write("px4_e3_cem_eval.csv", out); write("px4_e3_delta_adv.csv", pooled)
+
+
+def e4neg():
+    cal = cal_load()
+    R = rows("e4neg", "e4neg")
+    if not cal or not R:
+        print("e4neg: needs calibration and missions"); return
+    aos = [attack_only(r, "e4neg") for r in R]
+    st = [not alarm(r, cal, "ALL", 0.05, gate=False) for r in R]
+    out = [{"control": "no anchor, ramp 0.5 m/s", "n": len(R), "evasion_rate": round(float(np.mean(st)), 4),
+            "attack_only_dev_median_m": round(float(np.median([x for x in aos if x is not None])), 3),
+            "attack_only_dev_max_m": round(float(np.max([x for x in aos if x is not None])), 3),
+            "provenance": "px4_sitl"}]
+    write("px4_e4neg.csv", out)
+
+
+TASKS = {"calibrate": calibrate, "smoke": smoke, "e1": e1, "e2": e2, "e3": e3, "e4neg": e4neg}
+
+if __name__ == "__main__":
+    for t in (sys.argv[1:] or TASKS):
+        print(f"[{t}]")
+        TASKS[t]()

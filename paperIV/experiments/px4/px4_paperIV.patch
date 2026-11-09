@@ -1,0 +1,1025 @@
+--- a/ROMFS/px4fmu_common/init.d-posix/px4-rc.params
++++ b/ROMFS/px4fmu_common/init.d-posix/px4-rc.params
+@@ -3,3 +3,10 @@
+ 
+ #param set-default MAV_SYS_ID $((px4_instance+1))
+ #param set-default IMU_INTEG_RATE 250
++
++# Paper IV: per-mission parameters, written by the fleet driver into the instance's working
++# directory before boot, so that every mission starts from the same parameter set
++if [ -f ./p4_mission_params.txt ]
++then
++	. ./p4_mission_params.txt
++fi
+--- /dev/null
++++ b/src/lib/paper4/paper4.hpp
+@@ -0,0 +1,129 @@
++/****************************************************************************
++ * Paper IV SITL harness: seeded noise and lateral gust shared by the SIH
++ * simulator and the simulated GPS. Header only.
++ *
++ * Every random input of a mission is drawn from a stream seeded by a PX4
++ * parameter (BEN_SEED, ATK_SEED), reseeded at arming, so a mission and its
++ * benign twin (same seeds, attack off) see the same noise, wind and faults.
++ ****************************************************************************/
++#pragma once
++
++#include <math.h>
++#include <stdint.h>
++
++namespace paper4
++{
++
++// splitmix64 generator with Box-Muller normals
++class Rng
++{
++public:
++	void seed(uint64_t s)
++	{
++		_s = s * 0x9E3779B97F4A7C15ull + 0x632BE59BD9B4E019ull;
++		_has_spare = false;
++	}
++
++	uint64_t next()
++	{
++		uint64_t z = (_s += 0x9E3779B97F4A7C15ull);
++		z = (z ^ (z >> 30)) * 0xBF58476D1CE4E5B9ull;
++		z = (z ^ (z >> 27)) * 0x94D049BB133111EBull;
++		return z ^ (z >> 31);
++	}
++
++	// uniform on [0, 1)
++	double uniform() { return (double)(next() >> 11) * (1.0 / 9007199254740992.0); }
++
++	double normal()
++	{
++		if (_has_spare) {
++			_has_spare = false;
++			return _spare;
++		}
++
++		double u1 = uniform();
++
++		while (u1 <= 1e-300) { u1 = uniform(); }
++
++		const double u2 = uniform();
++		const double r = sqrt(-2.0 * log(u1));
++		_spare = r * sin(2.0 * M_PI * u2);
++		_has_spare = true;
++		return r * cos(2.0 * M_PI * u2);
++	}
++
++private:
++	uint64_t _s{0x853C49E6748FEA9Bull};
++	bool _has_spare{false};
++	double _spare{0.0};
++};
++
++// Lateral Dryden turbulence (MIL-F-8785C), one-sided spatial PSD
++//   Phi_v(Om) = sigma^2 (L / pi) (1 + 3 (L Om)^2) / (1 + (L Om)^2)^2,
++// synthesised as a sum of cosines with random phases and jittered frequencies
++// (spectral representation), scaled to the exact standard deviation sigma.
++// Stateless in time: at(t) can be evaluated by any module at any instant, so
++// the airframe (SIH) and the weather-mimic attacker (GPS) see the same gust.
++class Gust
++{
++public:
++	static constexpr int NW = 64;
++
++	void init(uint64_t seed, double sigma, double L, double V)
++	{
++		_on = (sigma > 0.0) && (L > 0.0) && (V > 0.0);
++
++		if (!_on) { return; }
++
++		Rng r;
++		r.seed(seed);
++		const double w_lo = 0.005, w_hi = 30.0;   // rad/s, temporal
++		const double q = pow(w_hi / w_lo, 1.0 / NW);
++		double var = 0.0;
++
++		for (int i = 0; i < NW; i++) {
++			const double a = w_lo * pow(q, i), b = a * q;
++			const double w = a + r.uniform() * (b - a);
++			const double Om = w / V, x = L * Om;
++			const double phi_t = (L / M_PI) * (1.0 + 3.0 * x * x) / ((1.0 + x * x) * (1.0 + x * x)) / V;
++			_om[i] = w;
++			_amp[i] = sqrt(2.0 * phi_t * (b - a));
++			_ph[i] = 2.0 * M_PI * r.uniform();
++			var += 0.5 * _amp[i] * _amp[i];
++		}
++
++		const double k = sigma / sqrt(var > 0.0 ? var : 1.0);
++
++		for (int i = 0; i < NW; i++) { _amp[i] *= k; }
++	}
++
++	double at(double t) const
++	{
++		if (!_on) { return 0.0; }
++
++		double w = 0.0;
++
++		for (int i = 0; i < NW; i++) { w += _amp[i] * cos(_om[i] * t + _ph[i]); }
++
++		return w;
++	}
++
++private:
++	bool _on{false};
++	double _amp[NW] {};
++	double _om[NW] {};
++	double _ph[NW] {};
++};
++
++// stream identifiers: one independent stream per random input
++enum Stream : uint64_t {
++	S_IMU = 1, S_GUST = 2, S_FAULT = 3, S_GNSS = 4, S_ANCHOR = 5, S_ATTACK = 6
++};
++
++inline uint64_t stream_seed(int32_t seed, Stream s)
++{
++	return (uint64_t)(uint32_t)seed * 1000003ull + (uint64_t)s * 7919ull;
++}
++
++} // namespace paper4
+--- a/src/modules/ekf2/EKF/ekf.h
++++ b/src/modules/ekf2/EKF/ekf.h
+@@ -1005,6 +1005,12 @@
+ 	void controlEvVelFusion(const extVisionSample &ev_sample, const bool common_starting_conditions_passing, const bool ev_reset, const bool quality_sufficient, estimator_aid_source3d_s &aid_src);
+ 	void controlEvYawFusion(const extVisionSample &ev_sample, const bool common_starting_conditions_passing, const bool ev_reset, const bool quality_sufficient, estimator_aid_source1d_s &aid_src);
+ 
++	// Paper IV: a trusted re-anchoring fix (condition C2') arrives as an EV sample with this quality
++	// marker. It is fused as an absolute horizontal position, never gated and without the EV
++	// position-bias estimator, and it leaves the regular EV state machine untouched.
++	static constexpr int8_t kTrustedAnchorQuality = -77;
++	void fuseTrustedAnchor(const extVisionSample &ev_sample);
++
+ 	void startEvPosFusion(const Vector2f &measurement, const Vector2f &measurement_var, estimator_aid_source2d_s &aid_src);
+ 	void updateEvPosFusion(const Vector2f &measurement, const Vector2f &measurement_var, bool quality_sufficient, bool reset, estimator_aid_source2d_s &aid_src);
+ 	void stopEvPosFusion();
+--- a/src/modules/ekf2/EKF/ev_control.cpp
++++ b/src/modules/ekf2/EKF/ev_control.cpp
+@@ -47,6 +47,11 @@
+ 
+ 	if (_ext_vision_buffer && _ext_vision_buffer->pop_first_older_than(_time_delayed_us, &ev_sample)) {
+ 
++		if (ev_sample.quality == kTrustedAnchorQuality) {
++			fuseTrustedAnchor(ev_sample);
++			return;
++		}
++
+ 		bool ev_reset = (ev_sample.reset_counter != _ev_sample_prev.reset_counter);
+ 
+ 		// determine if we should use the horizontal position observations
+@@ -84,3 +89,24 @@
+ 		ECL_WARN("vision data stopped");
+ 	}
+ }
++
++void Ekf::fuseTrustedAnchor(const extVisionSample &ev_sample)
++{
++	// Paper IV, condition C2': absolute horizontal fix in the EKF's local NED frame
++	if (!_control_status.flags.tilt_align || !_control_status.flags.yaw_align) {
++		return;
++	}
++
++	const Vector2f measurement{ev_sample.pos(0), ev_sample.pos(1)};
++	const Vector2f measurement_var{ev_sample.position_var(0), ev_sample.position_var(1)};
++
++	if (!measurement.isAllFinite() || !measurement_var.isAllFinite()) {
++		return;
++	}
++
++	// gate 1e3 sigma: the anchor is trusted and always fused; its normalised innovation is logged
++	// in estimator_aid_src_ev_pos and the anchor-gate alarm is computed from it offline
++	updateHorizontalPositionAidSrcStatus(ev_sample.time_us, measurement, measurement_var, 1.e3f, _aid_src_ev_pos);
++	_aid_src_ev_pos.fusion_enabled = true;
++	fuseHorizontalPosition(_aid_src_ev_pos);
++}
+--- a/src/modules/simulation/sensor_gps_sim/SensorGpsSim.cpp
++++ b/src/modules/simulation/sensor_gps_sim/SensorGpsSim.cpp
+@@ -52,7 +52,7 @@
+ 
+ bool SensorGpsSim::init()
+ {
+-	ScheduleOnInterval(125_ms); // 8 Hz
++	ScheduleOnInterval(100_ms); // Paper IV: 10 Hz, as in the reduced-order model
+ 	return true;
+ }
+ 
+@@ -114,11 +114,36 @@
+ 		vehicle_global_position_s gpos{};
+ 		_vehicle_global_position_sub.copy(&gpos);
+ 
+-		double latitude = gpos.lat + math::degrees((double)generate_wgn() * 0.2 / CONSTANTS_RADIUS_OF_EARTH);
+-		double longitude = gpos.lon + math::degrees((double)generate_wgn() * 0.2 / CONSTANTS_RADIUS_OF_EARTH);
+-		float altitude = gpos.alt + (generate_wgn() * 0.5f);
++		// Paper IV: attack and benign GNSS errors (inactive before arming: stock behaviour)
++		const P4Out p4 = p4_step(hrt_absolute_time(), gpos);
++		p4_anchor(hrt_absolute_time(), lpos, gpos);
++
++		double latitude, longitude;
++
++		if (p4.active) {
++			const double n_n = (double)p4.dn + (double)p4.sig * _p4_gnss_rng.normal();
++			const double n_e = (double)p4.de + (double)p4.sig * _p4_gnss_rng.normal();
++			latitude = gpos.lat + math::degrees(n_n / CONSTANTS_RADIUS_OF_EARTH);
++			longitude = gpos.lon + math::degrees(n_e / (CONSTANTS_RADIUS_OF_EARTH * cos(math::radians(gpos.lat))));
+ 
+-		Vector3f gps_vel = Vector3f{lpos.vx, lpos.vy, lpos.vz} + noiseGauss3f(0.06f, 0.077f, 0.158f);
++		} else {
++			latitude = gpos.lat + math::degrees((double)generate_wgn() * 0.2 / CONSTANTS_RADIUS_OF_EARTH);
++			longitude = gpos.lon + math::degrees((double)generate_wgn() * 0.2 / CONSTANTS_RADIUS_OF_EARTH);
++		}
++
++		// after arming, every GNSS noise sample comes from the mission's seeded stream
++		const float altitude = gpos.alt + (p4.active ? (float)(0.5 * _p4_gnss_rng.normal()) : generate_wgn() * 0.5f);
++
++		Vector3f gps_vel = Vector3f{lpos.vx, lpos.vy, lpos.vz};
++
++		if (p4.active) {
++			gps_vel(0) += (float)(0.06 * _p4_gnss_rng.normal()) + p4.vn;
++			gps_vel(1) += (float)(0.077 * _p4_gnss_rng.normal()) + p4.ve;
++			gps_vel(2) += (float)(0.158 * _p4_gnss_rng.normal());
++
++		} else {
++			gps_vel += noiseGauss3f(0.06f, 0.077f, 0.158f);
++		}
+ 
+ 		// device id
+ 		device::Device::DeviceId device_id;
+@@ -129,7 +154,7 @@
+ 
+ 		sensor_gps_s sensor_gps{};
+ 
+-		if (_sim_gps_used.get() >= 4) {
++		if (_sim_gps_used.get() >= 4 && !p4.outage) {
+ 			// fix
+ 			sensor_gps.fix_type = 3; // 3D fix
+ 			sensor_gps.s_variance_m_s = 0.5f;
+@@ -182,6 +207,198 @@
+ 	perf_end(_loop_perf);
+ }
+ 
++SensorGpsSim::P4Out SensorGpsSim::p4_step(const hrt_abstime &now, const vehicle_global_position_s &gpos)
++{
++	P4Out out{};
++	vehicle_status_s vs;
++
++	if (_vehicle_status_sub.update(&vs)) {
++		const bool armed = (vs.arming_state == vehicle_status_s::ARMING_STATE_ARMED);
++
++		if (armed && !_p4_armed && vs.armed_time > 0) {
++			const int32_t seed = _ben_seed.get();
++			_p4_arm_time = vs.armed_time;
++			_p4_gust.init(paper4::stream_seed(seed, paper4::S_GUST), _ben_w_sig.get(), _ben_w_l.get(), _ben_w_v.get());
++			_p4_gnss_rng.seed(paper4::stream_seed(seed, paper4::S_GNSS));
++			_p4_anchor_rng.seed(paper4::stream_seed(seed, paper4::S_ANCHOR));
++			_p4_atk_rng.seed(paper4::stream_seed(_atk_seed.get(), paper4::S_ATTACK));
++			// stationary start of the benign Gauss-Markov drift, as in the reduced-order model
++			_p4_gm_n = _ben_gmsig.get() * (float)_p4_gnss_rng.normal();
++			_p4_gm_e = _ben_gmsig.get() * (float)_p4_gnss_rng.normal();
++			_p4_d = _p4_dd = _p4_beta = _p4_d_prev = 0.f;
++			_p4_agm = 0.f;
++			_p4_t_prev = -1e9f;
++			_p4_next_anchor = (_ben_anc_t.get() > 0.f) ? _ben_anc_t.get() : 1e9f;
++			_p4_terminal_done = false;
++		}
++
++		_p4_armed = armed;
++	}
++
++	if (!_p4_armed) {
++		return out;
++	}
++
++	const float t = (float)((double)(now - _p4_arm_time) * 1e-6) - _ben_toff.get();
++	const float dt = (_p4_t_prev > -1e8f) ? math::max(t - _p4_t_prev, 0.f) : 0.f;
++	_p4_t_prev = t;
++	out.active = true;
++
++	// benign GNSS: white noise (jamming episodes multiply it), Gauss-Markov drift, outage
++	const bool jam = (t >= _ben_jam_t.get()) && (t < _ben_jam_t.get() + _ben_jam_d.get());
++	out.sig = _ben_gsig.get() * (jam ? _ben_jam_k.get() : 1.f);
++
++	if (dt > 0.f && _ben_gmtau.get() > 0.f) {
++		const float phi = expf(-dt / _ben_gmtau.get());
++		const float k = sqrtf(math::max(1.f - phi * phi, 0.f)) * _ben_gmsig.get();
++		_p4_gm_n = phi * _p4_gm_n + k * (float)_p4_gnss_rng.normal();
++		_p4_gm_e = phi * _p4_gm_e + k * (float)_p4_gnss_rng.normal();
++	}
++
++	out.outage = (t >= _ben_out_t.get()) && (t < _ben_out_t.get() + _ben_out_d.get());
++
++	// attacker: scalar offset d(t) along ATK_DIR
++	float d = 0.f;
++
++	if (_atk_en.get() == 1) {
++		d = p4_attack_offset(t, dt);
++	}
++
++	const float c = cosf(_atk_dir.get()), s = sinf(_atk_dir.get());
++	out.dn = _p4_gm_n + d * c;
++	out.de = _p4_gm_e + d * s;
++
++	// a consistent spoofer also shifts the reported velocity by d'(t); a step has no Doppler signature
++	if (_atk_en.get() == 1 && _atk_vcon.get() == 1 && _atk_fam.get() != 0 && dt > 0.f) {
++		const float dv = (d - _p4_d_prev) / dt;
++		out.vn = dv * c;
++		out.ve = dv * s;
++	}
++
++	_p4_d_prev = d;
++
++	debug_vect_s dbg{};
++	dbg.timestamp = hrt_absolute_time();
++	strncpy(dbg.name, "p4atk", sizeof(dbg.name));
++	dbg.x = d;                                   // attack offset [m]
++	dbg.y = out.de;                              // total east offset (attack + benign drift) [m]
++	dbg.z = (float)_p4_gust.at((double)t);       // gust [m/s]
++	_debug_pub.publish(dbg);
++
++	return out;
++}
++
++float SensorGpsSim::p4_attack_offset(float t, float dt)
++{
++	// the five disguise families of the reduced-order model (sim.py), on the mission clock
++	const bool on = t >= _atk_t0.get();
++	const float tt = t - _atk_t0.get();
++
++	switch (_atk_fam.get()) {
++	case 0: // step
++		_p4_d = on ? _atk_a.get() : 0.f;
++		break;
++
++	case 1: // ramp
++		_p4_d = on ? math::min(_atk_r.get() * tt, _atk_cap.get()) : 0.f;
++		break;
++
++	case 2: { // fault mimic: integrated random-walk acceleration
++			_p4_beta += _atk_bsig.get() * sqrtf(dt) * (float)_p4_atk_rng.normal();
++			const float acc = on ? (_atk_b0.get() + _p4_beta) : 0.f;
++			_p4_dd += acc * dt;
++			_p4_d = math::min(on ? (_p4_d + _p4_dd * dt) : 0.f, _atk_cap.get());
++
++			if (_p4_d >= _atk_cap.get()) { _p4_dd = 0.f; }
++
++			break;
++		}
++
++	case 3: { // GNSS mimic: Gauss-Markov magnitude plus a slow drift
++			if (dt > 0.f) {
++				const float phi = expf(-dt / math::max(_atk_tau.get(), 1e-3f));
++				_p4_agm = phi * _p4_agm + sqrtf(math::max(1.f - phi * phi, 0.f)) * (float)_p4_atk_rng.normal();
++			}
++
++			_p4_d = on ? (_atk_a.get() * fabsf(_p4_agm) + _atk_c.get() * math::max(tt, 0.f)) : 0.f;
++			break;
++		}
++
++	case 4: { // weather mimic: follows the airframe's gust with a lag, plus a bias ramp
++			const float wl = (float)_p4_gust.at((double)(t - _atk_lag.get()));
++			_p4_d = on ? (_atk_a.get() * wl / math::max(_atk_wnrm.get(), 1e-6f)
++				      + _atk_wb.get() * math::min(tt / 10.f, 1.f)) : 0.f;
++			break;
++		}
++
++	default:
++		_p4_d = 0.f;
++		break;
++	}
++
++	return _p4_d;
++}
++
++void SensorGpsSim::p4_anchor(const hrt_abstime &now, const vehicle_local_position_s &lpos_gt,
++			     const vehicle_global_position_s &gpos)
++{
++	// trusted re-anchoring fix (condition C2'): true position plus noise, expressed in the EKF's
++	// local frame, every BEN_ANC_T s of mission time and once at the end of the mission (BEN_T_END)
++	_ekf_local_position_sub.update(&_ekf_lpos);
++
++	if (!_p4_armed || _ben_anc_t.get() <= 0.f || !_ekf_lpos.xy_global || !_ekf_lpos.z_global) {
++		return;
++	}
++
++	const float t = (float)((double)(now - _p4_arm_time) * 1e-6) - _ben_toff.get();
++	bool fire = false;
++
++	if (t >= _p4_next_anchor && t < _ben_t_end.get()) {
++		fire = true;
++		_p4_next_anchor += _ben_anc_t.get();
++
++	} else if (!_p4_terminal_done && t >= _ben_t_end.get()) {
++		fire = true;
++		_p4_terminal_done = true;
++	}
++
++	if (!fire) {
++		return;
++	}
++
++	MapProjection ref{_ekf_lpos.ref_lat, _ekf_lpos.ref_lon};
++	float x = 0.f, y = 0.f;
++	ref.project(gpos.lat, gpos.lon, x, y);
++	const float sig = _ben_anc_sig.get();
++
++	vehicle_odometry_s odom{};
++	odom.timestamp_sample = gpos.timestamp_sample;
++	odom.pose_frame = vehicle_odometry_s::POSE_FRAME_NED;
++	odom.position[0] = x + sig * (float)_p4_anchor_rng.normal();
++	odom.position[1] = y + sig * (float)_p4_anchor_rng.normal();
++	odom.position[2] = _ekf_lpos.ref_alt - gpos.alt;
++	odom.q[0] = NAN; odom.q[1] = NAN; odom.q[2] = NAN; odom.q[3] = NAN;
++	odom.velocity_frame = vehicle_odometry_s::VELOCITY_FRAME_UNKNOWN;
++	odom.velocity[0] = NAN; odom.velocity[1] = NAN; odom.velocity[2] = NAN;
++	odom.angular_velocity[0] = NAN; odom.angular_velocity[1] = NAN; odom.angular_velocity[2] = NAN;
++	odom.position_variance[0] = sig * sig; odom.position_variance[1] = sig * sig; odom.position_variance[2] = 1.f;
++	odom.orientation_variance[0] = NAN; odom.orientation_variance[1] = NAN; odom.orientation_variance[2] = NAN;
++	odom.velocity_variance[0] = NAN; odom.velocity_variance[1] = NAN; odom.velocity_variance[2] = NAN;
++	odom.reset_counter = 0;
++	odom.quality = -77;   // Ekf::kTrustedAnchorQuality
++	odom.timestamp = hrt_absolute_time();
++	_anchor_pub.publish(odom);
++
++	debug_vect_s dbg{};
++	dbg.timestamp = hrt_absolute_time();
++	strncpy(dbg.name, "p4anc", sizeof(dbg.name));
++	dbg.x = odom.position[0];
++	dbg.y = odom.position[1];
++	dbg.z = t;
++	_debug_pub.publish(dbg);
++	(void)lpos_gt;
++}
++
+ int SensorGpsSim::task_spawn(int argc, char *argv[])
+ {
+ 	SensorGpsSim *instance = new SensorGpsSim();
+--- a/src/modules/simulation/sensor_gps_sim/SensorGpsSim.hpp
++++ b/src/modules/simulation/sensor_gps_sim/SensorGpsSim.hpp
+@@ -45,6 +45,14 @@
+ #include <uORB/topics/sensor_gps.h>
+ #include <uORB/topics/vehicle_global_position.h>
+ #include <uORB/topics/vehicle_local_position.h>
++#include <uORB/topics/vehicle_status.h>
++#include <uORB/topics/vehicle_odometry.h>
++#include <uORB/topics/debug_vect.h>
++#include <uORB/Publication.hpp>
++#include <lib/geo/geo.h>
++#include <lib/mathlib/mathlib.h>
++#include <lib/paper4/paper4.hpp>
++#include <string.h>
+ 
+ using namespace time_literals;
+ 
+@@ -80,9 +88,70 @@
+ 
+ 	uORB::PublicationMulti<sensor_gps_s> _sensor_gps_pub{ORB_ID(sensor_gps)};
+ 
++	// Paper IV: GNSS attacker, benign GNSS envelope and trusted anchor, on the mission clock
++	struct P4Out {
++		float dn{0.f}, de{0.f};       // GNSS position offset applied (attack + benign), NE [m]
++		float vn{0.f}, ve{0.f};       // GNSS velocity offset applied (attack only), NE [m/s]
++		float sig{0.f};               // white-noise standard deviation in force [m]
++		bool outage{false};
++		bool active{false};
++	};
++	P4Out p4_step(const hrt_abstime &now, const vehicle_global_position_s &gpos);
++	float p4_attack_offset(float t, float dt);
++	void p4_anchor(const hrt_abstime &now, const vehicle_local_position_s &lpos_gt, const vehicle_global_position_s &gpos);
++
++	uORB::Subscription _vehicle_status_sub{ORB_ID(vehicle_status)};
++	uORB::Subscription _ekf_local_position_sub{ORB_ID(vehicle_local_position)};
++	uORB::Publication<vehicle_odometry_s> _anchor_pub{ORB_ID(vehicle_visual_odometry)};
++	uORB::Publication<debug_vect_s> _debug_pub{ORB_ID(debug_vect)};
++
++	bool _p4_armed{false};
++	hrt_abstime _p4_arm_time{0};
++	float _p4_t_prev{-1e9f};
++	paper4::Gust _p4_gust{};
++	paper4::Rng _p4_gnss_rng{}, _p4_anchor_rng{}, _p4_atk_rng{};
++	float _p4_gm_n{0.f}, _p4_gm_e{0.f};          // benign Gauss-Markov drift [m]
++	float _p4_d{0.f}, _p4_dd{0.f}, _p4_beta{0.f}, _p4_agm{0.f};   // attacker state
++	float _p4_d_prev{0.f};
++	float _p4_next_anchor{1e9f};
++	bool _p4_terminal_done{false};
++	vehicle_local_position_s _ekf_lpos{};
++
+ 	perf_counter_t _loop_perf{perf_alloc(PC_ELAPSED, MODULE_NAME": cycle")};
+ 
+ 	DEFINE_PARAMETERS(
+-		(ParamInt<px4::params::SIM_GPS_USED>) _sim_gps_used
++		(ParamInt<px4::params::SIM_GPS_USED>) _sim_gps_used,
++		(ParamInt<px4::params::BEN_SEED>) _ben_seed,
++		(ParamFloat<px4::params::BEN_TOFF>) _ben_toff,
++		(ParamFloat<px4::params::BEN_W_SIG>) _ben_w_sig,
++		(ParamFloat<px4::params::BEN_W_L>) _ben_w_l,
++		(ParamFloat<px4::params::BEN_W_V>) _ben_w_v,
++		(ParamFloat<px4::params::BEN_GSIG>) _ben_gsig,
++		(ParamFloat<px4::params::BEN_GMSIG>) _ben_gmsig,
++		(ParamFloat<px4::params::BEN_GMTAU>) _ben_gmtau,
++		(ParamFloat<px4::params::BEN_OUT_T>) _ben_out_t,
++		(ParamFloat<px4::params::BEN_OUT_D>) _ben_out_d,
++		(ParamFloat<px4::params::BEN_JAM_T>) _ben_jam_t,
++		(ParamFloat<px4::params::BEN_JAM_D>) _ben_jam_d,
++		(ParamFloat<px4::params::BEN_JAM_K>) _ben_jam_k,
++		(ParamFloat<px4::params::BEN_ANC_T>) _ben_anc_t,
++		(ParamFloat<px4::params::BEN_ANC_SIG>) _ben_anc_sig,
++		(ParamFloat<px4::params::BEN_T_END>) _ben_t_end,
++		(ParamInt<px4::params::ATK_EN>) _atk_en,
++		(ParamInt<px4::params::ATK_FAM>) _atk_fam,
++		(ParamInt<px4::params::ATK_SEED>) _atk_seed,
++		(ParamInt<px4::params::ATK_VCON>) _atk_vcon,
++		(ParamFloat<px4::params::ATK_T0>) _atk_t0,
++		(ParamFloat<px4::params::ATK_A>) _atk_a,
++		(ParamFloat<px4::params::ATK_R>) _atk_r,
++		(ParamFloat<px4::params::ATK_CAP>) _atk_cap,
++		(ParamFloat<px4::params::ATK_B0>) _atk_b0,
++		(ParamFloat<px4::params::ATK_BSIG>) _atk_bsig,
++		(ParamFloat<px4::params::ATK_TAU>) _atk_tau,
++		(ParamFloat<px4::params::ATK_C>) _atk_c,
++		(ParamFloat<px4::params::ATK_LAG>) _atk_lag,
++		(ParamFloat<px4::params::ATK_WB>) _atk_wb,
++		(ParamFloat<px4::params::ATK_WNRM>) _atk_wnrm,
++		(ParamFloat<px4::params::ATK_DIR>) _atk_dir
+ 	)
+ };
+--- a/src/modules/simulation/sensor_gps_sim/parameters.c
++++ b/src/modules/simulation/sensor_gps_sim/parameters.c
+@@ -50,3 +50,189 @@
+  * @group Simulator
+  */
+ PARAM_DEFINE_INT32(SIM_GPS_USED, 10);
++
++/* Paper IV SITL harness: GNSS attacker, benign GNSS envelope, trusted anchor (mission time, s) */
++
++/**
++ * Paper IV: GNSS white-noise standard deviation after arming
++ * @unit m
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(BEN_GSIG, 0.5f);
++
++/**
++ * Paper IV: GNSS Gauss-Markov drift standard deviation
++ * @unit m
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(BEN_GMSIG, 0.0f);
++
++/**
++ * Paper IV: GNSS Gauss-Markov correlation time
++ * @unit s
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(BEN_GMTAU, 60.0f);
++
++/**
++ * Paper IV: GNSS outage start (mission time)
++ * @unit s
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(BEN_OUT_T, 1.0e6f);
++
++/**
++ * Paper IV: GNSS outage duration
++ * @unit s
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(BEN_OUT_D, 0.0f);
++
++/**
++ * Paper IV: jamming-noise episode start (mission time)
++ * @unit s
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(BEN_JAM_T, 1.0e6f);
++
++/**
++ * Paper IV: jamming-noise episode duration
++ * @unit s
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(BEN_JAM_D, 0.0f);
++
++/**
++ * Paper IV: jamming-noise multiplier of the white noise
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(BEN_JAM_K, 1.0f);
++
++/**
++ * Paper IV: trusted re-anchoring interval (0 disables the anchor)
++ * @unit s
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(BEN_ANC_T, 0.0f);
++
++/**
++ * Paper IV: trusted re-anchoring fix noise
++ * @unit m
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(BEN_ANC_SIG, 0.3f);
++
++/**
++ * Paper IV: mission end (terminal anchor)
++ * @unit s
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(BEN_T_END, 60.0f);
++
++/**
++ * Paper IV: GNSS attack enabled (0/1)
++ * @group Paper IV
++ */
++PARAM_DEFINE_INT32(ATK_EN, 0);
++
++/**
++ * Paper IV: attack family: 0 step, 1 ramp, 2 fault mimic, 3 GNSS mimic, 4 weather mimic
++ * @group Paper IV
++ */
++PARAM_DEFINE_INT32(ATK_FAM, 0);
++
++/**
++ * Paper IV: seed of the attacker's random stream
++ * @group Paper IV
++ */
++PARAM_DEFINE_INT32(ATK_SEED, 0);
++
++/**
++ * Paper IV: shift the reported GNSS velocity by the offset rate (0/1)
++ * @group Paper IV
++ */
++PARAM_DEFINE_INT32(ATK_VCON, 1);
++
++/**
++ * Paper IV: attack onset (mission time)
++ * @unit s
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(ATK_T0, 1.0e6f);
++
++/**
++ * Paper IV: amplitude (step, GNSS mimic, weather mimic)
++ * @unit m
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(ATK_A, 0.0f);
++
++/**
++ * Paper IV: ramp rate
++ * @unit m/s
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(ATK_R, 0.0f);
++
++/**
++ * Paper IV: offset cap (ramp, fault mimic)
++ * @unit m
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(ATK_CAP, 0.0f);
++
++/**
++ * Paper IV: fault mimic: initial acceleration
++ * @unit m/s^2
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(ATK_B0, 0.0f);
++
++/**
++ * Paper IV: fault mimic: random-walk intensity
++ * @unit m/s^2/sqrt(s)
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(ATK_BSIG, 0.0f);
++
++/**
++ * Paper IV: GNSS mimic: correlation time
++ * @unit s
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(ATK_TAU, 60.0f);
++
++/**
++ * Paper IV: GNSS mimic: drift rate
++ * @unit m/s
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(ATK_C, 0.0f);
++
++/**
++ * Paper IV: weather mimic: lag behind the gust
++ * @unit s
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(ATK_LAG, 0.0f);
++
++/**
++ * Paper IV: weather mimic: bias reached after 10 s
++ * @unit m
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(ATK_WB, 0.0f);
++
++/**
++ * Paper IV: weather mimic: gust normalisation (moderate sigma)
++ * @unit m/s
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(ATK_WNRM, 1.0f);
++
++/**
++ * Paper IV: offset direction (rad from north; pi/2 is east)
++ * @unit rad
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(ATK_DIR, 1.5707963f);
+--- a/src/modules/simulation/simulator_sih/sih.cpp
++++ b/src/modules/simulation/simulator_sih/sih.cpp
+@@ -53,6 +53,9 @@
+ using namespace matrix;
+ using namespace time_literals;
+ 
++// Paper IV: SIH's own seeded stream (the stock code shared the process-wide rand())
++static paper4::Rng s_p4_imu_rng;
++
+ Sih::Sih() :
+ 	ModuleParams(nullptr)
+ {}
+@@ -210,6 +213,8 @@
+ 
+ 	read_motors(dt);
+ 
++	p4_update(now);
++
+ 	generate_force_and_torques();
+ 
+ 	equations_of_motion(dt);
+@@ -233,6 +238,57 @@
+ 	perf_end(_loop_perf);
+ }
+ 
++void Sih::p4_update(const hrt_abstime &now)
++{
++	vehicle_status_s vs;
++
++	if (_vehicle_status_sub.update(&vs)) {
++		const bool armed = (vs.arming_state == vehicle_status_s::ARMING_STATE_ARMED);
++
++		if (armed && !_p4_armed && vs.armed_time > 0) {
++			// arming starts the mission clock: reseed every stream from BEN_SEED
++			const int32_t seed = _ben_seed.get();
++			_p4_arm_time = vs.armed_time;
++			s_p4_imu_rng.seed(paper4::stream_seed(seed, paper4::S_IMU));
++			_p4_gust.init(paper4::stream_seed(seed, paper4::S_GUST), _ben_w_sig.get(), _ben_w_l.get(), _ben_w_v.get());
++			_p4_fault_rng.seed(paper4::stream_seed(seed, paper4::S_FAULT));
++			_p4_bias_y = _ben_b0.get();
++			_p4_step_done = false;
++			PX4_INFO("Paper IV: mission clock started (seed %d)", (int)seed);
++		}
++
++		_p4_armed = armed;
++	}
++
++	if (!_p4_armed) {
++		_p4_wind_I.setZero();
++		_p4_loe = 1.f;
++		_p4_t = -1e9f;
++		return;
++	}
++
++	const float t = (float)((double)(now - _p4_arm_time) * 1e-6) - _ben_toff.get();
++	const float dt = (_p4_t > -1e8f) ? math::max(t - _p4_t, 0.f) : 0.f;
++	_p4_t = t;
++
++	// lateral gust, along BEN_W_DIR (rad from north; pi/2 = east = cross-track)
++	const float w = (float)_p4_gust.at((double)t);
++	const float wd = _ben_w_dir.get();
++	_p4_wind_I = Vector3f(w * cosf(wd), w * sinf(wd), 0.f);
++
++	// accelerometer bias: random walk (BEN_BRW, m/s^2/sqrt(s)) plus one step (BEN_BS_M at BEN_BS_T)
++	if (dt > 0.f) {
++		_p4_bias_y += _ben_brw.get() * sqrtf(dt) * (float)_p4_fault_rng.normal();
++	}
++
++	if (!_p4_step_done && t >= _ben_bs_t.get()) {
++		_p4_bias_y += _ben_bs_m.get();
++		_p4_step_done = true;
++	}
++
++	_p4_loe = (t >= _ben_loe_t.get()) ? (1.f - _ben_loe_m.get()) : 1.f;
++}
++
+ void Sih::parameters_updated()
+ {
+ 	_T_MAX = _sih_t_max.get();
+@@ -269,6 +325,7 @@
+ void Sih::init_variables()
+ {
+ 	srand(1234);    // initialize the random seed once before calling generate_wgn()
++	s_p4_imu_rng.seed(1234);
+ 
+ 	_p_I = Vector3f(0.0f, 0.0f, 0.0f);
+ 	_v_I = Vector3f(0.0f, 0.0f, 0.0f);
+@@ -304,7 +361,10 @@
+ 		_Mt_B = Vector3f(_L_ROLL * _T_MAX * (-_u[0] + _u[1] + _u[2] - _u[3]),
+ 				 _L_PITCH * _T_MAX * (+_u[0] - _u[1] + _u[2] - _u[3]),
+ 				 _Q_MAX * (+_u[0] + _u[1] - _u[2] - _u[3]));
+-		_Fa_I = -_KDV * _v_I;   // first order drag to slow down the aircraft
++		// Paper IV: uniform loss of effectiveness of all rotors, and drag relative to the air
++		_T_B = _T_B * _p4_loe;
++		_Mt_B = _Mt_B * _p4_loe;
++		_Fa_I = -_KDV * (_v_I - _p4_wind_I);   // first order drag to slow down the aircraft
+ 		_Ma_B = -_KDW * _w_B;   // first order angular damper
+ 
+ 	} else if (_vehicle == VehicleType::FW) {
+@@ -438,6 +498,7 @@
+ 
+ 	// IMU
+ 	Vector3f acc = _C_IB.transpose() * (_v_I_dot - Vector3f(0.0f, 0.0f, CONSTANTS_ONE_G)) + noiseGauss3f(0.5f, 1.7f, 1.4f);
++	acc(1) += _p4_bias_y;   // Paper IV: accelerometer bias fault (body y = cross-track when heading north)
+ 	Vector3f gyro = _w_B + noiseGauss3f(0.14f, 0.07f, 0.03f);
+ 
+ 	// update IMU every iteration
+@@ -567,31 +628,8 @@
+ 
+ float Sih::generate_wgn()   // generate white Gaussian noise sample with std=1
+ {
+-	// algorithm 1:
+-	// float temp=((float)(rand()+1))/(((float)RAND_MAX+1.0f));
+-	// return sqrtf(-2.0f*logf(temp))*cosf(2.0f*M_PI_F*rand()/RAND_MAX);
+-	// algorithm 2: from BlockRandGauss.hpp
+-	static float V1, V2, S;
+-	static bool phase = true;
+-	float X;
+-
+-	if (phase) {
+-		do {
+-			float U1 = (float)rand() / (float)RAND_MAX;
+-			float U2 = (float)rand() / (float)RAND_MAX;
+-			V1 = 2.0f * U1 - 1.0f;
+-			V2 = 2.0f * U2 - 1.0f;
+-			S = V1 * V1 + V2 * V2;
+-		} while (S >= 1.0f || fabsf(S) < 1e-8f);
+-
+-		X = V1 * float(sqrtf(-2.0f * float(logf(S)) / S));
+-
+-	} else {
+-		X = V2 * float(sqrtf(-2.0f * float(logf(S)) / S));
+-	}
+-
+-	phase = !phase;
+-	return X;
++	// Paper IV: seeded per-module stream, reseeded at arming from BEN_SEED
++	return (float)s_p4_imu_rng.normal();
+ }
+ 
+ Vector3f Sih::noiseGauss3f(float stdx, float stdy, float stdz)
+--- a/src/modules/simulation/simulator_sih/sih.hpp
++++ b/src/modules/simulation/simulator_sih/sih.hpp
+@@ -77,6 +77,8 @@
+ #include <uORB/topics/vehicle_attitude.h>
+ #include <uORB/topics/vehicle_global_position.h>
+ #include <uORB/topics/vehicle_local_position.h>
++#include <uORB/topics/vehicle_status.h>
++#include <lib/paper4/paper4.hpp>
+ 
+ #if defined(ENABLE_LOCKSTEP_SCHEDULER)
+ #include <sys/time.h>
+@@ -130,6 +132,19 @@
+ 
+ 	uORB::SubscriptionInterval _parameter_update_sub{ORB_ID(parameter_update), 1_s};
+ 	uORB::Subscription _actuator_out_sub{ORB_ID(actuator_outputs)};
++	uORB::Subscription _vehicle_status_sub{ORB_ID(vehicle_status)};
++
++	// Paper IV benign envelope (wind, IMU bias faults, loss of effectiveness), on the mission clock
++	void p4_update(const hrt_abstime &now);
++	bool _p4_armed{false};
++	hrt_abstime _p4_arm_time{0};
++	float _p4_t{-1e9f};                 // mission time [s] = time since arming - BEN_TOFF
++	paper4::Gust _p4_gust{};
++	paper4::Rng _p4_fault_rng{};
++	float _p4_bias_y{0.f};              // accelerometer bias on the body y axis [m/s^2]
++	bool _p4_step_done{false};
++	float _p4_loe{1.f};                 // thrust effectiveness factor
++	matrix::Vector3f _p4_wind_I{};      // wind in NED [m/s]
+ 
+ 	// hard constants
+ 	static constexpr uint16_t NB_MOTORS = 6;
+@@ -280,6 +295,18 @@
+ 		(ParamFloat<px4::params::SIH_DISTSNSR_MAX>) _sih_distance_snsr_max,
+ 		(ParamFloat<px4::params::SIH_DISTSNSR_OVR>) _sih_distance_snsr_override,
+ 		(ParamFloat<px4::params::SIH_T_TAU>) _sih_thrust_tau,
+-		(ParamInt<px4::params::SIH_VEHICLE_TYPE>) _sih_vtype
++		(ParamInt<px4::params::SIH_VEHICLE_TYPE>) _sih_vtype,
++		(ParamInt<px4::params::BEN_SEED>) _ben_seed,
++		(ParamFloat<px4::params::BEN_TOFF>) _ben_toff,
++		(ParamFloat<px4::params::BEN_W_SIG>) _ben_w_sig,
++		(ParamFloat<px4::params::BEN_W_L>) _ben_w_l,
++		(ParamFloat<px4::params::BEN_W_V>) _ben_w_v,
++		(ParamFloat<px4::params::BEN_W_DIR>) _ben_w_dir,
++		(ParamFloat<px4::params::BEN_B0>) _ben_b0,
++		(ParamFloat<px4::params::BEN_BRW>) _ben_brw,
++		(ParamFloat<px4::params::BEN_BS_T>) _ben_bs_t,
++		(ParamFloat<px4::params::BEN_BS_M>) _ben_bs_m,
++		(ParamFloat<px4::params::BEN_LOE_T>) _ben_loe_t,
++		(ParamFloat<px4::params::BEN_LOE_M>) _ben_loe_m
+ 	)
+ };
+--- a/src/modules/simulation/simulator_sih/sih_params.c
++++ b/src/modules/simulation/simulator_sih/sih_params.c
+@@ -338,3 +338,90 @@
+  * @group Simulation In Hardware
+  */
+ PARAM_DEFINE_INT32(SIH_VEHICLE_TYPE, 0);
++
++/*
++ * Paper IV SITL harness: benign envelope and mission clock.
++ * Times are mission time: seconds since arming minus BEN_TOFF.
++ */
++
++/**
++ * Paper IV: seed of every benign random stream (reseeded at arming)
++ * @group Paper IV
++ */
++PARAM_DEFINE_INT32(BEN_SEED, 0);
++
++/**
++ * Paper IV: mission-clock offset after arming
++ * @unit s
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(BEN_TOFF, 15.0f);
++
++/**
++ * Paper IV: lateral Dryden gust standard deviation (0 disables wind)
++ * @unit m/s
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(BEN_W_SIG, 0.0f);
++
++/**
++ * Paper IV: lateral Dryden gust scale length
++ * @unit m
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(BEN_W_L, 200.0f);
++
++/**
++ * Paper IV: airspeed used for the Dryden time scale
++ * @unit m/s
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(BEN_W_V, 8.0f);
++
++/**
++ * Paper IV: gust direction (rad from north; pi/2 is east)
++ * @unit rad
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(BEN_W_DIR, 1.5707963f);
++
++/**
++ * Paper IV: initial accelerometer bias on the body y axis
++ * @unit m/s^2
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(BEN_B0, 0.0f);
++
++/**
++ * Paper IV: accelerometer bias random walk
++ * @unit m/s^2/sqrt(s)
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(BEN_BRW, 0.0f);
++
++/**
++ * Paper IV: accelerometer bias step time (mission time; large value disables)
++ * @unit s
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(BEN_BS_T, 1.0e6f);
++
++/**
++ * Paper IV: accelerometer bias step magnitude
++ * @unit m/s^2
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(BEN_BS_M, 0.0f);
++
++/**
++ * Paper IV: loss-of-effectiveness onset (mission time; large value disables)
++ * @unit s
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(BEN_LOE_T, 1.0e6f);
++
++/**
++ * Paper IV: loss-of-effectiveness fraction (0..1)
++ * @group Paper IV
++ */
++PARAM_DEFINE_FLOAT(BEN_LOE_M, 0.0f);
