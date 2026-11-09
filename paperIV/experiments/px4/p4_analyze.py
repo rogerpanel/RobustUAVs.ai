@@ -161,7 +161,9 @@ def health(exp, R):
     f = lambda k: int(sum(bool(r.get(k)) for r in R))
     print(f"  {exp}: {n} ok missions; failsafe {f('failsafe')}, disarmed in window {f('disarmed_in_window')}, "
           f"mission restarted after arming {f('mission_restarted_after_arm')}; anchors fused per mission "
-          f"median {np.median([r['n_anchor_fused'] for r in R]):.0f} (published {np.median([r['n_anchor_pub'] for r in R]):.0f})")
+          f"median {np.median([r['n_anchor_fused'] for r in R]):.0f} (published {np.median([r['n_anchor_pub'] for r in R]):.0f}); "
+          f"cruise speed median {np.median([r.get('along_speed_mps', np.nan) for r in R]):.2f} m/s; "
+          f"position resets in {sum(r.get('n_pos_reset', 0) > 0 for r in R)} missions")
 
 
 def smoke():
@@ -170,7 +172,8 @@ def smoke():
         print(f"  {mid}: maxdev {r['maxdev']:.2f} m, offset applied max {r['dmax_applied']:.2f} m, "
               f"S1 {r['S1']:.2f} S2 {r['S2']:.2f} S3 {r['S3']:.1f} S4 {r['S4']:.3f} SA {r['SA']:.2f}, "
               f"anchors {r['n_anchor_fused']}/{r['n_anchor_pub']}, GNSS rejected {r['n_gnss_rejected']}, "
-              f"resets {r['n_pos_reset_gps']}, along-track at end {r['along_m_end']:.0f} m, nav {r['nav_states']}")
+              f"resets {r.get('n_pos_reset')}, fusion stops {r.get('n_gnss_fusion_stops')}, "
+              f"speed {r.get('along_speed_mps', float('nan')):.1f} m/s, nav {r['nav_states']}")
     a, b = series("smoke", "smoke_benign_a"), series("smoke", "smoke_benign_b")
     if a is not None and b is not None:
         print(f"  replay (same seed, benign): sup|e_a - e_b| = {np.max(np.abs(a['e'] - b['e'])):.4f} m")

@@ -25,7 +25,7 @@ NCPU="$(nproc)"
 K="${K:-$(( NCPU / 2 > 12 ? 12 : (NCPU / 2 < 1 ? 1 : NCPU / 2) ))}"
 SPEED="${SPEED:-8}"
 STAGES="${*:-smoke}"
-[ "$STAGES" = all ] && STAGES="setup smoke e0 e1 e2 e3 e4neg pack"
+[ "$STAGES" = all ] && STAGES="setup smoke e0 e1 e2 e4neg e3 pack"
 mkdir -p "$LOG"
 
 say() { echo "[$(date +%H:%M:%S)] $*" | tee -a "$LOG/run.txt"; }

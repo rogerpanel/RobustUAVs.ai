@@ -104,6 +104,8 @@ def extract(path, keep_series=True):
     along = np.interp(grid, tg, xg - x0)
     out["maxdev"] = float(np.max(np.abs(e)))
     out["along_m_end"] = float(along[-1])
+    cr = (grid >= 10.0) & (grid <= 50.0)
+    out["along_speed_mps"] = float(np.polyfit(grid[cr], along[cr], 1)[0])
 
     # ---------------- attack offset (patched GPS module) and anchors
     dv = _topic(ul, "debug_vect")
@@ -168,14 +170,24 @@ def extract(path, keep_series=True):
     out["S2"] = S2
 
     # ---------------- PX4 stock alarms
-    ev = _topic(ul, "estimator_event_flags")
+    # position resets: increments of EKF2's horizontal reset counter (vehicle_local_position.xy_reset_counter);
+    # GNSS fusion stops: cs_gps going from true to false (estimator_status_flags)
+    lp = _topic(ul, "vehicle_local_position")
     n_reset = 0
-    if ev is not None:
-        te = mt(ev["timestamp"]); me = (te >= 0) & (te <= tend)
-        n_reset = int((ev["reset_pos_to_gps"][me] > 0).sum())
-        n_reset += int((ev["gps_fusion_timout"][me] > 0).sum()) if "gps_fusion_timout" in ev else 0
+    if lp is not None and "xy_reset_counter" in lp:
+        tl = mt(lp["timestamp"]); c = lp["xy_reset_counter"].astype(int)
+        inc = np.diff(c) % 256
+        ml = (tl[1:] >= 0) & (tl[1:] <= tend)
+        n_reset = int((inc[ml] > 0).sum())
+    sf = _topic(ul, "estimator_status_flags")
+    n_stop = 0
+    if sf is not None and "cs_gps" in sf:
+        tf = mt(sf["timestamp"]); g = sf["cs_gps"].astype(int)
+        mf = (tf[1:] >= 0) & (tf[1:] <= tend)
+        n_stop = int(((g[:-1] == 1) & (g[1:] == 0))[mf].sum())
     out["n_gnss_rejected"] = n_rej
-    out["n_pos_reset_gps"] = n_reset
+    out["n_pos_reset"] = n_reset
+    out["n_gnss_fusion_stops"] = n_stop
     out["Sstk"] = float(n_rej + n_reset)
 
     # ---------------- D3: commanded-acceleration observer + CUSUM (N and E)
