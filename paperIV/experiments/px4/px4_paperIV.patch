@@ -548,7 +548,7 @@
  };
 --- a/src/modules/simulation/sensor_gps_sim/parameters.c
 +++ b/src/modules/simulation/sensor_gps_sim/parameters.c
-@@ -50,3 +50,189 @@
+@@ -50,3 +50,188 @@
   * @group Simulator
   */
  PARAM_DEFINE_INT32(SIM_GPS_USED, 10);
@@ -691,8 +691,7 @@
 +PARAM_DEFINE_FLOAT(ATK_B0, 0.0f);
 +
 +/**
-+ * Paper IV: fault mimic: random-walk intensity
-+ * @unit m/s^2/sqrt(s)
++ * Paper IV: fault mimic: random-walk intensity, in m/s^2/sqrt(s)
 + * @group Paper IV
 + */
 +PARAM_DEFINE_FLOAT(ATK_BSIG, 0.0f);
@@ -932,7 +931,7 @@
  };
 --- a/src/modules/simulation/simulator_sih/sih_params.c
 +++ b/src/modules/simulation/simulator_sih/sih_params.c
-@@ -338,3 +338,90 @@
+@@ -338,3 +338,89 @@
   * @group Simulation In Hardware
   */
  PARAM_DEFINE_INT32(SIH_VEHICLE_TYPE, 0);
@@ -991,8 +990,7 @@
 +PARAM_DEFINE_FLOAT(BEN_B0, 0.0f);
 +
 +/**
-+ * Paper IV: accelerometer bias random walk
-+ * @unit m/s^2/sqrt(s)
++ * Paper IV: accelerometer bias random walk, in m/s^2/sqrt(s)
 + * @group Paper IV
 + */
 +PARAM_DEFINE_FLOAT(BEN_BRW, 0.0f);

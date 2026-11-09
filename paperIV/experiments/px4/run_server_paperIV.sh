@@ -67,7 +67,20 @@ stage_setup() {
   say "setup: PX4 tree at $PX4_P4 is $ver"
   case "$ver" in v1.14.3*) ;; *) say "setup: WARNING: expected v1.14.3 (the patch was written against v1.14.3)";; esac
   dock "cd /src && git status --porcelain --untracked-files=no | grep -v '^ M build' | head -20" > "$LOG/setup_dirty.txt" || true
-  if dock "cd /src && git apply --reverse --check /repo/paperIV/experiments/px4/px4_paperIV.patch" >/dev/null 2>&1; then
+  local P=/repo/paperIV/experiments/px4/px4_paperIV.patch
+  if ! dock "cd /src && git apply --reverse --check $P" >/dev/null 2>&1; then
+    # an earlier version of the patch may be applied: find it in the history and take it out
+    local h
+    for h in $(git -C "$REPO" log --format=%h -- paperIV/experiments/px4/px4_paperIV.patch); do
+      git -C "$REPO" show "$h:paperIV/experiments/px4/px4_paperIV.patch" > "$LOG/patch_$h.patch"
+      if dock "cd /src && git apply --reverse --check /repo/paperIV/results/px4/server_logs/patch_$h.patch" >/dev/null 2>&1; then
+        dock "cd /src && git apply --reverse /repo/paperIV/results/px4/server_logs/patch_$h.patch"
+        say "setup: removed the earlier patch version $h"
+        break
+      fi
+    done
+  fi
+  if dock "cd /src && git apply --reverse --check $P" >/dev/null 2>&1; then
     say "setup: Paper IV patch already applied"
   elif dock "cd /src && git apply --check /repo/paperIV/experiments/px4/px4_paperIV.patch" > "$LOG/setup_patch.txt" 2>&1; then
     dock "cd /src && git apply /repo/paperIV/experiments/px4/px4_paperIV.patch"
