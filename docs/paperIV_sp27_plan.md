@@ -54,6 +54,23 @@ convex programme, solved exactly:
 - D2 (3 consecutive exceedances) and D4 (5 consecutive): disjunctive, so exact treatment needs a
   mixed-integer programme; dropping them keeps the bound valid (a superset of the feasible set).
 
+**First results (9 Nov).**
+- Adding the CUSUM detector (D3) as cone constraints barely tightens the bound (35.2 vs 35.9 m at
+  the same evaluation point, T_a = 5 s): its threshold (about 2,479) must admit benign wind,
+  jamming noise and outages, so it leaves the attacker almost unconstrained. Formal confirmation of
+  the thesis: the benign envelope is the attacker's budget.
+- The proved worst case falls almost linearly with the re-anchoring interval
+  (LP: jump rule + anchor gate + saturation alarm, 1% FPR, eps = 0.01, stride 20, LoE 1.0/0.7):
+  T_a = 0.5 s: 7.5 m; 1 s: 10.2 m; 2 s: 14.8 m; 3 s: 19.7 m; 5 s: 31.9 m.
+  This is the design rule with a proof: re-anchoring at 1 s certifies a 20 m corridor against every
+  attacker in A_GNSS on the linear loop; 0.5 s certifies 10 m (before subtracting the network tube
+  and the benign floor in Theorem 1).
+- Full grid (all operating points, all LoE values, stride 10) running:
+  results/r8_analytic_bound_short_anchor.csv.
+- Still to do: a confidence correction on the empirical benign quantiles (order-statistic bound),
+  so the "probability >= 1 - eps" statement holds with stated confidence rather than in the
+  large-sample limit.
+
 **Then:** Theorem 1 uses the certified budget instead of the empirical one, so the floor is
 certified for A_GNSS on the linear loop, and the empirical optimisers become a lower bound that
 brackets the truth (empirical <= true worst case <= certified).
