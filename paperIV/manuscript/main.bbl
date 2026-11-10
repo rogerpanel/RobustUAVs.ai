@@ -172,11 +172,6 @@ G.~Puccetti and L.~R{\"u}schendorf, ``Computation of sharp bounds on the
 M.~Hofert, ``Implementing the rearrangement algorithm: An example from
   computational risk management,'' \emph{Risks}, vol.~8, no.~2, p.~47, 2020.
 
-\bibitem{mishra2026uavcas}
-S.~Mishra, B.~Bhargava, Z.~Liu, and S.~Islam, ``{UAV-CAS}: A calibrated
-  digital-twin dataset for intrusion detection in {UAV} swarm networks,'' IEEE
-  DataPort, doi:10.21227/zgrg-z865; companion preprint arXiv:2606.17845, 2026.
-
 \bibitem{soltani2026datamut}
 K.~Soltani, F.~Cor{\`o}, P.~Chatterjee, and S.~K. Das, ``{DATAMUt}:
   Deterministic algorithms for time-delay attack detection in multi-hop {UAV}
@@ -188,6 +183,11 @@ K.~Soltani, F.~Cor{\`o}, P.~Chatterjee, and S.~K. Das, ``{DATAMUt}:
   mission completion under electronic warfare,'' 2026, released with the
   anonymised artifact.
 
+\bibitem{mishra2026uavcas}
+S.~Mishra, B.~Bhargava, Z.~Liu, and S.~Islam, ``{UAV-CAS}: A calibrated
+  digital-twin dataset for intrusion detection in {UAV} swarm networks,'' IEEE
+  DataPort, doi:10.21227/zgrg-z865; companion preprint arXiv:2606.17845, 2026.
+
 \bibitem{le2025rflymad}
 X.~Le, B.~Jin, G.~Cui, X.~Dai, and Q.~Quan, ``{RflyMAD}: A dataset for
   multicopter fault detection and health assessment,'' \emph{Int. J. Robotics
@@ -197,17 +197,6 @@ X.~Le, B.~Jin, G.~Cui, X.~Dai, and Q.~Quan, ``{RflyMAD}: A dataset for
 A.~Keipour, M.~Mousaei, and S.~Scherer, ``{ALFA}: A dataset for {UAV} fault and
   anomaly detection,'' \emph{Int. J. Robotics Research}, vol.~40, no.~2, pp.
   515--520, 2021.
-
-\bibitem{gebru2021}
-T.~Gebru, J.~Morgenstern, B.~Vecchione, J.~W. Vaughan, H.~Wallach,
-  H.~Daum{\'e}~III, and K.~Crawford, ``Datasheets for datasets,''
-  \emph{Communications of the ACM}, vol.~64, no.~12, pp. 86--92, 2021.
-
-\bibitem{arp2022dos}
-D.~Arp, E.~Quiring, F.~Pendlebury, A.~Warnecke, F.~Pierazzi, C.~Wressnegger,
-  L.~Cavallaro, and K.~Rieck, ``Dos and don'ts of machine learning in computer
-  security,'' in \emph{Proc. 31st USENIX Security Symposium}, 2022, pp.
-  3971--3988.
 
 \bibitem{rubinstein2004cem}
 R.~Y. Rubinstein and D.~P. Kroese, \emph{The Cross-Entropy Method: A Unified
@@ -579,11 +568,6 @@ M.~Chwia{\l}kowski, E.~Goubault, and S.~Putot, ``Probabilistic verification of
 R.~B. Ilyes, Q.~H. Ho, and M.~Lahijanian, ``Stochastic robustness interval for
   motion planning with signal temporal logic,'' in \emph{Proc. IEEE Int. Conf.
   Robotics and Automation (ICRA)}, 2023, pp. 5716--5722.
-
-\bibitem{usenix25ethics}
-{USENIX Association}, ``{USENIX Security '25} ethics guidelines,''
-  \url{https://www.usenix.org/conference/usenixsecurity25/ethics-guidelines},
-  2024.
 
 \bibitem{elsheimy2008}
 N.~El-Sheimy, H.~Hou, and X.~Niu, ``Analysis and modeling of inertial sensors

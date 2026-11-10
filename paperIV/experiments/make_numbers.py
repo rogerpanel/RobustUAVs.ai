@@ -381,6 +381,93 @@ if (RES / "e4r_soundness.csv").exists():
     mac("nRevSatAlarmMax", pct(max(float(r["frac_sat_alarm"]) for r in cl.values()), 1))
     mac("nRevZeroUndet", str(sum(int(r["n_undetected"]) == 0 for r in cl.values())))
 
+# ------------------------------------------------------------- proved budget vs re-anchoring interval, D3 cone
+if (RES / "r8_analytic_bound.csv").exists():
+    r8 = rd("r8_analytic_bound.csv")
+    v = next(r for r in r8 if r["fpr"] == "0.01" and r["T_anchor_s"] in ("5", "5.0")
+             and r["constraints"].startswith("anchor gate + D1 ("))["delta_lp_m"]
+    mac("nREightDOneFiveOnePct", fmt(float(v), 1))
+    v = next(r for r in r8 if r["fpr"] == "0.01" and r["T_anchor_s"].startswith("none")
+             and r["constraints"].startswith("anchor gate + D1 + D_sat"))["delta_lp_m"]
+    mac("nREightNoAnchorSat", th_(round(float(v))))
+if (RES / "r8_bound_vs_anchor.csv").exists():
+    bv = rd("r8_bound_vs_anchor.csv")
+    tags = {"0.5": "Half", "1.0": "One", "2.0": "Two", "3.0": "Three", "5.0": "Five", "10.0": "Ten"}
+    lines = []
+    for ta, tg in tags.items():
+        rr = [r for r in bv if r["T_anchor_s"] == ta]
+        if not rr:
+            continue
+        w = max(float(r["delta_cert_m"]) for r in rr)
+        mac(f"nBoundTa{tg}", fmt(w, 1))
+        l1 = next((float(r["delta_cert_m"]) for r in rr if r["loe"] == "1.0"), float("nan"))
+        l7 = next((float(r["delta_cert_m"]) for r in rr if r["loe"] == "0.7"), float("nan"))
+        lines.append(f"{float(ta):g} & {fmt(l1, 1)} & {fmt(l7, 1)} & {fmt(w, 1)} \\\\")
+    (MS / "tab_bound_ta_body.tex").write_text("\n".join(lines) + "\n")
+if (RES / "r9_d3_point.csv").exists():
+    r9 = rd("r9_d3_point.csv")
+    wo = [r for r in r9 if "D3" not in r["constraints"]]
+    best = max(wo, key=lambda r: float(r["delta_m"]))
+    wi = next(r for r in r9 if "D3" in r["constraints"] and r["eval_t_s"] == best["eval_t_s"])
+    mac("nDThreeWithout", fmt(float(best["delta_m"]), 1)); mac("nDThreeWith", fmt(float(wi["delta_m"]), 1))
+    mac("nDThreeTheta", th_(round(float(best["theta_D3"]))))
+    mac("nDThreeEvalT", fmt(float(best["eval_t_s"]), 1))
+
+# ------------------------------------------------------------- PX4 SITL transfer study (results/px4)
+PX = RES / "px4"
+if (PX / "px4_e2_reading.json").exists():
+    rp = lambda n: list(csv.DictReader(open(PX / n)))
+    val = rp("px4_validity.csv")
+    mac("nPxMissions", th_(sum(int(r["n_ok"]) for r in val) + 4))          # + 4 smoke missions
+    rates = [float(r["rate"]) for r in val if r["exp"] not in ("e0_replay",) and r["dir"] != "e3eval2"]
+    mac("nPxNotFlownMin", pct(min(rates), 0)); mac("nPxNotFlownMax", pct(max(rates), 0))
+    e0n = next(r for r in val if r["exp"] == "e0")
+    mac("nPxBenign", str(int(e0n["n_ok"]) - int(e0n["n_not_flown"])))
+    rep_ = [float(r["sup_e_diff_m"]) for r in rp("px4_e0_replay.csv") if r["sup_e_diff_m"]]
+    mac("nPxReplayMed", fmt(float(np.median(rep_)), 2)); mac("nPxReplayMax", fmt(max(rep_), 2))
+    bm = {r["q"]: float(r["maxdev_m"]) for r in rp("px4_e0_benign_maxdev.csv")}
+    mac("nPxBenignQnf", fmt(bm["0.95"], 1)); mac("nPxBenignMax", fmt(bm["1.0"], 1))
+    e1 = {(r["attack"], r["fpr"]): r for r in rp("px4_e1_detection.csv")}
+    for a_, tg in (("step5", "Step"), ("ramp05", "Ramp")):
+        r_ = e1[(a_, "0.05")]
+        mac(f"nPxEOne{tg}DTwo", pct(float(r_["D2"]), 1)); mac(f"nPxEOne{tg}All", pct(float(r_["ALL+gate"]), 0))
+        mac(f"nPxEOne{tg}DThree", pct(float(r_["D3"]), 0)); mac(f"nPxEOne{tg}DFour", pct(float(r_["D4"]), 0))
+        mac(f"nPxEOne{tg}Dev", fmt(float(r_["attack_only_dev_median_m"]), 1))
+    cx = rp("px4_e2_cross.csv")
+    prim = [r for r in cx if r["attacker_id"] in ("20", "21", "22", "23", "24") and r["stack"] == "ALL"
+            and r["anchor_gate"] == "True"]
+    ev = [float(r["evasion_rate"]) for r in prim]
+    mac("nPxEvMin", pct(min(ev), 0)); mac("nPxEvMax", pct(max(ev), 0))
+    q50 = [float(r["attack_only_dev_q50"]) for r in prim]
+    mac("nPxQfMin", fmt(min(q50), 1)); mac("nPxQfMax", fmt(max(q50), 1))
+    mxp = [float(r["attack_only_dev_max"]) for r in prim]
+    mac("nPxPrimMaxMin", fmt(min(mxp), 1)); mac("nPxPrimMaxMax", fmt(max(mxp), 1))
+    worst = lambda st, g: max(float(r["attack_only_dev_max"]) for r in cx if r["stack"] == st and r["anchor_gate"] == g)
+    mac("nPxWorstAllGate", fmt(worst("ALL", "True"), 2)); mac("nPxWorstDOneGate", fmt(worst("D1", "True"), 1))
+    for st, tg in (("ALL", "All"), ("D1", "DOne"), ("D2", "DTwo"), ("D3", "DThree"), ("D4", "DFour")):
+        mac(f"nPxWorst{tg}NoGate", fmt(worst(st, "False"), 1))
+    rdg = json.loads((PX / "px4_e2_reading.json").read_text())
+    stp = next(c for c in rdg["a"]["cells"] if c["family"] == "step")
+    mac("nPxReadStepDev", fmt(stp["dev_px4_m"], 2)); mac("nPxReadStepLim", fmt(2 * stp["dev_ro_m"], 2))
+    mac("nPxReadCap", fmt(rdg["b"]["cap_m"], 2))
+    mac("nPxReadFaultDTwo", fmt(rdg["b"]["D2_max_by_family"]["fault_mimic"], 1))
+    mac("nPxReadFaultDFour", fmt(rdg["b"]["D4_max_by_family"]["fault_mimic"], 1))
+    mac("nPxReadAOk", str(sum(c["evasion_ge_50pct"] and c["dev_within_2x"] for c in rdg["a"]["cells"])))
+    ce = [r for r in rp("px4_e3_cem_eval.csv") if r["fpr"] == "0.05"]
+    okf = [r for r in ce if float(r["evasion_rate"]) > 0]
+    mac("nPxCemEvMin", pct(min(float(r["evasion_rate"]) for r in okf), 0))
+    mac("nPxCemEvMax", pct(max(float(r["evasion_rate"]) for r in okf), 0))
+    mac("nPxCemDevMax", fmt(max(float(r["attack_only_dev_max"]) for r in okf), 1))
+    da = {r["fpr"]: r for r in rp("px4_e3_delta_adv.csv")}
+    mac("nPxDadv", fmt(float(da["0.05"]["delta_adv_px4_m"]), 2))
+    mac("nPxDadvMed", fmt(float(da["0.05"]["attack_only_q50_m"]), 1)); mac("nPxDadvQnf", fmt(float(da["0.05"]["attack_only_q95_m"]), 1))
+    mac("nPxDadvRoPilot", fmt(float(da["0.01"]["delta_adv_ro_pilot_m"]), 2))
+    mac("nPxDadvRoPooled", fmt(float(da["0.01"]["delta_adv_ro_pooled_m"]), 2))
+    ng = rp("px4_e4neg.csv")[0]
+    mac("nPxNoAnchorEv", pct(float(ng["evasion_rate"]), 0)); mac("nPxNoAnchorDev", fmt(float(ng["attack_only_dev_median_m"]), 1))
+    cal = json.loads((PX / "calibration.json").read_text())
+    mac("nPxDThreeTheta", th_(round(cal["single"]["0.05"]["D3"])))
+
 with open(MS / "numbers.tex", "w") as fh:
     fh.write("% Generated by experiments/make_numbers.py -- do not edit by hand.\n")
     for k in sorted(M):
