@@ -147,7 +147,7 @@ stage_pack() {
   tar -C "$REPO/paperIV/results" --exclude='px4/*/ulg' --exclude='px4/*/fail_logs' -czf "$out" px4
   # small archive to attach in the chat: tables, calibration, per-mission rows, logs (no series, no ULogs)
   local tab="$HOME/paperIV_px4_tables_$(date +%Y%m%d_%H%M).tgz"
-  (cd "$REPO/paperIV/results" && tar -czf "$tab" px4/*.csv px4/*.json px4/*/missions.jsonl px4/*/cem_state.json \
+  (cd "$REPO/paperIV/results" && tar -czf "$tab" px4/*.csv px4/*.json px4/*/missions.jsonl px4/*/cem_state*.json \
      px4/server_logs 2>/dev/null || true)
   say "pack: full results $out ($(du -h "$out" | cut -f1)); tables to send back $tab ($(du -h "$tab" | cut -f1))"
 }
