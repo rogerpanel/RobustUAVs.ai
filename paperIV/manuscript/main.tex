@@ -157,19 +157,17 @@ test the resulting bound against attackers optimised to evade it.
   $\dtot=\dnet(\theta)\oplus\dadv(\theta)\oplus\dgnss\oplus\dfault\oplus\denv$
   combines deterministic, stochastic and probability-box (p-box) terms. We prove
   a dependence-sharp bound on the probability of undetected mission failure
-  (\cref{thm:floor}) and show that the classical union
-  bound~\cite{makarov1981,ruschendorf1982}, sharp for two sources, is loose
-  against a known coupling by up to the number of sources under comonotonicity
-  and without bound under independence (\cref{prop:union}).
+  (\cref{thm:floor}) and show when the union
+  bound~\cite{makarov1981,ruschendorf1982} is sharp and when it is loose
+  (\cref{prop:union}).
 \item \textbf{A proved stealth budget (\cref{sec:certbudget}).} For every causal,
   adaptive GNSS-offset attacker, a linear programme bounds the undetected
   deviation; the bound is finite only with trusted re-anchoring and falls from
   \nBoundTaFive{} to \nBoundTaOne\,m as the interval shrinks from 5 to 1\,s.
 \item \textbf{An evasion study and a soundness test
   (\cref{sec:evasion,sec:eval}).} We cross-evaluate attackers optimised over
-  five disguise families against four detectors and their combination, and test
-  the bound on held-out attackers under Holm correction, using negative
-  controls to show the test's power.
+  five disguises against four detectors, and test the bound on held-out
+  attackers with negative controls.
 \item \textbf{A negative result and its repair (\cref{sec:scaled,sec:revised}).}
   Stronger optimisers and a test scaled to \nROneTests{} points found the
   pilot instantiation unsound, with \nROneViol{} Holm-significant violations
@@ -569,7 +567,8 @@ or the trusted re-anchoring fix.
 
 \begin{proposition}[Uniform proved budget]
 \label{prop:certbudget}
-On the linear loop of \cref{sec:evasion}, fix the parametric inputs and let
+On the linear loop of \cref{sec:evasion}, on a mission with constant loss of
+effectiveness and no GNSS outage, let
 $\Psi$ contain D1, the anchor gate and the saturation alarm $D_{\mathrm{sat}}$.
 With benign margins at their $1-\epsilon/m$ calibration quantiles
 ($m$ constraint families), with probability at least $1-\epsilon$ over the benign
@@ -796,6 +795,11 @@ intervals~\cite{clopper1934}.
 % =====================================================================
 \input{sec_conclusion}
 
+\small
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+
+\normalsize
 % =====================================================================
 \section*{Ethics Considerations}
 % =====================================================================
@@ -803,10 +807,6 @@ intervals~\cite{clopper1934}.
 
 \section*{Open Science}
 \input{sec_openscience}
-
-\small
-\bibliographystyle{IEEEtran}
-\bibliography{refs}
 
 \normalsize
 \appendices

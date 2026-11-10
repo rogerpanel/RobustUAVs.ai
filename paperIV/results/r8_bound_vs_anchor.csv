@@ -1,0 +1,13 @@
+fpr,eps,T_anchor_s,loe,constraints,delta_cert_m,argmax_t_s,stride_steps,provenance
+0.01,0.01,0.5,1.0,anchor gate + D1 + D_sat,7.496,4.65,20,physics_model
+0.01,0.01,0.5,0.7,anchor gate + D1 + D_sat,7.444,14.6,20,physics_model
+0.01,0.01,1.0,1.0,anchor gate + D1 + D_sat,10.245,16.0,20,physics_model
+0.01,0.01,1.0,0.7,anchor gate + D1 + D_sat,10.158,16.0,20,physics_model
+0.01,0.01,2.0,1.0,anchor gate + D1 + D_sat,14.843,59.75,20,physics_model
+0.01,0.01,2.0,0.7,anchor gate + D1 + D_sat,13.748,59.85,20,physics_model
+0.01,0.01,3.0,1.0,anchor gate + D1 + D_sat,19.69,59.35,20,physics_model
+0.01,0.01,3.0,0.7,anchor gate + D1 + D_sat,17.347,59.4,20,physics_model
+0.01,0.01,5.0,1.0,anchor gate + D1 + D_sat,31.9,58.35,20,physics_model
+0.01,0.01,5.0,0.7,anchor gate + D1 + D_sat,26.09,58.35,20,physics_model
+0.01,0.01,10.0,1.0,anchor gate + D1 + D_sat,77.672,55.3,20,physics_model
+0.01,0.01,10.0,0.7,anchor gate + D1 + D_sat,57.627,55.4,20,physics_model

@@ -463,6 +463,11 @@ if (PX / "px4_e2_reading.json").exists():
     mac("nPxDadvMed", fmt(float(da["0.05"]["attack_only_q50_m"]), 1)); mac("nPxDadvQnf", fmt(float(da["0.05"]["attack_only_q95_m"]), 1))
     mac("nPxDadvRoPilot", fmt(float(da["0.01"]["delta_adv_ro_pilot_m"]), 2))
     mac("nPxDadvRoPooled", fmt(float(da["0.01"]["delta_adv_ro_pooled_m"]), 2))
+    ro = [r for r in rd("e2x_cross.csv") if r["attacker_id"] in ("20", "21", "22", "23", "24") and r["stack"] == "ALL"]
+    mac("nRoPrimEvMin", pct(min(float(r["evasion_rate"]) for r in ro), 0))
+    mac("nRoPrimEvMax", pct(max(float(r["evasion_rate"]) for r in ro), 0))
+    mac("nRoPrimMaxMin", fmt(min(float(r["attack_only_dev_max"]) for r in ro), 1))
+    mac("nRoPrimMaxMax", fmt(max(float(r["attack_only_dev_max"]) for r in ro), 1))
     ng = rp("px4_e4neg.csv")[0]
     mac("nPxNoAnchorEv", pct(float(ng["evasion_rate"]), 0)); mac("nPxNoAnchorDev", fmt(float(ng["attack_only_dev_median_m"]), 1))
     cal = json.loads((PX / "calibration.json").read_text())

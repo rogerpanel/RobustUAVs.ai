@@ -1,6 +1,6 @@
 # Paper IV — Runbook
 
-**Paper:** *When the Attacker Is Indistinguishable from the Weather: A Cross-Layer Benchmark and a Unified Perturbation Budget for Certified UAV Autonomy* (target: USENIX Security)
+**Paper:** *When the Attacker Is Indistinguishable from the Weather: Provable Bounds on Undetected GNSS-Spoofing Deviation for UAVs* (target: IEEE S&P 2027)
 **Repository:** `rogerpanel/RobustUAVs.ai`, branch `claude/whelan-uavcas-ingest-u00isn` (the branch Papers I-III are developed on; `paperIV/` was started on `claude/paperIV-crosslayer` and merged here).
 **Folder:** `paperIV/` (`experiments/`, `results/`, `manuscript/`)
 

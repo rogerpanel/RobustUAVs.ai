@@ -80,6 +80,21 @@ K.~H. Kim, T.~Narendran, B.~Mehralizadeh, Z.~Abu-Abbas, D.~Kara, V.~Paruchuri,
   vulnerable by nature: Security consequences of learnability in {UAV} state
   estimators,'' arXiv:2407.15003v2, 2024.
 
+\bibitem{mo2016}
+Y.~Mo and B.~Sinopoli, ``On the performance degradation of cyber-physical
+  systems under stealthy integrity attacks,'' \emph{IEEE Trans. Automatic
+  Control}, vol.~61, no.~9, pp. 2618--2624, 2016.
+
+\bibitem{urbina2016}
+D.~I. Urbina, J.~A. Giraldo, A.~A. C{\'a}rdenas, N.~O. Tippenhauer, J.~Valente,
+  M.~Faisal, J.~Ruths, R.~Candell, and H.~Sandberg, ``Limiting the impact of
+  stealthy attacks on industrial control systems,'' in \emph{Proc. ACM SIGSAC
+  Conf. Computer and Communications Security (CCS)}, 2016, pp. 1092--1105.
+
+\bibitem{sha2001}
+L.~Sha, ``Using simplicity to control complexity,'' \emph{IEEE Software},
+  vol.~18, no.~4, pp. 20--28, 2001.
+
 \bibitem{bai2017}
 C.-Z. Bai, F.~Pasqualetti, and V.~Gupta, ``Data-injection attacks in stochastic
   control systems: Detectability and performance tradeoffs,''
@@ -216,16 +231,6 @@ C.~J. Clopper and E.~S. Pearson, ``The use of confidence or fiducial limits
   illustrated in the case of the binomial,'' \emph{Biometrika}, vol.~26, no.~4,
   pp. 404--413, 1934.
 
-\bibitem{li2026unified}
-L.~Li, S.~X. Ding, M.~Zhong, D.~Zhao, and Y.~Shi, ``Analysis, detection and
-  control of secure and safe cyber-physical control systems in a unified
-  framework,'' arXiv:2601.07150, 2026.
-
-\bibitem{xue2025dual}
-X.~Xue, D.~Shen, S.~X. Ding, and D.~Zhao, ``Dual detection framework for faults
-  and integrity attacks in cyber-physical control systems,'' arXiv:2510.14052,
-  2025.
-
 \bibitem{erba2025}
 A.~Erba, J.~H. Castellanos, S.~Sihag, S.~Zonouz, and N.~O. Tippenhauer,
   ``{ConfuSense}: Sensor reconfiguration attacks for stealthy {UAV}
@@ -244,17 +249,6 @@ Y.~Mo and B.~Sinopoli, ``False data injection attacks in control systems,'' in
 A.~Teixeira, I.~Shames, H.~Sandberg, and K.~H. Johansson, ``A secure control
   framework for resource-limited adversaries,'' \emph{Automatica}, vol.~51, pp.
   135--148, 2015.
-
-\bibitem{urbina2016}
-D.~I. Urbina, J.~A. Giraldo, A.~A. C{\'a}rdenas, N.~O. Tippenhauer, J.~Valente,
-  M.~Faisal, J.~Ruths, R.~Candell, and H.~Sandberg, ``Limiting the impact of
-  stealthy attacks on industrial control systems,'' in \emph{Proc. ACM SIGSAC
-  Conf. Computer and Communications Security (CCS)}, 2016, pp. 1092--1105.
-
-\bibitem{mo2016}
-Y.~Mo and B.~Sinopoli, ``On the performance degradation of cyber-physical
-  systems under stealthy integrity attacks,'' \emph{IEEE Trans. Automatic
-  Control}, vol.~61, no.~9, pp. 2618--2624, 2016.
 
 \bibitem{murguia2020}
 C.~Murguia, I.~Shames, J.~Ruths, and D.~Ne{\v{s}}i{\'c}, ``Security metrics and
@@ -275,6 +269,16 @@ S.~Mishra, Y.~Shoukry, N.~Karamchandani, S.~Diggavi, and P.~Tabuada, ``Secure
   state estimation: Optimal guarantees against sensor attacks in the presence
   of noise,'' in \emph{Proc. IEEE Int. Symp. Information Theory (ISIT)}, 2015,
   pp. 2929--2933.
+
+\bibitem{xue2025dual}
+X.~Xue, D.~Shen, S.~X. Ding, and D.~Zhao, ``Dual detection framework for faults
+  and integrity attacks in cyber-physical control systems,'' arXiv:2510.14052,
+  2025.
+
+\bibitem{li2026unified}
+L.~Li, S.~X. Ding, M.~Zhong, D.~Zhao, and Y.~Shi, ``Analysis, detection and
+  control of secure and safe cyber-physical control systems in a unified
+  framework,'' arXiv:2601.07150, 2026.
 
 \bibitem{borgeshink2014}
 R.~C. Borges~Hink, J.~M. Beaver, M.~A. Buckner, T.~Morris, U.~Adhikari, and
@@ -469,10 +473,6 @@ A.~D. Ames, S.~Coogan, M.~Egerstedt, G.~Notomista, K.~Sreenath, and P.~Tabuada,
 S.~Bansal, M.~Chen, S.~Herbert, and C.~J. Tomlin, ``{Hamilton-Jacobi}
   reachability: A brief overview and recent advances,'' in \emph{Proc. 56th
   IEEE Conf. Decision and Control (CDC)}, 2017, pp. 2242--2253.
-
-\bibitem{sha2001}
-L.~Sha, ``Using simplicity to control complexity,'' \emph{IEEE Software},
-  vol.~18, no.~4, pp. 20--28, 2001.
 
 \bibitem{modares2026pz}
 A.~Modares, Z.~Zhang, T.~Charalambous, A.~Alanwar, and H.~Modares,

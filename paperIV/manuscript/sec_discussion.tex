@@ -1,4 +1,11 @@
 % ------------------------------------------------------------- Discussion
+\paragraph{Summary of findings.}
+Every disguise evades every detector, and only the anchor gate caps the
+undetected deviation for all of them (RQ1); the repaired bound survived fresh
+attackers (RQ2--RQ5); a measured GNSS marginal cut the floor two- to threefold
+(RQ6); and in PX4 the stealth budget transferred while the full disguise matrix
+did not (RQ7).
+
 \paragraph{Design rules for defenders.}
 Five design rules follow from the measurements, and each mitigates the attack
 described in this paper.
@@ -9,7 +16,8 @@ described in this paper.
   detector and disguise. Without the gate, the contribution reached
   \nNgMax\,m. Lengthening the interval from 5 to 20\,s multiplied the budget by
   \nAnchorMultTwenty{} (\cref{fig:anchor}), while moving the operating point
-  from 1\% to 10\% FPR left the pooled budget unchanged in the pilot (\cref{sec:eval}). For a corridor of
+  from 1\% to 10\% FPR left the pooled budget unchanged in the pilot (\cref{sec:eval}); the
+  proved budget falls almost linearly with $T_a$ (\cref{tab:boundta}). For a corridor of
   margin $m$, choose $T_a$ such that
   $\dadv(T_a)\le m-e^{LT_c}\dnet-s^\star$, where $s^\star$ is the smallest
   budget with $\pbar(s^\star)$ below the tolerated risk.
@@ -35,51 +43,34 @@ described in this paper.
   should be either proved or monitored.
 \end{enumerate}
 
-\paragraph{Relation to separability results.}
-Li et al.~\cite{li2026unified} and Xue et al.~\cite{xue2025dual} argue that
-faults and attacks act through different subspaces and can be separated by
-residual design. Our gate-free results are compatible with that view for a
-given residual, since D2 and D4 do separate several disguises. The two views
-differ in the quantifier. Separability holds for a fixed attack against a fixed detector.
-Equivalence concerns the attacker's best response, and against every detector
-we built, some family of small-amplitude offsets evaded in at least
-\nCrossEvMin{} of missions. Whether a residual exists that tolerates the benign
-classes and still rejects all of their imitations remains open; our evidence
-shows only that none of ours does.
-
 \paragraph{Limitations.}
 \begin{itemize}
-\item \emph{Reduced-order model.} The pilot simulates one lateral channel with
-  a linear KF. PX4's EKF2 has more states, different gating and nonlinear
-  coupling. The disguise matrix and soundness results hold for this model; a
-  SITL transfer study, specified in the artifact's README, must re-establish
-  them before they are claimed for a deployed autopilot.
+\item \emph{Reduced-order model.} The proof and the soundness test cover one
+  lateral channel with a linear KF. The PX4 study (\cref{sec:px4}) transferred
+  the stealth budget but not the full disguise matrix, ran in SITL rather than
+  flight, needed a small EKF2 change to fuse a trusted fix, and excluded
+  missions lost to a harness start-up race. A model-mismatch term between the
+  linear loop and EKF2, added to the proved budget, is not yet bounded.
 \item \emph{Empirical adversarial term.} The usable $\dadv$ is a pooled supremum
   over optimised attackers. Stronger optimisers raised it by
   \nROneDadvRatioFive$\times$, and a held-out mixed-family attacker then
-  exceeded it, reaching \nROneAdvMax\,m. The provable LP budget
-  (\cref{sec:revised}) is \nREightSatRatio$\times$ larger because it drops
-  every non-convex detector. Tightening it requires reachable-set bounds for
-  detectors that alarm on runs of exceedances, for example by mixed-integer
-  programming, or detectors redesigned so that silence implies a convex
-  constraint. Both lie beyond the scope of this paper, as does a white-box
+  exceeded it, reaching \nROneAdvMax\,m. The proved budget
+  (\cref{sec:certbudget}) is \nREightSatRatio$\times$ larger at $T_a=5$\,s because
+  it drops the run-based detectors D2 and D4; at 1\,s it is \nBoundTaOne\,m.
+  Tightening it needs mixed-integer constraints for run-based alarms or
+  detectors redesigned so that silence implies a convex constraint, and its
+  margins still need a finite-sample correction. Both lie beyond the scope of this paper, as does a white-box
   gradient attacker through a differentiable simulator, which would extend the
   scaled attacker study.
 \item \emph{Finite calibration.} With \nCalMissions{} samples per source, the
-  simultaneous band certifies at most $\nRFiveFloorCpTwenty$. Certifying a
-  floor of $1-10^{-k}$ needs several times $10^{k+1}$ calibration missions
-  per source, which only simulation or fleet logs can supply.
-\item \emph{Limited power.} At every point where the revised bound is
-  informative, the observed frequency of undetected failure was zero. The test
-  has shown that it can fail (the negative controls and \cref{sec:scaled}), but
-  the revised bound has not been stressed near its value. Closing the temporal
-  gap would make it tight enough to be stressed directly.
-\item \emph{GNSS marginal.} Replacing the simulated GNSS marginal by the
-  measured jamming envelope (\cref{sec:r5}) cut the floor at $m=10$\,m by a factor of two to
-  three. The
-  measured-marginal study covers GNSS only: the fault marginal remains
-  simulated, and calibrating it on RflyMAD and ALFA flight logs is an extension
-  of that study. The measured envelope comes from one campaign on one airframe.
+  simultaneous band certifies at most $\nRFiveFloorCpTwenty$; a floor of
+  $1-10^{-k}$ needs several times $10^{k+1}$ missions per source.
+\item \emph{Limited power.} Where the revised bound is informative, no
+  undetected failure occurred, so the bound has not been stressed near its
+  value, although the test has shown that it can fail (\cref{sec:scaled}).
+\item \emph{GNSS marginal.} Only the GNSS marginal was replaced by a measured
+  one (\cref{sec:r5}), from one campaign on one airframe; the fault marginal
+  remains simulated.
 \item \emph{Analytic network term.} $\dnet$ enters as the certified tube of
   \cref{sec:background} rather than through simulation; injecting measured
   relay staleness into SITL is a stated extension.

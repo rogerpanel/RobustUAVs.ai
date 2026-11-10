@@ -12,16 +12,12 @@ stealthy attacks under bounded noise~\cite{degue2022}, and secure state
 estimation bounds error under sparse attacks plus Gaussian
 noise~\cite{mishra2015}. Each treats the benign perturbation as a single, known
 nuisance. Roy and Dey formalised fault-mimicking actuator attacks in linear
-systems~\cite{roy2023}. A recent dual-detection framework~\cite{xue2025dual}
-and a unified secure-and-safe analysis~\cite{li2026unified} argue against our
-thesis, holding that faults and attacks occupy separable residual subspaces. Our
-cross-evaluation (\cref{sec:eval}) finds separability for particular
-detector--disguise pairs, but an attacker who chooses the disguise found an
-evading parameterisation against every detector we built. In power grids, discriminating disturbances from
-attacks~\cite{borgeshink2014,ghosh2024} and the observation that physical
-measurements alone cannot separate faults from attacks~\cite{ahsan2026}
-parallel our setting. Load-altering attacks have been designed to stay robust
-to grid uncertainty~\cite{sayed2024gridchaos}, but not to hide within it.
+systems~\cite{roy2023}. Dual-detection~\cite{xue2025dual} and unified secure-and-safe
+analyses~\cite{li2026unified} hold that faults and attacks occupy separable
+residual subspaces. Separability holds for a fixed attack against a fixed
+detector; equivalence concerns the attacker's best response, and against every
+detector we built some small-amplitude disguise evaded (\cref{sec:eval}). Power
+grids raise the same question~\cite{borgeshink2014,ghosh2024,ahsan2026,sayed2024gridchaos}.
 
 \paragraph{Attacks on UAV navigation.}
 GNSS spoofing has advanced from portable spoofers and takeover
@@ -31,10 +27,9 @@ multi-sensor fusion~\cite{shen2020,zeng2018}; see~\cite{psiaki2016,zeng2026surve
 for surveys. Stealthy attacks against control-based defences~\cite{dash2019,dash2021dtrap},
 perception and black-box GPS attacks on UAVs~\cite{khazraei2023,khazraei2024},
 optimal attacks on nonlinear estimators~\cite{hallyburton2022}, sensor
-reconfiguration attacks~\cite{erba2025} and learned spoofers that exploit wind
-compensation~\cite{kim2024predictable} all establish that stealth is possible.
-Precise redirection with real-time tracking was demonstrated
-recently~\cite{meng2026phantom}. Acoustic injection reaches inertial
+reconfiguration attacks~\cite{erba2025}, learned spoofers that exploit wind
+compensation~\cite{kim2024predictable} and precise redirection with real-time
+tracking~\cite{meng2026phantom} all establish that stealth is possible. Acoustic injection reaches inertial
 sensors directly~\cite{son2015,trippel2017}, and the hardness of physical
 sensor attacks has been studied systematically~\cite{kim2024hardness}. None of
 these works treats the disguise as the attacker's optimisation variable or
@@ -74,16 +69,12 @@ work to our budget. Conformal methods~\cite{lindemann2023ral,lindemann2023iccps}
 assume exchangeability, which an adaptive attacker breaks.
 
 \paragraph{Dependence uncertainty.}
-Sharp bounds on the distribution of a sum with fixed
-marginals~\cite{makarov1981,ruschendorf1982,frank1987}, the Rearrangement
-Algorithm~\cite{puccetti2012,puccetti2013,embrechts2013var,hofert2020,bernard2026},
-dependency-bounds convolution~\cite{williamson1990} and probability-bounds
-analysis~\cite{ferson2003,ferson2004,bouissou2012} are mature in finance and
-reliability engineering~\cite{song2020dba}, and copulas and p-boxes appear in
-power-system uncertainty analysis~\cite{papaefthymiou2009,arrigo2023,amiri2021}.
-Closest in verification are Dempster--Shafer and imprecise-copula analyses of
-neural networks~\cite{goubault2024,pifarre2026,chwialkowski2026} and Boole--Fr\'echet
-bounds for temporal-logic motion planning~\cite{ilyes2023stori}. To our
-knowledge, no prior work applies dependence-sharp aggregation across an
-adversarial, a stochastic and an environmental perturbation to certify a
-cyber-physical mission outcome.
+Sharp bounds on sums with fixed marginals~\cite{makarov1981,ruschendorf1982,frank1987},
+the Rearrangement Algorithm~\cite{puccetti2012,puccetti2013,embrechts2013var,hofert2020,bernard2026}
+and probability-bounds analysis~\cite{williamson1990,ferson2003,ferson2004,bouissou2012}
+are mature in finance, reliability~\cite{song2020dba} and power
+systems~\cite{papaefthymiou2009,arrigo2023,amiri2021}, and appear in verification
+of neural networks~\cite{goubault2024,pifarre2026,chwialkowski2026} and motion
+planning~\cite{ilyes2023stori}. To our knowledge, no prior work applies them
+across an adversarial, a stochastic and an environmental perturbation to certify
+a cyber-physical mission outcome.

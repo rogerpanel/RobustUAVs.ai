@@ -1,0 +1,11 @@
+T_anchor_s,loe,fpr,eps,theta_D3,constraints,eval_t_s,delta_m,status,provenance
+5.0,1.0,0.01,0.01,2478.973,anchor gate + D1 + D_sat,58.35,35.941,optimal,physics_model
+5.0,1.0,0.01,0.01,2478.973,anchor gate + D1 + D_sat,30.0,23.558,optimal,physics_model
+5.0,1.0,0.01,0.01,2478.973,anchor gate + D1 + D_sat,10.0,22.124,optimal,physics_model
+5.0,1.0,0.01,0.01,2478.973,anchor gate + D1 + D_sat,5.5,14.776,optimal,physics_model
+5.0,1.0,0.01,0.01,2478.973,anchor gate + D1 + D_sat,59.95,26.112,optimal,physics_model
+5.0,1.0,0.01,0.01,2478.973,anchor gate + D1 + D_sat + D3 (SOC),58.35,35.202,optimal,physics_model
+5.0,1.0,0.01,0.01,2478.973,anchor gate + D1 + D_sat + D3 (SOC),30.0,23.494,optimal,physics_model
+5.0,1.0,0.01,0.01,2478.973,anchor gate + D1 + D_sat + D3 (SOC),10.0,22.124,optimal,physics_model
+5.0,1.0,0.01,0.01,2478.973,anchor gate + D1 + D_sat + D3 (SOC),5.5,14.762,optimal,physics_model
+5.0,1.0,0.01,0.01,2478.973,anchor gate + D1 + D_sat + D3 (SOC),59.95,26.04,optimal,physics_model

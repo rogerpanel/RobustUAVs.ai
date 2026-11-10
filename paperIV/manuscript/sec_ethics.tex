@@ -26,9 +26,10 @@ optimiser, to make a real spoofing attack harder to detect.
   redistributed.
 \end{itemize}
 
-\paragraph{Disclosure.} The pilot uses a generic Kalman filter rather than a
-specific autopilot, so it discloses no vendor vulnerability. If the
-software-in-the-loop transfer study specified in the artifact's README shows that a disguise family
-evades PX4 EKF2's innovation gating, we will notify the PX4 and ArduPilot
-security contacts at least 90 days before publication and include the
-mitigation.
+\paragraph{Disclosure.} The reduced-order study uses a generic Kalman filter.
+The PX4 SITL study (\cref{sec:px4}) shows that small disguised GNSS offsets pass
+EKF2's innovation gating and that, without a trusted fix, a slow ramp moves the
+vehicle by the full offset undetected. This follows from tolerating benign GNSS
+error rather than from a software defect, and the mitigation is a trusted
+re-anchoring fix. We will share the results with the PX4 and ArduPilot security
+contacts at least 90 days before publication.

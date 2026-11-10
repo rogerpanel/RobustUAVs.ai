@@ -81,38 +81,16 @@ block, which we did not reuse.
 \end{enumerate}
 
 \paragraph{An analytic stealth budget.}
-With noise removed, the linear loop maps the attack offsets $d_j$ at the GNSS
-epochs to the attack-only deviation linearly. The worst undetected deviation
-is therefore a linear programme over $d$, solved once for every time step.
-Its constraints are the detector conditions that are convex in $d$ and
-implied by silence, with the benign contribution bounded by its
-$1-\epsilon/3$ calibration quantile ($\epsilon=0.01$).
-\begin{itemize}
-\item D1: a bounded jump between consecutive fixes.
-\item The anchor gate: a bounded innovation at each trusted fix.
-\item $D_{\mathrm{sat}}$: a bounded attack-only command.
-\end{itemize}
-D2--D4 alarm on runs of exceedances or on quadratic statistics, which are not
-convex in $d$, so we drop them. Dropping a detector only enlarges the feasible
-set, so the bound stays valid for every stack that contains the kept ones. We
-take the worst actuator effectiveness in $[0.7,1]$, and the onset of the attack
-is free. Three findings follow (\code{r8\_analytic\_bound.csv}).
-\begin{itemize}
-\item \emph{The anchor gate alone yields no finite bound.} The trusted fix
-  constrains the estimate error at anchor times, but not the deviation, and an
-  attacker that carries the estimate along with the vehicle passes every anchor.
-\item \emph{A jump detector adds little.} With D1 the budget is finite but
-  \nREightDOneFive\,m at $T_a=5$\,s, because D1's threshold must tolerate
-  the jumps of GNSS jamming noise.
-\item \emph{The saturation alarm makes the budget physical.} With
-  $D_{\mathrm{sat}}$ the budget falls to \nREightSatFive\,m. That is still
-  \nREightSatRatio$\times$ the calibrated $\dadv$ and \nREightSatRatioAdv$\times$
-  the largest deviation any optimised attacker reached (\nROneAdvMax\,m).
-\end{itemize}
-The gap measures what the non-convex detectors D2--D4 contribute beyond what
-has been proved. With the provable budget, the floor certifies nothing below a
-margin of about \nREightSatFive\,m. With the empirical budget it certifies
-more but rests on a supremum that further search has raised before.
+With noise removed, the linear loop maps the attack offsets to the attack-only
+deviation linearly, so the worst undetected deviation is a linear programme over
+the offsets, constrained by D1, the anchor gate and $D_{\mathrm{sat}}$, with
+benign margins at their $1-\epsilon/3$ calibration quantiles ($\epsilon=0.01$),
+the worst LoE in $[0.7,1]$ and a free onset (\code{r8\_analytic\_bound.csv}).
+\Cref{sec:certbudget} states the attacker class and the result. At $T_a=5$\,s
+the budget is \nREightSatFive\,m, \nREightSatRatio$\times$ the calibrated $\dadv$
+and \nREightSatRatioAdv$\times$ the largest deviation any optimised attacker
+reached (\nROneAdvMax\,m); the gap measures what D2--D4 contribute beyond
+what has been proved.
 
 \paragraph{Result on fresh seeds.}
 \input{sec_revised_result}
@@ -120,19 +98,16 @@ more but rests on a supremum that further search has raised before.
 \subsection{RQ6: effect of a measured GNSS marginal}
 \label{sec:r5}
 The pilot's GNSS marginal is simulated (99th percentile \nRFivePnnSim\,m). The
-released artifact contains measured navigation error from the real GPS-jamming
-flight of the UAV Attack Dataset~\cite{whelan2020dataset}:
-\nRFiveSamples{} one-second samples over two episodes, a noise episode and a
-loss of fix, whose error envelope grows with staleness to \nRFiveEnvTen\,m at
-10\,s and \nRFiveEnvMax\,m at 15\,s (spoofing samples are excluded,
-since spoofing belongs to $\dadv$). We replaced each simulated degradation episode
-by the larger of its simulated deviation and the measured envelope at the
-episode's staleness, with the simulator's episode probabilities, and in a stress
-variant set every episode to the measured 45\,s duration. The construction is
-conservative in one respect, since it never makes a mission's GNSS deviation
-smaller. It also assumes that the measured navigation error becomes cross-track
-deviation one for one, which holds when the controller tracks its estimate;
-this assumption is not itself measured.
+artifact contains measured navigation error from the real GPS-jamming flight of
+the UAV Attack Dataset~\cite{whelan2020dataset}: \nRFiveSamples{} one-second
+samples over a noise episode and a loss of fix, whose error grows with staleness
+to \nRFiveEnvTen\,m at 10\,s and \nRFiveEnvMax\,m at 15\,s (spoofing samples
+belong to $\dadv$ and are excluded). We replaced each simulated degradation
+episode by the larger of its simulated deviation and the measured envelope at the
+episode's staleness, and in a stress variant set every episode to the measured
+45\,s duration. This never makes a mission's GNSS deviation smaller, but it
+assumes, without measuring it, that navigation error becomes cross-track
+deviation one for one.
 
 At $m=10$\,m and 5\% FPR, with $\dadv=\nROneDadvFive$\,m, the floor estimated from
 the empirical marginals falls from \nRFiveFloorSim{} (simulated GNSS) to
