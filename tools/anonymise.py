@@ -176,11 +176,28 @@ def is_verbatim(rel: Path) -> bool:
     return str(rel).startswith(VERBATIM_DATA) and rel.suffix.lower() in {".csv", ".jsonl", ".json"}
 
 
+# Published prior work cited in the third person, as double-blind rules require: a bibliography
+# line carrying one of these DOIs is left verbatim (the PDF shows the same names), and the
+# verifier does not report it. Every other line is rewritten and checked as before.
+THIRD_PERSON_DOIS = ("10.3103/S1060992X24700681", "10.1016/j.neucom.2026.133105")
+
+
+def _third_person_line(line: str) -> bool:
+    return line.lstrip().startswith("@") and any(d in line for d in THIRD_PERSON_DOIS)
+
+
 def anonymise_text(text: str, tooling: bool = True) -> str:
+    lines = text.split("\n")
+    keep = {i: ln for i, ln in enumerate(lines) if _third_person_line(ln)}
+    for i in keep:
+        lines[i] = "\x00THIRDPERSON%d\x00" % i
+    text = "\n".join(lines)
     for pattern, replacement in RULES:
         if not tooling and pattern in TOOLING:
             continue
         text = re.sub(pattern, replacement, text)
+    for i, ln in keep.items():
+        text = text.replace("\x00THIRDPERSON%d\x00" % i, ln)
     return text
 
 
@@ -321,7 +338,7 @@ def verify(dst: Path) -> list[tuple[Path, int, str]]:
         try:
             r_ = rx_data if is_verbatim(path.relative_to(dst)) else rx
             for n, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
-                if r_.search(line):
+                if r_.search(line) and not (path.suffix == ".bib" and _third_person_line(line)):
                     survivors.append((path.relative_to(dst), n, line.strip()[:120]))
         except UnicodeDecodeError:
             continue
