@@ -1,0 +1,16 @@
+fpr,family,n,evasion_rate,n_with_twin,attack_only_dev_q50,attack_only_dev_q95,attack_only_dev_max,source,provenance
+0.01,fault_mimic,50,0.94,47,1.273,1.452,1.592,e3eval2,px4_sitl
+0.01,gnss_mimic,50,0.0,0,,,0.0,e3eval2,px4_sitl
+0.01,ramp,50,0.86,43,2.2,2.326,2.802,e3eval2,px4_sitl
+0.01,step,50,0.92,46,1.543,1.65,2.319,e3eval2,px4_sitl
+0.01,weather_mimic,50,0.0,0,,,0.0,e3eval2,px4_sitl
+0.05,fault_mimic,50,0.88,44,1.274,1.461,1.592,e3eval2,px4_sitl
+0.05,gnss_mimic,50,0.0,0,,,0.0,e3eval2,px4_sitl
+0.05,ramp,50,0.8,40,2.2,2.328,2.802,e3eval2,px4_sitl
+0.05,step,50,0.84,42,1.55,1.657,2.319,e3eval2,px4_sitl
+0.05,weather_mimic,50,0.0,0,,,0.0,e3eval2,px4_sitl
+0.1,fault_mimic,50,0.84,42,1.27,1.412,1.592,e3eval2,px4_sitl
+0.1,gnss_mimic,50,0.0,0,,,0.0,e3eval2,px4_sitl
+0.1,ramp,50,0.74,37,2.199,2.329,2.802,e3eval2,px4_sitl
+0.1,step,50,0.78,39,1.543,1.663,2.319,e3eval2,px4_sitl
+0.1,weather_mimic,50,0.0,0,,,0.0,e3eval2,px4_sitl

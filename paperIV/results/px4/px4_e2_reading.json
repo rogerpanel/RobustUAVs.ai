@@ -1,0 +1,74 @@
+{
+ "a": {
+  "holds": false,
+  "cells": [
+   {
+    "family": "step",
+    "evasion_px4": 0.8571,
+    "evasion_ro": 0.841,
+    "dev_px4_m": 4.754,
+    "dev_ro_m": 2.108,
+    "evasion_ge_50pct": true,
+    "dev_within_2x": false
+   },
+   {
+    "family": "ramp",
+    "evasion_px4": 0.8778,
+    "evasion_ro": 0.872,
+    "dev_px4_m": 2.318,
+    "dev_ro_m": 1.511,
+    "evasion_ge_50pct": true,
+    "dev_within_2x": true
+   },
+   {
+    "family": "fault_mimic",
+    "evasion_px4": 0.8387,
+    "evasion_ro": 0.79,
+    "dev_px4_m": 3.176,
+    "dev_ro_m": 2.255,
+    "evasion_ge_50pct": true,
+    "dev_within_2x": true
+   },
+   {
+    "family": "gnss_mimic",
+    "evasion_px4": 0.8387,
+    "evasion_ro": 0.763,
+    "dev_px4_m": 2.181,
+    "dev_ro_m": 2.406,
+    "evasion_ge_50pct": true,
+    "dev_within_2x": true
+   },
+   {
+    "family": "weather_mimic",
+    "evasion_px4": 0.7835,
+    "evasion_ro": 0.691,
+    "dev_px4_m": 2.49,
+    "dev_ro_m": 2.88,
+    "evasion_ge_50pct": true,
+    "dev_within_2x": true
+   }
+  ]
+ },
+ "b": {
+  "holds": false,
+  "cap_m": 6.766,
+  "D2_caps_every_family": false,
+  "some_family_exceeds_cap_under_D4": true,
+  "D2_max_by_family": {
+   "step": 4.754,
+   "ramp": 4.819,
+   "fault_mimic": 11.631,
+   "gnss_mimic": 4.936,
+   "weather_mimic": 4.888
+  },
+  "D4_max_by_family": {
+   "step": 13.448,
+   "ramp": 4.819,
+   "fault_mimic": 29.906,
+   "gnss_mimic": 13.27,
+   "weather_mimic": 4.888
+  }
+ },
+ "transfer_holds_qualitatively": false,
+ "provenance": "px4_sitl"
+}

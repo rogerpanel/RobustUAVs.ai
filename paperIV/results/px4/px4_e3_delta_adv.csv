@@ -1,0 +1,4 @@
+fpr,delta_adv_px4_m,n_stealthy,attack_only_q50_m,attack_only_q95_m,delta_adv_ro_pilot_m,delta_adv_ro_pooled_m,provenance
+0.01,4.754,1338,1.526,2.211,4.371,5.463,px4_sitl
+0.05,4.754,1257,1.53,2.211,,,px4_sitl
+0.1,4.754,1178,1.534,2.211,,,px4_sitl

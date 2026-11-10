@@ -1,0 +1,14 @@
+dir,exp,n_ok,n_not_flown,rate,provenance
+e0,e0,500,35,0.07,px4_sitl
+e0,e0_replay,20,0,0.0,px4_sitl
+e1,e1,600,22,0.0367,px4_sitl
+e1,e1_twin,600,23,0.0383,px4_sitl
+e2,e2,1999,115,0.0575,px4_sitl
+e2,e2_twin,100,4,0.04,px4_sitl
+e3,e3,6398,337,0.0527,px4_sitl
+e3eval,e3eval,250,9,0.036,px4_sitl
+e3eval,e3eval_twin,50,3,0.06,px4_sitl
+e3eval2,e3eval,250,0,0.0,px4_sitl
+e3eval2,e3eval_twin,50,0,0.0,px4_sitl
+e4neg,e4neg,100,5,0.05,px4_sitl
+e4neg,e4neg_twin,100,2,0.02,px4_sitl
