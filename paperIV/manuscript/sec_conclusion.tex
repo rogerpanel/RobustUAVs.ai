@@ -1,14 +1,16 @@
 % ------------------------------------------------------------- Conclusion
 A UAV's navigation stack cannot distinguish an attacker from the weather, and
 an attacker who knows this will exploit it. We turned that observation into a
-threat model, $\varepsilon$-observational equivalence; a requirement, that a
-mission-level guarantee bound undetected failure without relying on the detector
-to notice the disguise; and a bound that meets it for every coupling of the
-benign sources. Every disguise evaded every detector, and only a trusted
-re-anchoring fix capped the undetected deviation of all of them. For an explicit adaptive GNSS attacker that cap is now proved on the linear loop:
-it is finite only with the fix and shrinks to \nBoundTaOne\,m at 1\,s, so the
-re-anchoring interval, not a threshold, is the defender's design parameter.
-After a scaled test exposed two unmonitored conditions, the repaired bound held
-on fresh data, and PX4 SITL flights transferred the stealth budget but not the
-full disguise matrix. Bounding the mismatch between the linear loop and EKF2 and
-adding the run-based detectors to the proof come next.
+threat model, $\varepsilon$-observational equivalence, and a bound on undetected
+mission failure for every coupling of the benign sources. In the reduced-order
+study every disguise evaded every detector, and only a trusted re-anchoring fix
+capped the undetected deviation of all of them. For an explicit adaptive GNSS
+attacker that cap is now proved on the linear loop: it is finite only with the
+fix and shrinks to \nBoundTaOne\,m at 1\,s, and PX4 SITL flights at that interval
+stayed within \nPxTaWorstDOneGate\,m. The re-anchoring interval, not a threshold,
+is therefore the defender's design parameter. Engineers can size it to the
+corridor a mission must hold; certification authorities can ask for a bound on
+undetected failure whose every condition is proved or monitored at run time,
+not only a detection rate; and researchers gain a way to state and falsify such
+bounds under pre-registered protocols. Bounding the mismatch between the linear
+loop and EKF2 and adding the run-based detectors to the proof come next.

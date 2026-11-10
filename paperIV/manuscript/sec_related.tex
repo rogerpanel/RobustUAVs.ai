@@ -1,53 +1,47 @@
 % ------------------------------------------------------------- Related work
 \paragraph{Stealthy and disguised attacks on control systems.}
-The literature on stealthy attacks follows a line from false-data injection
-against $\chi^2$-monitored Kalman filters~\cite{mo2010fdi,mo2009replay} and the
-attack space of Teixeira et al.~\cite{teixeira2015}, through impact limited by a
-false-alarm budget~\cite{urbina2016} and reachable-set security
-metrics~\cite{mo2016,murguia2020}, to $\varepsilon$-stealthiness in
-KL divergence~\cite{bai2017} and attacks that alarm at the false-alarm
-rate~\cite{hashemi2018}. Pasqualetti et al.\ characterised undetectable attacks
-as unknown inputs~\cite{pasqualetti2013}. Interval observers bound worst-case
-stealthy attacks under bounded noise~\cite{degue2022}, and secure state
-estimation bounds error under sparse attacks plus Gaussian
-noise~\cite{mishra2015}. Each treats the benign perturbation as a single, known
-nuisance. Roy and Dey formalised fault-mimicking actuator attacks in linear
-systems~\cite{roy2023}. Dual-detection~\cite{xue2025dual} and unified secure-and-safe
-analyses~\cite{li2026unified} hold that faults and attacks occupy separable
-residual subspaces. Separability holds for a fixed attack against a fixed
-detector; equivalence concerns the attacker's best response, and against every
-detector we built some small-amplitude disguise evaded (\cref{sec:eval}). Power
-grids raise the same question~\cite{borgeshink2014,ghosh2024,ahsan2026,sayed2024gridchaos}.
+Stealthy attacks have been studied from false-data injection against
+$\chi^2$-monitored Kalman filters~\cite{mo2010fdi,mo2009replay} and the attack
+space of Teixeira et al.~\cite{teixeira2015}, through impact limited by a
+false-alarm budget~\cite{urbina2016} and reachable-set
+metrics~\cite{mo2016,murguia2020}, to $\varepsilon$-stealthiness in KL
+divergence~\cite{bai2017}, attacks that alarm at the false-alarm
+rate~\cite{hashemi2018}, undetectable unknown inputs~\cite{pasqualetti2013},
+interval observers under bounded noise~\cite{degue2022} and secure estimation
+under sparse attacks~\cite{mishra2015}. Each treats the benign perturbation as a
+single, known nuisance. Fault-mimicking actuator attacks~\cite{roy2023} and
+separability analyses~\cite{xue2025dual,li2026unified} concern a fixed attack
+against a fixed detector; equivalence concerns the attacker's best response,
+and against every detector we built some small-amplitude disguise evaded
+(\cref{sec:eval}). Power grids raise the same
+question~\cite{borgeshink2014,ghosh2024,ahsan2026,sayed2024gridchaos}.
 
 \paragraph{Attacks on UAV navigation.}
 GNSS spoofing has advanced from portable spoofers and takeover
 conditions~\cite{humphreys2008,tippenhauer2011} to covert UAV
 capture~\cite{kerns2014}, adaptive hijacking~\cite{noh2019} and attacks on
-multi-sensor fusion~\cite{shen2020,zeng2018}; see~\cite{psiaki2016,zeng2026survey}
-for surveys. Stealthy attacks against control-based defences~\cite{dash2019,dash2021dtrap},
-perception and black-box GPS attacks on UAVs~\cite{khazraei2023,khazraei2024},
-optimal attacks on nonlinear estimators~\cite{hallyburton2022}, sensor
-reconfiguration attacks~\cite{erba2025}, learned spoofers that exploit wind
-compensation~\cite{kim2024predictable} and precise redirection with real-time
-tracking~\cite{meng2026phantom} all establish that stealth is possible. Acoustic injection reaches inertial
-sensors directly~\cite{son2015,trippel2017}, and the hardness of physical
-sensor attacks has been studied systematically~\cite{kim2024hardness}. None of
-these works treats the disguise as the attacker's optimisation variable or
-links undetected deviation to a mission-level certificate.
+multi-sensor fusion~\cite{shen2020,zeng2018}, surveyed in~\cite{psiaki2016,zeng2026survey}.
+Stealthy attacks against control-based defences~\cite{dash2019,dash2021dtrap},
+black-box GPS attacks~\cite{khazraei2023,khazraei2024}, optimal attacks on
+nonlinear estimators~\cite{hallyburton2022}, sensor
+reconfiguration~\cite{erba2025}, wind-exploiting
+spoofers~\cite{kim2024predictable}, real-time redirection~\cite{meng2026phantom},
+acoustic inertial injection~\cite{son2015,trippel2017} and the hardness of
+physical sensor attacks~\cite{kim2024hardness} establish that stealth is
+possible, but none treats the disguise as the attacker's optimisation variable
+or links undetected deviation to a mission-level certificate.
 
 \paragraph{Detection and recovery.}
-Control invariants~\cite{choi2018}, SAVIOR's physical invariants with
-CUSUM~\cite{quinonez2020savior}, software sensors~\cite{choi2020raid},
-PID-Piper~\cite{dash2021pidpiper}, diagnosis-guided
+Control and physical invariants~\cite{choi2018,quinonez2020savior}, software
+sensors~\cite{choi2020raid}, PID-Piper~\cite{dash2021pidpiper}, diagnosis-guided
 recovery~\cite{dash2024delorean}, safety-critical variable
 monitoring~\cite{park2023scvmon}, PWM-fused IDSs~\cite{asif2024confide} and
-model-based recovery for inertial attacks~\cite{meng2025mars} are the defences
-an attacker in our model must evade. GNSS-specific monitors include power and
-distortion monitoring~\cite{wesson2018pdm} and INS-aided spoofing
-detection with integrity-risk bounds~\cite{tanil2018}. The latter is the
-closest GNSS analogue of our budget, but it has no fault or environment term
-and no unknown dependence. Active exposure~\cite{tian2026} and fuzzing of
-inputs and parameters~\cite{kim2019rvfuzzer,kim2021pgfuzz} are complementary.
+inertial-attack recovery~\cite{meng2025mars} are the defences an attacker in our
+model must evade; active exposure~\cite{tian2026} and
+fuzzing~\cite{kim2019rvfuzzer,kim2021pgfuzz} complement them. Among GNSS
+monitors~\cite{wesson2018pdm,tanil2018}, INS-aided detection with integrity-risk
+bounds~\cite{tanil2018} is the closest analogue of our budget, but it has no
+fault or environment term and no unknown dependence.
 
 \paragraph{Certificates and reachability.}
 Randomized smoothing~\cite{cohen2019smoothing,salman2019,lecuyer2019} and its
@@ -56,16 +50,13 @@ certify models or rewards, not missions. Set-based
 reachability~\cite{althoff2021,althoff2010,scott2016}, tube model predictive
 control~\cite{mayne2005}, funnels~\cite{tedrake2010,majumdar2017}, control
 barrier functions~\cite{ames2019}, Hamilton--Jacobi
-reachability~\cite{bansal2017} and the Simplex architecture~\cite{sha2001}
-supply deterministic or probabilistic envelopes. Probabilistic zonotopes assume
-independence between their components~\cite{althoff2010}; recent work separates
-realised from aleatory disturbances~\cite{modares2026pz}. Stochastic games give
-max--min reach-avoid probabilities against an adversary plus
-nature~\cite{ding2013games}, with a fully known stochastic kernel; and a
-Wasserstein distributionally robust reachability metric combines stealthy
-false-data injection with ambiguous noise~\cite{feng2025wdr}, without dependence
-between components or a mission-level floor. These two are the nearest prior
-work to our budget. Conformal methods~\cite{lindemann2023ral,lindemann2023iccps}
+reachability~\cite{bansal2017} and Simplex~\cite{sha2001} supply envelopes, and
+probabilistic zonotopes assume independent components~\cite{althoff2010,modares2026pz}.
+The nearest prior work to our budget is stochastic reach-avoid games against an
+adversary plus nature~\cite{ding2013games}, with a known kernel, and Wasserstein
+distributionally robust reachability for stealthy injection under ambiguous
+noise~\cite{feng2025wdr}, without dependence between components or a
+mission-level floor. Conformal methods~\cite{lindemann2023ral,lindemann2023iccps}
 assume exchangeability, which an adaptive attacker breaks.
 
 \paragraph{Dependence uncertainty.}

@@ -74,17 +74,17 @@ Provable Bounds on Undetected GNSS-Spoofing Deviation for UAVs}
 % =====================================================================
 \begin{abstract}
 A UAV cannot tell from its navigation inputs whether a growing position error comes from a
-jammer, a drifting sensor or wind, so an attacker can disguise interference as a tolerated
-disturbance. We bound the probability that a mission fails with no detector raising an alarm, for
-every coupling of the benign disturbances. For any causal, adaptive, fully informed GNSS-offset
-attacker, a linear programme proves the largest undetected deviation of a linear navigation loop,
-with finite-sample confidence. The bound is finite only when a trusted fix re-anchors the
-estimator, and shrinks from \nBoundTaFive\,m at 5\,s to \nBoundTaOne\,m at 1\,s. In
-\nMissionsTotal{} simulated missions, optimised disguises evade four detectors, and CUSUM barely
-tightens the bound: detectors must tolerate benign noise. In \nPxMissions{} PX4
-software-in-the-loop missions, the stealth budget transferred (\nPxDadv\,m against
-\nPxDadvRoPilot--\nPxDadvRoPooled\,m) but the full disguise matrix did not; re-anchoring every
-second kept every undetected deviation within \nPxTaWorstDOneGate\,m, inside the proved bound.
+jammer, a drifting sensor or wind, so an attacker can disguise interference as benign. We bound
+the probability that a mission fails with no detector raising an alarm, for every coupling of the
+benign disturbances. For any adaptive, fully informed GNSS-offset attacker, a linear programme
+proves, with finite-sample confidence, the largest undetected deviation of a linear navigation
+loop. The bound is finite only when a trusted fix re-anchors the estimator, and shrinks from
+\nBoundTaFive\,m at 5\,s to \nBoundTaOne\,m at 1\,s. Optimised disguises evade four detectors in
+\nMissionsTotal{} simulated missions, because detectors must tolerate benign noise. In
+\nPxMissions{} PX4 software-in-the-loop missions, the stealth budget transferred but the full
+disguise matrix did not, and re-anchoring every second kept every undetected deviation within
+\nPxTaWorstDOneGate\,m. Engineers and certification authorities can therefore size the trusted
+re-anchoring interval to the corridor a mission must hold, instead of tuning detector thresholds.
 \end{abstract}
 
 % =====================================================================
@@ -175,7 +175,8 @@ test the resulting bound against attackers optimised to evade it.
   alarm and a finite-sample p-box repair both.
 \item \textbf{A pre-registered PX4 transfer study (\cref{sec:px4}).} In
   \nPxMissions{} SITL missions with EKF2, the stealth budget transferred, the
-  pre-registered transfer of the full disguise matrix did not, and we report both.
+  pre-registered transfer of the full disguise matrix did not, and re-anchoring
+  every second kept every undetected deviation within \nPxTaWorstDOneGate\,m.
 \end{itemize}
 
 \paragraph{Scope.}
@@ -288,7 +289,7 @@ sources, we seek:
   explicit, and an evasion study that measures which disguise defeats which
   detector.
 \end{description}
-\noindent These define six research questions. RQ1: can an attacker mimic a
+\noindent These define seven research questions. RQ1: can an attacker mimic a
 fault, a GNSS drift or a gust well enough to evade a detector while still
 producing a large deviation, and which disguise does each detector miss? RQ2:
 does the source-agnostic floor bound the outcome of missions whose attack went
@@ -298,7 +299,8 @@ sound at every held-out operating point under Holm-corrected tests, and does the
 test detect unsoundness when a condition is deliberately broken? RQ5: does the
 answer to RQ4 survive stronger attackers and a larger test, and if not, which
 condition fails? RQ6: how much does the floor change when the simulated GNSS
-marginal is replaced by measured jamming data?
+marginal is replaced by measured jamming data? RQ7: does the result carry over to a full
+autopilot estimator, and does the re-anchoring rule hold there?
 
 \Cref{fig:framework} summarises the methodology through which the paper answers
 these questions.
@@ -592,16 +594,16 @@ probability.
 
 \noindent
 \emph{Finite only with trusted re-anchoring.} At $T_a=5$\,s and 1\% FPR the
-programme is \nREightGateOnly{} with the anchor gate alone, an attacker that
-carries the estimate along with the vehicle passes every fix,
+programme is \nREightGateOnly{} with the anchor gate alone (an attacker that
+carries the estimate along with the vehicle passes every fix),
 \nREightDOneFiveOnePct\,m with D1 added, and \nREightSatFive\,m with
 $D_{\mathrm{sat}}$. (These values use large-sample margins.) Without the trusted fix it is unbounded with D1 and
 \nREightNoAnchorSat\,m with $D_{\mathrm{sat}}$, limited only by the mission
 length. A useful worst case for $\mathcal A_{\mathrm{GNSS}}$ thus needs both the
 fix and the saturation alarm.
 
-\emph{The benign envelope is the attacker's budget.} D3 is convex after all:
-its CUSUM stays below $\theta_3$ if and only if every window sum of squared
+\emph{The benign envelope is the attacker's budget.} D3's alarm condition is
+also convex: its CUSUM stays below $\theta_3$ if and only if every window sum of squared
 residuals stays below $\theta_3+(1+\kappa)|W|$, which with the triangle
 inequality gives second-order-cone constraints. With the margins split over
 these constraints as well, adding them moves the bound only from

@@ -1,10 +1,11 @@
 % ------------------------------------------------------------- Discussion
 \paragraph{Summary of findings.}
-Every disguise evades every detector, and only the anchor gate caps the
-undetected deviation for all of them (RQ1); the repaired bound survived fresh
+In the reduced-order study every disguise evades every detector, and only the
+anchor gate caps the undetected deviation for all of them (RQ1); the repaired bound survived fresh
 attackers (RQ2--RQ5); a measured GNSS marginal cut the floor two- to threefold
 (RQ6); and in PX4 the stealth budget transferred while the full disguise matrix
-did not (RQ7).
+did not, and 1\,s re-anchoring held every undetected deviation within
+\nPxTaWorstDOneGate\,m (RQ7).
 
 \paragraph{Design rules for defenders.}
 Five design rules follow from the measurements, and each mitigates the attack
@@ -17,7 +18,9 @@ described in this paper.
   \nNgMax\,m. Lengthening the interval from 5 to 20\,s multiplied the budget by
   \nAnchorMultTwenty{} (\cref{fig:anchor}), while moving the operating point
   from 1\% to 10\% FPR left the pooled budget unchanged in the pilot (\cref{sec:eval}); the
-  proved budget falls almost linearly with $T_a$ (\cref{tab:boundta}). For a corridor of
+  proved budget falls almost linearly with $T_a$ (\cref{tab:boundta}), and in PX4
+  re-anchoring every 1\,s rather than 5\,s cut the worst undetected deviation
+  from \nPxWorstAllGate{} to \nPxTaWorstAllGate\,m. For a corridor of
   margin $m$, choose $T_a$ such that
   $\dadv(T_a)\le m-e^{LT_c}\dnet-s^\star$, where $s^\star$ is the smallest
   budget with $\pbar(s^\star)$ below the tolerated risk.

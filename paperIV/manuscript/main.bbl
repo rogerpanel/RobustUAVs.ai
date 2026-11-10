@@ -386,16 +386,6 @@ H.~Meng, S.~Luo, Z.~Liang, Q.~Huang, A.~Khazraei, and M.~Pajic, ``{MARS}:
   Defending unmanned aerial vehicles from attacks on inertial sensors with
   model-based anomaly detection and recovery,'' arXiv:2505.00924, 2025.
 
-\bibitem{wesson2018pdm}
-K.~D. Wesson, J.~N. Gross, T.~E. Humphreys, and B.~L. Evans, ``{GNSS} signal
-  authentication via power and distortion monitoring,'' \emph{IEEE Trans.
-  Aerospace and Electronic Systems}, vol.~54, no.~2, pp. 739--754, 2018.
-
-\bibitem{tanil2018}
-{\c{C}}.~Tanil, S.~Khanafseh, M.~Joerger, and B.~Pervan, ``An {INS} monitor to
-  detect {GNSS} spoofers capable of tracking vehicle position,'' \emph{IEEE
-  Trans. Aerospace and Electronic Systems}, vol.~54, no.~1, pp. 131--143, 2018.
-
 \bibitem{tian2026}
 M.~Tian, S.~Li, and B.~Zhong, ``Zonotope-based active exposure of stealthy
   deception attacks in sensor-fusion systems,'' arXiv:2609.02587, 2026.
@@ -410,6 +400,16 @@ T.~Kim, C.~H. Kim, J.~Rhee, F.~Fei, Z.~Tu, G.~Walkup, X.~Zhang, X.~Deng, and
 H.~Kim, M.~O. Ozmen, A.~Bianchi, Z.~B. Celik, and D.~Xu, ``{PGFUZZ}:
   Policy-guided fuzzing for robotic vehicles,'' in \emph{Proc. Network and
   Distributed System Security Symp. (NDSS)}, 2021.
+
+\bibitem{wesson2018pdm}
+K.~D. Wesson, J.~N. Gross, T.~E. Humphreys, and B.~L. Evans, ``{GNSS} signal
+  authentication via power and distortion monitoring,'' \emph{IEEE Trans.
+  Aerospace and Electronic Systems}, vol.~54, no.~2, pp. 739--754, 2018.
+
+\bibitem{tanil2018}
+{\c{C}}.~Tanil, S.~Khanafseh, M.~Joerger, and B.~Pervan, ``An {INS} monitor to
+  detect {GNSS} spoofers capable of tracking vehicle position,'' \emph{IEEE
+  Trans. Aerospace and Electronic Systems}, vol.~54, no.~1, pp. 131--143, 2018.
 
 \bibitem{salman2019}
 H.~Salman, J.~Li, I.~Razenshteyn, P.~Zhang, H.~Zhang, S.~Bubeck, and G.~Yang,
