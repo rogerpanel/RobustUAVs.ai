@@ -1,7 +1,6 @@
-# When the Attacker Is Indistinguishable from the Weather: artifact for review
+# When the Attacker Hides in the Weather: artifact for review
 
-This repository is the anonymised artifact for the paper *When the Attacker Is Indistinguishable
-from the Weather: Provable Bounds on Undetected GNSS-Spoofing Deviation for UAVs*. It contains the
+This repository is the anonymised artifact for the paper *When the Attacker Hides in the Weather: Provable Bounds on Undetected GNSS Spoofing of UAVs*. It contains the
 closed-loop simulator, the four detectors and the anchor gate, the five disguise families and
 their optimisers, the dependence-bound library, every result file behind every number in the
 paper, and the scripts that write those numbers, tables and figure data into the manuscript.

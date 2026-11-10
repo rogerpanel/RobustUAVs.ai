@@ -1,6 +1,6 @@
 # Paper IV — Runbook
 
-**Paper:** *When the Attacker Is Indistinguishable from the Weather: Provable Bounds on Undetected GNSS-Spoofing Deviation for UAVs* (target: IEEE S&P 2027)
+**Paper:** *When the Attacker Hides in the Weather: Provable Bounds on Undetected GNSS Spoofing of UAVs* (target: IEEE S&P 2027)
 **Repository:** `rogerpanel/RobustUAVs.ai`, branch `claude/whelan-uavcas-ingest-u00isn` (the branch Papers I-III are developed on; `paperIV/` was started on `claude/paperIV-crosslayer` and merged here).
 **Folder:** `paperIV/` (`experiments/`, `results/`, `manuscript/`)
 

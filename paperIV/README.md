@@ -1,4 +1,4 @@
-# Paper IV: When the Attacker Is Indistinguishable from the Weather
+# Paper IV: When the Attacker Hides in the Weather
 
 A unified perturbation budget for certified UAV autonomy.
 
