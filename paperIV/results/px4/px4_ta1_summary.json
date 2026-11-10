@@ -1,0 +1,31 @@
+{
+ "bound_1s_m": 10.24,
+ "bound_5s_m": 31.9,
+ "worst_D1_gate_1s_m": 3.159,
+ "worst_D1_gate_5s_m": 7.091,
+ "worst_D1_nogate_1s_m": 27.96,
+ "worst_D1_nogate_5s_m": 47.996,
+ "worst_ALL_gate_1s_m": 2.443,
+ "worst_ALL_gate_5s_m": 4.754,
+ "worst_ALL_nogate_1s_m": 2.665,
+ "worst_ALL_nogate_5s_m": 11.631,
+ "P1_D1gate_within_bound": true,
+ "P2_D1gate_smaller_than_5s": true,
+ "P2_ALLgate_smaller_than_5s": true,
+ "naive_ramp_1s": {
+  "exp": "ta1_e1",
+  "attacker_id": "ramp05",
+  "family": "ramp",
+  "stack": "ALL",
+  "anchor_gate": true,
+  "n": 50,
+  "evasion_rate": 0.0,
+  "n_with_twin": 0,
+  "attack_only_dev_q50": null,
+  "attack_only_dev_q95": null,
+  "attack_only_dev_max": 0.0,
+  "anchor_s": 1.0,
+  "provenance": "px4_sitl"
+ },
+ "provenance": "px4_sitl"
+}

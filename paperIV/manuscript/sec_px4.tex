@@ -40,7 +40,7 @@ Worst of 35, no gate: stack / D4 / D1 & \nPxWorstAllNoGate/\nPxWorstDFourNoGate/
 PX4-optimised: evasion; largest dev. & \nPxCemEvMin--\nPxCemEvMax; \nPxCemDevMax & \\
 Stealth budget $\dadv$ & \nPxDadv & \nPxDadvRoPilot/\nPxDadvRoPooled \\
 No anchor, ramp: evasion; drift & \nPxNoAnchorEv; \nPxNoAnchorDev & \\
-% TODO-E5: row "1 s re-anchoring: worst, stack+gate / D1+gate" -- E5 is running; no number yet.
+Re-anchoring 1\,s: worst, stack$+$gate / D1$+$gate & \nPxTaWorstAllGate/\nPxTaWorstDOneGate & bound \nBoundTaOne \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -65,7 +65,11 @@ proved bound (D1 and the anchor gate), the worst PX4 case was
 empirical consistency check, since the proof covers the linear loop only. D3's
 threshold, set by benign outages, made it as likely to fire on a naive attack as
 on a benign mission (\nPxEOneStepDThree{} and \nPxEOneRampDThree).
-% TODO-E5: one sentence on the 1 s re-anchoring run (pre-registered predictions P1, P2) once E5 is analysed.
+With re-anchoring every 1\,s (pre-registered with two predictions), both held: the
+worst undetected deviation was \nPxTaWorstDOneGate\,m for the bound's stack, inside
+the \nBoundTaOne\,m bound and below the 5\,s value, and \nPxTaWorstAllGate\,m for
+the full stack with the gate (\nPxTaWorstAllNoGate\,m even without it); the naive
+ramp evaded in \nPxTaRampEv{} of missions.
 
 \paragraph{The pre-registered reading did not hold.}
 The protocol fixed two conditions for a qualitative transfer of the disguise

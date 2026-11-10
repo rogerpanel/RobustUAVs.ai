@@ -46,22 +46,16 @@ described in this paper.
 \paragraph{Limitations.}
 \begin{itemize}
 \item \emph{Reduced-order model.} The proof and the soundness test cover one
-  lateral channel with a linear KF. The PX4 study (\cref{sec:px4}) transferred
-  the stealth budget but not the full disguise matrix, ran in SITL rather than
-  flight, needed a small EKF2 change to fuse a trusted fix, and excluded
-  missions lost to a harness start-up race. A model-mismatch term between the
-  linear loop and EKF2, added to the proved budget, is not yet bounded.
+  lateral channel with a linear KF. The PX4 study (\cref{sec:px4}) ran in SITL,
+  needed a small EKF2 change, and transferred the stealth budget but not the
+  full disguise matrix; a model-mismatch term to EKF2 is not yet bounded.
 \item \emph{Empirical adversarial term.} The usable $\dadv$ is a pooled supremum
-  over optimised attackers. Stronger optimisers raised it by
-  \nROneDadvRatioFive$\times$, and a held-out mixed-family attacker then
-  exceeded it, reaching \nROneAdvMax\,m. The proved budget
-  (\cref{sec:certbudget}) is \nREightSatRatio$\times$ larger at $T_a=5$\,s because
-  it drops the run-based detectors D2 and D4; at 1\,s it is \nBoundTaOne\,m.
-  Tightening it needs mixed-integer constraints for run-based alarms or
-  detectors redesigned so that silence implies a convex constraint, and its
-  margins still need a finite-sample correction. Both lie beyond the scope of this paper, as does a white-box
-  gradient attacker through a differentiable simulator, which would extend the
-  scaled attacker study.
+  over optimised attackers; stronger optimisers raised it by
+  \nROneDadvRatioFive$\times$, and a held-out mixed-family attacker exceeded it
+  (\nROneAdvMax\,m). The proved budget (\cref{sec:certbudget}) omits the
+  run-based detectors D2 and D4, which need mixed-integer constraints, and its
+  margins need a finite-sample correction; a white-box gradient attacker is left
+  for future work.
 \item \emph{Finite calibration.} With \nCalMissions{} samples per source, the
   simultaneous band certifies at most $\nRFiveFloorCpTwenty$; a floor of
   $1-10^{-k}$ needs several times $10^{k+1}$ missions per source.
