@@ -12,3 +12,10 @@ e3eval2,e3eval,250,0,0.0,px4_sitl
 e3eval2,e3eval_twin,50,0,0.0,px4_sitl
 e4neg,e4neg,100,5,0.05,px4_sitl
 e4neg,e4neg_twin,100,2,0.02,px4_sitl
+ta1,ta1_e0,200,0,0.0,px4_sitl
+ta1,ta1_e1,50,0,0.0,px4_sitl
+ta1,ta1_e1_twin,50,0,0.0,px4_sitl
+ta1,ta1_e2,700,0,0.0,px4_sitl
+ta1,ta1_e2_twin,100,0,0.0,px4_sitl
+ta1,ta1_e3,150,0,0.0,px4_sitl
+ta1,ta1_e3_twin,50,0,0.0,px4_sitl

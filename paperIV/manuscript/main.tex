@@ -75,16 +75,16 @@ Provable Bounds on Undetected GNSS-Spoofing Deviation for UAVs}
 \begin{abstract}
 A UAV cannot tell from its navigation inputs whether a growing position error comes from a
 jammer, a drifting sensor or wind, so an attacker can disguise interference as a tolerated
-disturbance. We formalise this adversarial equivalence and bound the probability that a mission
-fails with no detector raising an alarm, for every coupling of the benign disturbances. For any
-causal, adaptive and fully informed GNSS-offset attacker, a linear programme proves the largest
-undetected deviation of a linear navigation loop. The bound is finite only when a trusted fix
-re-anchors the estimator, and it shrinks with the re-anchoring interval, from \nBoundTaFive\,m at
-5\,s to \nBoundTaOne\,m at 1\,s. In \nMissionsTotal{} simulated missions, optimised disguises
-evade four detectors, and a CUSUM detector barely tightens the bound, because detectors must
-tolerate benign noise. In \nPxMissions{} PX4 software-in-the-loop missions, the stealth
-budget transferred (\nPxDadv\,m against \nPxDadvRoPilot--\nPxDadvRoPooled\,m), but the
-pre-registered transfer of the full disguise matrix did not hold.
+disturbance. We bound the probability that a mission fails with no detector raising an alarm, for
+every coupling of the benign disturbances. For any causal, adaptive, fully informed GNSS-offset
+attacker, a linear programme proves the largest undetected deviation of a linear navigation loop,
+with finite-sample confidence. The bound is finite only when a trusted fix re-anchors the
+estimator, and shrinks from \nBoundTaFive\,m at 5\,s to \nBoundTaOne\,m at 1\,s. In
+\nMissionsTotal{} simulated missions, optimised disguises evade four detectors, and CUSUM barely
+tightens the bound: detectors must tolerate benign noise. In \nPxMissions{} PX4
+software-in-the-loop missions, the stealth budget transferred (\nPxDadv\,m against
+\nPxDadvRoPilot--\nPxDadvRoPooled\,m) but the full disguise matrix did not; re-anchoring every
+second kept every undetected deviation within \nPxTaWorstDOneGate\,m, inside the proved bound.
 \end{abstract}
 
 % =====================================================================
@@ -570,9 +570,10 @@ or the trusted re-anchoring fix.
 On the linear loop of \cref{sec:evasion}, on a mission with constant loss of
 effectiveness and no GNSS outage, let
 $\Psi$ contain D1, the anchor gate and the saturation alarm $D_{\mathrm{sat}}$.
-With benign margins at their $1-\epsilon/m$ calibration quantiles
-($m$ constraint families), with probability at least $1-\epsilon$ over the benign
-inputs, every attack in $\mathcal A_{\mathrm{GNSS}}$ that leaves $\Psi$ silent has
+Let each of the $m$ benign margins be the order statistic of $N$ calibration
+missions that upper-bounds its $1-\epsilon/m$ quantile with confidence
+$1-\delta/m$. Then, with confidence at least $1-\delta$ over the calibration sample
+and probability at least $1-\epsilon$ over the benign inputs, every attack in $\mathcal A_{\mathrm{GNSS}}$ that leaves $\Psi$ silent has
 $\sup_t|e_{\mathrm{adv}}(t)|\le\delta_{\mathrm{cert}}(T_a)$, the value of the
 linear programme of \cref{sec:revised}.
 \end{proposition}
@@ -582,8 +583,11 @@ $D_{\mathrm{sat}}$ is silent), the attack-only deviation and the attack-only par
 of the detector statistics are linear in $d$. Silence of each detector in $\Psi$, together with
 the benign margins, implies a convex (here polyhedral) constraint on $d$. The
 bound holds for every $d$ in the feasible set, which contains every sequence an
-adaptive policy can produce on that realisation; a union bound over the $m$
-margins gives the probability.
+adaptive policy can produce on that realisation. The order statistic
+$X_{(k)}$ falls below the $q$-quantile only if at least $k$ of the $N$ samples do,
+with probability $P(\mathrm{Bin}(N,q)\ge k)\le\delta/m$ for any continuous
+distribution; union bounds over the $m$ margins give the confidence and the
+probability.
 \end{proof}
 
 \noindent
@@ -591,7 +595,7 @@ margins gives the probability.
 programme is \nREightGateOnly{} with the anchor gate alone, an attacker that
 carries the estimate along with the vehicle passes every fix,
 \nREightDOneFiveOnePct\,m with D1 added, and \nREightSatFive\,m with
-$D_{\mathrm{sat}}$. Without the trusted fix it is unbounded with D1 and
+$D_{\mathrm{sat}}$. (These values use large-sample margins.) Without the trusted fix it is unbounded with D1 and
 \nREightNoAnchorSat\,m with $D_{\mathrm{sat}}$, limited only by the mission
 length. A useful worst case for $\mathcal A_{\mathrm{GNSS}}$ thus needs both the
 fix and the saturation alarm.
@@ -610,18 +614,21 @@ against the re-anchoring interval. It falls almost linearly, so re-anchoring
 every second certifies a 20\,m corridor against every attacker in
 $\mathcal A_{\mathrm{GNSS}}$, and every 0.5\,s a 10\,m corridor, before the network
 tube and the benign floor of \cref{thm:floor} are subtracted. The scope is the
-linear loop; the margins use large-sample quantiles, and a finite-sample
-correction of them is left open. \Cref{sec:px4} checks the bound against PX4.
+linear loop. The margins are distribution-free (the \nConfRank th largest of
+\nConfN{} calibration values, $\delta=\nConfDelta$) and raise the bound by at most
+\nConfIncMax{} over large-sample quantiles. \Cref{sec:px4} checks the bound against PX4.
 
 \begin{table}[t]
 \centering\small
 \caption{Proved worst-case undetected deviation $\delta_{\mathrm{cert}}$ (m) for
 $\mathcal A_{\mathrm{GNSS}}$ against the re-anchoring interval $T_a$: D1, anchor gate
-and $D_{\mathrm{sat}}$, 1\% FPR, $\epsilon=0.01$, linear loop.}
+and $D_{\mathrm{sat}}$, 1\% FPR, $\epsilon=0.01$, linear loop, worst over loss of
+effectiveness; margins at large-sample quantiles and with the finite-sample
+correction (confidence $1-\delta$, $\delta=\nConfDelta$).}
 \label{tab:boundta}
-\begin{tabular}{rrrr}
+\begin{tabular}{rrr}
 \toprule
-$T_a$ (s) & LoE 1.0 & LoE 0.7 & worst \\
+$T_a$ (s) & large-sample & corrected \\
 \midrule
 \tabinput{tab_bound_ta_body.tex}
 \bottomrule

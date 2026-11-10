@@ -404,6 +404,26 @@ if (RES / "r8_bound_vs_anchor.csv").exists():
         l7 = next((float(r["delta_cert_m"]) for r in rr if r["loe"] == "0.7"), float("nan"))
         lines.append(f"{float(ta):g} & {fmt(l1, 1)} & {fmt(l7, 1)} & {fmt(w, 1)} \\\\")
     (MS / "tab_bound_ta_body.tex").write_text("\n".join(lines) + "\n")
+if (RES / "r10_bound_conf.csv").exists():
+    # finite-sample confidence correction (r10_confidence_bound.py): the headline bound macros and the
+    # table use the corrected margins; the empirical-quantile values stay available for comparison
+    bc = rd("r10_bound_conf.csv")
+    tags = {"0.5": "Half", "1.0": "One", "2.0": "Two", "3.0": "Three", "5.0": "Five", "10.0": "Ten"}
+    lines = []
+    for ta, tg in tags.items():
+        rr = [r for r in bc if r["T_anchor_s"] == ta]
+        if not rr:
+            continue
+        we = max(float(r["delta_cert_empirical_m"]) for r in rr)
+        wc = max(float(r["delta_cert_corrected_m"]) for r in rr)
+        mac(f"nBoundTa{tg}", fmt(wc, 1)); mac(f"nBoundTa{tg}Emp", fmt(we, 1))
+        lines.append(f"{float(ta):g} & {fmt(we, 1)} & {fmt(wc, 1)} \\\\")
+    (MS / "tab_bound_ta_body.tex").write_text("\n".join(lines) + "\n")
+    inc = max(float(r["delta_cert_corrected_m"]) / float(r["delta_cert_empirical_m"]) - 1 for r in bc)
+    mac("nConfIncMax", pct(inc, 0))
+    r0 = bc[0]
+    mac("nConfDelta", fmt(float(r0["delta"]), 2)); mac("nConfN", th_(int(r0["n_cal"])))
+    mac("nConfRank", str(int(r0["n_cal"]) - int(r0["order_k"]) + 1))
 if (RES / "r9_d3_point.csv").exists():
     r9 = rd("r9_d3_point.csv")
     wo = [r for r in r9 if "D3" not in r["constraints"]]
