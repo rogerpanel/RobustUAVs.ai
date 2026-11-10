@@ -110,3 +110,23 @@ without a drag term; the GNSS rate is 10 Hz in both.
    (`results/px4/e3eval2`). The original selection and its evaluation are kept and reported.
 3. **Robust statistics.** Next to every maximum, the median and 95th percentile of the attack-only
    deviation are reported, because a single mission can dominate a maximum.
+
+## E5: the design rule at a 1 s re-anchoring interval (recorded 10 Nov 2026, before its first flight)
+
+Same harness, validity rule, detectors and seeds as above; only the anchor interval changes to 1 s.
+Thresholds (D1-D4 at 1 - f and 1 - f/4, anchor gate at 0.99) are recalibrated on the 1 s benign set.
+
+| Part | Design | Seeds | Missions |
+|---|---|---|---|
+| calibration | benign, anchor 1 s | 1000-1199 | 200 |
+| E2 primary | attackers 20-24, not re-optimised, plus twins | 4000-4099 | 600 |
+| worst without the gate | attackers 7, 12, 14, 29 (the largest 5 s deviations with the anchor gate removed) | 4000-4049 | 200 |
+| E3 | the re-selected PX4 attackers (step, ramp, fault mimic), plus twins | 25000-25049 | 200 |
+| naive | ramp 0.5 m/s, plus twins | 5300-5349 | 100 |
+
+**Predictions.** P1: with the anchor gate armed, the largest undetected attack-only deviation over all
+E5 attackers against the stack of the proved bound (D1 + anchor gate) is at most the proved linear-loop
+bound at 1 s, 10.24 m (an empirical consistency check, not a proof for PX4). P2: it is smaller than the
+5 s value (7.09 m), and the same holds for the full stack with the gate (5 s: 4.75 m).
+Reported regardless: every cell of `px4_ta1_cross.csv`, medians and 95th percentiles, the cells
+without the gate, and the naive ramp.

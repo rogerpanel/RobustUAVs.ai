@@ -89,11 +89,40 @@ def e3eval(n=50, out_dir=None):
     return specs + list(tw.values())
 
 
-PLANS = {"smoke": smoke, "e0": e0, "e1": e1, "e2": e2, "e4neg": e4neg, "e3eval": e3eval}
+def ta1(anchor=1.0):
+    """E5 (PX4_PREREG.md): the design rule at a 1 s re-anchoring interval. Same seeds as the 5 s runs.
+      benign calibration     200 missions, seeds 1000-1199
+      E2 primary (20-24)     100 missions each, seeds 4000-4099, plus 100 twins
+      worst gate-removed     attackers 7, 12, 14, 29 (largest 5 s deviations without the anchor gate),
+                             50 missions each, seeds 4000-4049 (twins shared with E2)
+      E3 clean attackers     step, ramp, fault mimic, 50 missions each, seeds 25000-25049, plus 50 twins
+      naive ramp 0.5 m/s     50 missions, seeds 5300-5349, plus twins"""
+    specs = [S.mission(f"ta1_e0_s{1000 + j}", "ta1_e0", 1000 + j, anchor=anchor) for j in range(200)]
+    att = {int(r["attacker_id"]): r for r in csv.DictReader(open(RES / "e2_attackers.csv"))}
+    for aid, n in [(a, 100) for a in range(20, 25)] + [(a, 50) for a in (7, 12, 14, 29)]:
+        for j in range(n):
+            specs.append(S.mission(f"ta1_e2_a{aid}_s{4000 + j}", "ta1_e2", 4000 + j, anchor=anchor,
+                                   family=att[aid]["family"], u=json.loads(att[aid]["params"]), attacker_id=aid))
+    clean = json.loads((RES / "px4" / "e3" / "cem_state_clean.json").read_text())
+    for fam in ("step", "ramp", "fault_mimic"):
+        for j in range(50):
+            specs.append(S.mission(f"ta1_e3_{fam}_s{25000 + j}", "ta1_e3", 25000 + j, anchor=anchor, family=fam,
+                                   u=clean[fam]["best"][1], attacker_id=f"px4cem_{fam}"))
+    for j in range(50):
+        specs.append(S.mission(f"ta1_e1_ramp05_s{5300 + j}", "ta1_e1", 5300 + j, anchor=anchor, family="ramp",
+                               phys=RAMP05, attacker_id="ramp05"))
+    tw = {}
+    for s_ in specs:
+        if s_["family"] != "none":
+            t = S.twin(s_); tw[t["mid"]] = t
+    return specs + list(tw.values())
+
+
+PLANS = {"smoke": smoke, "e0": e0, "e1": e1, "e2": e2, "e4neg": e4neg, "e3eval": e3eval, "ta1": ta1}
 
 if __name__ == "__main__":
     out = HERE / "plans"; out.mkdir(exist_ok=True)
-    for name in (sys.argv[1:] or [k for k in PLANS if k != "e3eval"]):
+    for name in (sys.argv[1:] or [k for k in PLANS if k not in ("e3eval", "ta1")]):
         specs = PLANS[name]()
         mids = [s["mid"] for s in specs]
         assert len(mids) == len(set(mids)), f"duplicate mission ids in {name}"

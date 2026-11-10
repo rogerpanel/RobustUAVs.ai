@@ -140,6 +140,8 @@ stage_e3fix() {
   [ -f "$RES/e3/cem_state_clean.json" ] || analyze e3select
   plans e3eval; fleet e3eval2 --plan plans/e3eval.jsonl; analyze e3
 }
+# E5: the design rule at a 1 s re-anchoring interval (1,300 missions, about 1.75 h at K=3, speed 10)
+stage_ta1() { image; plans ta1; fleet ta1 --plan plans/ta1.jsonl; analyze ta1; }
 stage_e4neg() { image; plans e4neg; fleet e4neg --plan plans/e4neg.jsonl; analyze e4neg; }
 
 stage_pack() {

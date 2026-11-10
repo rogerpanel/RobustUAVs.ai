@@ -397,7 +397,73 @@ def e3select():
         print(f"  {fam}: clean best J {v['best'][0]:.3f} at gen/cand {v['from']} (original best J {v['best_original'][0]:.3f})")
 
 
-TASKS = {"calibrate": calibrate, "smoke": smoke, "e1": e1, "e2": e2, "e3": e3, "e4neg": e4neg, "e3select": e3select}
+def calib_from(R):
+    st = {d: np.array([r["S" + d[1]] for r in R]) for d in DETS}
+    return {"n": len(R),
+            "single": {str(f): {d: float(np.quantile(st[d], 1 - f)) for d in DETS} for f in FPR_GRID},
+            "stack": {str(f): {d: float(np.quantile(st[d], 1 - f / 4)) for d in DETS} for f in FPR_GRID},
+            "anchor": float(np.quantile([r["SA"] for r in R], 0.99)), "provenance": "px4_sitl"}
+
+
+BOUND_TA = {1.0: 10.24, 5.0: 31.90}     # proved worst case, linear loop, D1 + anchor gate + D_sat, 1 % (results/r8_*)
+
+
+def ta1():
+    """E5: re-anchoring every 1 s. Thresholds recalibrated on the 1 s benign missions; same tables as E2/E3,
+    compared with the 5 s results and with the proved bound; pre-registered prediction (PX4_PREREG.md)."""
+    D = "ta1"
+    B = rows(D, "ta1_e0")
+    if len(B) < 50:
+        print(f"ta1: only {len(B)} benign missions"); return
+    cal = calib_from(B)
+    (PX / "calibration_ta1.json").write_text(json.dumps(cal, indent=1))
+    md = [r["maxdev"] for r in B]
+    print(f"  ta1 calibration on {len(B)} benign missions; anchor gate {cal['anchor']:.2f}; "
+          f"benign maxdev q50 {np.median(md):.2f} q95 {np.quantile(md, 0.95):.2f} max {max(md):.2f} m")
+    cal5 = cal_load()
+    out = []
+    for exp in ("ta1_e2", "ta1_e3", "ta1_e1"):
+        R = [r for r in rows(D, exp) if r["family"] != "none"]
+        for aid in sorted({str(r["attacker_id"]) for r in R}):
+            sub = [r for r in R if str(r["attacker_id"]) == aid]
+            ao = {r["mid"]: attack_only(r, D) for r in sub}
+            for stack in STACKS:
+                for gate in (True, False):
+                    st = [r for r in sub if not alarm(r, cal, stack, 0.05, gate)]
+                    q = qs([ao[r["mid"]] for r in st])
+                    out.append({"exp": exp, "attacker_id": aid, "family": sub[0]["family"], "stack": stack,
+                                "anchor_gate": gate, "n": len(sub), "evasion_rate": round(len(st) / len(sub), 4),
+                                "n_with_twin": sum(ao[r["mid"]] is not None for r in st),
+                                "attack_only_dev_q50": q["q50"], "attack_only_dev_q95": q["q95"],
+                                "attack_only_dev_max": q["max"], "anchor_s": 1.0, "provenance": "px4_sitl"})
+    write("px4_ta1_cross.csv", out)
+
+    def worst(stack, gate, rowsx):
+        c = [r for r in rowsx if r["stack"] == stack and r["anchor_gate"] == gate and r["exp"] != "ta1_e1"]
+        return max((r["attack_only_dev_max"] for r in c), default=0.0)
+    five = list(csv.DictReader(open(PX / "px4_e2_cross.csv"))) if (PX / "px4_e2_cross.csv").exists() else []
+    w5 = lambda stack, gate: max((float(r["attack_only_dev_max"]) for r in five if r["stack"] == stack
+                                  and r["anchor_gate"] == str(gate)), default=None)
+    summ = {"bound_1s_m": BOUND_TA[1.0], "bound_5s_m": BOUND_TA[5.0]}
+    for stack in ("D1", "ALL"):
+        for gate in (True, False):
+            summ[f"worst_{stack}_{'gate' if gate else 'nogate'}_1s_m"] = worst(stack, gate, out)
+            summ[f"worst_{stack}_{'gate' if gate else 'nogate'}_5s_m"] = w5(stack, gate)
+    summ["P1_D1gate_within_bound"] = summ["worst_D1_gate_1s_m"] <= BOUND_TA[1.0]
+    summ["P2_D1gate_smaller_than_5s"] = (summ["worst_D1_gate_5s_m"] is not None
+                                         and summ["worst_D1_gate_1s_m"] < summ["worst_D1_gate_5s_m"])
+    summ["P2_ALLgate_smaller_than_5s"] = (summ["worst_ALL_gate_5s_m"] is not None
+                                          and summ["worst_ALL_gate_1s_m"] < summ["worst_ALL_gate_5s_m"])
+    rr = [r for r in out if r["exp"] == "ta1_e1" and r["stack"] == "ALL" and r["anchor_gate"]]
+    summ["naive_ramp_1s"] = rr[0] if rr else None
+    summ["provenance"] = "px4_sitl"
+    (PX / "px4_ta1_summary.json").write_text(json.dumps(summ, indent=1))
+    for k, v in summ.items():
+        if k != "naive_ramp_1s":
+            print(f"  {k}: {v}")
+
+
+TASKS = {"calibrate": calibrate, "smoke": smoke, "e1": e1, "e2": e2, "e3": e3, "e4neg": e4neg, "e3select": e3select, "ta1": ta1}
 
 if __name__ == "__main__":
     for t in (sys.argv[1:] or TASKS):
