@@ -18,9 +18,9 @@ described in this paper.
   \nNgMax\,m. Lengthening the interval from 5 to 20\,s multiplied the budget by
   \nAnchorMultTwenty{} (\cref{fig:anchor}), while moving the operating point
   from 1\% to 10\% FPR left the pooled budget unchanged in the pilot (\cref{sec:eval}); the
-  proved budget falls almost linearly with $T_a$ (\cref{tab:boundta}), and in PX4
-  re-anchoring every 1\,s rather than 5\,s cut the worst undetected deviation
-  from \nPxWorstAllGate{} to \nPxTaWorstAllGate\,m. For a corridor of
+  proved budget falls almost linearly with $T_a$ (\cref{tab:boundta}); in PX4,
+  1\,s instead of 5\,s cut the worst undetected deviation from \nPxWorstAllGate{} to
+  \nPxTaWorstAllGate\,m. For a corridor of
   margin $m$, choose $T_a$ such that
   $\dadv(T_a)\le m-e^{LT_c}\dnet-s^\star$, where $s^\star$ is the smallest
   budget with $\pbar(s^\star)$ below the tolerated risk.

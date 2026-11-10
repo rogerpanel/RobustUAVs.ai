@@ -13,8 +13,7 @@ single, known nuisance. Fault-mimicking actuator attacks~\cite{roy2023} and
 separability analyses~\cite{xue2025dual,li2026unified} concern a fixed attack
 against a fixed detector; equivalence concerns the attacker's best response,
 and against every detector we built some small-amplitude disguise evaded
-(\cref{sec:eval}). Power grids raise the same
-question~\cite{borgeshink2014,ghosh2024,ahsan2026,sayed2024gridchaos}.
+(\cref{sec:eval}), a question power grids share~\cite{borgeshink2014,ghosh2024,ahsan2026,sayed2024gridchaos}.
 
 \paragraph{Attacks on UAV navigation.}
 GNSS spoofing has advanced from portable spoofers and takeover
@@ -38,10 +37,12 @@ recovery~\cite{dash2024delorean}, safety-critical variable
 monitoring~\cite{park2023scvmon}, PWM-fused IDSs~\cite{asif2024confide} and
 inertial-attack recovery~\cite{meng2025mars} are the defences an attacker in our
 model must evade; active exposure~\cite{tian2026} and
-fuzzing~\cite{kim2019rvfuzzer,kim2021pgfuzz} complement them. Among GNSS
-monitors~\cite{wesson2018pdm,tanil2018}, INS-aided detection with integrity-risk
-bounds~\cite{tanil2018} is the closest analogue of our budget, but it has no
-fault or environment term and no unknown dependence.
+fuzzing~\cite{kim2019rvfuzzer,kim2021pgfuzz} complement them. Hardening learned intrusion detectors against
+evasion~\cite{anaedevha2024evasion} or calibrating their false-alarm operating
+point~\cite{anaedevha2026hgp} does not bound what an undetected attacker achieves. Power-distortion
+and INS-aided GNSS monitors with integrity-risk bounds~\cite{wesson2018pdm,tanil2018}
+are the closest analogue of our budget, without a fault or environment term or
+unknown dependence.
 
 \paragraph{Certificates and reachability.}
 Randomized smoothing~\cite{cohen2019smoothing,salman2019,lecuyer2019} and its
@@ -56,7 +57,7 @@ The nearest prior work to our budget is stochastic reach-avoid games against an
 adversary plus nature~\cite{ding2013games}, with a known kernel, and Wasserstein
 distributionally robust reachability for stealthy injection under ambiguous
 noise~\cite{feng2025wdr}, without dependence between components or a
-mission-level floor. Conformal methods~\cite{lindemann2023ral,lindemann2023iccps}
+mission-level floor; conformal methods~\cite{lindemann2023ral,lindemann2023iccps}
 assume exchangeability, which an adaptive attacker breaks.
 
 \paragraph{Dependence uncertainty.}

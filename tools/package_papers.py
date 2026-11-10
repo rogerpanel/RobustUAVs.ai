@@ -195,6 +195,32 @@ def manuscript_files(ms: Path):
         yield p
 
 
+# Published prior work cited in the third person, as the venues' double-blind rules require. The
+# author's name may appear in the PDF only inside these reference-list entries (after the
+# References heading); anywhere else it is still a leak.
+THIRD_PERSON_CITES = {
+    "IV": ("improved robust adversarial model against evasion attacks on intrusion detection",
+           "hierarchical gaussian processes for intrusion detection"),
+}
+
+
+def _drop_third_person_cites(paper: str, txt: str) -> str:
+    allowed = [re.sub(r"[^a-z]", "", t.lower()) for t in THIRD_PERSON_CITES.get(paper, ())]
+    if not allowed:
+        return txt
+    heads = [m.start() for m in re.finditer(r"R\s?E\s?F\s?E\s?R\s?E\s?N\s?C\s?E\s?S", txt)]
+    if not heads:
+        return txt
+    refs_at = heads[-1]
+    out, last = [], 0
+    for m in re.finditer(r"Anaedevha", txt):
+        window = re.sub(r"[^a-z]", "", txt[m.start():m.start() + 400].lower())
+        if m.start() > refs_at and any(a in window for a in allowed):
+            out.append(txt[last:m.start()]); last = m.end()
+    out.append(txt[last:])
+    return "".join(out)
+
+
 def build_ok(folder: Path) -> tuple[bool, str]:
     r = subprocess.run(["latexmk", "-pdf", "-interaction=nonstopmode", "main.tex"], cwd=folder,
                        capture_output=True, text=True)
@@ -269,6 +295,7 @@ def overleaf(paper: str, src: Path, work: Path) -> Path:
     meta = subprocess.run(["pdfinfo", "main.pdf"], cwd=test, capture_output=True, text=True).stdout
     rx = re.compile(r"rogerpanel|rogernickanaedevha|Anaedevha|robustuavs|robustidps|10\.34740"
                     r"|MEPhI|Padova|Claude", re.I)
+    txt = _drop_third_person_cites(paper, txt)
     leaks = rx.findall(txt + meta)
     if leaks:
         raise SystemExit(f"identifier visible in the Paper {paper} PDF: {sorted(set(leaks))}")

@@ -401,6 +401,16 @@ H.~Kim, M.~O. Ozmen, A.~Bianchi, Z.~B. Celik, and D.~Xu, ``{PGFUZZ}:
   Policy-guided fuzzing for robotic vehicles,'' in \emph{Proc. Network and
   Distributed System Security Symp. (NDSS)}, 2021.
 
+\bibitem{anaedevha2024evasion}
+R.~N. Anaedevha and A.~G. Trofimov, ``Improved robust adversarial model against
+  evasion attacks on intrusion detection systems,'' \emph{Optical Memory and
+  Neural Networks}, vol.~33, no. Suppl. 3, pp. S414--S423, 2024.
+
+\bibitem{anaedevha2026hgp}
+R.~N. Anaedevha, A.~G. Trofimov, and Y.~V. Borodachev, ``Uncertainty-calibrated
+  hierarchical {G}aussian processes for intrusion detection with multi-scale
+  temporal modeling,'' \emph{Neurocomputing}, vol. 677, p. 133105, 2026.
+
 \bibitem{wesson2018pdm}
 K.~D. Wesson, J.~N. Gross, T.~E. Humphreys, and B.~L. Evans, ``{GNSS} signal
   authentication via power and distortion monitoring,'' \emph{IEEE Trans.
