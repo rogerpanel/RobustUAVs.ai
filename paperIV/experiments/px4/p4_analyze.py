@@ -35,20 +35,40 @@ REF_D2_NOGATE_MAX = 3.383          # largest undetected attack-only deviation un
 REF_DELTA_ADV = {0.01: (4.371, 5.463)}   # pilot and pooled stealth budget (results/r1_delta_adv.csv)
 
 
-def rows(d, exp=None):
-    """ok missions of results directory d (one fleet run); exp filters on the spec's experiment tag."""
+EXCLUDED = {}       # (dir, exp) -> number of missions that were not flown (validity rule, PX4_PREREG.md deviation 1)
+
+
+def flown(r):
+    """Validity rule: the mission is valid iff PX4 was in mission mode (nav_state 3) inside the window.
+    Missions that never flew went to Descend/Termination before the window started, at random
+    (the same seed flies in another run), independently of the attack."""
+    return 3 in (r.get("nav_states") or [])
+
+
+def _all_rows(d):
     f = PX / d / "missions.jsonl"
     if not f.exists():
-        return []
+        return {}
     out = {}
     for line in f.read_text().splitlines():
         try:
             r = json.loads(line)
         except json.JSONDecodeError:
             continue
-        if r.get("status") == "ok" and (exp is None or r.get("exp") == exp):
+        if r.get("status") == "ok":
             out[r["mid"]] = r
-    return list(out.values())
+    return out
+
+
+def rows(d, exp=None, valid_only=True):
+    """ok missions of results directory d (one fleet run); exp filters on the spec's experiment tag;
+    missions that were never flown are dropped and counted in EXCLUDED."""
+    out = [r for r in _all_rows(d).values() if exp is None or r.get("exp") == exp]
+    if not valid_only:
+        return out
+    bad = [r for r in out if not flown(r)]
+    EXCLUDED[(d, exp)] = (len(bad), len(out))
+    return [r for r in out if flown(r)]
 
 
 def write(name, rs):
@@ -69,14 +89,36 @@ def twin_mid(r):
     return f"twin_{r['exp']}_a{r['anchor_s']}_s{r['seed']}"
 
 
+_VALID = {}
+
+
 def attack_only(r, d):
-    """sup_t |e_attack(t) - e_twin(t)| after the attack onset (twin flown in the same run d), or None."""
+    """sup_t |e_attack(t) - e_twin(t)| after the attack onset (twin flown in the same run d), or None
+    when the twin is missing or was not flown (validity rule)."""
+    if d not in _VALID:
+        _VALID[d] = {m for m, x in _all_rows(d).items() if flown(x)}
+    if twin_mid(r) not in _VALID[d] or r["mid"] not in _VALID[d]:
+        return None
     a = series(d, r["mid"]); b = series(d, twin_mid(r))
     if a is None or b is None:
         return None
     t = a["t"]; t0 = r.get("attack_t0") or 0.0
     m = t >= t0
     return float(np.max(np.abs(a["e"][m] - b["e"][m]))) if m.any() else 0.0
+
+
+def qs(v):
+    v = [x for x in v if x is not None]
+    if not v:
+        return {"q50": None, "q95": None, "max": 0.0}
+    return {"q50": round(float(np.quantile(v, 0.5)), 3), "q95": round(float(np.quantile(v, 0.95)), 3),
+            "max": round(float(np.max(v)), 3)}
+
+
+def validity_report():
+    out = [{"dir": d, "exp": e or "all", "n_ok": n, "n_not_flown": k, "rate": round(k / n, 4) if n else None,
+            "provenance": "px4_sitl"} for (d, e), (k, n) in sorted(EXCLUDED.items(), key=str)]
+    write("px4_validity.csv", out)
 
 
 def cal_load():
@@ -137,7 +179,7 @@ def replay():
     out = []
     for mid, b in P.items():
         a = R.get(mid.replace("e0_replay_", "e0_"))
-        if not a:
+        if not a:            # one of the pair was not flown (validity rule)
             continue
         sa, sb = series("e0", a["mid"]), series("e0", mid)
         dev = float(np.max(np.abs(sa["e"] - sb["e"]))) if sa is not None and sb is not None else None
@@ -151,6 +193,8 @@ def replay():
     write("px4_e0_replay.csv", out)
     if out:
         v = [r["sup_e_diff_m"] for r in out if r["sup_e_diff_m"] is not None]
+        if not v:
+            print("  replay floor: series not available"); return
         print(f"  replay floor: median {np.median(v):.3f} m, max {np.max(v):.3f} m over {len(v)} seed pairs")
 
 
@@ -223,7 +267,8 @@ def e2():
     R = rows("e2", "e2")
     by = {}
     for r in R:
-        by.setdefault(r["attacker_id"], []).append(r)
+        if r["family"] != "none":
+            by.setdefault(r["attacker_id"], []).append(r)
     ref = {int(x["attacker_id"]): x for x in csv.DictReader(open(RES / "e2_attackers.csv"))}
     out = []
     for aid, sub in sorted(by.items()):
@@ -233,9 +278,11 @@ def e2():
             for gate in (True, False):
                 st = [r for r in sub if not alarm(r, cal, stack, fpr if stack == "ALL" else 0.05, gate)]
                 aos = [ao[r["mid"]] for r in st if ao[r["mid"]] is not None]
+                q = qs(aos)
                 out.append({"attacker_id": aid, "family": ref[aid]["family"], "origin_stack": ref[aid]["origin_stack"],
                             "origin_fpr": fpr, "stack": stack, "anchor_gate": gate, "n": len(sub),
                             "evasion_rate": round(len(st) / len(sub), 4), "n_stealthy": len(st),
+                            "n_with_twin": len(aos), "attack_only_dev_q50": q["q50"], "attack_only_dev_q95": q["q95"],
                             "attack_only_dev_max": round(max(aos), 3) if aos else 0.0,
                             "stealthy_dev_max": round(max(r["maxdev_after"] for r in st), 3) if st else 0.0,
                             "n_twins_missing": sum(v is None for v in ao.values()), "provenance": "px4_sitl"})
@@ -277,7 +324,8 @@ def reading(out):
 # ---------------------------------------------------------------------- E3
 def e3():
     cal = cal_load()
-    R = rows("e3eval", "e3eval")
+    D3 = "e3eval2" if (PX / "e3eval2" / "missions.jsonl").exists() else "e3eval"
+    R = [r for r in rows(D3, "e3eval") if r["family"] != "none"]
     if not cal or not R:
         print("e3: needs calibration and e3eval missions"); return
     out = []
@@ -286,16 +334,20 @@ def e3():
         for fam in sorted(set(r["family"] for r in R)):
             sub = [r for r in R if r["family"] == fam]
             st = [r for r in sub if not alarm(r, cal, "ALL", fpr)]
-            aos = [attack_only(r, "e3eval") for r in st]; aos = [x for x in aos if x is not None]
+            aos = [attack_only(r, D3) for r in st]; aos = [x for x in aos if x is not None]
+            q = qs(aos)
             out.append({"fpr": fpr, "family": fam, "n": len(sub), "evasion_rate": round(len(st) / len(sub), 4),
-                        "attack_only_dev_max": round(max(aos), 3) if aos else 0.0, "provenance": "px4_sitl"})
+                        "n_with_twin": len(aos), "attack_only_dev_q50": q["q50"], "attack_only_dev_q95": q["q95"],
+                        "attack_only_dev_max": q["max"], "source": D3, "provenance": "px4_sitl"})
         # pooled over the PX4-optimised attackers and the transferred ones (E2), as in the paper
         E2 = rows("e2", "e2")
-        aos = [attack_only(r, "e3eval") for r in R if not alarm(r, cal, "ALL", fpr)]
-        aos += [attack_only(r, "e2") for r in E2 if not alarm(r, cal, "ALL", fpr)]
+        aos = [attack_only(r, D3) for r in R if not alarm(r, cal, "ALL", fpr)]
+        aos += [attack_only(r, "e2") for r in E2 if r["family"] != "none" and not alarm(r, cal, "ALL", fpr)]
         aos = [x for x in aos if x is not None]
         ref = REF_DELTA_ADV.get(fpr)
+        q = qs(aos)
         pooled.append({"fpr": fpr, "delta_adv_px4_m": round(max(aos), 3) if aos else 0.0, "n_stealthy": len(aos),
+                       "attack_only_q50_m": q["q50"], "attack_only_q95_m": q["q95"],
                        "delta_adv_ro_pilot_m": ref[0] if ref else None, "delta_adv_ro_pooled_m": ref[1] if ref else None,
                        "provenance": "px4_sitl"})
     write("px4_e3_cem_eval.csv", out); write("px4_e3_delta_adv.csv", pooled)
@@ -303,21 +355,52 @@ def e3():
 
 def e4neg():
     cal = cal_load()
-    R = rows("e4neg", "e4neg")
+    R = [r for r in rows("e4neg", "e4neg") if r["family"] != "none"]
     if not cal or not R:
         print("e4neg: needs calibration and missions"); return
     aos = [attack_only(r, "e4neg") for r in R]
     st = [not alarm(r, cal, "ALL", 0.05, gate=False) for r in R]
+    q = qs(aos)
     out = [{"control": "no anchor, ramp 0.5 m/s", "n": len(R), "evasion_rate": round(float(np.mean(st)), 4),
-            "attack_only_dev_median_m": round(float(np.median([x for x in aos if x is not None])), 3),
-            "attack_only_dev_max_m": round(float(np.max([x for x in aos if x is not None])), 3),
+            "n_with_twin": sum(x is not None for x in aos), "attack_only_dev_median_m": q["q50"],
+            "attack_only_dev_q95_m": q["q95"], "attack_only_dev_max_m": q["max"],
+            "maxdev_after_median_m": round(float(np.median([r["maxdev_after"] for r in R])), 3),
             "provenance": "px4_sitl"}]
     write("px4_e4neg.csv", out)
 
 
-TASKS = {"calibrate": calibrate, "smoke": smoke, "e1": e1, "e2": e2, "e3": e3, "e4neg": e4neg}
+def e3select():
+    """Deviation 2 (PX4_PREREG.md): the CEM was steered by an objective that included missions that
+    were never flown. Re-select, per family, the best of the candidates the CEM evaluated, with the
+    objective recomputed on valid missions only and the clean calibration; write cem_state_clean.json."""
+    cal = cal_load()
+    R = {r["mid"]: r for r in rows("e3")}
+    st = json.loads((PX / "e3" / "cem_state.json").read_text())
+    clean, table = {}, []
+    for fam, v in st.items():
+        best = (-1.0, None, None)
+        for h in v["hist"]:
+            g = h["gen"]
+            for c, u in enumerate(h["U"]):
+                vals = [R[m]["maxdev_after"] * (not alarm(R[m], cal, "ALL", 0.05))
+                        for m in (f"e3_{fam}_g{g}_c{c}_k{j}" for j in range(64)) if m in R]
+                if len(vals) >= 8:
+                    J = float(np.mean(vals))
+                    table.append({"family": fam, "gen": g, "cand": c, "n_valid": len(vals), "J_clean": round(J, 4),
+                                  "J_original": round(h["J"][c], 4), "provenance": "px4_sitl"})
+                    if J > best[0]:
+                        best = (J, u, (g, c))
+        clean[fam] = {"best": [best[0], best[1]], "from": best[2], "best_original": v["best"]}
+    (PX / "e3" / "cem_state_clean.json").write_text(json.dumps(clean, indent=1))
+    write("px4_e3_reselect.csv", table)
+    for fam, v in clean.items():
+        print(f"  {fam}: clean best J {v['best'][0]:.3f} at gen/cand {v['from']} (original best J {v['best_original'][0]:.3f})")
+
+
+TASKS = {"calibrate": calibrate, "smoke": smoke, "e1": e1, "e2": e2, "e3": e3, "e4neg": e4neg, "e3select": e3select}
 
 if __name__ == "__main__":
     for t in (sys.argv[1:] or TASKS):
         print(f"[{t}]")
         TASKS[t]()
+    validity_report()

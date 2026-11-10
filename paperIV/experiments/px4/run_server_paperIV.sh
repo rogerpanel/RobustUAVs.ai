@@ -132,6 +132,14 @@ stage_e3() {
   fleet e3 --cem --calibration /repo/paperIV/results/px4/calibration.json --gens "${E3_GENS:-10}" --lam "${E3_LAM:-8}" --K "${E3_K:-16}"
   plans e3eval; fleet e3eval --plan plans/e3eval.jsonl; analyze e3
 }
+# corrected analysis (PX4_PREREG.md deviations 1 and 3): no flights
+stage_reanalyze() { image; analyze calibrate e1 e2 e4neg e3select; }
+# E3 re-selection and re-evaluation (deviation 2): 300 missions
+stage_e3fix() {
+  image
+  [ -f "$RES/e3/cem_state_clean.json" ] || analyze e3select
+  plans e3eval; fleet e3eval2 --plan plans/e3eval.jsonl; analyze e3
+}
 stage_e4neg() { image; plans e4neg; fleet e4neg --plan plans/e4neg.jsonl; analyze e4neg; }
 
 stage_pack() {

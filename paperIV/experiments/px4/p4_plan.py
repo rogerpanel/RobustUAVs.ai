@@ -75,7 +75,8 @@ def e4neg(n=100):
 def e3eval(n=50, out_dir=None):
     """Best PX4-optimised attacker per family (from the E3 CEM state), on fresh seeds 25000-25049, with twins."""
     out_dir = Path(out_dir or RES / "px4" / "e3")
-    st = json.loads((out_dir / "cem_state.json").read_text())
+    f = out_dir / "cem_state_clean.json"
+    st = json.loads((f if f.exists() else out_dir / "cem_state.json").read_text())
     specs = []
     for fam, v in st.items():
         u = v["best"][1]

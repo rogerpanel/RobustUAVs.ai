@@ -91,3 +91,22 @@ every mission that failed to fly or to parse (`missions.jsonl`, `fail_logs/`).
 IMU noise is SIH's (larger than the model's); GNSS offsets act in 2-D, and the attack is cross-track only;
 loss of effectiveness scales all rotors; the D3 observer uses PX4's kinematic acceleration setpoint
 without a drag term; the GNSS rate is 10 Hz in both.
+
+## Deviations (recorded 10 Nov 2026, after E0-E3 were flown and before the corrected E2 attack-only deviations were computed)
+
+1. **Validity rule (missions that were never flown).** In 5-7 % of missions PX4 entered Descend or
+   Termination before the mission window and never flew the mission (nav_state never 3 in the window;
+   along-track speed 0). It occurs at random, independently of the attack: the same seed flies in
+   another run (two E0 replay pairs differ only in this), and the rate is similar for benign (7.0 %),
+   attacked (5.3-5.8 %) and twin (4 %) missions. It is a start-up race in the harness. Such missions
+   are excluded, and an attacked mission is excluded from attack-only statistics when its twin was not
+   flown. Counts per experiment are reported (`px4_validity.csv`). E0 thresholds are recalibrated on
+   the 465 valid benign missions. Failsafes that start inside the window are kept. From now on, the
+   driver retries a mission that was not flown.
+2. **E3 attacker selection.** The CEM objective included missions that were never flown, which steered
+   the search. Per family, the best attacker is re-selected among the 80 candidates the CEM evaluated,
+   with the objective recomputed on valid missions and the recalibrated thresholds
+   (`px4_e3_reselect.csv`), and re-evaluated on the pre-registered fresh seeds 25000-25049 with twins
+   (`results/px4/e3eval2`). The original selection and its evaluation are kept and reported.
+3. **Robust statistics.** Next to every maximum, the median and 95th percentile of the attack-only
+   deviation are reported, because a single mission can dominate a maximum.

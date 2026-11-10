@@ -218,6 +218,8 @@ class Fleet:
                     row.update(stats)
                     np.savez_compressed(self.out / "series" / f"{spec['mid']}.npz", **series) if series else None
                     row["status"] = "ok" if stats.get("ok") else "bad_log"
+                    if row["status"] == "ok" and 3 not in (stats.get("nav_states") or []):
+                        row["status"] = "not_flown"     # Descend/Termination before the window: retried
                 except Exception as e:  # noqa: BLE001
                     row["status"] = "extract_error"; row["error"] = f"{type(e).__name__}: {e}"
                     traceback.print_exc()
@@ -321,7 +323,7 @@ def main():
     ap.add_argument("--plan"); ap.add_argument("--exp", required=True)
     ap.add_argument("--px4", default="/src"); ap.add_argument("--out", default="/repo/paperIV/results/px4")
     ap.add_argument("-k", type=int, default=8); ap.add_argument("--speed", type=float, default=8.0)
-    ap.add_argument("--retries", type=int, default=1)
+    ap.add_argument("--retries", type=int, default=3)
     ap.add_argument("--keep-ulog", default="sample", choices=("all", "sample", "none"))
     ap.add_argument("--limit", type=int, default=0, help="fly only the first N missions of the plan")
     ap.add_argument("--cem", action="store_true"); ap.add_argument("--calibration")
