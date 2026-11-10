@@ -1,0 +1,9 @@
+# LaTeX build by-products
+*.aux
+*.log
+*.blg
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
