@@ -119,9 +119,21 @@ def attack_u(family: str, u):
     return attack(family, phys), phys
 
 
+# Stock-EKF2 harness (PX4 >= v1.16, px4_paperIV_stock.patch): the trusted fix reaches EKF2 through its
+# auxiliary global position aiding, with the gate opened so that the fix is never rejected (C2').
+PX4_FIXED_STOCK_EKF2 = {
+    "EKF2_AGP_CTRL": 1,           # fuse the horizontal position of aux_global_position
+    "EKF2_AGP_GATE": 1000.0,      # trusted: never rejected; the anchor gate alarms offline on its NIS
+    "EKF2_AGP_NOISE": SIG_ANCHOR, # observation noise = the fix's stated accuracy (0.3 m)
+    "EKF2_AGP_DELAY": 0.0,
+}
+STOCK_EKF2 = False                # set by p4_fleet.py --stock-ekf2
+
+
 def params_file(params: dict) -> str:
     lines = ["# Paper IV mission parameters (written by p4_fleet.py)"]
-    for k, v in {**PX4_FIXED, **params}.items():
+    fixed = {**PX4_FIXED, **(PX4_FIXED_STOCK_EKF2 if STOCK_EKF2 else {})}
+    for k, v in {**fixed, **params}.items():
         if isinstance(v, (bool, np.bool_)):
             v = int(v)
         if isinstance(v, (int, np.integer)):

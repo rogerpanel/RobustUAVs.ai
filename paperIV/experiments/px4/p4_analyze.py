@@ -11,7 +11,15 @@
   e4neg      negative control without the anchor
 Every table carries provenance = px4_sitl. Nothing is filled in when an input is
 missing: the table is skipped and the reason printed.
-Usage: python3 p4_analyze.py [calibrate smoke e1 e2 e3 e4neg]
+Usage: python3 p4_analyze.py [--complete] [calibrate smoke e1 e2 e3 e4neg]
+
+--complete (PX4_PREREG.md deviation 4): missions excluded under the validity rule are
+filled in from results/px4/rerun_<run>/ (the same specs flown again, p4_rerun.py). A
+mission's detector statistics and its attack-only deviation always come from ONE flight
+and its twin from the SAME run: the original pair when both were flown, else the rerun
+pair. Thresholds stay those of calibration.json (fixed before the rerun); the complete E0
+set only yields a sensitivity table (px4_e0_thresholds_complete.csv). Every output file
+gets the suffix _complete, so the as-reported tables are never overwritten.
 """
 from __future__ import annotations
 
@@ -35,7 +43,19 @@ REF_D2_NOGATE_MAX = 3.383          # largest undetected attack-only deviation un
 REF_DELTA_ADV = {0.01: (4.371, 5.463)}   # pilot and pooled stealth budget (results/r1_delta_adv.csv)
 
 
-EXCLUDED = {}       # (dir, exp) -> number of missions that were not flown (validity rule, PX4_PREREG.md deviation 1)
+EXCLUDED = {}       # (dir, exp) -> (not flown, ok records, recovered by the rerun)  (PX4_PREREG.md deviations 1, 4)
+COMPLETE = False    # --complete: fill excluded missions in from rerun_<dir> (deviation 4)
+
+
+def rerun_dir(d):
+    return f"rerun_{d}"
+
+
+def out_name(name):
+    if not COMPLETE:
+        return name
+    stem, dot, ext = name.rpartition(".")
+    return f"{stem}_complete.{ext}" if dot else f"{name}_complete"
 
 
 def flown(r):
@@ -60,23 +80,71 @@ def _all_rows(d):
     return out
 
 
+def _failed_only(d, exp):
+    """Missions of run d whose every record failed (bad_log, error, not_flown after the retries)."""
+    f = PX / d / "missions.jsonl"
+    seen, ok = {}, set()
+    for line in (f.read_text().splitlines() if f.exists() else []):
+        try:
+            r = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if exp is None or r.get("exp") == exp:
+            seen[r["mid"]] = r.get("status")
+            if r.get("status") == "ok":
+                ok.add(r["mid"])
+    return set(seen) - ok
+
+
+def _attacked(r):
+    return r.get("family") not in (None, "none")
+
+
 def rows(d, exp=None, valid_only=True):
     """ok missions of results directory d (one fleet run); exp filters on the spec's experiment tag;
-    missions that were never flown are dropped and counted in EXCLUDED."""
-    out = [r for r in _all_rows(d).values() if exp is None or r.get("exp") == exp]
+    missions that were never flown are dropped and counted in EXCLUDED. Every returned row carries
+    _src, the directory of the flight it describes (d, or rerun_<d> with --complete)."""
+    O = _all_rows(d)
+    out = [r for r in O.values() if exp is None or r.get("exp") == exp]
+    for r in out:
+        r["_src"] = d
     if not valid_only:
         return out
     bad = [r for r in out if not flown(r)]
-    EXCLUDED[(d, exp)] = (len(bad), len(out))
-    return [r for r in out if flown(r)]
+    if not COMPLETE:
+        EXCLUDED[(d, exp)] = (len(bad), len(out), 0)
+        return [r for r in out if flown(r)]
+    Rr = _all_rows(rerun_dir(d))
+    okO = {m for m, x in O.items() if flown(x)}
+    okR = {m for m, x in Rr.items() if flown(x)}
+    sel, recovered = [], 0
+    for m in sorted(set(r["mid"] for r in out) | {m for m, x in Rr.items() if exp is None or x.get("exp") == exp}):
+        x = O.get(m) or Rr[m]
+        paired = lambda ok: m in ok and (not _attacked(x) or twin_mid(x) in ok)
+        if paired(okO):
+            src = d
+        elif paired(okR):
+            src = rerun_dir(d)
+        elif m in okO:
+            src = d                      # flown, but no flown twin in either run: no attack-only value
+        elif m in okR:
+            src = rerun_dir(d)
+        else:
+            continue                     # still not flown
+        r = dict((O if src == d else Rr)[m]); r["_src"] = src
+        recovered += src != d and m not in okO
+        sel.append(r)
+    EXCLUDED[(d, exp)] = (len(bad) + len(_failed_only(d, exp)), len(out), recovered)
+    return sel
 
 
 def write(name, rs):
+    name = out_name(name)
     if not rs:
         print(f"  {name}: nothing to write"); return
-    keys = list(dict.fromkeys(k for r in rs for k in r))
+    keys = list(dict.fromkeys(k for r in rs for k in r if not k.startswith("_")))
     with open(PX / name, "w", newline="") as fh:
-        w = csv.DictWriter(fh, fieldnames=keys); w.writeheader(); w.writerows(rs)
+        w = csv.DictWriter(fh, fieldnames=keys, extrasaction="ignore"); w.writeheader(); w.writerows(rs)
     print(f"  wrote results/px4/{name} ({len(rs)} rows)")
 
 
@@ -93,8 +161,9 @@ _VALID = {}
 
 
 def attack_only(r, d):
-    """sup_t |e_attack(t) - e_twin(t)| after the attack onset (twin flown in the same run d), or None
-    when the twin is missing or was not flown (validity rule)."""
+    """sup_t |e_attack(t) - e_twin(t)| after the attack onset (twin flown in the same run as the
+    mission, r["_src"], default d), or None when the twin is missing or was not flown (validity rule)."""
+    d = r.get("_src", d)
     if d not in _VALID:
         _VALID[d] = {m for m, x in _all_rows(d).items() if flown(x)}
     if twin_mid(r) not in _VALID[d] or r["mid"] not in _VALID[d]:
@@ -116,8 +185,15 @@ def qs(v):
 
 
 def validity_report():
-    out = [{"dir": d, "exp": e or "all", "n_ok": n, "n_not_flown": k, "rate": round(k / n, 4) if n else None,
-            "provenance": "px4_sitl"} for (d, e), (k, n) in sorted(EXCLUDED.items(), key=str)]
+    out = []
+    for (d, e), (k, n, rec) in sorted(EXCLUDED.items(), key=str):
+        row = {"dir": d, "exp": e or "all", "n_ok": n, "n_not_flown": k, "rate": round(k / n, 4) if n else None}
+        if COMPLETE:
+            k0 = k - len(_failed_only(d, None if e == "all" else e))
+            row.update(n_not_flown=k0, rate=round(k0 / n, 4) if n else None,
+                       n_not_flown_incl_failed_records=k, n_recovered_by_rerun=rec, n_still_excluded=k - rec)
+        row["provenance"] = "px4_sitl"
+        out.append(row)
     write("px4_validity.csv", out)
 
 
@@ -146,8 +222,15 @@ def calibrate():
     cal = {"n": len(R), "single": single, "stack": stack, "anchor": float(np.quantile(SA, 0.99)),
            "stock_fpr_any": float(np.mean(stock > 0)), "sat_any_fpr": float(np.mean(sat > 0)),
            "sat_q99_s": float(np.quantile(sat, 0.99)), "provenance": "px4_sitl"}
-    (PX / "calibration.json").write_text(json.dumps(cal, indent=1))
-    print(f"  calibration on {len(R)} benign PX4 missions -> results/px4/calibration.json")
+    (PX / out_name("calibration.json")).write_text(json.dumps(cal, indent=1))
+    print(f"  calibration on {len(R)} benign PX4 missions -> results/px4/{out_name('calibration.json')}")
+    if COMPLETE and cal_load():
+        ref = cal_load()
+        for f in ("0.01", "0.05"):
+            print(f"  thresholds at {f}, complete vs recorded: " + ", ".join(
+                f"{d} {single[f][d]:.4g}/{ref['single'][f][d]:.4g}" for d in DETS) +
+                f"; anchor gate {cal['anchor']:.4g}/{ref['anchor']:.4g} (the recorded thresholds stay in use)")
+        cal = ref
     out = [{"fpr_target": f, "detector": d, "theta": round(single[str(f)][d], 5), "theta_stack": round(stack[str(f)][d], 5),
             "provenance": "px4_sitl"} for f in FPR_GRID for d in DETS]
     write("px4_e0_thresholds.csv", out)
@@ -181,7 +264,9 @@ def replay():
         a = R.get(mid.replace("e0_replay_", "e0_"))
         if not a:            # one of the pair was not flown (validity rule)
             continue
-        sa, sb = series("e0", a["mid"]), series("e0", mid)
+        if a.get("_src") != b.get("_src"):     # a replay pair is compared only within one run
+            continue
+        sa, sb = series(a["_src"], a["mid"]), series(b["_src"], mid)
         dev = float(np.max(np.abs(sa["e"] - sb["e"]))) if sa is not None and sb is not None else None
         row = {"seed": a["seed"], "sup_e_diff_m": None if dev is None else round(dev, 4),
                "maxdev_a": round(a["maxdev"], 3), "maxdev_b": round(b["maxdev"], 3)}
@@ -316,7 +401,7 @@ def reading(out):
            "b": {"holds": b1 and b2, "cap_m": cap, "D2_caps_every_family": b1, "some_family_exceeds_cap_under_D4": b2,
                  "D2_max_by_family": d2, "D4_max_by_family": d4},
            "transfer_holds_qualitatively": a_holds and b1 and b2, "provenance": "px4_sitl"}
-    (PX / "px4_e2_reading.json").write_text(json.dumps(res, indent=1))
+    (PX / out_name("px4_e2_reading.json")).write_text(json.dumps(res, indent=1))
     print(f"  E2 pre-registered reading: (a) {a_holds}, (b) {b1 and b2} "
           f"-> transfer holds qualitatively: {res['transfer_holds_qualitatively']}")
 
@@ -391,7 +476,7 @@ def e3select():
                     if J > best[0]:
                         best = (J, u, (g, c))
         clean[fam] = {"best": [best[0], best[1]], "from": best[2], "best_original": v["best"]}
-    (PX / "e3" / "cem_state_clean.json").write_text(json.dumps(clean, indent=1))
+    (PX / "e3" / out_name("cem_state_clean.json")).write_text(json.dumps(clean, indent=1))
     write("px4_e3_reselect.csv", table)
     for fam, v in clean.items():
         print(f"  {fam}: clean best J {v['best'][0]:.3f} at gen/cand {v['from']} (original best J {v['best_original'][0]:.3f})")
@@ -416,7 +501,7 @@ def ta1():
     if len(B) < 50:
         print(f"ta1: only {len(B)} benign missions"); return
     cal = calib_from(B)
-    (PX / "calibration_ta1.json").write_text(json.dumps(cal, indent=1))
+    (PX / out_name("calibration_ta1.json")).write_text(json.dumps(cal, indent=1))
     md = [r["maxdev"] for r in B]
     print(f"  ta1 calibration on {len(B)} benign missions; anchor gate {cal['anchor']:.2f}; "
           f"benign maxdev q50 {np.median(md):.2f} q95 {np.quantile(md, 0.95):.2f} max {max(md):.2f} m")
@@ -441,7 +526,8 @@ def ta1():
     def worst(stack, gate, rowsx):
         c = [r for r in rowsx if r["stack"] == stack and r["anchor_gate"] == gate and r["exp"] != "ta1_e1"]
         return max((r["attack_only_dev_max"] for r in c), default=0.0)
-    five = list(csv.DictReader(open(PX / "px4_e2_cross.csv"))) if (PX / "px4_e2_cross.csv").exists() else []
+    f5 = PX / out_name("px4_e2_cross.csv")
+    five = list(csv.DictReader(open(f5))) if f5.exists() else []
     w5 = lambda stack, gate: max((float(r["attack_only_dev_max"]) for r in five if r["stack"] == stack
                                   and r["anchor_gate"] == str(gate)), default=None)
     summ = {"bound_1s_m": BOUND_TA[1.0], "bound_5s_m": BOUND_TA[5.0]}
@@ -457,16 +543,86 @@ def ta1():
     rr = [r for r in out if r["exp"] == "ta1_e1" and r["stack"] == "ALL" and r["anchor_gate"]]
     summ["naive_ramp_1s"] = rr[0] if rr else None
     summ["provenance"] = "px4_sitl"
-    (PX / "px4_ta1_summary.json").write_text(json.dumps(summ, indent=1))
+    (PX / out_name("px4_ta1_summary.json")).write_text(json.dumps(summ, indent=1))
     for k, v in summ.items():
         if k != "naive_ramp_1s":
             print(f"  {k}: {v}")
 
 
-TASKS = {"calibrate": calibrate, "smoke": smoke, "e1": e1, "e2": e2, "e3": e3, "e4neg": e4neg, "e3select": e3select, "ta1": ta1}
+def bound_corrected(ta):
+    """Proved worst case with the finite-sample correction (results/r10_bound_conf.csv), worst over LoE."""
+    v = [float(r["delta_cert_corrected_m"]) for r in csv.DictReader(open(RES / "r10_bound_conf.csv"))
+         if float(r["T_anchor_s"]) == ta]
+    return max(v) if v else None
+
+
+def stock():
+    """E7: replication with UNMODIFIED EKF2 (PX4 v1.17.0, px4_paperIV_stock.patch). Thresholds are
+    calibrated per re-anchoring interval on that run's own benign missions; tables as in E5; the
+    pre-registered predictions P1 (D1 + gate within the corrected proved bound, 1 s and 5 s) and P2
+    (1 s below 5 s, for D1 + gate and for the full stack + gate)."""
+    D = "stock"
+    if not (PX / D / "missions.jsonl").exists():
+        print("stock: no missions"); return
+    out, summ, cals = [], {"px4_version": "v1.17.0", "ekf2": "unmodified"}, {}
+    for ta, tag in ((5.0, "st5"), (1.0, "st1")):
+        B = rows(D, f"{tag}_e0")
+        if len(B) < 50:
+            print(f"stock: only {len(B)} benign missions at {ta} s"); continue
+        cal = cals[ta] = calib_from(B)
+        (PX / out_name(f"calibration_stock_{tag}.json")).write_text(json.dumps(cal, indent=1))
+        md = [r["maxdev"] for r in B]
+        print(f"  stock {ta:g} s: calibration on {len(B)} benign missions; anchor gate {cal['anchor']:.2f}; "
+              f"benign maxdev q50 {np.median(md):.2f} max {max(md):.2f} m")
+        for exp in (f"{tag}_e2", f"{tag}_e3") + (("st5_e1",) if ta == 5.0 else ()):
+            R = [r for r in rows(D, exp) if r["family"] != "none"]
+            for aid in sorted({str(r["attacker_id"]) for r in R}):
+                sub = [r for r in R if str(r["attacker_id"]) == aid]
+                ao = {r["mid"]: attack_only(r, D) for r in sub}
+                for stack in STACKS:
+                    for gate in (True, False):
+                        st = [r for r in sub if not alarm(r, cal, stack, 0.05, gate)]
+                        q = qs([ao[r["mid"]] for r in st])
+                        out.append({"exp": exp, "attacker_id": aid, "family": sub[0]["family"], "stack": stack,
+                                    "anchor_gate": gate, "anchor_s": ta, "n": len(sub),
+                                    "evasion_rate": round(len(st) / len(sub), 4),
+                                    "n_with_twin": sum(ao[r["mid"]] is not None for r in st),
+                                    "attack_only_dev_q50": q["q50"], "attack_only_dev_q95": q["q95"],
+                                    "attack_only_dev_max": q["max"], "provenance": "px4_sitl_stock_ekf2"})
+        for stack in ("D1", "ALL"):
+            for gate in (True, False):
+                c = [r for r in out if r["anchor_s"] == ta and r["stack"] == stack and r["anchor_gate"] == gate
+                     and not r["exp"].endswith("_e1")]
+                summ[f"worst_{stack}_{'gate' if gate else 'nogate'}_{ta:g}s_m"] = max(
+                    (r["attack_only_dev_max"] for r in c), default=None)
+        summ[f"bound_corrected_{ta:g}s_m"] = bound_corrected(ta)
+    write("px4_stock_cross.csv", out)
+    R = [r for r in rows(D, "st0_e4neg") if r["family"] != "none"]
+    if R and 5.0 in cals:
+        aos = [attack_only(r, D) for r in R]
+        summ["no_anchor_ramp"] = {"n": len(R), "evasion_rate": round(float(np.mean(
+            [not alarm(r, cals[5.0], "ALL", 0.05, gate=False) for r in R])), 4), **qs(aos)}
+    g = lambda k: summ.get(k)
+    for ta in (1.0, 5.0):
+        w, b = g(f"worst_D1_gate_{ta:g}s_m"), g(f"bound_corrected_{ta:g}s_m")
+        summ[f"P1_D1gate_within_bound_{ta:g}s"] = None if w is None or b is None else bool(w <= b)
+    for st in ("D1", "ALL"):
+        a, b = g(f"worst_{st}_gate_1s_m"), g(f"worst_{st}_gate_5s_m")
+        summ[f"P2_{st}gate_1s_below_5s"] = None if a is None or b is None else bool(a < b)
+    summ["provenance"] = "px4_sitl_stock_ekf2"
+    (PX / out_name("px4_stock_summary.json")).write_text(json.dumps(summ, indent=1))
+    for k, v in summ.items():
+        print(f"  {k}: {v}")
+
+
+TASKS = {"stock": stock, "calibrate": calibrate, "smoke": smoke, "e1": e1, "e2": e2, "e3": e3, "e4neg": e4neg, "e3select": e3select, "ta1": ta1}
 
 if __name__ == "__main__":
-    for t in (sys.argv[1:] or TASKS):
+    args = sys.argv[1:]
+    if "--complete" in args:
+        COMPLETE = True
+        args = [a for a in args if a != "--complete"]
+    for t in (args or TASKS):
         print(f"[{t}]")
         TASKS[t]()
     validity_report()

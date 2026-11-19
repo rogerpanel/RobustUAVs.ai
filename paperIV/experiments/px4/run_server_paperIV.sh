@@ -8,6 +8,14 @@
 #   bash paperIV/experiments/px4/run_server_paperIV.sh all       # setup smoke e0 e1 e2 e3 e4neg pack
 #   bash paperIV/experiments/px4/run_server_paperIV.sh pack      # results tarball in $HOME (no ULogs)
 #
+# Deviation 4, E6 and E7 (PX4_PREREG.md, recorded 19 Nov 2026):
+#   ... run_server_paperIV.sh rerun          # fly again the 420 missions that were never flown, then
+#                                            # the --complete tables and the diagnosis (about 35 min)
+#   ... run_server_paperIV.sh diag           # why the excluded missions failed (from the kept ULogs)
+#   ... run_server_paperIV.sh mismatch       # E6: linear loop vs PX4 on the flown offsets (no flights)
+#   ... run_server_paperIV.sh setup_stock    # PX4 v1.17.0 + px4_paperIV_stock.patch (EKF2 unmodified)
+#   ... run_server_paperIV.sh stock          # E7: 2,600 missions on stock EKF2 (about 3.5 h at K=3)
+#   ... run_server_paperIV.sh pack
 # Environment: K instances in parallel (default: half the cores, at most 12), SPEED (simulation
 # speed factor, default 8), PX4_SRC (Paper III's PX4 tree, default ~/PX4-Autopilot; only copied,
 # never modified), PX4_P4 (the patched copy, default ~/PX4-Autopilot-paperIV).
@@ -21,6 +29,7 @@ IMG_BASE="${PX4_IMG:-px4io/px4-dev-simulation-jammy:latest}"
 IMG="p4sitl:1"
 PX4_SRC="${PX4_SRC:-$HOME/PX4-Autopilot}"
 PX4_P4="${PX4_P4:-$HOME/PX4-Autopilot-paperIV}"
+PX4_STOCK="${PX4_STOCK:-$HOME/PX4-Autopilot-v1.17-paperIV}"   # E7: PX4 v1.17.0, EKF2 unmodified
 NCPU="$(nproc)"
 K="${K:-$(( NCPU / 2 > 12 ? 12 : (NCPU / 2 < 1 ? 1 : NCPU / 2) ))}"
 SPEED="${SPEED:-8}"
@@ -42,6 +51,11 @@ image() {
 # run a command in the container: PX4 copy at /src, this repository at /repo
 dock() {
   docker run --rm --network host -v "$PX4_P4":/src -v "$REPO":/repo "$IMG" \
+    bash -lc "git config --global --add safe.directory '*' >/dev/null 2>&1; $*"
+}
+
+dock_stock() {
+  docker run --rm --network host -v "$PX4_STOCK":/src -v "$REPO":/repo "$IMG" \
     bash -lc "git config --global --add safe.directory '*' >/dev/null 2>&1; $*"
 }
 
@@ -143,6 +157,64 @@ stage_e3fix() {
 # E5: the design rule at a 1 s re-anchoring interval (1,300 missions, about 1.75 h at K=3, speed 10)
 stage_ta1() { image; plans ta1; fleet ta1 --plan plans/ta1.jsonl; analyze ta1; }
 stage_e4neg() { image; plans e4neg; fleet e4neg --plan plans/e4neg.jsonl; analyze e4neg; }
+
+# ---------------------------------------------------------------- deviation 4, E6, E7
+stage_rerun() {
+  image
+  dock "cd /repo/paperIV/experiments/px4 && python3 p4_rerun.py" | tee -a "$LOG/run.txt"
+  local d
+  for d in e0 e1 e2 e3eval e4neg; do
+    [ -s "$HERE/plans/rerun_$d.jsonl" ] && fleet "rerun_$d" --plan "plans/rerun_$d.jsonl" --keep-ulog sample
+  done
+  analyze --complete calibrate e1 e2 e3 e4neg
+  stage_diag
+}
+stage_diag() {
+  image
+  dock "cd /repo/paperIV/experiments/px4 && python3 p4_unflown_diag.py" 2>&1 | tee -a "$LOG/diag.txt"; own
+}
+stage_mismatch() {
+  image
+  dock "cd /repo/paperIV/experiments/px4 && python3 p4_mismatch.py" 2>&1 | tee -a "$LOG/mismatch.txt"
+  if ls -d "$RES"/rerun_* >/dev/null 2>&1; then
+    dock "cd /repo/paperIV/experiments/px4 && python3 p4_mismatch.py --complete" 2>&1 | tee -a "$LOG/mismatch.txt"
+  fi
+  own
+}
+stage_setup_stock() {
+  image
+  if [ ! -d "$PX4_STOCK" ]; then
+    say "setup_stock: cloning PX4 v1.17.0 into $PX4_STOCK"
+    git clone --recursive --branch v1.17.0 --depth 1 --shallow-submodules \
+      https://github.com/PX4/PX4-Autopilot.git "$PX4_STOCK" > "$LOG/clone_stock.txt" 2>&1
+  fi
+  local P=/repo/paperIV/experiments/px4/px4_paperIV_stock.patch
+  if dock_stock "cd /src && git apply --reverse --check $P" >/dev/null 2>&1; then
+    say "setup_stock: stock-EKF2 patch already applied"
+  elif dock_stock "cd /src && git apply --check $P" > "$LOG/setup_stock_patch.txt" 2>&1; then
+    dock_stock "cd /src && git apply $P"
+    say "setup_stock: patch applied; EKF2 files touched: $(grep -c '^+++ b/src/modules/ekf2' "$HERE/px4_paperIV_stock.patch")"
+  else
+    say "setup_stock: the patch does not apply:"; sed 's/^/    /' "$LOG/setup_stock_patch.txt" | tee -a "$LOG/run.txt"; exit 1
+  fi
+  say "setup_stock: building px4_sitl_default (log: $PX4_STOCK/build_p4.log)"
+  if ! dock_stock "cd /src && { pip3 install -q 'empy==3.3.4' >/dev/null 2>&1 || true; } && make px4_sitl_default > /src/build_p4.log 2>&1"; then
+    say "setup_stock: BUILD FAILED; the first error:"
+    { grep -n -B2 -A12 "error:" "$PX4_STOCK/build_p4.log" | head -60 || tail -n 40 "$PX4_STOCK/build_p4.log"; } | tee -a "$LOG/build_stock_error.txt"
+    exit 1
+  fi
+  say "setup_stock: build OK"
+}
+stage_stock() {
+  image
+  [ -x "$PX4_STOCK/build/px4_sitl_default/bin/px4" ] || { say "stock: run setup_stock first"; return 1; }
+  plans stock
+  say "stock: flying ($K instances, speed $SPEED, EKF2 unmodified); log: $LOG/stock.txt"
+  dock_stock "cd /repo/paperIV/experiments/px4 && python3 -u p4_fleet.py --exp stock --plan plans/stock.jsonl --stock-ekf2 --px4 /src --out /repo/paperIV/results/px4 -k $K --speed $SPEED" \
+    2>&1 | tee -a "$LOG/stock.txt" || true
+  own
+  analyze stock
+}
 
 stage_pack() {
   local out="$HOME/paperIV_px4_results_$(date +%Y%m%d_%H%M).tgz"

@@ -118,11 +118,48 @@ def ta1(anchor=1.0):
     return specs + list(tw.values())
 
 
-PLANS = {"smoke": smoke, "e0": e0, "e1": e1, "e2": e2, "e4neg": e4neg, "e3eval": e3eval, "ta1": ta1}
+def stock():
+    """E7 (PX4_PREREG.md): replication on PX4 v1.17.0 with UNMODIFIED EKF2 (px4_paperIV_stock.patch: the
+    trusted fix enters through EKF2's stock auxiliary global position aiding). Same seeds as before;
+    mission ids carry the prefix st<T_a>_.
+      calibration         benign, 5 s: seeds 1000-1499 (500); 1 s: seeds 1000-1199 (200)
+      E2 primary          attackers 20-24, seeds 4000-4099, at 5 s and 1 s, plus twins
+      E3 clean attackers  step, ramp, fault mimic, seeds 25000-25049, at 5 s and 1 s, plus twins
+      naive offsets       step 5 m (seeds 5000-5049) and ramp 0.5 m/s (5300-5349) at 5 s, plus twins
+      no anchor           ramp 0.5 m/s, seeds 3900-3949, plus twins (negative control)"""
+    att = {int(r["attacker_id"]): r for r in csv.DictReader(open(RES / "e2_attackers.csv"))}
+    clean = json.loads((RES / "px4" / "e3" / "cem_state_clean.json").read_text())
+    specs = []
+    for ta, n_cal in ((5.0, 500), (1.0, 200)):
+        tag = f"st{int(ta)}"
+        specs += [S.mission(f"{tag}_e0_s{1000 + j}", f"{tag}_e0", 1000 + j, anchor=ta) for j in range(n_cal)]
+        for aid in range(20, 25):
+            for j in range(100):
+                specs.append(S.mission(f"{tag}_e2_a{aid}_s{4000 + j}", f"{tag}_e2", 4000 + j, anchor=ta,
+                                       family=att[aid]["family"], u=json.loads(att[aid]["params"]), attacker_id=aid))
+        for fam in ("step", "ramp", "fault_mimic"):
+            for j in range(50):
+                specs.append(S.mission(f"{tag}_e3_{fam}_s{25000 + j}", f"{tag}_e3", 25000 + j, anchor=ta, family=fam,
+                                       u=clean[fam]["best"][1], attacker_id=f"px4cem_{fam}"))
+    for j in range(50):
+        specs.append(S.mission(f"st5_e1_step5_s{5000 + j}", "st5_e1", 5000 + j, family="step", phys=STEP5,
+                               attacker_id="step5"))
+        specs.append(S.mission(f"st5_e1_ramp05_s{5300 + j}", "st5_e1", 5300 + j, family="ramp", phys=RAMP05,
+                               attacker_id="ramp05"))
+        specs.append(S.mission(f"st0_e4neg_ramp05_s{3900 + j}", "st0_e4neg", 3900 + j, anchor=None, family="ramp",
+                               phys=RAMP05, attacker_id="ramp05_noanchor"))
+    tw = {}
+    for s_ in specs:
+        if s_["family"] != "none":
+            t = S.twin(s_); tw[t["mid"]] = t
+    return specs + list(tw.values())
+
+
+PLANS = {"smoke": smoke, "e0": e0, "e1": e1, "e2": e2, "e4neg": e4neg, "e3eval": e3eval, "ta1": ta1, "stock": stock}
 
 if __name__ == "__main__":
     out = HERE / "plans"; out.mkdir(exist_ok=True)
-    for name in (sys.argv[1:] or [k for k in PLANS if k not in ("e3eval", "ta1")]):
+    for name in (sys.argv[1:] or [k for k in PLANS if k not in ("e3eval", "ta1", "stock")]):
         specs = PLANS[name]()
         mids = [s["mid"] for s in specs]
         assert len(mids) == len(set(mids)), f"duplicate mission ids in {name}"

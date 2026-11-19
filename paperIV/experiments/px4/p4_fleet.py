@@ -331,7 +331,10 @@ def main():
     ap.add_argument("--lam", type=int, default=8); ap.add_argument("--K", type=int, default=16)
     ap.add_argument("--elite", type=int, default=3); ap.add_argument("--fpr", type=float, default=0.05)
     ap.add_argument("--anchor", type=float, default=5.0); ap.add_argument("--cem-seed", type=int, default=2027)
+    ap.add_argument("--stock-ekf2", action="store_true",
+                    help="firmware built with px4_paperIV_stock.patch (PX4 >= v1.16, EKF2 unmodified)")
     a = ap.parse_args()
+    S.STOCK_EKF2 = a.stock_ekf2
     fleet = Fleet(a)
     if a.cem:
         asyncio.run(cem(fleet, a))

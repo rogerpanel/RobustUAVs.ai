@@ -118,6 +118,18 @@ Expected cost: about 6–10 CPU-hours (embarrassingly parallel; `PAR=$(nproc)`).
 
 ## R3 — PX4 SITL transfer validation (C3) **[load-bearing]**
 
+> **As run (Nov 2026).** The study used SIH in PX4 v1.14.3 SITL. The protocol is in `PX4_PREREG.md`
+> and the commands are in `experiments/px4/run_server_paperIV.sh`. Additions recorded on 19 Nov 2026,
+> each run from the repository root:
+>
+> - `bash paperIV/experiments/px4/run_server_paperIV.sh rerun` flies again the 420 excluded missions
+>   (deviation 4) and writes the `_complete` tables and the failure diagnosis.
+> - `... mismatch` computes E6, the linear-loop-to-PX4 mismatch term, without flights.
+> - `... setup_stock stock` runs E7, the replication on PX4 v1.17.0 with unmodified EKF2 (the trusted
+>   fix enters through EKF2's auxiliary global position aiding; `px4_paperIV_stock.patch`).
+>
+> Hardware future work is in `HARDWARE_FUTURE_WORK.md`. The plan below is the original design.
+
 **Goal.** About 1,000 missions per condition in PX4 SITL with Gazebo. Confirm that (a) the detector ranking by disguise and (b) floor soundness transfer from the pilot.
 
 1. Image: `px4io/px4-dev-simulation-jammy` (pin the digest). Build `make px4_sitl gz_x500`. Run headless with `HEADLESS=1`.

@@ -18,7 +18,8 @@ Statistics (one per mission; a detector alarms iff its statistic > threshold):
        gravity added, double integrated; quadratic-fit curvature of GNSS minus
        the integral over 4 s; minimum over 5 consecutive fixes; max over N/E.
   SA   anchor gate: largest normalised innovation (chi-square, 2 dof) of the
-       trusted fixes (estimator_aid_src_ev_pos).
+       trusted fixes (estimator_aid_src_aux_global_position on stock EKF2, PX4 >= v1.16;
+       estimator_aid_src_ev_pos with the v1.14.3 EKF2 patch).
   Ssat D_sat: longest run (s) with any rotor at its upper or lower limit.
   Sstk PX4 stock: number of EKF2 GNSS rejections, position resets to GNSS and
        GNSS fusion timeouts in the window (alarm iff > 0 is reported as well).
@@ -133,10 +134,12 @@ def extract(path, keep_series=True):
     gp = _topic(ul, "vehicle_gps_position")
     if gp is None:
         gp = _topic(ul, "sensor_gps")
-    lat0 = float(_param(ul, "SIH_LOC_LAT0", 0)) * 1e-7; lon0 = float(_param(ul, "SIH_LOC_LON0", 0)) * 1e-7
+    deg = lambda v: float(v) * (1e-7 if abs(float(v)) > 1e3 else 1.0)   # int 1e-7 deg (v1.14) or float deg (v1.17)
+    lat0 = deg(_param(ul, "SIH_LOC_LAT0", 0)); lon0 = deg(_param(ul, "SIH_LOC_LON0", 0))
     tz = mt(gp["timestamp"])
-    lat = gp["lat"].astype(float) * (1e-7 if np.abs(gp["lat"]).max() > 1e3 else 1.0)
-    lon = gp["lon"].astype(float) * (1e-7 if np.abs(gp["lon"]).max() > 1e3 else 1.0)
+    klat, klon = ("lat", "lon") if "lat" in gp else ("latitude_deg", "longitude_deg")   # v1.14 / v1.17 names
+    lat = gp[klat].astype(float) * (1e-7 if np.abs(gp[klat]).max() > 1e3 else 1.0)
+    lon = gp[klon].astype(float) * (1e-7 if np.abs(gp[klon]).max() > 1e3 else 1.0)
     zn = np.radians(lat - lat0) * R_E - x0
     ze = np.radians(lon - lon0) * R_E * math.cos(math.radians(lat0)) - y0
     vn, ve = gp["vel_n_m_s"].astype(float), gp["vel_e_m_s"].astype(float)
@@ -161,7 +164,8 @@ def extract(path, keep_series=True):
     if ag is not None:
         ta2 = mt(ag["timestamp_sample"])
         tr = np.maximum(ag["test_ratio[0]"], ag["test_ratio[1]"]).astype(float)
-        m2 = (ta2 >= 0) & (ta2 <= tend) & (ag["fusion_enabled"] > 0)
+        fe = ag["fusion_enabled"] > 0 if "fusion_enabled" in ag else np.ones(len(ta2), bool)   # field gone in v1.17
+        m2 = (ta2 >= 0) & (ta2 <= tend) & fe
         trw = tr[m2]
         if len(trw) >= CONSEC_CHI2:
             run = np.lib.stride_tricks.sliding_window_view(trw, CONSEC_CHI2).min(1)
@@ -260,7 +264,11 @@ def extract(path, keep_series=True):
     out["S4"] = float(S4)
 
     # ---------------- anchor gate
-    ae = _topic(ul, "estimator_aid_src_ev_pos")
+    # v1.14.3 harness: trusted fix through the patched EV path (estimator_aid_src_ev_pos);
+    # stock-EKF2 harness (PX4 >= v1.16): EKF2's auxiliary global position aiding
+    ae = _topic(ul, "estimator_aid_src_aux_global_position")
+    if ae is None:
+        ae = _topic(ul, "estimator_aid_src_ev_pos")
     SA, n_anchor_fused = 0.0, 0
     if ae is not None:
         tae = mt(ae["timestamp_sample"])

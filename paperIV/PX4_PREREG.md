@@ -130,3 +130,58 @@ bound at 1 s, 10.24 m (an empirical consistency check, not a proof for PX4). P2:
 5 s value (7.09 m), and the same holds for the full stack with the gate (5 s: 4.75 m).
 Reported regardless: every cell of `px4_ta1_cross.csv`, medians and 95th percentiles, the cells
 without the gate, and the naive ramp.
+
+## Deviation 4, E6 and E7 (recorded 19 Nov 2026, before any of the flights below)
+
+4. **Reruns of the missions that were never flown.** Deviation 1 excluded 5-7 % of the missions of
+   E0, E1, E2, the first E3 evaluation and E4neg. Every such mission is flown again with the same
+   specification (`p4_rerun.py` rebuilds each spec from the run's own records and checks it against
+   them; 420 missions), with the retrying driver. To keep every attack-only deviation inside one run,
+   an excluded attacked mission is flown again with its twin, an excluded twin with every attacked
+   mission that shares it, and an E0 replay pair together. The analysis (`p4_analyze.py --complete`)
+   takes, per mission, the original flight when it and its twin were flown, otherwise the rerun pair;
+   detector statistics and attack-only deviation always come from the same flight. Thresholds stay
+   those of `calibration.json`; the complete E0 set is reported only as a sensitivity table. The
+   as-reported tables are kept; the complete ones carry the suffix `_complete`; missions still not
+   flown are counted. E3 (the CEM search) is not flown again (deviation 2 covers it).
+   The cause of the failsafe is diagnosed from the kept ULogs and console logs of failed attempts
+   (`p4_unflown_diag.py`, `px4_unflown_diagnosis.csv`) and reported as found.
+
+### E6: mismatch between the proved linear loop and PX4 (no flights)
+
+For every attacked PX4 mission with a flown twin (E1, E2, the clean E3 evaluation at 5 s; E5 at 1 s),
+the logged offset sequence d is passed through the linear loop of the proof (same re-anchoring
+interval, LoE 1), and M = sup over t >= t0 of |e_px4(t) - e_lin(t)|, with e_px4 the attack-only
+deviation. Reported: M per mission; its median, 95th percentile and maximum; a distribution-free
+upper confidence bound M_ub on its (1 - eps) quantile (order statistic, eps in {0.05, 0.01},
+delta = 0.05) over every attack and over the attacks undetected by D1 + anchor gate; the share of
+offset sequences that satisfy the linear stealth constraints of the proved bound (corrected margins);
+and delta_cert(T_a) + M_ub. This is a statement about the attacker classes that were flown, not a
+worst case over every attack, and it includes the replay floor. (`p4_mismatch.py`)
+
+### E7: replication on stock EKF2 (PX4 v1.17.0)
+
+PX4 v1.16 and later fuse an auxiliary global position (EKF2_AGP_CTRL) as an absolute horizontal
+position. The harness is ported to PX4 v1.17.0 with `px4_paperIV_stock.patch`, which changes only
+simulator modules (SIH, simulated GNSS) and the start-up script; EKF2 is not modified. The trusted
+fix is published on `aux_global_position` every T_a s, with EKF2_AGP_GATE = 1000 (never rejected)
+and EKF2_AGP_NOISE = 0.3 m; the anchor gate is computed offline from
+`estimator_aid_src_aux_global_position`. A four-mission smoke run on v1.17.0 (19 Nov 2026) flew
+every mission and fused 12 of 12 fixes; it is a bring-up check, not data.
+
+| Part | Design | Seeds | Missions |
+|---|---|---|---|
+| calibration | benign, 5 s and 1 s | 1000-1499 (5 s), 1000-1199 (1 s) | 700 |
+| E2 primary | attackers 20-24, not re-optimised, at 5 s and 1 s, plus twins | 4000-4099 | 1,200 |
+| E3 clean attackers | step, ramp, fault mimic, at 5 s and 1 s, plus twins | 25000-25049 | 400 |
+| naive | step 5 m and ramp 0.5 m/s at 5 s, plus twins | 5000-5049, 5300-5349 | 200 |
+| no anchor | ramp 0.5 m/s, plus twins | 3900-3949 | 100 |
+
+Thresholds are calibrated per interval on E7's own benign missions (D1-D4 at 1 - f and 1 - f/4,
+anchor gate at 0.99). **Predictions.** P1: for D1 + anchor gate, the largest undetected attack-only
+deviation is at most the finite-sample corrected proved bound, 33.48 m at 5 s and 10.64 m at 1 s (an
+empirical consistency check, not a proof for PX4). P2: the 1 s value is below the 5 s value, for
+D1 + gate and for the full stack + gate. Reported regardless: every cell of `px4_stock_cross.csv`,
+medians and 95th percentiles, the cells without the gate, the naive offsets and the no-anchor
+control. E7 differs from E0-E5 in the PX4 version (newer EKF2 and SIH), so it is a replication on
+stock firmware, not a repetition under identical conditions.
