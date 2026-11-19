@@ -16,14 +16,13 @@ turbulence, outside the declared envelope, raises the FPR of the SAVIOR-style
 detector D3, which models no wind, to \nFprSevereDThree{}; the others stay at or
 below \nFprSevereOtherMax{}.
 
-\Cref{fig:roc} shows the operating curves against naive offsets. At 5\% FPR the
+Against naive offsets (operating curves in \cref{fig:roc}, \cref{app:roc}), at 5\% FPR the
 $\chi^2$ gate detects a 5\,m step in \nTprStepDTwo{} of missions and the
 invariant D4 in \nTprStepDFour{}, but the signature monitor and D3 detect it in
 only \nTprStepDOne{} and \nTprStepDThree{}, which is close to chance. A 0.5\,m/s
 ramp is caught by D2 (\nTprRampDTwo{}) and essentially by no other detector
 ($\le$\nTprRampDThree{}).
 
-\figROC
 
 \subsection{RQ1: evasion and undetected deviation per detector}
 \paragraph{Cross-evaluation.}
@@ -123,36 +122,13 @@ attacker therefore spends its budget in the terminal window.
 \figAnchor
 
 \subsection{RQ3: decomposition of the bound's looseness}
-\Cref{fig:gap} decomposes the tail of the benign budget; the ratios below are
-at $s=\nGapS$\,m, and their ordering changes in the far tail, where few joint
-exceedances remain.
-\begin{enumerate}
-\item For two sources, the union and RA bounds agree to within
-  \nUnionRaDtwoMaxErr{}, as Makarov's theorem requires. For three, the RA
-  tightens the union bound by \nRaGain{} (\nGapUnion{} to \nGapRa{}). Under
-  unknown dependence, the union bound is nearly the right quantity.
-\item The worst coupling exceeds independent sums at the same marginals by
-  \nDepRatio$\times$ (\emph{dependence gap}). Evaluating the wind at the upper
-  envelope rather than at the conditions actually flown costs a further
-  \nEnvRatio$\times$ (\emph{envelope gap}).
-\item Independent sums at matched wind agree with the sum of per-source
-  suprema measured on the same missions to within \nNatRatio$\times$,
-  consistent with the benign sources being independent, as they are by
-  construction in the simulator.
-\item The sum of per-source suprema exceeds the supremum of the joint deviation
-  by \nTimeRatio$\times$ (\emph{temporal gap}; \nGapJointK{} joint exceedances in
-  \nJointMissions{} missions). Sources seldom peak at the same instant, but a
-  budget built from per-source suprema must assume they do.
-\end{enumerate}
-The dependence gap can be closed only by knowing the coupling, which an
-attacker who controls jamming denies the defender. The envelope gap shrinks
-with better wind knowledge. The temporal gap, the largest of the three at
-this $s$, can be closed without either, by bounding the supremum of the summed trajectory
-directly, for example with a reachable-set computation per certification
-window. Condition (C5), which licenses adding per-source suprema, held in
-\nSubaddSources{} of joint missions.
-
-\figGap
+At $s=\nGapS$\,m (\cref{app:rq3}), the RA tightens the union bound for three
+sources by only \nRaGain, so under unknown dependence the union bound is nearly
+the right quantity. The worst coupling exceeds independent sums by
+\nDepRatio$\times$ (dependence gap), the wind envelope costs \nEnvRatio$\times$,
+and adding per-source suprema costs \nTimeRatio$\times$ (temporal gap, the largest),
+because sources seldom peak together; (C5) held in \nSubaddSources{} of joint
+missions. Only the temporal gap can be closed without knowing the coupling.
 
 \subsection{RQ2 and RQ4: soundness of the bound under evasion}
 Pooling all attackers on calibration missions gives a stealth budget of
@@ -220,39 +196,14 @@ the sharp $\pbar$, reported as $\min(\mathrm{RA},p_U)$.}
 
 \figFloor
 
-\paragraph{Negative controls and the power of the test.}
+\paragraph{Negative controls.}
 A soundness test that cannot fail is uninformative, so we broke two conditions
-deliberately and re-optimised the attacker under each (\cref{tab:negative}).
-\begin{itemize}
-\item \emph{(C2$'$) broken, no re-anchoring.} Undetected deviation reaches
-  \nNegCtwoMaxDev\,m, and the test flags \nNegCtwoViol{} of \nNegCtwoRows{}
-  points (\nNegCtwoViolFam{}), every one where the bound is informative.
-\item \emph{(C4) broken, severe turbulence (45--60\,kt).} The fault mimic
-  reaches \nNegCfourMaxDev\,m undetected, and the test flags the bound at
-  $m=20$\,m, where $\pbar=0$ because the empirical marginals have finite
-  support. At $m=10$\,m the observed frequency stays below $\pbar$, so this
-  break is detected only where the bound is tightest. The weather mimic was
-  detected in every mission, leaving no undetected missions to test.
-\end{itemize}
-The test thus detects unsoundness when a stated condition fails and enough
-undetected missions remain to measure it, which is the behaviour the audit
-loop of \cref{fig:framework} relies on.
+deliberately and re-optimised the attacker under each (\cref{app:negative}).
+Without re-anchoring (C2$'$ broken) the undetected deviation reaches
+\nNegCtwoMaxDev\,m and the test flags \nNegCtwoViol{} of \nNegCtwoRows{}
+points; under severe turbulence (C4 broken) it flags the bound at $m=20$\,m.
+The test thus detects unsoundness when a stated condition fails.
 
-\begin{table}[t]
-\centering\footnotesize
-\setlength{\tabcolsep}{2.4pt}
-\caption{Negative controls at 5\% FPR. Undet.\ = undetected missions out of
-\nEvalMissions; fails = failures among them; viol.\ = Holm-significant violation
-of $\pbar$; dev.\ = largest undetected deviation (m).}
-\label{tab:negative}
-\begin{tabular}{@{}llcccccc@{}}
-\toprule
-\textbf{Control} & \textbf{disguise} & $m$ & \textbf{undet.} & \textbf{fails} & $\pbar$ & \textbf{viol.} & \textbf{dev.} \\
-\midrule
-\tabinput{tab_negative_body.tex}
-\bottomrule
-\end{tabular}
-\end{table}
 
 \input{sec_scaled}
 

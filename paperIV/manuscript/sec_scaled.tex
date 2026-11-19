@@ -26,31 +26,18 @@ in \nROneSupExceed{} of \nROneCells{} cells, by the mixed family up to
 \nROneAdvMax\,m. An empirical supremum is a lower bound on $\dadv$, and further
 search continued to raise it.
 
-\paragraph{Holm-significant violations and their diagnosis.}
+\paragraph{Holm-significant violations.}
 With $\dadv=\nROneDadvFive$\,m, the test flagged \nROneViol{} of \nROneTests{}
-points, all at $m=\nROneViolM$\,m, where the bound claimed $\pbar=0$. We
-re-simulated each flagged cell with its seeds
-(\code{r1\_violation\_diagnosis.csv}). The violations come from
-\nDiagMissions{} missions, and the attacker caused none of them. Each fails
-under its benign inputs alone (benign-only deviation \nDiagBenignMin--\nDiagBenignMax\,m),
-the attack adds at most \nDiagAttackMax\,m, and \nDiagAllSat{} three saturate the
-actuator with or without the attack. Two conditions of \cref{thm:floor} failed,
-neither of which concerns disguise.
-\begin{itemize}
-\item \emph{(C3) for the marginals.} The empirical marginal of each source has
-  finite support. Beyond the largest of \nCalMissions{} calibration samples,
-  $\pbar$ is zero, and the bound claims a certainty that no finite sample can
-  justify. One benign mission in 5{,}000 fails at $m=20$\,m.
-\item \emph{(C1), which was not enforced.} Superposition held in at least
-  \nROneSuperposMin{} of missions, and every violating mission saturated. The
-  pilot had stated (C1) as an assumption, but no component of the stack checked
-  it at run time.
-\end{itemize}
-This is a negative result about the pilot instantiation rather than about
-\cref{thm:floor}. The theorem's conclusion requires its conditions, and the
-scaled test found two that the instantiation did not secure. We report the
-violations as found. The revision below fixes the instantiation before any new
-data are examined and does not tune the old run until it passes.
+points, all at $m=\nROneViolM$\,m, where the bound claimed $\pbar=0$. Re-simulating
+each flagged cell with its seeds (\cref{app:diagnosis}) showed that the attacker
+caused none of them: each of the \nDiagMissions{} missions fails under its benign
+inputs alone, and the attack adds at most \nDiagAttackMax\,m. Two conditions of
+\cref{thm:floor} failed, neither of which concerns disguise: (C3), because
+empirical marginals have finite support and $\pbar$ is zero beyond the largest
+calibration sample, and (C1), because superposition was assumed but not enforced
+at run time. This is a negative result about the pilot instantiation rather than
+about \cref{thm:floor}; we report the violations as found, and the revision below
+fixes the instantiation before any new data are examined.
 
 \subsection{A revised instantiation evaluated on fresh data}
 \label{sec:revised}
@@ -96,26 +83,9 @@ what has been proved.
 \input{sec_revised_result}
 
 \subsection{RQ6: effect of a measured GNSS marginal}
-\label{sec:r5}
-The pilot's GNSS marginal is simulated (99th percentile \nRFivePnnSim\,m). The
-artifact contains measured navigation error from the real GPS-jamming flight of
-the UAV Attack Dataset~\cite{whelan2020dataset}: \nRFiveSamples{} one-second
-samples over a noise episode and a loss of fix, whose error grows with staleness
-to \nRFiveEnvTen\,m at 10\,s and \nRFiveEnvMax\,m at 15\,s (spoofing samples
-belong to $\dadv$ and are excluded). We replaced each simulated degradation
-episode by the larger of its simulated deviation and the measured envelope at the
-episode's staleness, and in a stress variant set every episode to the measured
-45\,s duration. This never makes a mission's GNSS deviation smaller, but it
-assumes, without measuring it, that navigation error becomes cross-track
-deviation one for one.
-
-At $m=10$\,m and 5\% FPR, with $\dadv=\nROneDadvFive$\,m, the floor estimated from
-the empirical marginals falls from \nRFiveFloorSim{} (simulated GNSS) to
-\nRFiveFloorMeas{} (measured envelope) and \nRFiveFloorLong{} (45\,s episodes).
-With the finite-sample band of \cref{sec:revised}, the values are
-\nRFiveFloorCpSim, \nRFiveFloorCpMeas{} and \nRFiveFloorCpLong. The bound is only
-as good as its GNSS marginal; a simulated marginal overstated the certified
-floor by a factor of two to three at this margin. It is the jamming-induced
-tail, rather than the attack, that the corridor must absorb. At $m=20$\,m every variant
-certifies \nRFiveFloorCpTwenty, the ceiling that \nCalMissions{} calibration
-samples per source permit.
+Replacing the simulated GNSS marginal by the measured jamming envelope of the UAV
+Attack Dataset~\cite{whelan2020dataset} (\cref{sec:r5}) lowers the floor at
+$m=10$\,m and 5\% FPR from \nRFiveFloorSim{} to \nRFiveFloorMeas{}
+(\nRFiveFloorLong{} with 45\,s episodes): a simulated marginal overstated the floor
+two- to threefold, and the jamming-induced tail, not the attack, is what the
+corridor must absorb. At $m=20$\,m every variant certifies \nRFiveFloorCpTwenty.

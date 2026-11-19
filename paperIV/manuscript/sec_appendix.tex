@@ -58,6 +58,39 @@ UAV & unmanned aerial vehicle \\
 
 \section{Proof Details}
 \label{app:proofs}
+\paragraph{Proof of \cref{prop:union}.}
+(a) For any split, $\{\sum X_i>s\}\subseteq\bigcup_i\{X_i>s_i\}$. (b) is
+Makarov's theorem~\cite{makarov1981}, proved independently by
+R\"uschendorf~\cite{ruschendorf1982}; Frank et al.\ give the
+attaining coupling~\cite{frank1987}. (c) Embrechts et al.\ give examples of
+strict inequality~\cite{embrechts2013var}. (d) is direct
+computation; for independent exponentials, $p_U$ is attained at the equal split
+and the ratio $2e^{s/2}/(1+s)$ diverges (\cref{app:proofs}). (e) The Fr\'echet
+class of a Dirac marginal is a singleton.
+
+\paragraph{Proof of \cref{thm:floor}.}
+On $U$, (C3) gives $\sup_t|e_{\mathrm{adv}}|\le\dadv$, and \eqref{eq:dnet} bounds
+the network contribution by $e^{LT_c}\dnet(\theta)$, which adds to the others
+by (C6) (\cref{lem:subadd} does not cover the network term). By \cref{lem:subadd} and
+(C5), failure on $U$ implies $\sum_iX_i>s_m$. Hence
+$\Pr[\text{fail}\wedge U]\le\Pr[\sum_iX_i>s_m]\le\pbar(s_m)$, which needs no
+conditioning on $U$. The tail of a sum is non-decreasing under first-order
+stochastic dominance of any summand, for every coupling and hence for the
+supremum, so the stochastically largest member of the p-box is the worst
+(\cref{app:proofs}). The conditional form follows by dividing by $\Pr[U]$.
+
+\paragraph{Proof of \cref{prop:certbudget}.}
+By superposition (\cref{lem:subadd}, exact on the event $U$ because
+$D_{\mathrm{sat}}$ is silent), the attack-only deviation and the attack-only parts
+of the detector statistics are linear in $d$. Silence of each detector in $\Psi$, together with
+the benign margins, implies a convex (here polyhedral) constraint on $d$. The
+bound holds for every $d$ in the feasible set, which contains every sequence an
+adaptive policy can produce on that realisation. The order statistic
+$X_{(k)}$ falls below the $q$-quantile only if at least $k$ of the $N$ samples do,
+with probability $P(\mathrm{Bin}(N,q)\ge k)\le\delta/m$ for any continuous
+distribution; union bounds over the $m$ margins give the confidence and the
+probability.
+
 \paragraph{\Cref{prop:union}(b): sharpness for two sources.}
 For $d=2$, Makarov~\cite{makarov1981} showed that
 $\sup_C\Pr_C[X_1+X_2>s]=\min\{1,\inf_{t}(S_1(t^-)+S_2((s-t)^-))\}$,
@@ -123,3 +156,146 @@ outage / jam & 0.3 (mean 5\,s) / 0.2 & model \\
 \bottomrule
 \end{tabularx}
 \end{center}
+
+\section{Looseness of the Bound (RQ3)}
+\label{app:rq3}
+\Cref{fig:gap} decomposes the tail of the benign budget; the ratios below are
+at $s=\nGapS$\,m, and their ordering changes in the far tail, where few joint
+exceedances remain.
+\begin{enumerate}
+\item For two sources, the union and RA bounds agree to within
+  \nUnionRaDtwoMaxErr{}, as Makarov's theorem requires. For three, the RA
+  tightens the union bound by \nRaGain{} (\nGapUnion{} to \nGapRa{}). Under
+  unknown dependence, the union bound is nearly the right quantity.
+\item The worst coupling exceeds independent sums at the same marginals by
+  \nDepRatio$\times$ (\emph{dependence gap}). Evaluating the wind at the upper
+  envelope rather than at the conditions actually flown costs a further
+  \nEnvRatio$\times$ (\emph{envelope gap}).
+\item Independent sums at matched wind agree with the sum of per-source
+  suprema measured on the same missions to within \nNatRatio$\times$,
+  consistent with the benign sources being independent, as they are by
+  construction in the simulator.
+\item The sum of per-source suprema exceeds the supremum of the joint deviation
+  by \nTimeRatio$\times$ (\emph{temporal gap}; \nGapJointK{} joint exceedances in
+  \nJointMissions{} missions). Sources seldom peak at the same instant, but a
+  budget built from per-source suprema must assume they do.
+\end{enumerate}
+The dependence gap can be closed only by knowing the coupling, which an
+attacker who controls jamming denies the defender. The envelope gap shrinks
+with better wind knowledge. The temporal gap, the largest of the three at
+this $s$, can be closed without either, by bounding the supremum of the summed trajectory
+directly, for example with a reachable-set computation per certification
+window. Condition (C5), which licenses adding per-source suprema, held in
+\nSubaddSources{} of joint missions.
+
+\figGap
+
+\section{Measured GNSS Marginal (RQ6)}
+\label{sec:r5}
+The pilot's GNSS marginal is simulated (99th percentile \nRFivePnnSim\,m). The
+artifact contains measured navigation error from the real GPS-jamming flight of
+the UAV Attack Dataset~\cite{whelan2020dataset}: \nRFiveSamples{} one-second
+samples over a noise episode and a loss of fix, whose error grows with staleness
+to \nRFiveEnvTen\,m at 10\,s and \nRFiveEnvMax\,m at 15\,s (spoofing samples
+belong to $\dadv$ and are excluded). We replaced each simulated degradation
+episode by the larger of its simulated deviation and the measured envelope at the
+episode's staleness, and in a stress variant set every episode to the measured
+45\,s duration. This never makes a mission's GNSS deviation smaller, but it
+assumes, without measuring it, that navigation error becomes cross-track
+deviation one for one.
+
+At $m=10$\,m and 5\% FPR, with $\dadv=\nROneDadvFive$\,m, the floor estimated from
+the empirical marginals falls from \nRFiveFloorSim{} (simulated GNSS) to
+\nRFiveFloorMeas{} (measured envelope) and \nRFiveFloorLong{} (45\,s episodes).
+With the finite-sample band of \cref{sec:revised}, the values are
+\nRFiveFloorCpSim, \nRFiveFloorCpMeas{} and \nRFiveFloorCpLong. The bound is only
+as good as its GNSS marginal; a simulated marginal overstated the certified
+floor by a factor of two to three at this margin. It is the jamming-induced
+tail, rather than the attack, that the corridor must absorb. At $m=20$\,m every variant
+certifies \nRFiveFloorCpTwenty, the ceiling that \nCalMissions{} calibration
+samples per source permit.
+
+% ------------------------------------------------------------- moved from the body for length
+\section{Negative Controls}
+\label{app:negative}
+A soundness test that cannot fail is uninformative, so we broke two conditions
+deliberately and re-optimised the attacker under each (\cref{tab:negative}).
+\begin{itemize}
+\item \emph{(C2$'$) broken, no re-anchoring.} Undetected deviation reaches
+  \nNegCtwoMaxDev\,m, and the test flags \nNegCtwoViol{} of \nNegCtwoRows{}
+  points (\nNegCtwoViolFam{}), every one where the bound is informative.
+\item \emph{(C4) broken, severe turbulence (45--60\,kt).} The fault mimic
+  reaches \nNegCfourMaxDev\,m undetected, and the test flags the bound at
+  $m=20$\,m, where $\pbar=0$ because the empirical marginals have finite
+  support. At $m=10$\,m the observed frequency stays below $\pbar$, so this
+  break is detected only where the bound is tightest. The weather mimic was
+  detected in every mission, leaving no undetected missions to test.
+\end{itemize}
+The test thus detects unsoundness when a stated condition fails and enough
+undetected missions remain to measure it, which is the behaviour the audit
+loop of \cref{fig:framework} relies on.
+
+\begin{table}[t]
+\centering\footnotesize
+\setlength{\tabcolsep}{2.4pt}
+\caption{Negative controls at 5\% FPR. Undet.\ = undetected missions out of
+\nEvalMissions; fails = failures among them; viol.\ = Holm-significant violation
+of $\pbar$; dev.\ = largest undetected deviation (m).}
+\label{tab:negative}
+\begin{tabular}{@{}llcccccc@{}}
+\toprule
+\textbf{Control} & \textbf{disguise} & $m$ & \textbf{undet.} & \textbf{fails} & $\pbar$ & \textbf{viol.} & \textbf{dev.} \\
+\midrule
+\tabinput{tab_negative_body.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Diagnosis of the Scaled-Test Violations (RQ5)}
+\label{app:diagnosis}
+With $\dadv=\nROneDadvFive$\,m, the test flagged \nROneViol{} of \nROneTests{}
+points, all at $m=\nROneViolM$\,m, where the bound claimed $\pbar=0$. We
+re-simulated each flagged cell with its seeds
+(\code{r1\_violation\_diagnosis.csv}). The violations come from
+\nDiagMissions{} missions, and the attacker caused none of them. Each fails
+under its benign inputs alone (benign-only deviation \nDiagBenignMin--\nDiagBenignMax\,m),
+the attack adds at most \nDiagAttackMax\,m, and \nDiagAllSat{} three saturate the
+actuator with or without the attack. Two conditions of \cref{thm:floor} failed,
+neither of which concerns disguise.
+\begin{itemize}
+\item \emph{(C3) for the marginals.} The empirical marginal of each source has
+  finite support. Beyond the largest of \nCalMissions{} calibration samples,
+  $\pbar$ is zero, and the bound claims a certainty that no finite sample can
+  justify. One benign mission in 5{,}000 fails at $m=20$\,m.
+\item \emph{(C1), which was not enforced.} Superposition held in at least
+  \nROneSuperposMin{} of missions, and every violating mission saturated. The
+  pilot had stated (C1) as an assumption, but no component of the stack checked
+  it at run time.
+\end{itemize}
+This is a negative result about the pilot instantiation rather than about
+\cref{thm:floor}. The theorem's conclusion requires its conditions, and the
+scaled test found two that the instantiation did not secure. We report the
+violations as found. The revision below fixes the instantiation before any new
+data are examined and does not tune the old run until it passes.
+
+
+
+\section{Detector Operating Curves}
+\label{app:roc}
+\Cref{fig:roc} shows the operating curves of the four detectors against a naive
+5\,m step and a 0.5\,m/s ramp, which \cref{sec:eval} summarises.
+
+\figROC
+
+\section{PX4: the Pre-Registered Transfer Conditions}
+\label{app:px4read}
+The protocol fixed two conditions for a qualitative transfer of the disguise
+matrix. (a)~With the gate armed, every primary attacker should evade in at least
+half of the missions with at most twice its reduced-order deviation; \nPxReadAOk{}
+of five families met it, but the step reached \nPxReadStepDev\,m against a limit of
+\nPxReadStepLim\,m. (b)~With the gate removed, EKF2's gate should cap every family
+at \nPxReadCap\,m while D4 does not; D4 admitted \nPxReadFaultDFour\,m to the fault
+mimic, but EKF2's gate also admitted \nPxReadFaultDTwo\,m. What transferred is
+the ordering: the anchor gate decides how far an undetected attacker gets, the
+inertial invariant D4 is bypassed by the fault mimic, and without the gate the
+damage is two to three times larger in PX4 than in the reduced-order model.

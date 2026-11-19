@@ -208,7 +208,8 @@ def _drop_third_person_cites(paper: str, txt: str) -> str:
     allowed = [re.sub(r"[^a-z]", "", t.lower()) for t in THIRD_PERSON_CITES.get(paper, ())]
     if not allowed:
         return txt
-    heads = [m.start() for m in re.finditer(r"R\s?E\s?F\s?E\s?R\s?E\s?N\s?C\s?E\s?S", txt)]
+    # IEEEtran prints "REFERENCES"; the USENIX style (plainurl) prints "References".
+    heads = [m.start() for m in re.finditer(r"^\s*(?:R\s?E\s?F\s?E\s?R\s?E\s?N\s?C\s?E\s?S|References)\s*$", txt, re.M)]
     if not heads:
         return txt
     refs_at = heads[-1]

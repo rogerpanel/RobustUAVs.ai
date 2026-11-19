@@ -3,10 +3,9 @@ A UAV's navigation stack cannot distinguish an attacker from the weather, and
 an attacker who knows this will exploit it. We turned that observation into a
 threat model, $\varepsilon$-observational equivalence, and a bound on undetected
 failure for every coupling of the benign sources. Optimised disguises evaded
-every detector, and for an explicit adaptive GNSS attacker the undetected
-deviation is now proved on the linear loop: finite only with a trusted
-re-anchoring fix and \nBoundTaOne\,m at 1\,s, while PX4 SITL flights at that
-interval stayed within \nPxTaWorstDOneGate\,m. The re-anchoring interval, not a threshold,
+every detector; for an adaptive GNSS attacker the undetected deviation is
+proved finite only with trusted re-anchoring, \nBoundTaOne\,m at 1\,s, and PX4
+flights at that interval stayed within \nPxTaWorstDOneGate\,m. The re-anchoring interval, not a threshold,
 is therefore the defender's design parameter. Engineers can size it to the
 corridor a mission must hold; certification authorities can require a bound on
 undetected failure, with every condition proved or monitored, not only a
