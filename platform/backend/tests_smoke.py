@@ -192,6 +192,23 @@ def test_paper2_every_table_and_full_study():
         assert f["n_filtered"] == f["counts"]["tier"]["A"] and set(f["counts"]["eligible"]) == {"1"}
 
 
+def test_paper4_design_rule():
+    c = _client()
+    r = c.get("/api/papers/IV/design_rule", params={"m": 20.0, "net": 2.65})
+    if r.status_code == 503:
+        return
+    assert r.status_code == 200, r.text
+    d = r.json()
+    tas = [b["T_a_s"] for b in d["table"]]
+    assert tas == sorted(tas) and len(tas) >= 5, tas
+    assert all(b["bound_corrected_m"] >= b["bound_large_sample_m"] for b in d["table"])
+    rec = d["recommendation"]
+    assert rec["T_a_s"] is not None and rec["bound_corrected_m"] + 2.65 <= 20.0
+    none = c.get("/api/papers/IV/design_rule", params={"m": 1.0}).json()["recommendation"]
+    assert none["T_a_s"] is None                                  # nothing fits a 1 m corridor
+    assert c.get("/api/papers/IV/design_rule", params={"m": -1}).status_code == 422
+
+
 def test_paper3_certify_tiny():
     """Hand computation: rho = (1,3,6,12), alpha = (2,5,5,10).
     n_k = #{rho <= alpha_(k)} = (1,2,2,3); k - n_k = (0,0,1,1); d = 1.

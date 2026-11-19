@@ -60,6 +60,7 @@ export const papersApi = {
 
   // Paper IV -- the dependence-uncertainty floor of the unified budget.
   floorDefaults: () => request('/api/papers/IV/floor'),
+  designRule: (m, net) => request(`/api/papers/IV/design_rule${query({ m, net })}`),
   floor: (body) => post('/api/papers/IV/floor', body),
   floorSweep: (body) => post('/api/papers/IV/floor/sweep', body),
   marginals: (alpha) => request(`/api/papers/IV/marginals${query({ alpha })}`),

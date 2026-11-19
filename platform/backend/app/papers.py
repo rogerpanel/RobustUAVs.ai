@@ -36,6 +36,7 @@ import functools
 import importlib
 import importlib.util
 import math
+import json
 import re
 import sys
 from pathlib import Path
@@ -1101,4 +1102,65 @@ def floor(req: dict) -> dict:
         "formula": "s = m - delta_adv - net;  floor = 1 - p(s)",
         "source": "paperIV/experiments/depbounds.py (union_bound, cp_tails, "
                   "pbar_union_cp), paperIV/results/e3_marginals.npz",
+    }
+
+
+# ============================================ Paper IV: the design rule ===
+# The proved stealth budget against the trusted re-anchoring interval T_a
+# (results/r10_bound_conf.csv: linear loop, D1 + anchor gate + D_sat, 1 % FPR,
+# eps = 0.01, worst loss of effectiveness; margins at large-sample quantiles and
+# with the finite-sample correction), and what PX4 SITL measured at 5 s and 1 s.
+# Only the evaluated intervals are proved, so the recommendation is the largest
+# evaluated T_a whose corrected bound fits the corridor; nothing is interpolated.
+
+def design_rule(m: Optional[float] = None, net: float = 0.0) -> dict:
+    rows = _iv_rows("r10_bound_conf.csv")
+    if not rows:
+        raise Unavailable("paperIV/results/r10_bound_conf.csv")
+    by_ta: dict[float, dict] = {}
+    for r in rows:
+        ta = _num(r.get("T_anchor_s"))
+        emp, cor = _num(r.get("delta_cert_empirical_m")), _num(r.get("delta_cert_corrected_m"))
+        if ta is None or emp is None or cor is None:
+            continue
+        b = by_ta.setdefault(ta, {"T_a_s": ta, "bound_large_sample_m": emp, "bound_corrected_m": cor})
+        b["bound_large_sample_m"] = max(b["bound_large_sample_m"], emp)
+        b["bound_corrected_m"] = max(b["bound_corrected_m"], cor)
+    table = [by_ta[k] for k in sorted(by_ta)]
+    r0 = rows[0]
+    rec = None
+    if m is not None:
+        fits = [b for b in table if b["bound_corrected_m"] + net <= m]
+        rec = {"m": m, "net_m": net,
+               "T_a_s": fits[-1]["T_a_s"] if fits else None,
+               "bound_corrected_m": fits[-1]["bound_corrected_m"] if fits else None,
+               "note": ("largest evaluated interval whose corrected bound plus the network tube fits the "
+                        "corridor; the benign floor of Theorem 1 must still fit in what remains")
+               if fits else "no evaluated interval fits this corridor; shorten T_a below "
+                            f"{table[0]['T_a_s']} s or widen the corridor"}
+    px4 = {}
+    try:
+        summ = json.loads((REPO / "paperIV" / "results" / "px4" / "px4_ta1_summary.json").read_text())
+        px4 = {k: summ.get(k) for k in ("worst_D1_gate_1s_m", "worst_D1_gate_5s_m", "worst_ALL_gate_1s_m",
+                                         "worst_ALL_gate_5s_m", "worst_ALL_nogate_1s_m",
+                                         "worst_ALL_nogate_5s_m", "P1_D1gate_within_bound",
+                                         "P2_D1gate_smaller_than_5s", "P2_ALLgate_smaller_than_5s")}
+    except (OSError, ValueError):
+        px4 = {}
+    neg = _iv_rows("px4/px4_e4neg.csv")
+    if neg:
+        px4["no_anchor_ramp_evasion"] = _num(neg[0].get("evasion_rate"))
+        px4["no_anchor_ramp_deviation_m"] = _num(neg[0].get("attack_only_dev_median_m"))
+    return {
+        "table": table,
+        "confidence": {"delta": _num(r0.get("delta")), "n_cal": _num(r0.get("n_cal")),
+                       "order_k": _num(r0.get("order_k")), "eps": _num(r0.get("eps")),
+                       "fpr": _num(r0.get("fpr"))},
+        "recommendation": rec,
+        "px4": px4,
+        "provenance": {"bound": "physics_model", "px4": "px4_sitl"},
+        "scope": "proved on the linear loop for every causal, adaptive GNSS-offset attacker; "
+                 "PX4 values are measured, not proved",
+        "source": "paperIV/results/r10_bound_conf.csv, paperIV/results/px4/px4_ta1_summary.json, "
+                  "paperIV/results/px4/px4_e4neg.csv",
     }

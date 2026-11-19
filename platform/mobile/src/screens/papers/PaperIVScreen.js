@@ -5,6 +5,7 @@ import { useTheme, fonts } from '../../theme';
 import Chip from '../../components/Chip';
 import ExportMenu from '../../components/ExportMenu';
 import LineChart from '../../components/LineChart';
+import DesignRulePanel from './DesignRulePanel';
 import { Steps, SweepControls } from './demo';
 import { ScreenHeader, Panel, Unavailable, KV } from '../uav/parts';
 import {
@@ -140,7 +141,8 @@ export default function PaperIVScreen() {
   const title = paper?.title ?? 'Paper IV - UAVPerturbation';
   const header = (
     <ScreenHeader eyebrow="Papers · Paper IV - UAVPerturbation" title={title}
-      lede="Read the certified floor of the unified perturbation budget. Set the
+      lede="Size the trusted re-anchoring interval for a corridor from the paper's
+            proved bound, then read the certified floor of the unified perturbation budget. Set the
             margin, the stealth budget δ_adv and the network tube; what is left
             must absorb GNSS error, benign faults and wind, whose coupling is
             unknown. The floor is computed by the paper's own dependence bounds
@@ -156,6 +158,8 @@ export default function PaperIVScreen() {
   return (
     <ScrollView style={s.screen} contentContainerStyle={s.content}>
       {header}
+
+      <DesignRulePanel width={width} />
 
       {loadState.unavailable ? (
         <Panel title="Floor calculator"><Unavailable message={loadState.unavailable} /></Panel>

@@ -672,6 +672,12 @@ def api_paper4_floor_sweep(body: FloorSweepRequest) -> dict:
     return _papers(papers_demo.floor_sweep, body.model_dump())
 
 
+@app.get("/api/papers/IV/design_rule", tags=["papers"])
+def api_paper4_design_rule(m: Optional[float] = Query(None, gt=0, le=1000),
+                           net: float = Query(0.0, ge=0, le=100)) -> dict:
+    return _papers(papers.design_rule, m, net)
+
+
 @app.get("/api/papers/IV/marginals", tags=["papers"])
 def api_paper4_marginals(alpha: Optional[float] = Query(None, gt=0, lt=1)) -> dict:
     return _papers(papers_demo.marginal_tails, alpha)
