@@ -12,7 +12,7 @@ reached nav_state 3 (mission) inside the window, it reports:
   * EKF2 status at that moment (tilt/yaw alignment, GNSS, external-vision fusion);
   * the largest roll/pitch before the failsafe (a vehicle that tips at take-off);
   * the vehicle commands received (arm, mode, mission start) and their results;
-  * every logged PX4 message of level WARNING or worse.
+  * every logged PX4 message of level INFO or worse around arming (logger lines excluded).
 
 Nothing is inferred beyond the logs: the most frequent flags and messages are printed, and
 the per-mission table is written to results/px4/px4_unflown_diagnosis.csv. Missions that
@@ -52,6 +52,27 @@ def at(data, t_us, field):
         return None
     i = np.searchsorted(data["timestamp"], t_us, side="right") - 1
     return None if i < 0 else data[field][i]
+
+
+def flags_ever(data, t0, t1, skip=("timestamp",)):
+    """Boolean fields of a topic that were true at any sample in [t0, t1] (and the earliest time)."""
+    if data is None:
+        return None
+    m = (data["timestamp"] >= t0) & (data["timestamp"] <= t1)
+    out = []
+    for f, col in data.items():
+        if f in skip or f.startswith("mode_req"):
+            continue
+        boolean = col.dtype == np.bool_ or (col.dtype == np.uint8 and set(np.unique(col).tolist()) <= {0, 1})
+        if boolean and m.any() and col[m].astype(bool).any():
+            out.append(f)
+    return sorted(out)
+
+
+def level(m) -> int:
+    """ULog stores the level as an ASCII digit ('0' EMERG ... '7' DEBUG)."""
+    v = int(m.log_level)
+    return v - 48 if v >= 48 else v
 
 
 def diagnose(path: Path) -> dict | None:
@@ -95,6 +116,19 @@ def diagnose(path: Path) -> dict | None:
         out["failsafe_flags_set"] = " ".join(sorted(on))
     else:
         out["failsafe_flags_set"] = "(failsafe_flags not logged)"
+    t_hi = tq + int(1e6)
+    ever = flags_ever(ff, t_arm, t_hi)
+    out["failsafe_flags_ever"] = "(not logged)" if ever is None else " ".join(ever)
+    fd = topic(ul, "failure_detector_status")
+    ever = flags_ever(fd, t_arm, t_hi)
+    out["failure_detector_ever"] = "(not logged)" if ever is None else " ".join(ever)
+    aa = topic(ul, "actuator_armed")
+    ever = flags_ever(aa, t_arm, t_hi, skip=("timestamp", "armed", "prearmed", "ready_to_arm"))
+    out["actuator_armed_ever"] = "(not logged)" if ever is None else " ".join(ever)
+    for f in ("failure_detector_status", "latest_disarming_reason", "latest_arming_reason"):
+        v = at(vs, t_hi, f)
+        if v is not None:
+            out[f"vs_{f}"] = int(v)
 
     es = topic(ul, "estimator_status_flags")
     for f, alt in (("cs_tilt_align", None), ("cs_yaw_align", None), ("cs_gps", "cs_gnss_pos"),
@@ -133,10 +167,11 @@ def diagnose(path: Path) -> dict | None:
         out["rejected_commands"] = " ".join(bad[:10])
     msgs = []
     for m in ul.logged_messages:
-        lvl = m.log_level if isinstance(m.log_level, int) else 6
-        if lvl <= 4:
+        lvl = level(m)
+        if lvl <= 6 and -30 <= (m.timestamp - t_arm) * 1e-6 <= toff + 5 \
+                and not m.message.startswith(("[logger]", "[tone_alarm]")):
             msgs.append(f"[{LEVELS.get(lvl, lvl)} {(m.timestamp - t_arm) * 1e-6:.1f}] {m.message}")
-    out["messages"] = " | ".join(msgs[:12])
+    out["messages"] = " | ".join(msgs[:20])
     return out
 
 
@@ -151,7 +186,7 @@ def main():
     except ImportError:
         raise SystemExit("pyulog is needed: pip3 install pyulog (the fleet's container image has it)")
     runs = sys.argv[1:] or sorted(p.name for p in PX.iterdir() if (p / "ulg").is_dir())
-    rows, n_flew = [], collections.Counter()
+    rows, n_flew, flown_rows = [], collections.Counter(), []
     for run in runs:
         for f in sorted((PX / run / "ulg").glob("*.ulg")):
             try:
@@ -161,11 +196,14 @@ def main():
             r["run"] = run
             if r.get("flew"):
                 n_flew[run] += 1
+                flown_rows.append(r)
                 continue
             logs = sorted((PX / run / "fail_logs").glob(f"{f.stem}_a*.log"))
             r["console"] = " | ".join(console(logs[-1])) if logs else ""
             rows.append(r)
-    keys = ["run", "mid", "nav_sequence", "t_failsafe_s", "failsafe_flags_set", "cs_tilt_align", "cs_yaw_align",
+    keys = ["run", "mid", "nav_sequence", "t_failsafe_s", "failsafe_flags_set", "failsafe_flags_ever",
+            "failure_detector_ever", "actuator_armed_ever", "vs_failure_detector_status",
+            "vs_latest_disarming_reason", "vs_latest_arming_reason", "cs_tilt_align", "cs_yaw_align",
             "cs_gps", "cs_ev_pos", "cs_inertial_dead_reckoning", "max_tilt_deg_before_fs", "landed_at_fs",
             "commands", "rejected_commands", "messages", "console", "why", "file"]
     with open(PX / "px4_unflown_diagnosis.csv", "w", newline="") as fh:
@@ -174,25 +212,32 @@ def main():
     print(f"ULogs of missions that did not fly: {len(rows)} -> results/px4/px4_unflown_diagnosis.csv")
     if not rows:
         return
-    for key, label in (("failsafe_flags_set", "failsafe flags set at the failsafe"),
+    for key, label in (("failsafe_flags_set", "failsafe flags set just after the failsafe"),
+                       ("failsafe_flags_ever", "failsafe flags set at any time from arming to failsafe + 1 s"),
+                       ("failure_detector_ever", "failure-detector flags (same window)"),
+                       ("actuator_armed_ever", "actuator_armed flags (same window)"),
+                       ("vs_failure_detector_status", "vehicle_status.failure_detector_status"),
                        ("nav_sequence", "navigation sequences")):
-        c = collections.Counter(r.get(key) or "" for r in rows)
-        print(f"\nmost frequent {label}:")
+        c = collections.Counter(str(r.get(key) or "") for r in rows)
+        cf = collections.Counter(str(r.get(key) or "") for r in flown_rows)
+        print(f"\nmost frequent {label}  [count in missions that did not fly | that flew]:")
         for v, n in c.most_common(6):
-            print(f"  {n:4d}  {v}")
+            print(f"  {n:4d} | {cf.get(v, 0):4d}  {v or '(none)'}")
     c = collections.Counter()
     for r in rows:
         for m in set(re.sub(r"\[\w+ -?[\d.]+\] ", "", x) for x in (r.get("messages") or "").split(" | ") if x):
             c[m] += 1
-    print("\nmost frequent PX4 warnings (missions containing each):")
+    print("\nmost frequent PX4 messages, INFO or worse, arming-30 s to window+5 s (missions containing each):")
     for v, n in c.most_common(10):
         print(f"  {n:4d}  {v}")
     t = [r["t_failsafe_s"] for r in rows if r.get("t_failsafe_s") is not None]
     if t:
         print(f"\nfirst failsafe after arming: median {np.median(t):.1f} s, range {min(t):.1f}-{max(t):.1f} s")
     tl = [r["max_tilt_deg_before_fs"] for r in rows if r.get("max_tilt_deg_before_fs") is not None]
+    tf = [r["max_tilt_deg_before_fs"] for r in flown_rows if r.get("max_tilt_deg_before_fs") is not None]
     if tl:
-        print(f"largest tilt before it: median {np.median(tl):.0f} deg, max {max(tl):.0f} deg")
+        print(f"largest tilt before it: median {np.median(tl):.0f} deg, max {max(tl):.0f} deg"
+              + (f"  (missions that flew, first 5 s: median {np.median(tf):.0f}, max {max(tf):.0f} deg)" if tf else ""))
 
 
 if __name__ == "__main__":

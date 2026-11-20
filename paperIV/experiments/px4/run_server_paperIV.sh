@@ -171,13 +171,17 @@ stage_rerun() {
 }
 stage_diag() {
   image
-  dock "cd /repo/paperIV/experiments/px4 && python3 p4_unflown_diag.py" 2>&1 | tee -a "$LOG/diag.txt"; own
+  dock "cd /repo/paperIV/experiments/px4 && python3 p4_unflown_diag.py" 2>&1 | tee -a "$LOG/diag.txt" \
+    || say "diag failed (see $LOG/diag.txt); continuing"
+  own
 }
 stage_mismatch() {
   image
-  dock "cd /repo/paperIV/experiments/px4 && python3 p4_mismatch.py" 2>&1 | tee -a "$LOG/mismatch.txt"
+  dock "cd /repo/paperIV/experiments/px4 && python3 p4_mismatch.py" 2>&1 | tee -a "$LOG/mismatch.txt" \
+    || say "mismatch failed (see $LOG/mismatch.txt); continuing"
   if ls -d "$RES"/rerun_* >/dev/null 2>&1; then
-    dock "cd /repo/paperIV/experiments/px4 && python3 p4_mismatch.py --complete" 2>&1 | tee -a "$LOG/mismatch.txt"
+    dock "cd /repo/paperIV/experiments/px4 && python3 p4_mismatch.py --complete" 2>&1 | tee -a "$LOG/mismatch.txt" \
+      || say "mismatch --complete failed; continuing"
   fi
   own
 }

@@ -551,8 +551,11 @@ def ta1():
 
 def bound_corrected(ta):
     """Proved worst case with the finite-sample correction (results/r10_bound_conf.csv), worst over LoE."""
-    v = [float(r["delta_cert_corrected_m"]) for r in csv.DictReader(open(RES / "r10_bound_conf.csv"))
-         if float(r["T_anchor_s"]) == ta]
+    f = RES / "r10_bound_conf.csv"
+    if not f.exists():
+        print(f"  {f} missing: the P1 check is skipped (git checkout FETCH_HEAD -- paperIV/results/r10_bound_conf.csv)")
+        return None
+    v = [float(r["delta_cert_corrected_m"]) for r in csv.DictReader(open(f)) if float(r["T_anchor_s"]) == ta]
     return max(v) if v else None
 
 

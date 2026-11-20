@@ -44,8 +44,28 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE)); sys.path.insert(0, str(HERE.parent))
 import p4_analyze as A  # noqa: E402
 import r8_analytic_bound as R8  # noqa: E402
-from r10_confidence_bound import order_index  # noqa: E402
+from scipy.stats import binom  # noqa: E402
 from constants import DT, GNSS_EVERY, N_STEPS, U_MAX  # noqa: E402
+
+def order_index(n, q, alpha):
+    """Smallest k (1-based) with P(Bin(n, q) >= k) <= alpha: X_(k) >= x_q with prob. >= 1 - alpha
+    (the same rule as r10_confidence_bound.py, repeated here so this script needs only results files)."""
+    k = int(binom.ppf(1 - alpha, n, q)) + 1
+    while k > 1 and binom.sf(k - 2, n, q) <= alpha:
+        k -= 1
+    while binom.sf(k - 1, n, q) > alpha:
+        k += 1
+    if k > n:
+        raise ValueError(f"n = {n} is too small for q = {q}, alpha = {alpha}")
+    return k
+
+
+def need(path):
+    if not path.exists():
+        raise SystemExit(f"missing {path}: update the checkout with "
+                         f"git checkout FETCH_HEAD -- paperIV/experiments paperIV/results/{path.name}")
+    return path
+
 
 RUNS = {5.0: [("e1", "e1"), ("e2", "e2"), ("e3eval2", "e3eval")],
         1.0: [("ta1", "ta1_e1"), ("ta1", "ta1_e2"), ("ta1", "ta1_e3")],
@@ -61,14 +81,14 @@ def linear(anchor):
 
 @lru_cache(maxsize=None)
 def bound_row(anchor):
-    rows = [r for r in csv.DictReader(open(A.RES / "r10_bound_conf.csv"))
+    rows = [r for r in csv.DictReader(open(need(A.RES / "r10_bound_conf.csv")))
             if float(r["T_anchor_s"]) == anchor and float(r["loe"]) == 1.0]
     return rows[0] if rows else None
 
 
 def constraint_limits():
     import json
-    js = json.loads((A.RES / "e1_calibration.json").read_text())
+    js = json.loads(need(A.RES / "e1_calibration.json").read_text())
     r = bound_row(5.0)
     th1 = {float(k): v for k, v in js["stack"].items()}[float(r["fpr"])]["D1"]
     c1 = th1 + float(r["margin_S1_cor"])
