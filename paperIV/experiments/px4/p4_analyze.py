@@ -61,15 +61,34 @@ def out_name(name):
     return f"{stem}{suffix}.{ext}" if dot else f"{name}{suffix}"
 
 
-def flown(r):
+def pre_onset_speed(r, d):
+    """Along-track speed fitted on [5 s, attack onset] (on [5, 50] s for benign missions and twins), from the
+    record when the extraction stored it, else from the mission's series; None when the window before the
+    onset is shorter than 3 s (cannot be judged: the mission is kept)."""
+    if r.get("along_speed_pre_mps", "missing") != "missing":
+        return r["along_speed_pre_mps"]
+    s = series(d, r["mid"]) if d else None
+    if s is None or "along" not in s:
+        return r.get("along_speed_mps")
+    t = s["t"].astype(float); al = s["along"].astype(float)
+    t_on = r.get("attack_t0") if _attacked(r) and r.get("attack_t0") is not None else 50.0
+    m = (t >= 5.0) & (t <= min(float(t_on), 50.0))
+    return float(np.polyfit(t[m], al[m], 1)[0]) if m.sum() >= 60 else None
+
+
+def flown(r, d=None):
     """Validity rule: the mission is valid iff PX4 was in mission mode (nav_state 3) inside the window.
     Missions that never flew went to Descend/Termination before the window started, at random
     (the same seed flies in another run), independently of the attack."""
     if 3 not in (r.get("nav_states") or []):
         return False
-    # deviation 5: a mission that reached mission mode but never cruised (the start-up failure in a
-    # form the nav-state rule misses: failsafe before the window, vehicle near the take-off point)
-    return not CRUISE or (r.get("along_speed_mps") or 0.0) >= CRUISE_MIN_MPS
+    # deviation 5: a mission that reached mission mode but did not cruise BEFORE any offset was applied
+    # (the start-up failure in a form the nav-state rule misses). A slowdown after the attack onset is an
+    # attack effect and is kept.
+    if not CRUISE:
+        return True
+    v = pre_onset_speed(r, d or r.get("_src"))
+    return v is None or v >= CRUISE_MIN_MPS
 
 
 def _all_rows(d):
@@ -117,13 +136,13 @@ def rows(d, exp=None, valid_only=True):
         r["_src"] = d
     if not valid_only:
         return out
-    bad = [r for r in out if not flown(r)]
+    bad = [r for r in out if not flown(r, d)]
     if not COMPLETE:
         EXCLUDED[(d, exp)] = (len(bad), len(out), 0)
-        return [r for r in out if flown(r)]
+        return [r for r in out if flown(r, d)]
     Rr = _all_rows(rerun_dir(d))
-    okO = {m for m, x in O.items() if flown(x)}
-    okR = {m for m, x in Rr.items() if flown(x)}
+    okO = {m for m, x in O.items() if flown(x, d)}
+    okR = {m for m, x in Rr.items() if flown(x, rerun_dir(d))}
     sel, recovered = [], 0
     for m in sorted(set(r["mid"] for r in out) | {m for m, x in Rr.items() if exp is None or x.get("exp") == exp}):
         x = O.get(m) or Rr[m]
@@ -172,7 +191,7 @@ def attack_only(r, d):
     mission, r["_src"], default d), or None when the twin is missing or was not flown (validity rule)."""
     d = r.get("_src", d)
     if d not in _VALID:
-        _VALID[d] = {m for m, x in _all_rows(d).items() if flown(x)}
+        _VALID[d] = {m for m, x in _all_rows(d).items() if flown(x, d)}
     if twin_mid(r) not in _VALID[d] or r["mid"] not in _VALID[d]:
         return None
     a = series(d, r["mid"]); b = series(d, twin_mid(r))

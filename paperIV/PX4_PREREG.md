@@ -203,16 +203,27 @@ mission mode inside the window before the failsafe. Deviation 1 described these 
 "nav_state never 3 in the window; along-track speed 0", but only the first condition was
 implemented.
 
-**Change.** A mission is valid iff it reached mission mode inside the window AND its along-track
-speed, fitted on [10, 50] s, is at least 2 m/s. The rule does not depend on the attack: the attack
-is cross-track, and the failure precedes the attack onset. It is applied identically to every run
-(`p4_analyze.py --cruise`, `p4_mismatch.py --cruise`); outputs carry the suffix `_cruise`. Under
-this rule a mission that never cruised is excluded together with its pair, as in deviation 1. The
-driver now also retries such missions in future flights.
+**Change.** A mission is valid iff it reached mission mode inside the window AND it cruised before
+any offset was applied. That is, its along-track speed fitted on [5 s, attack onset] is at least
+2 m/s; benign missions and twins are judged on [5, 50] s. When the onset is earlier than 8 s, the
+mission cannot be judged and is kept. The condition looks only at the vehicle before the attack, so
+it cannot remove an attack effect: a mission that slows down AFTER the onset (for example after a
+large offset trips EKF2) is kept.
 
-**Effect on counts.** Missions that passed the old rule but never cruised: E0 2, E1 5, E2 14,
-E3 33, E4neg 2, E5 5, E7 2, and 3 in the E2 rerun (all seed 4003). P1 of E7 is reported both as
-registered (failed at 5 s, for the reason above) and under this rule.
+A first version of this rule, recorded earlier the same day, used the speed over the whole window.
+Before it was used for any reported number, it was found to drop such attack-induced slowdowns:
+- E2 attacker 28 at seed 4016 applied a 34 m offset, was caught by the anchor gate, and slowed to
+  1.4 m/s, while its twin cruised at 7.8 m/s;
+- the first version excluded E0 2, E1 5, E2 14, E3 33, E4neg 2, E5 5 and E7 2 missions, plus 3 in
+  the E2 rerun (all seed 4003).
+
+It was replaced by the pre-onset rule above; the exclusions under that rule are counted in
+`px4_validity_complete_cruise.csv`. The rule is applied identically to every run
+(`p4_analyze.py --cruise`, `p4_mismatch.py --cruise`); outputs carry the suffix `_cruise`. A
+mission that fails it is excluded together with its pair, as in deviation 1. In future flights the
+driver retries such missions (`along_speed_pre_mps`, now extracted from every ULog).
+
+P1 of E7 is reported both as registered (failed at 5 s, for the reason above) and under this rule.
 
 **Mismatch (E6), added at the same time and labelled post hoc.** The one-sided term
 M+ = max(0, sup|e_px4| - sup|e_lin|), next to the registered pointwise M. M+ suffices for the

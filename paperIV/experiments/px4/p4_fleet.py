@@ -218,9 +218,11 @@ class Fleet:
                     row.update(stats)
                     np.savez_compressed(self.out / "series" / f"{spec['mid']}.npz", **series) if series else None
                     row["status"] = "ok" if stats.get("ok") else "bad_log"
+                    pre = stats.get("along_speed_pre_mps")
                     if row["status"] == "ok" and (3 not in (stats.get("nav_states") or [])
-                                                  or (stats.get("along_speed_mps") or 0.0) < 2.0):
-                        row["status"] = "not_flown"     # failsafe before the window or never cruised: retried
+                                                  or (pre is not None and pre < 2.0)):
+                        row["status"] = "not_flown"     # failsafe before the window, or no cruise before any
+                                                        # offset was applied: a start-up failure, retried
                 except Exception as e:  # noqa: BLE001
                     row["status"] = "extract_error"; row["error"] = f"{type(e).__name__}: {e}"
                     traceback.print_exc()

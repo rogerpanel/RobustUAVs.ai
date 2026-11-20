@@ -125,6 +125,10 @@ def extract(path, keep_series=True):
     t0_param = float(_param(ul, "ATK_T0", 1e6)) if int(_param(ul, "ATK_EN", 0)) == 1 else math.inf
     t_on = min(t0_param, t0_att) if math.isfinite(t0_param) else t0_att
     out["attack_t0"] = t0_param if math.isfinite(t0_param) else None
+    # along-track speed BEFORE the attack onset (whole window for benign missions): a mission that did not
+    # cruise before any offset was applied failed at start-up; a slowdown after the onset is kept
+    pre = (grid >= 5.0) & (grid <= min(t_on if math.isfinite(t_on) else 50.0, 50.0))
+    out["along_speed_pre_mps"] = float(np.polyfit(grid[pre], along[pre], 1)[0]) if pre.sum() >= 60 else None
     out["dmax_applied"] = float(np.max(np.abs(d_grid)))
     after = grid >= (t_on if math.isfinite(t_on) else np.inf)
     out["maxdev_after"] = float(np.max(np.abs(e[after]))) if after.any() else 0.0
