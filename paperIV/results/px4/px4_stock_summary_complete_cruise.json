@@ -1,0 +1,26 @@
+{
+ "px4_version": "v1.17.0",
+ "ekf2": "unmodified",
+ "worst_D1_gate_5s_m": 4.294,
+ "worst_D1_nogate_5s_m": 19.661,
+ "worst_ALL_gate_5s_m": 3.525,
+ "worst_ALL_nogate_5s_m": 14.925,
+ "bound_corrected_5s_m": 33.483,
+ "worst_D1_gate_1s_m": 2.982,
+ "worst_D1_nogate_1s_m": 8.302,
+ "worst_ALL_gate_1s_m": 2.982,
+ "worst_ALL_nogate_1s_m": 2.982,
+ "bound_corrected_1s_m": 10.639,
+ "no_anchor_ramp": {
+  "n": 50,
+  "evasion_rate": 0.94,
+  "q50": 17.488,
+  "q95": 17.597,
+  "max": 17.643
+ },
+ "P1_D1gate_within_bound_1s": true,
+ "P1_D1gate_within_bound_5s": true,
+ "P2_D1gate_1s_below_5s": true,
+ "P2_ALLgate_1s_below_5s": true,
+ "provenance": "px4_sitl_stock_ekf2"
+}

@@ -5,6 +5,8 @@ Never type a number into the manuscript; re-run this script instead."""
 from __future__ import annotations
 
 import csv
+import gzip
+import collections
 import json
 from collections import defaultdict
 from pathlib import Path
@@ -437,23 +439,39 @@ if (RES / "r9_d3_point.csv").exists():
 PX = RES / "px4"
 if (PX / "px4_e2_reading.json").exists():
     rp = lambda n: list(csv.DictReader(open(PX / n)))
+    # Final tables (PX4_PREREG.md deviations 4 and 5): excluded missions flown again (_complete) and the
+    # validity rule with the pre-onset cruise condition (_cruise). The as-registered tables stay in
+    # results/px4 and feed the *Reg macros, so the paper can state both.
+    FIN = "_complete_cruise"
+    def fin_name(n):
+        stem, ext = n.rsplit(".", 1)
+        return f"{stem}{FIN}.{ext}" if (PX / f"{stem}{FIN}.{ext}").exists() else n
+    rpf = lambda n: rp(fin_name(n))
+    jf = lambda n: json.loads((PX / fin_name(n)).read_text())
     val = rp("px4_validity.csv")
-    mac("nPxMissions", th_(sum(int(r["n_ok"]) for r in val) + 4))          # + 4 smoke missions
+    rerun = {}
+    for d_ in ("rerun_e0", "rerun_e1", "rerun_e2", "rerun_e3eval", "rerun_e4neg"):
+        f_ = PX / d_ / "missions.jsonl.gz"
+        if f_.exists():
+            rerun[d_] = {json.loads(l)["mid"] for l in gzip.open(f_, "rt")}
+    n_rerun = sum(len(v) for v in rerun.values())
+    mac("nPxRerun", th_(n_rerun))
+    mac("nPxMissions", th_(sum(int(r["n_ok"]) for r in val) + 4 + n_rerun))   # + 4 smoke missions + reruns
     rates = [float(r["rate"]) for r in val if r["exp"] not in ("e0_replay",) and r["dir"] != "e3eval2"]
     mac("nPxNotFlownMin", pct(min(rates), 0)); mac("nPxNotFlownMax", pct(max(rates), 0))
     e0n = next(r for r in val if r["exp"] == "e0")
     mac("nPxBenign", str(int(e0n["n_ok"]) - int(e0n["n_not_flown"])))
-    rep_ = [float(r["sup_e_diff_m"]) for r in rp("px4_e0_replay.csv") if r["sup_e_diff_m"]]
+    rep_ = [float(r["sup_e_diff_m"]) for r in rpf("px4_e0_replay.csv") if r["sup_e_diff_m"]]
     mac("nPxReplayMed", fmt(float(np.median(rep_)), 2)); mac("nPxReplayMax", fmt(max(rep_), 2))
     bm = {r["q"]: float(r["maxdev_m"]) for r in rp("px4_e0_benign_maxdev.csv")}
     mac("nPxBenignQnf", fmt(bm["0.95"], 1)); mac("nPxBenignMax", fmt(bm["1.0"], 1))
-    e1 = {(r["attack"], r["fpr"]): r for r in rp("px4_e1_detection.csv")}
+    e1 = {(r["attack"], r["fpr"]): r for r in rpf("px4_e1_detection.csv")}
     for a_, tg in (("step5", "Step"), ("ramp05", "Ramp")):
         r_ = e1[(a_, "0.05")]
         mac(f"nPxEOne{tg}DTwo", pct(float(r_["D2"]), 1)); mac(f"nPxEOne{tg}All", pct(float(r_["ALL+gate"]), 0))
         mac(f"nPxEOne{tg}DThree", pct(float(r_["D3"]), 0)); mac(f"nPxEOne{tg}DFour", pct(float(r_["D4"]), 0))
         mac(f"nPxEOne{tg}Dev", fmt(float(r_["attack_only_dev_median_m"]), 1))
-    cx = rp("px4_e2_cross.csv")
+    cx = rpf("px4_e2_cross.csv")
     prim = [r for r in cx if r["attacker_id"] in ("20", "21", "22", "23", "24") and r["stack"] == "ALL"
             and r["anchor_gate"] == "True"]
     ev = [float(r["evasion_rate"]) for r in prim]
@@ -466,19 +484,19 @@ if (PX / "px4_e2_reading.json").exists():
     mac("nPxWorstAllGate", fmt(worst("ALL", "True"), 2)); mac("nPxWorstDOneGate", fmt(worst("D1", "True"), 1))
     for st, tg in (("ALL", "All"), ("D1", "DOne"), ("D2", "DTwo"), ("D3", "DThree"), ("D4", "DFour")):
         mac(f"nPxWorst{tg}NoGate", fmt(worst(st, "False"), 1))
-    rdg = json.loads((PX / "px4_e2_reading.json").read_text())
+    rdg = jf("px4_e2_reading.json")
     stp = next(c for c in rdg["a"]["cells"] if c["family"] == "step")
     mac("nPxReadStepDev", fmt(stp["dev_px4_m"], 2)); mac("nPxReadStepLim", fmt(2 * stp["dev_ro_m"], 2))
     mac("nPxReadCap", fmt(rdg["b"]["cap_m"], 2))
     mac("nPxReadFaultDTwo", fmt(rdg["b"]["D2_max_by_family"]["fault_mimic"], 1))
     mac("nPxReadFaultDFour", fmt(rdg["b"]["D4_max_by_family"]["fault_mimic"], 1))
     mac("nPxReadAOk", str(sum(c["evasion_ge_50pct"] and c["dev_within_2x"] for c in rdg["a"]["cells"])))
-    ce = [r for r in rp("px4_e3_cem_eval.csv") if r["fpr"] == "0.05"]
+    ce = [r for r in rpf("px4_e3_cem_eval.csv") if r["fpr"] == "0.05"]
     okf = [r for r in ce if float(r["evasion_rate"]) > 0]
     mac("nPxCemEvMin", pct(min(float(r["evasion_rate"]) for r in okf), 0))
     mac("nPxCemEvMax", pct(max(float(r["evasion_rate"]) for r in okf), 0))
     mac("nPxCemDevMax", fmt(max(float(r["attack_only_dev_max"]) for r in okf), 1))
-    da = {r["fpr"]: r for r in rp("px4_e3_delta_adv.csv")}
+    da = {r["fpr"]: r for r in rpf("px4_e3_delta_adv.csv")}
     mac("nPxDadv", fmt(float(da["0.05"]["delta_adv_px4_m"]), 2))
     mac("nPxDadvMed", fmt(float(da["0.05"]["attack_only_q50_m"]), 1)); mac("nPxDadvQnf", fmt(float(da["0.05"]["attack_only_q95_m"]), 1))
     mac("nPxDadvRoPilot", fmt(float(da["0.01"]["delta_adv_ro_pilot_m"]), 2))
@@ -488,18 +506,74 @@ if (PX / "px4_e2_reading.json").exists():
     mac("nRoPrimEvMax", pct(max(float(r["evasion_rate"]) for r in ro), 0))
     mac("nRoPrimMaxMin", fmt(min(float(r["attack_only_dev_max"]) for r in ro), 1))
     mac("nRoPrimMaxMax", fmt(max(float(r["attack_only_dev_max"]) for r in ro), 1))
-    ng = rp("px4_e4neg.csv")[0]
+    ng = rpf("px4_e4neg.csv")[0]
     mac("nPxNoAnchorEv", pct(float(ng["evasion_rate"]), 0)); mac("nPxNoAnchorDev", fmt(float(ng["attack_only_dev_median_m"]), 1))
     cal = json.loads((PX / "calibration.json").read_text())
     mac("nPxDThreeTheta", th_(round(cal["single"]["0.05"]["D3"])))
     if (PX / "px4_ta1_summary.json").exists():          # E5: re-anchoring every 1 s
-        ta = json.loads((PX / "px4_ta1_summary.json").read_text())
+        ta = jf("px4_ta1_summary.json")
         mac("nPxTaWorstAllGate", fmt(ta["worst_ALL_gate_1s_m"], 2))
         mac("nPxTaWorstDOneGate", fmt(ta["worst_D1_gate_1s_m"], 2))
         mac("nPxTaWorstAllNoGate", fmt(ta["worst_ALL_nogate_1s_m"], 2))
         mac("nPxTaWorstDOneNoGate", fmt(ta["worst_D1_nogate_1s_m"], 1))
         mac("nPxTaRampEv", pct(float(ta["naive_ramp_1s"]["evasion_rate"]), 0))
         assert ta["P1_D1gate_within_bound"] and ta["P2_D1gate_smaller_than_5s"] and ta["P2_ALLgate_smaller_than_5s"]
+
+    # as registered (before deviations 4 and 5), for the text that states both
+    cx0 = rp("px4_e2_cross.csv")
+    mac("nPxWorstAllGateReg", fmt(max(float(r["attack_only_dev_max"]) for r in cx0
+                                      if r["stack"] == "ALL" and r["anchor_gate"] == "True"), 2))
+    mac("nPxDadvReg", fmt(float({r["fpr"]: r for r in rp("px4_e3_delta_adv.csv")}["0.05"]["delta_adv_px4_m"]), 2))
+    rdg0 = json.loads((PX / "px4_e2_reading.json").read_text())
+    mac("nPxReadAOkReg", str(sum(c["evasion_ge_50pct"] and c["dev_within_2x"] for c in rdg0["a"]["cells"])))
+    mac("nPxReadStepDevReg", fmt(next(c for c in rdg0["a"]["cells"] if c["family"] == "step")["dev_px4_m"], 2))
+    mac("nPxReadAHolds", "held" if rdg["a"]["holds"] else "did not hold")
+    vc = rp(fin_name("px4_validity.csv"))
+    v14 = [r for r in vc if r["dir"] != "stock"]
+    mac("nPxStillExcl", str(sum(int(r["n_still_excluded"]) for r in v14)))
+    mac("nPxStillExclPct", pct(sum(int(r["n_still_excluded"]) for r in v14) / sum(int(r["n_ok"]) for r in v14), 1))
+
+    # E6: linear loop vs PX4 on the flown offsets, attacks undetected by D1 + anchor gate (one-sided M+ and
+    # the registered pointwise M, eps = 0.01, delta = 0.05)
+    mm = {r["anchor_s"]: r for r in rpf("px4_mismatch_summary.csv") if r["subset"] == "undetected_D1_gate"}
+    for a_, tg in (("5.0", "Five"), ("1.0", "One")):
+        r_ = mm[a_]
+        mac(f"nMm{tg}N", th_(int(r_["n"])))
+        mac(f"nMm{tg}Feas", pct(float(r_["share_offsets_feasible_in_linear_bound"]), 0))
+        mac(f"nMm{tg}PlusMax", fmt(float(r_["Mplus_max_m"]), 2))
+        mac(f"nMm{tg}PlusUb", fmt(float(r_["Mplus_ub_eps0.01_m"]), 2))
+        mac(f"nMm{tg}PlusStat", fmt(float(r_["stat_bound_Mplus_eps0.01_m"]), 1))
+        mac(f"nMm{tg}PointUb", fmt(float(r_["M_ub_eps0.01_m"]), 1))
+        mac(f"nMm{tg}PointStat", fmt(float(r_["stat_bound_eps0.01_m"]), 1))
+        mac(f"nMm{tg}PointMed", fmt(float(r_["mismatch_q50_m"]), 2))
+
+    # E7: stock EKF2, PX4 v1.17.0
+    if (PX / "px4_stock_summary.json").exists():
+        st0 = json.loads((PX / "px4_stock_summary.json").read_text())
+        st = jf("px4_stock_summary.json")
+        recs = [json.loads(l) for l in gzip.open(PX / "stock" / "missions.jsonl.gz", "rt")]
+        per = collections.Counter(r["mid"] for r in recs)
+        mac("nStMissions", th_(len(per))); mac("nStRetried", str(sum(v > 1 for v in per.values())))
+        mac("nPxMissionsAll", th_(sum(int(r["n_ok"]) for r in val) + 4 + n_rerun + len(per)))
+        mac("nStRetriedPct", pct(sum(v > 1 for v in per.values()) / len(per), 0))
+        vs = [r for r in vc if r["dir"] == "stock"]
+        mac("nStExcl", str(sum(int(r["n_still_excluded"]) for r in vs)))
+        for k_, tg in (("worst_D1_gate_5s_m", "DOneGateFive"), ("worst_D1_gate_1s_m", "DOneGateOne"),
+                       ("worst_ALL_gate_5s_m", "AllGateFive"), ("worst_ALL_gate_1s_m", "AllGateOne"),
+                       ("worst_D1_nogate_5s_m", "DOneNoGateFive"), ("worst_ALL_nogate_5s_m", "AllNoGateFive")):
+            mac(f"nSt{tg}", fmt(st[k_], 2))
+        mac("nStRegDOneGateFive", fmt(st0["worst_D1_gate_5s_m"], 2)); mac("nStRegDOneGateOne", fmt(st0["worst_D1_gate_1s_m"], 2))
+        mac("nStNoAnchorEv", pct(st["no_anchor_ramp"]["evasion_rate"], 0)); mac("nStNoAnchorDev", fmt(st["no_anchor_ramp"]["q50"], 1))
+        sc = [r for r in rpf("px4_stock_cross.csv") if r["exp"] == "st5_e2" and r["stack"] == "ALL" and r["anchor_gate"] == "True"]
+        mac("nStEvMin", pct(min(float(r["evasion_rate"]) for r in sc), 0)); mac("nStEvMax", pct(max(float(r["evasion_rate"]) for r in sc), 0))
+        assert st["P1_D1gate_within_bound_1s"] and st["P1_D1gate_within_bound_5s"] and st["P2_D1gate_1s_below_5s"]
+        assert not st0["P1_D1gate_within_bound_5s"]          # as registered: failed (deviation 5)
+
+    # diagnosis of the start-up failure (kept ULogs of failed attempts)
+    dg = rp("px4_unflown_diagnosis.csv")
+    mac("nDiagFailed", str(len(dg)))
+    mac("nDiagExec", str(sum("Executing Mission" in r["messages"] for r in dg)))
+    mac("nDiagTkoItem", str(sum("Takeoff to 25" in r["messages"] for r in dg)))
 
 with open(MS / "numbers.tex", "w") as fh:
     fh.write("% Generated by experiments/make_numbers.py -- do not edit by hand.\n")

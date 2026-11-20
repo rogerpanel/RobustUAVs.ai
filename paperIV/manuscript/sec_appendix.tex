@@ -291,11 +291,80 @@ data are examined and does not tune the old run until it passes.
 \label{app:px4read}
 The protocol fixed two conditions for a qualitative transfer of the disguise
 matrix. (a)~With the gate armed, every primary attacker should evade in at least
-half of the missions with at most twice its reduced-order deviation; \nPxReadAOk{}
-of five families met it, but the step reached \nPxReadStepDev\,m against a limit of
-\nPxReadStepLim\,m. (b)~With the gate removed, EKF2's gate should cap every family
-at \nPxReadCap\,m while D4 does not; D4 admitted \nPxReadFaultDFour\,m to the fault
-mimic, but EKF2's gate also admitted \nPxReadFaultDTwo\,m. What transferred is
-the ordering: the anchor gate decides how far an undetected attacker gets, the
-inertial invariant D4 is bypassed by the fault mimic, and without the gate the
-damage is two to three times larger in PX4 than in the reduced-order model.
+half of the missions with at most twice its reduced-order deviation. After
+deviations 4 and 5, \nPxReadAOk{} of five families met it, the step with
+\nPxReadStepDev\,m against a limit of \nPxReadStepLim\,m. As registered,
+\nPxReadAOkReg{} met it and the step reached \nPxReadStepDevReg\,m, a value that
+came from a pair whose benign twin never flew. (b)~With the gate removed, EKF2's
+gate should cap every family at \nPxReadCap\,m while D4 does not; D4 admitted
+\nPxReadFaultDFour\,m to the fault mimic, but EKF2's gate also admitted
+\nPxReadFaultDTwo\,m. What transferred is the ordering: the anchor gate decides
+how far an undetected attacker gets, the inertial invariant D4 is bypassed by the
+fault mimic, and without the gate the damage is two to three times larger in PX4
+than in the reduced-order model.
+
+\section{PX4: Deviations from the Protocol}
+\label{app:px4dev}
+All five are dated in the artifact's pre-registration, each recorded before the
+data it changes were analysed, except deviation~5, which was recorded after the
+stock-EKF2 results had been seen.
+\begin{enumerate}
+\item \emph{Validity rule.} Missions in which PX4 entered Descend or Termination
+  before the window were excluded, with their pairs, and the thresholds were
+  recalibrated on the \nPxBenign{} valid benign missions.
+\item \emph{Re-selection of the PX4-optimised attackers.} The search had been
+  steered by missions that never flew; the best attacker per family was
+  re-selected on valid missions and evaluated on the pre-registered fresh seeds.
+\item \emph{Robust statistics} (median and 95th percentile) next to every
+  maximum.
+\item \emph{Reruns.} All \nPxRerun{} missions excluded under deviation~1 were flown
+  again with the same seeds, together with their pairs, and every one flew. Filling
+  them in left the stealth budget at \nPxDadvReg\,m and the pre-registered reading
+  unchanged.
+\item \emph{Cruise condition.} The stock-EKF2 prediction at 5\,s failed on an
+  attacked flight that never cruised and never applied its offset. It had passed
+  the rule because PX4 entered mission mode inside the window before its
+  failsafe. A mission is now valid only if it also cruised (at least 2\,m/s along
+  track) before the attack onset, so that a slowdown caused by the attack is
+  kept. The rule applies to every run: \nPxStillExcl{} missions of the v1.14
+  study (\nPxStillExclPct) and \nStExcl{} of the replication are excluded. The
+  stealth budget falls from \nPxDadvReg{} to \nPxDadv\,m. Every PX4 number in the
+  body uses this rule. At the same time, the one-sided mismatch term of the body
+  was added next to the registered two-sided one. That term,
+  $\sup_{t\ge t_0}|e_{\mathrm{px4}}(t)-e_{\mathrm{lin}}(t)|$, also counts the linear
+  loop overshooting PX4, and gives \nMmFivePointStat{} and \nMmOnePointStat\,m in
+  place of \nMmFivePlusStat{} and \nMmOnePlusStat\,m.
+\end{enumerate}
+\begin{table}[t]
+\centering\footnotesize
+\caption{PX4 SITL, 5\,s re-anchoring, 5\% FPR, after deviations 4 and 5. Deviations
+(m) are attack-only on undetected missions. RO: reduced-order study (detection: D2).}
+\label{tab:px4}
+\setlength{\tabcolsep}{1.5pt}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+ & PX4 & RO \\
+\midrule
+Step 5\,m caught: EKF2 / stack$+$gate & \nPxEOneStepDTwo{} / \nPxEOneStepAll & \nTprStepDTwo \\
+Ramp 0.5\,m/s caught: EKF2 / stack$+$gate & \nPxEOneRampDTwo{} / \nPxEOneRampAll & \nTprRampDTwo \\
+Transferred attackers: evasion & \nPxEvMin--\nPxEvMax & \nRoPrimEvMin--\nRoPrimEvMax \\
+Transferred attackers: largest deviation & \nPxPrimMaxMin--\nPxPrimMaxMax & \nRoPrimMaxMin--\nRoPrimMaxMax \\
+Worst of 35, stack$+$gate & \nPxWorstAllGate & \nAnchorMaxFive \\
+Worst of 35, no gate: stack / D4 / D1 & \nPxWorstAllNoGate/\nPxWorstDFourNoGate/\nPxWorstDOneNoGate & \\
+PX4-optimised: evasion; largest dev. & \nPxCemEvMin--\nPxCemEvMax; \nPxCemDevMax & \\
+Stealth budget $\dadv$ & \nPxDadv & \nPxDadvRoPilot/\nPxDadvRoPooled \\
+No anchor, ramp: evasion; drift & \nPxNoAnchorEv; \nPxNoAnchorDev & \\
+Re-anchoring 1\,s: worst, stack$+$gate / D1$+$gate & \nPxTaWorstAllGate/\nPxTaWorstDOneGate & bound \nBoundTaOne \\
+Stock EKF2: worst D1$+$gate, 5\,s / 1\,s & \nStDOneGateFive/\nStDOneGateOne & \nBoundTaFive/\nBoundTaOne \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\emph{Cause of the start-up failure.} The kept logs of all \nDiagFailed{} failed
+attempts show invalid position setpoints right after take-off and a blind-land
+failsafe. In \nDiagExec{} of them, the navigator began the mission without its
+take-off step, which flights that succeeded rarely did. This points to a race
+between the driver's switch to mission mode and PX4's take-off logic, independent
+of the attack. It also occurs on v1.17.0, where \nStRetried{} of \nStMissions{}
+missions needed a retry.
+

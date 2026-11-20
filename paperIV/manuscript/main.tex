@@ -19,7 +19,6 @@
 \pgfplotsset{compat=1.17}
 \usepackage[capitalize,nameinlink]{cleveref}
 \usepackage{enumitem}
-\setlength{\emergencystretch}{1.5em}
 
 % ---------------- colours (colour-blind-safe palette) ----------------
 \definecolor{cBlue}{HTML}{2C6E9B}
@@ -44,7 +43,7 @@
 \newcommand{\E}{\mathbb{E}}
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\Dclass}{\mathcal{D}}
-\newcommand{\code}[1]{\texttt{\small #1}}
+\newcommand{\code}[1]{\texttt{#1}}
 \newtheorem{definition}{Definition}
 \newtheorem{lemma}{Lemma}
 \newtheorem{proposition}{Proposition}
@@ -74,8 +73,8 @@ proves, with finite-sample confidence, the largest undetected deviation of a lin
 loop. The bound is finite only when a trusted fix re-anchors the estimator, and shrinks from
 \nBoundTaFive\,m at 5\,s to \nBoundTaOne\,m at 1\,s. Optimised disguises evade four detectors in
 \nMissionsTotal{} simulated missions, because detectors must tolerate benign noise. In
-\nPxMissions{} PX4 software-in-the-loop missions, the stealth budget transferred but the full
-disguise matrix did not, and re-anchoring every second kept every undetected deviation within
+\nPxMissionsAll{} PX4 software-in-the-loop missions, also on unmodified EKF2, the stealth budget
+transferred but the full disguise matrix did not, and re-anchoring every second kept every undetected deviation within
 \nPxTaWorstDOneGate\,m. Engineers and certification authorities can therefore size the trusted
 re-anchoring interval to the corridor a mission must hold, instead of tuning detector thresholds.
 \end{abstract}
@@ -165,9 +164,10 @@ test the resulting bound against attackers optimised to evade it.
   traced to two unsecured conditions unrelated to disguise. A run-time saturation
   alarm and a finite-sample p-box repair both.
 \item \textbf{A pre-registered PX4 transfer study (\cref{sec:px4}).} In
-  \nPxMissions{} SITL missions with EKF2, the stealth budget transferred, the
-  pre-registered transfer of the full disguise matrix did not, and re-anchoring
-  every second kept every undetected deviation within \nPxTaWorstDOneGate\,m.
+  \nPxMissionsAll{} SITL missions, including a replication on unmodified EKF2, the
+  stealth budget transferred, the full disguise matrix did not, re-anchoring every
+  second kept every undetected deviation within \nPxTaWorstDOneGate\,m, and PX4
+  exceeded the proof's linear loop by at most \nMmFivePlusMax\,m.
 \end{itemize}
 
 \paragraph{Scope.}

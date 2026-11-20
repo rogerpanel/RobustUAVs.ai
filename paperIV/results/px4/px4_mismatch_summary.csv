@@ -1,0 +1,7 @@
+anchor_s,subset,n,mismatch_q50_m,mismatch_q95_m,mismatch_max_m,delta_px4_max_m,delta_lin_max_m,share_offsets_feasible_in_linear_bound,delta_cert_corrected_m,M_ub_eps0.05_m,M_ub_eps0.05_order_k,stat_bound_eps0.05_m,M_ub_eps0.01_m,M_ub_eps0.01_order_k,stat_bound_eps0.01_m,delta,provenance
+5.0,all,2712,1.16,29.157,89.694,90.921,89.032,0.6645,33.483,30.777,2596,64.26,50.142,2694,83.625,0.05,px4_sitl
+5.0,undetected_D1_gate,1303,0.418,2.859,30.323,14.12,27.319,0.9877,33.483,3.686,1252,37.169,22.646,1297,56.129,0.05,px4_sitl
+1.0,all,900,0.53,11.434,39.104,27.96,38.663,0.78,10.639,12.189,866,22.828,24.299,897,34.938,0.05,px4_sitl
+1.0,undetected_D1_gate,582,0.423,1.203,23.984,3.159,23.55,0.9897,10.639,1.346,562,11.985,12.159,581,22.798,0.05,px4_sitl
+,all,95,0.509,2.554,36.505,50.022,17.362,,,30.673,94,,,,,0.05,px4_sitl
+,undetected_D1_gate,83,0.505,4.071,36.505,50.022,17.362,,,36.505,83,,,,,0.05,px4_sitl

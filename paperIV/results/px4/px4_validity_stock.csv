@@ -1,0 +1,9 @@
+dir,exp,n_ok,n_not_flown,rate,provenance
+stock,st0_e4neg,50,0,0.0,px4_sitl
+stock,st1_e0,200,0,0.0,px4_sitl
+stock,st1_e2,500,0,0.0,px4_sitl
+stock,st1_e3,150,0,0.0,px4_sitl
+stock,st5_e0,500,0,0.0,px4_sitl
+stock,st5_e1,100,0,0.0,px4_sitl
+stock,st5_e2,500,0,0.0,px4_sitl
+stock,st5_e3,150,0,0.0,px4_sitl

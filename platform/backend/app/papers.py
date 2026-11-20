@@ -1138,19 +1138,30 @@ def design_rule(m: Optional[float] = None, net: float = 0.0) -> dict:
                         "corridor; the benign floor of Theorem 1 must still fit in what remains")
                if fits else "no evaluated interval fits this corridor; shorten T_a below "
                             f"{table[0]['T_a_s']} s or widen the corridor"}
+    # PX4 values from the final tables (PX4_PREREG.md deviations 4 and 5) when present, else as registered
+    pxdir = REPO / "paperIV" / "results" / "px4"
+    fin = lambda n: (n.replace(".", "_complete_cruise.") if (pxdir / n.replace(".", "_complete_cruise.")).exists()
+                     else n)
     px4 = {}
     try:
-        summ = json.loads((REPO / "paperIV" / "results" / "px4" / "px4_ta1_summary.json").read_text())
+        summ = json.loads((pxdir / fin("px4_ta1_summary.json")).read_text())
         px4 = {k: summ.get(k) for k in ("worst_D1_gate_1s_m", "worst_D1_gate_5s_m", "worst_ALL_gate_1s_m",
                                          "worst_ALL_gate_5s_m", "worst_ALL_nogate_1s_m",
                                          "worst_ALL_nogate_5s_m", "P1_D1gate_within_bound",
                                          "P2_D1gate_smaller_than_5s", "P2_ALLgate_smaller_than_5s")}
     except (OSError, ValueError):
         px4 = {}
-    neg = _iv_rows("px4/px4_e4neg.csv")
+    neg = _iv_rows("px4/" + fin("px4_e4neg.csv"))
     if neg:
         px4["no_anchor_ramp_evasion"] = _num(neg[0].get("evasion_rate"))
         px4["no_anchor_ramp_deviation_m"] = _num(neg[0].get("attack_only_dev_median_m"))
+    try:   # E7: unmodified EKF2 (PX4 v1.17.0)
+        st = json.loads((pxdir / fin("px4_stock_summary.json")).read_text())
+        px4.update({f"stock_{k}": st.get(k) for k in ("worst_D1_gate_1s_m", "worst_D1_gate_5s_m")})
+    except (OSError, ValueError):
+        pass
+    srcs = ", ".join(f"paperIV/results/px4/{fin(n)}" for n in ("px4_ta1_summary.json", "px4_e4neg.csv",
+                                                                "px4_stock_summary.json"))
     return {
         "table": table,
         "confidence": {"delta": _num(r0.get("delta")), "n_cal": _num(r0.get("n_cal")),
@@ -1161,6 +1172,5 @@ def design_rule(m: Optional[float] = None, net: float = 0.0) -> dict:
         "provenance": {"bound": "physics_model", "px4": "px4_sitl"},
         "scope": "proved on the linear loop for every causal, adaptive GNSS-offset attacker; "
                  "PX4 values are measured, not proved",
-        "source": "paperIV/results/r10_bound_conf.csv, paperIV/results/px4/px4_ta1_summary.json, "
-                  "paperIV/results/px4/px4_e4neg.csv",
+        "source": "paperIV/results/r10_bound_conf.csv, " + srcs,
     }

@@ -1,11 +1,4 @@
 % ------------------------------------------------------------- Discussion
-\paragraph{Summary of findings.}
-Every disguise evades every detector and only the anchor gate caps the
-undetected deviation (RQ1); the repaired bound survived fresh attackers
-(RQ2--RQ5); a measured GNSS marginal cut the floor two- to threefold (RQ6); in
-PX4 the stealth budget, not the full disguise matrix, transferred, and 1\,s
-re-anchoring held undetected deviation within \nPxTaWorstDOneGate\,m (RQ7).
-
 \paragraph{Design rules for defenders.}
 Five design rules follow from the measurements.
 \begin{enumerate}
@@ -37,9 +30,10 @@ Five design rules follow from the measurements.
 \paragraph{Limitations.}
 \begin{itemize}
 \item \emph{Reduced-order model.} The proof and the soundness test cover one
-  lateral channel with a linear KF. The PX4 study (\cref{sec:px4}) ran in SITL,
-  needed a small EKF2 change, and transferred the stealth budget but not the
-  full disguise matrix; a model-mismatch term to EKF2 is not yet bounded.
+  lateral channel with a linear KF. In PX4 SITL (\cref{sec:px4}), on patched and on
+  unmodified EKF2, the stealth budget transferred but not the full disguise
+  matrix, and the mismatch to the linear loop is bounded only statistically, for
+  the attacker classes flown.
 \item \emph{Empirical adversarial term.} The usable $\dadv$ is a pooled supremum
   over optimised attackers; stronger optimisers raised it by
   \nROneDadvRatioFive$\times$, and a held-out mixed-family attacker exceeded it

@@ -1,0 +1,6 @@
+q,maxdev_m,n,provenance
+0.5,2.289,498,px4_sitl
+0.9,3.282,498,px4_sitl
+0.95,3.739,498,px4_sitl
+0.99,6.66,498,px4_sitl
+1.0,13.101,498,px4_sitl

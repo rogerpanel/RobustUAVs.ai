@@ -1,0 +1,2 @@
+control,n,evasion_rate,n_with_twin,attack_only_dev_median_m,attack_only_dev_q95_m,attack_only_dev_max_m,maxdev_after_median_m,provenance
+"no anchor, ramp 0.5 m/s",100,0.93,100,17.483,17.555,18.485,17.49,px4_sitl

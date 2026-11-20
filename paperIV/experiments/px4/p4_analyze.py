@@ -220,7 +220,12 @@ def validity_report():
                        n_not_flown_incl_failed_records=k, n_recovered_by_rerun=rec, n_still_excluded=k - rec)
         row["provenance"] = "px4_sitl"
         out.append(row)
-    write("px4_validity.csv", out)
+    # E7 (stock EKF2) is a separate study: its validity counts never overwrite those of E0-E5
+    main = [r for r in out if r["dir"] != "stock"]; st = [r for r in out if r["dir"] == "stock"]
+    if main:
+        write("px4_validity.csv", main)
+    if st:
+        write("px4_validity_stock.csv", st)
 
 
 def cal_load():

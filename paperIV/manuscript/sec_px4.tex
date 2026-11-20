@@ -8,68 +8,63 @@ The GNSS offset and the benign envelope (gust, GNSS noise, outages, jamming,
 IMU faults, LoE) are injected inside the simulator from seeded streams, so each
 attacked mission has a twin with the same noise and the attack off; the
 attack-only deviation is the largest difference between the two. Stock EKF2
-would absorb a trusted fix into a bias estimate while GNSS is active, so a small
-EKF2 change fuses it every 5\,s as an absolute position. D1--D4 and the anchor gate are computed offline from the
+v1.14 would absorb a trusted fix into a bias estimate while GNSS is active, so a
+small EKF2 change fuses it every 5\,s as an absolute position; the replication
+below needs no such change. D1--D4 and the anchor gate are computed offline from the
 flight logs, with D2 taken from EKF2's own GNSS innovation test, and thresholds
 are recalibrated on \nPxBenign{} benign missions. The protocol was pre-registered
-in the artifact before the first attacked flight, with two dated deviations: a
-harness start-up race sent \nPxNotFlownMin--\nPxNotFlownMax{} of missions into a
-failsafe before the window, independently of the attack, so these are excluded
-and the PX4-optimised attackers were re-selected. Flying one benign mission twice differs by
+before the first attacked flight, with five dated deviations (\cref{app:px4dev}),
+chiefly a harness start-up race that sent \nPxNotFlownMin--\nPxNotFlownMax{} of
+missions into a failsafe independently of the attack: all \nPxRerun{} were flown
+again, and a mission that did not cruise before the attack onset is excluded with
+its twin (\nPxStillExcl, \nPxStillExclPct). Flying one benign mission twice differs by
 \nPxReplayMed\,m in the median and \nPxReplayMax\,m at most, a floor under every
 attack-only number below.
 
-\begin{table}[t]
-\centering\footnotesize
-\caption{PX4 SITL, 5\,s re-anchoring, 5\% FPR. Deviations (m) are attack-only on
-undetected missions. RO: reduced-order study (detection: D2).}
-\label{tab:px4}
-\setlength{\tabcolsep}{1.5pt}
-\begin{tabular}{@{}lrr@{}}
-\toprule
- & PX4 & RO \\
-\midrule
-Step 5\,m caught: EKF2 / stack$+$gate & \nPxEOneStepDTwo{} / \nPxEOneStepAll & \nTprStepDTwo \\
-Ramp 0.5\,m/s caught: EKF2 / stack$+$gate & \nPxEOneRampDTwo{} / \nPxEOneRampAll & \nTprRampDTwo \\
-Transferred attackers: evasion & \nPxEvMin--\nPxEvMax & \nRoPrimEvMin--\nRoPrimEvMax \\
-Transferred attackers: largest deviation & \nPxPrimMaxMin--\nPxPrimMaxMax & \nRoPrimMaxMin--\nRoPrimMaxMax \\
-Worst of 35, stack$+$gate & \nPxWorstAllGate & \nAnchorMaxFive \\
-Worst of 35, no gate: stack / D4 / D1 & \nPxWorstAllNoGate/\nPxWorstDFourNoGate/\nPxWorstDOneNoGate & \\
-PX4-optimised: evasion; largest dev. & \nPxCemEvMin--\nPxCemEvMax; \nPxCemDevMax & \\
-Stealth budget $\dadv$ & \nPxDadv & \nPxDadvRoPilot/\nPxDadvRoPooled \\
-No anchor, ramp: evasion; drift & \nPxNoAnchorEv; \nPxNoAnchorDev & \\
-Re-anchoring 1\,s: worst, stack$+$gate / D1$+$gate & \nPxTaWorstAllGate/\nPxTaWorstDOneGate & bound \nBoundTaOne \\
-\bottomrule
-\end{tabular}
-\end{table}
 
 \paragraph{Results.}
-\Cref{tab:px4} summarises the study. Against naive offsets, EKF2's own gate
-caught the step in \nPxEOneStepDTwo{} and the ramp in \nPxEOneRampDTwo{} of
-missions, and the full stack with the anchor gate caught both every time. The
-35 attackers optimised in the reduced-order model, flown without
-re-optimisation, still evaded the full PX4 stack: the five primary ones in
-\nPxEvMin--\nPxEvMax{} of missions, but their median attack-only deviation was
-only \nPxQfMin--\nPxQfMax\,m, near the replay floor, and the worst over all
-attackers was \nPxWorstAllGate\,m. Attackers optimised against PX4 itself evaded
-in \nPxCemEvMin--\nPxCemEvMax{} of missions with at most \nPxCemDevMax\,m; no GNSS
-or weather mimic evaded at all. The PX4 stealth budget, \nPxDadv\,m (median
-\nPxDadvMed, 95th percentile \nPxDadvQnf\,m), lies between the reduced-order
-\nPxDadvRoPilot{} and \nPxDadvRoPooled\,m. Without the trusted fix, a 0.5\,m/s ramp
-evaded in \nPxNoAnchorEv{} of missions and moved the vehicle by the full
-\nPxNoAnchorDev\,m, as the finiteness result predicts. For the stack of the
-proved bound (D1 and the anchor gate), the worst PX4 case was
-\nPxWorstDOneGate\,m, inside the \nBoundTaFive\,m bound at 5\,s; this is an
-empirical consistency check, since the proof covers the linear loop only. With re-anchoring every 1\,s (pre-registered with two predictions), both held: the
-worst undetected deviation was \nPxTaWorstDOneGate\,m for the bound's stack, inside
-the \nBoundTaOne\,m bound and below the 5\,s value, and \nPxTaWorstAllGate\,m for
-the full stack with the gate (\nPxTaWorstAllNoGate\,m even without it); the naive
-ramp evaded in \nPxTaRampEv{} of missions.
+\Cref{tab:px4} (\cref{app:px4dev}) summarises the study. EKF2's own gate caught
+a naive 5\,m step in \nPxEOneStepDTwo{} and a 0.5\,m/s ramp in \nPxEOneRampDTwo{}
+of missions, the full stack with the anchor gate caught both every time. The
+five primary attackers optimised in the reduced-order model, flown without
+re-optimisation, still evaded the full PX4 stack in \nPxEvMin--\nPxEvMax{} of
+missions, but with median attack-only deviations of only \nPxQfMin--\nPxQfMax\,m,
+near the replay floor; the worst over all 35 attackers was \nPxWorstAllGate\,m
+(\nPxWorstAllGateReg\,m as registered, from a pair whose benign twin never flew).
+Attackers optimised against PX4 itself evaded in \nPxCemEvMin--\nPxCemEvMax{} of
+missions with at most \nPxCemDevMax\,m, and no GNSS or weather mimic evaded at
+all. The PX4 stealth budget, \nPxDadv\,m (95th percentile \nPxDadvQnf\,m), is below
+the reduced-order \nPxDadvRoPilot--\nPxDadvRoPooled\,m. Without the trusted fix a
+0.5\,m/s ramp evaded in \nPxNoAnchorEv{} of missions and drifted the full
+\nPxNoAnchorDev\,m, as the finiteness result predicts. For the bound's stack (D1
+and the anchor gate) the worst case was \nPxWorstDOneGate\,m at 5\,s and, with
+re-anchoring every 1\,s (pre-registered, both predictions held),
+\nPxTaWorstDOneGate\,m, inside the \nBoundTaFive{} and \nBoundTaOne\,m bounds; the
+full stack with the gate stayed within \nPxTaWorstAllGate\,m at 1\,s. These are
+consistency checks, since the proof covers the linear loop only.
 
-\paragraph{The pre-registered reading did not hold.}
-The protocol fixed two conditions for a qualitative transfer of the full
-disguise matrix, and neither held in full (\cref{app:px4read}): the step mimic
-exceeded its deviation limit, and without the gate EKF2's own test did not cap
-the fault mimic. What transferred is the ordering: the anchor gate decides how
-far an undetected attacker gets, D4 is bypassed by the fault mimic, and without
-the gate the damage is two to three times larger in PX4.
+\paragraph{Stock EKF2.}
+PX4 v1.16 and later fuse an auxiliary global position as an absolute fix, so we
+replicated the study on PX4 v1.17.0 with EKF2 unmodified (\nStMissions{} missions,
+5\,s and 1\,s, primary, PX4-optimised and naive attackers). The transferred
+attackers evaded the full stack in \nStEvMin--\nStEvMax{} of missions; the worst
+undetected deviation for the bound's stack was \nStDOneGateFive\,m at 5\,s and
+\nStDOneGateOne\,m at 1\,s, and the unanchored ramp drifted \nStNoAnchorDev\,m.
+As registered, the 5\,s prediction failed (\nStRegDOneGateFive\,m) on an attacked
+flight that never cruised or applied its offset, which led to deviation~5.
+
+\paragraph{Mismatch to the linear loop.}
+Passing each mission's logged offsets through the proof's linear loop, PX4's
+undetected deviation exceeded the linear prediction by at most \nMmFivePlusMax\,m
+at 5\,s and \nMmOnePlusMax\,m at 1\,s (\nMmFiveN{} and \nMmOneN{} attacks,
+\nMmFiveFeas{} of them feasible in the proof). With a 0.95-confidence bound on the
+99th percentile of the excess, bound plus excess is \nMmFivePlusStat\,m at 5\,s and
+\nMmOnePlusStat\,m at 1\,s: a statistical statement about the attacker classes
+flown, not a proof for EKF2 (\cref{app:px4dev}).
+
+\paragraph{The pre-registered reading held only in part.}
+Of the two conditions for a qualitative transfer of the full disguise matrix
+(\cref{app:px4read}), (a) \nPxReadAHolds{} and (b) did not: without the gate,
+EKF2's own test did not cap the fault mimic. What transferred is the ordering: the
+anchor gate decides how far an undetected attacker gets, D4 is bypassed by the
+fault mimic, and without the gate the damage is two to three times larger in PX4.
