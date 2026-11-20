@@ -148,9 +148,11 @@ def ub(v, eps, delta):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--complete", action="store_true", help="include the reruns of deviation 4")
+    ap.add_argument("--cruise", action="store_true", help="validity rule of deviation 5")
     ap.add_argument("--eps", default="0.05,0.01"); ap.add_argument("--delta", type=float, default=0.05)
     a = ap.parse_args()
     A.COMPLETE = a.complete
+    A.CRUISE = a.cruise
     cal5 = A.cal_load()
     f1 = A.PX / "calibration_ta1.json"
     cal1 = __import__("json").loads(f1.read_text()) if f1.exists() else None
@@ -183,6 +185,10 @@ def main():
             if not S:
                 continue
             M = [o["mismatch_m"] for o in S]
+            # one-sided form (recorded with deviation 5): sup|e_px4| <= sup|e_lin| + M+, and for offsets
+            # feasible in the linear bound sup|e_lin| <= delta_cert, so only PX4 EXCEEDING the linear
+            # loop matters; the pointwise M also counts the linear loop overshooting PX4.
+            Mp = [max(0.0, o["delta_px4_m"] - o["delta_lin_m"]) for o in S]
             row = {"anchor_s": anchor, "subset": subset, "n": len(S),
                    "mismatch_q50_m": round(float(np.median(M)), 3),
                    "mismatch_q95_m": round(float(np.quantile(M, 0.95)), 3), "mismatch_max_m": round(max(M), 3),
@@ -192,6 +198,13 @@ def main():
                 row["share_offsets_feasible_in_linear_bound"] = round(float(np.mean([o["feasible"] for o in S])), 4)
                 br = bound_row(anchor)
                 row["delta_cert_corrected_m"] = float(br["delta_cert_corrected_m"]) if br else None
+            row["Mplus_q50_m"] = round(float(np.median(Mp)), 3)
+            row["Mplus_max_m"] = round(max(Mp), 3)
+            for e in eps:
+                u, k = ub(Mp, e, a.delta)
+                row[f"Mplus_ub_eps{e}_m"] = None if u is None else round(u, 3)
+                if anchor is not None and u is not None and row.get("delta_cert_corrected_m") is not None:
+                    row[f"stat_bound_Mplus_eps{e}_m"] = round(row["delta_cert_corrected_m"] + u, 3)
             for e in eps:
                 u, k = ub(M, e, a.delta)
                 row[f"M_ub_eps{e}_m"] = None if u is None else round(u, 3)

@@ -185,3 +185,44 @@ D1 + gate and for the full stack + gate. Reported regardless: every cell of `px4
 medians and 95th percentiles, the cells without the gate, the naive offsets and the no-anchor
 control. E7 differs from E0-E5 in the PX4 version (newer EKF2 and SIH), so it is a replication on
 stock firmware, not a repetition under identical conditions.
+
+## Deviation 5 (recorded 20 Nov 2026, AFTER the E7 results were seen)
+
+**What triggered it.** P1 of E7 failed at 5 s as registered: the largest undetected attack-only
+deviation for D1 + gate was 37.77 m against the corrected bound of 33.48 m. (At 1 s it held:
+10.61 m against 10.64 m.) Both maxima come from ONE seed, 4069, flown with attacker 21 at 5 s and
+attacker 23 at 1 s. In both missions the vehicle never flew the mission:
+- along-track cruise speed 0.03 and -0.02 m/s (healthy missions: median 7.7 m/s, 1st percentile
+  at or above 3.9 m/s);
+- offset applied 0.0 m, because the attack never started;
+- no trusted fix fused, failsafe and disarm inside the window.
+
+Their healthy twins flew normally, so the "attack-only deviation" compared a failed flight with a
+flown one. The nav-state rule of deviation 1 let them through because the vehicle passed through
+mission mode inside the window before the failsafe. Deviation 1 described these missions as
+"nav_state never 3 in the window; along-track speed 0", but only the first condition was
+implemented.
+
+**Change.** A mission is valid iff it reached mission mode inside the window AND its along-track
+speed, fitted on [10, 50] s, is at least 2 m/s. The rule does not depend on the attack: the attack
+is cross-track, and the failure precedes the attack onset. It is applied identically to every run
+(`p4_analyze.py --cruise`, `p4_mismatch.py --cruise`); outputs carry the suffix `_cruise`. Under
+this rule a mission that never cruised is excluded together with its pair, as in deviation 1. The
+driver now also retries such missions in future flights.
+
+**Effect on counts.** Missions that passed the old rule but never cruised: E0 2, E1 5, E2 14,
+E3 33, E4neg 2, E5 5, E7 2, and 3 in the E2 rerun (all seed 4003). P1 of E7 is reported both as
+registered (failed at 5 s, for the reason above) and under this rule.
+
+**Mismatch (E6), added at the same time and labelled post hoc.** The one-sided term
+M+ = max(0, sup|e_px4| - sup|e_lin|), next to the registered pointwise M. M+ suffices for the
+statement sup|e_px4| <= delta_cert + M+ on offsets that are feasible in the linear bound. The
+pointwise M also counts the cases where the linear loop overshoots PX4.
+
+**Failure diagnosis.** The kept ULogs of the 104 failed attempts all contain:
+- "Preflight Fail: No valid data from Compass 0" and "... from Baro 0";
+- then, after take-off, `[mc_pos_control] invalid setpoints` and "Failsafe: blind land";
+- the navigation sequence mission, then Descend about 10 s after arming, then Termination.
+
+Whether these messages also occur in missions that flew is reported by `p4_unflown_diag.py` next
+to every message. The failure also occurs on v1.17.0 (205 of 2,600 E7 missions needed a retry).

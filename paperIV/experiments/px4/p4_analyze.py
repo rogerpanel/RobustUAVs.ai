@@ -45,6 +45,8 @@ REF_DELTA_ADV = {0.01: (4.371, 5.463)}   # pilot and pooled stealth budget (resu
 
 EXCLUDED = {}       # (dir, exp) -> (not flown, ok records, recovered by the rerun)  (PX4_PREREG.md deviations 1, 4)
 COMPLETE = False    # --complete: fill excluded missions in from rerun_<dir> (deviation 4)
+CRUISE = False      # --cruise: a flown mission must also have cruised (deviation 5)
+CRUISE_MIN_MPS = 2.0   # along-track speed fitted on [10, 50] s; healthy missions cruise at about 7.7 m/s
 
 
 def rerun_dir(d):
@@ -52,17 +54,22 @@ def rerun_dir(d):
 
 
 def out_name(name):
-    if not COMPLETE:
+    suffix = ("_complete" if COMPLETE else "") + ("_cruise" if CRUISE else "")
+    if not suffix:
         return name
     stem, dot, ext = name.rpartition(".")
-    return f"{stem}_complete.{ext}" if dot else f"{name}_complete"
+    return f"{stem}{suffix}.{ext}" if dot else f"{name}{suffix}"
 
 
 def flown(r):
     """Validity rule: the mission is valid iff PX4 was in mission mode (nav_state 3) inside the window.
     Missions that never flew went to Descend/Termination before the window started, at random
     (the same seed flies in another run), independently of the attack."""
-    return 3 in (r.get("nav_states") or [])
+    if 3 not in (r.get("nav_states") or []):
+        return False
+    # deviation 5: a mission that reached mission mode but never cruised (the start-up failure in a
+    # form the nav-state rule misses: failsafe before the window, vehicle near the take-off point)
+    return not CRUISE or (r.get("along_speed_mps") or 0.0) >= CRUISE_MIN_MPS
 
 
 def _all_rows(d):
@@ -624,7 +631,9 @@ if __name__ == "__main__":
     args = sys.argv[1:]
     if "--complete" in args:
         COMPLETE = True
-        args = [a for a in args if a != "--complete"]
+    if "--cruise" in args:
+        CRUISE = True
+    args = [a for a in args if a not in ("--complete", "--cruise")]
     for t in (args or TASKS):
         print(f"[{t}]")
         TASKS[t]()

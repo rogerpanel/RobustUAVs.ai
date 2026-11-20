@@ -15,6 +15,7 @@
 #   ... run_server_paperIV.sh mismatch       # E6: linear loop vs PX4 on the flown offsets (no flights)
 #   ... run_server_paperIV.sh setup_stock    # PX4 v1.17.0 + px4_paperIV_stock.patch (EKF2 unmodified)
 #   ... run_server_paperIV.sh stock          # E7: 2,600 missions on stock EKF2 (about 3.5 h at K=3)
+#   ... run_server_paperIV.sh dev5           # deviation 5: tables with the cruise validity rule (no flights)
 #   ... run_server_paperIV.sh pack
 # Environment: K instances in parallel (default: half the cores, at most 12), SPEED (simulation
 # speed factor, default 8), PX4_SRC (Paper III's PX4 tree, default ~/PX4-Autopilot; only copied,
@@ -218,6 +219,16 @@ stage_stock() {
     2>&1 | tee -a "$LOG/stock.txt" || true
   own
   analyze stock
+}
+
+# deviation 5 (PX4_PREREG.md, recorded 20 Nov 2026): validity rule with the cruise condition; no flights
+stage_dev5() {
+  image
+  analyze --complete --cruise calibrate e1 e2 e3 e4neg ta1 stock
+  dock "cd /repo/paperIV/experiments/px4 && python3 p4_mismatch.py --complete --cruise" 2>&1 | tee -a "$LOG/mismatch.txt" \
+    || say "mismatch --complete --cruise failed; continuing"
+  stage_diag
+  own
 }
 
 stage_pack() {

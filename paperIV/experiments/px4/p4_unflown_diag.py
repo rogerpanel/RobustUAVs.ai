@@ -223,13 +223,17 @@ def main():
         print(f"\nmost frequent {label}  [count in missions that did not fly | that flew]:")
         for v, n in c.most_common(6):
             print(f"  {n:4d} | {cf.get(v, 0):4d}  {v or '(none)'}")
-    c = collections.Counter()
-    for r in rows:
-        for m in set(re.sub(r"\[\w+ -?[\d.]+\] ", "", x) for x in (r.get("messages") or "").split(" | ") if x):
-            c[m] += 1
-    print("\nmost frequent PX4 messages, INFO or worse, arming-30 s to window+5 s (missions containing each):")
-    for v, n in c.most_common(10):
-        print(f"  {n:4d}  {v}")
+    def msg_counts(group):
+        c = collections.Counter()
+        for r in group:
+            for m in set(re.sub(r"\[\w+ -?[\d.]+\] ", "", x) for x in (r.get("messages") or "").split(" | ") if x):
+                c[m] += 1
+        return c
+    c, cf = msg_counts(rows), msg_counts(flown_rows)
+    print(f"\nmost frequent PX4 messages, INFO or worse, arming-30 s to window+5 s "
+          f"[missions containing each: {len(rows)} that did not fly | {len(flown_rows)} that flew]:")
+    for v, n in c.most_common(12):
+        print(f"  {n:4d} | {cf.get(v, 0):4d}  {v}")
     t = [r["t_failsafe_s"] for r in rows if r.get("t_failsafe_s") is not None]
     if t:
         print(f"\nfirst failsafe after arming: median {np.median(t):.1f} s, range {min(t):.1f}-{max(t):.1f} s")
